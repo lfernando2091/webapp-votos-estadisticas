@@ -1,0 +1,229 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Captura" url="/app/estructuras/captura" />
+					</p:breadCrumb>
+					
+					<p:panel header="Información de la Persona">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Nombre" />
+							<p:commandLink
+								value="${capturaCRUD.persona.primerApellido} ${capturaCRUD.persona.segundoApellido} ${capturaCRUD.persona.nombre}"
+								action="perfilPersona" immediate="true" />
+						</p:panelGrid>
+						<p:separator rendered="${capturaCRUD.nodo.figura.nivel != 'NACIONAL'}" />
+						<p:panelGrid id="panelTerritorios" columns="2" rendered="${capturaCRUD.nodo.figura.nivel != 'NACIONAL'}">
+							<f:facet name="header">Teritorios</f:facet>
+							<p:outputLabel value="Cargo" />
+							<p:outputLabel value="${capturaCRUD.nodo.figura.nombre}" />
+							<p:outputLabel value="Entidad" rendered="${capturaCRUD.nodo.figura.nivel != 'GEOZONA'}" />
+							<p:selectOneMenu value="${modelos.entidades.seleccionado}"
+								converter="ObjectConverter" style="width: 250px;" filter="true"
+								filterMatchMode="contains"
+								rendered="${capturaCRUD.nodo.figura.nivel != 'GEOZONA'}">
+								<p:ajax event="itemSelect" onstart="actualizarTerritorios();" />
+								<f:selectItems value="${modelos.entidades.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Distrito Federal" rendered="${capturaCRUD.nodo.figura.nivel == 'DFEDERAL'}" />
+							<p:selectOneMenu value="${modelos.dFederales.seleccionado}"
+								converter="ObjectConverter" style="width: 250px;" filter="true"
+								filterMatchMode="contains"
+								rendered="${capturaCRUD.nodo.figura.nivel == 'DFEDERAL'}">
+								<f:selectItems value="${modelos.dFederales.listado}" var="fila"
+									itemLabel="${fila.idDFederal}: ${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Distrito Local" rendered="${capturaCRUD.nodo.figura.nivel == 'DLOCAL'}" />
+							<p:selectOneMenu value="${modelos.dLocales.seleccionado}"
+								converter="ObjectConverter" style="width: 250px;" filter="true"
+								filterMatchMode="contains"
+								rendered="${capturaCRUD.nodo.figura.nivel == 'DLOCAL'}">
+								<f:selectItems value="${modelos.dLocales.listado}" var="fila"
+									itemLabel="${fila.idDLocal}: ${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Municipio" rendered="${capturaCRUD.nodo.figura.nivel == 'MUNICIPIO'}" />
+							<p:selectOneMenu value="${modelos.municipios.seleccionado}"
+								converter="ObjectConverter" style="width: 250px;" filter="true"
+								filterMatchMode="contains"
+								rendered="${capturaCRUD.nodo.figura.nivel == 'MUNICIPIO'}">
+								<f:selectItems value="${modelos.municipios.listado}" var="fila"
+									itemLabel="${fila.idMunicipio}: ${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Sección" rendered="${capturaCRUD.nodo.figura.nivel == 'SECCION'}" />
+							<p:selectOneMenu value="${modelos.secciones.seleccionado}"
+								converter="ObjectConverter" style="width: 250px;" filter="true"
+								filterMatchMode="contains"
+								rendered="${capturaCRUD.nodo.figura.nivel == 'SECCION'}">
+								<f:selectItems value="${modelos.secciones.listado}" var="fila"
+									itemLabel="${fila.idSeccion}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Geozona" rendered="${capturaCRUD.nodo.figura.nivel == 'GEOZONA'}" />
+							<p:selectOneMenu
+								value="${modelos.geozonaParticiones.seleccionado}"
+								converter="ObjectConverter" style="width: 250px;" filter="true"
+								filterMatchMode="contains"
+								rendered="${capturaCRUD.nodo.figura.nivel == 'GEOZONA'}">
+								<f:selectItems value="${modelos.geozonaParticiones.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<p:separator />
+						<p:panelGrid id="panelDependencias" columns="2"
+							rendered="${mapaCaptura.estructura.ambito == 'DEPENDENCIAS'}">
+							<f:facet name="header">Dependencia</f:facet>
+							<p:outputLabel value="Dependencia" />
+							<p:selectOneMenu value="${capturaCRUD.dependencia}"
+								converter="ObjectConverter" style="width: 250px;" filter="true" filterMatchMode="contains">
+								<f:selectItems value="${modeloDependencias.listado}" var="fila"
+									itemLabel="${fila.dependencia}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Cargo" />
+							<p:selectOneMenu value="${capturaCRUD.cargo}"
+								style="width: 200px;">
+								<f:selectItems value="${modeloCargos.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Fecha Inicio" />
+							<p:calendar value="${capturaCRUD.fechaInicio}" mode="popup"
+								converter="DateConverter" pattern="dd/MM/yyyy" />
+							<p:outputLabel value="Fecha Término" />
+							<p:calendar value="${capturaCRUD.fechaTermino}" mode="popup"
+								converter="DateConverter" pattern="dd/MM/yyyy" />
+							<p:outputLabel value="Vigente" />
+							<p:inputSwitch value="${capturaCRUD.vigente}" onLabel="Si"
+								offLabel="No" />
+						</p:panelGrid>
+						<p:separator />
+						<p:panelGrid columns="1" rendered="${!capturaCRUD.nodo.figura.atributos.isEmpty()}">
+							<f:facet name="header">Atributos</f:facet>
+							<p:dataTable id="tablaProgramasPromocion" value="${capturaCRUD.mapaAtributos.PROGRAMA_PROMOCION}" var="fila" rendered="${capturaCRUD.mapaAtributos.PROGRAMA_PROMOCION != null and !modeloProgramasPromocion.listado.isEmpty()}">
+								<p:column headerText="Programas de Promoción">${fila.programaPromocion.nombre}</p:column>
+								<f:facet name="footer">
+									<p:commandButton value="Agregar Programa" onstart="PF('dialogoProgramasPromocionWV').show();" />
+								</f:facet>
+							</p:dataTable>
+							<p:dataTable id="tablaLegislaturas" value="${capturaCRUD.mapaAtributos.LEGISLATURA}" var="fila" rendered="${capturaCRUD.mapaAtributos.LEGISLATURA != null and !modeloLegislaturas.listado.isEmpty()}">
+								<p:column headerText="Legislatura">${fila.legislatura.nombre}</p:column>
+								<f:facet name="footer">
+									<p:commandButton value="Agregar Legislatura" onstart="PF('dialogoLegislaturasWV').show();" />
+								</f:facet>
+							</p:dataTable>
+							<p:panelGrid columns="2" rendered="${capturaCRUD.mapaAtributos.PARTIDO_POLITICO != null}">
+								<p:outputLabel value="Partido Político" />
+								<p:selectOneMenu value="${capturaCRUD.mapaAtributos.PARTIDO_POLITICO[0].partidoPolitico}" converter="ObjectConverter" style="width: 300px;">
+									<f:selectItems value="${modeloPartidosPoliticos.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+							<p:panelGrid columns="2" rendered="${capturaCRUD.mapaAtributos.PERIODO != null}">
+								<p:outputLabel value="Fecha Inicio" />
+								<p:calendar value="${capturaCRUD.mapaAtributos.PERIODO[0].fechaInicio}" mode="popup"
+								converter="DateConverter" pattern="dd/MM/yyyy" />
+								<p:outputLabel value="Fecha Término" />
+								<p:calendar value="${capturaCRUD.mapaAtributos.PERIODO[0].fechaTermino}" mode="popup"
+								converter="DateConverter" pattern="dd/MM/yyyy" />
+								<p:outputLabel value="Vigente" />
+								<p:inputSwitch value="${capturaCRUD.mapaAtributos.PERIODO[0].vigente}" onLabel="Si" offLabel="No" />
+							</p:panelGrid>
+							<p:panelGrid columns="2" rendered="${capturaCRUD.mapaAtributos.TIPO_SENADOR != null}">
+								<p:outputLabel value="Tipo" />
+								<p:selectOneMenu value="${capturaCRUD.mapaAtributos.TIPO_SENADOR[0].tipoSenador}" converter="ObjectConverter" style="width: 200px;">
+									<f:selectItems value="${modeloTiposSenador.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+							<p:dataTable id="tablaComisionesCU_senadores" value="${capturaCRUD.mapaAtributos.COMISION_CAMARA_SENADORES}" var="fila" rendered="${capturaCRUD.mapaAtributos.COMISION_CAMARA_SENADORES != null}">
+								<p:column headerText="Comisión">${fila.comision.nombre}</p:column>
+								<p:column headerText="Cargo">${fila.comisionCargo.nombre}</p:column>
+								<f:facet name="footer">
+									<p:commandButton value="Agregar Comisión" onstart="PF('dialogoComisionesCU_senadoresWV').show();" />
+								</f:facet>
+							</p:dataTable>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="guardar" />
+							<p:commandButton value="Salir" action="cancelar" immediate="true" />
+						</f:facet>
+					</p:panel>
+					
+					<p:remoteCommand name="actualizarTerritorios" action="actualizarTerritorios" update="#{p:component('panelTerritorios')}" />
+
+					<p:dialog id="dialogoProgramasPromocion"
+						widgetVar="dialogoProgramasPromocionWV"
+						rendered="${capturaCRUD.mapaAtributos.PROGRAMA_PROMOCION != null and !modeloProgramasPromocion.listado.isEmpty()}"
+						header="Agregar Programa de Promoción" modal="true"
+						visible="false">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Programa" />
+							<p:selectOneMenu value="${modeloProgramasPromocion.seleccionado}" converter="ObjectConverter" filter="true" filterMatchMode="contains" style="width: 300px;">
+								<f:selectItems value="${modeloProgramasPromocion.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregarProgramaPromocion" onsuccess="PF('dialogoProgramasPromocionWV').hide();" update="#{p:component('tablaProgramasPromocion')}" />
+							<p:commandButton value="Cancelar" onstart="PF('dialogoProgramasPromocionWV').hide();" />
+						</f:facet>
+					</p:dialog>
+					
+					<p:dialog id="dialogoLegislaturas"
+						widgetVar="dialogoLegislaturasWV"
+						rendered="${capturaCRUD.mapaAtributos.LEGISLATURA != null and !modeloLegislaturas.listado.isEmpty()}"
+						header="Agregar Legislatura" modal="true"
+						visible="false">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Legislatura" />
+							<p:selectOneMenu value="${modeloLegislaturas.seleccionado}" converter="ObjectConverter" filter="true" filterMatchMode="contains" style="width: 300px;">
+								<f:selectItems value="${modeloLegislaturas.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregarLegislatura" onsuccess="PF('dialogoLegislaturasWV').hide();" update="#{p:component('tablaLegislaturas')}" />
+							<p:commandButton value="Cancelar" onstart="PF('dialogoLegislaturasWV').hide();" />
+						</f:facet>
+					</p:dialog>
+					
+					<p:dialog id="dialogoComisionesCU_senadores"
+						widgetVar="dialogoComisionesCU_senadoresWV"
+						rendered="${capturaCRUD.mapaAtributos.COMISION_CAMARA_SENADORES != null}"
+						header="Agregar Comisión" modal="true"
+						visible="false">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Comisión" />
+							<p:selectOneMenu value="${modeloComisionesCU_Senadores.seleccionado}" converter="ObjectConverter" filter="true" filterMatchMode="contains" style="width: 300px;">
+								<f:selectItems value="${modeloComisionesCU_Senadores.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Cargo" />
+							<p:selectOneMenu value="${modeloCargosComisionCU.seleccionado}" converter="ObjectConverter" filter="true" filterMatchMode="contains" style="width: 300px;">
+								<f:selectItems value="${modeloCargosComisionCU.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregarComisionCU" onsuccess="PF('dialogoComisionesCU_senadoresWV').hide();" update="#{p:component('tablaComisionesCU_senadores')}">
+								<f:param value="COMISION_CAMARA_SENADORES" name="comisionCU_tipoAtributo" />
+							</p:commandButton>
+							<p:commandButton value="Cancelar" onstart="PF('dialogoComisionesCU_senadoresWV').hide();" />
+						</f:facet>
+					</p:dialog>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				
+				<h:outputStylesheet>
+					.ui-datatable-footer{
+						text-align: left !important;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

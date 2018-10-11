@@ -1,0 +1,37 @@
+package com.saganet.politik.database.administracion;
+
+import java.io.Serializable;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("UsuarioEO")
+public class UsuarioEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 705717660039700078L;
+	
+	private String nick;
+	private String nombre;
+	
+	@Override
+	public String toString() {
+		return "UsuarioEO [nick=" + nick + ", nombre=" + nombre + "]";
+	}
+
+	public String getNick() {
+		return nick;
+	}
+
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	
+}

@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Legislaturas" url="/app/estructuras/legislaturas" />
+						<p:menuitem value="Agregar Legislatura" />
+					</p:breadCrumb>
+					
+					<p:panelGrid columns="2">
+						<p:outputLabel value="Nivel" />
+						<p:selectOneMenu value="${legislaturaCRUD.nivel}" style="width: 150px;">
+							<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" itemDisabled="${fila != 'NACIONAL' and fila != 'ENTIDAD'}" />
+							<p:ajax event="itemSelect" update="@form" />
+						</p:selectOneMenu>
+						<p:outputLabel value="Entidad" rendered="${legislaturaCRUD.nivel == 'ENTIDAD'}" />
+						<p:selectOneMenu value="${legislaturaCRUD.territorio}" rendered="${legislaturaCRUD.nivel == 'ENTIDAD'}" style="width: 300px;">
+							<f:selectItems value="${modeloEntidades.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+						</p:selectOneMenu>
+						<p:outputLabel value="Fecha Inicio" />
+						<p:calendar value="${legislaturaCRUD.fechaInicio}" mode="popup" converter="DateConverter" pattern="dd/MM/yyyy" />
+						<p:outputLabel value="Fecha Término" />
+						<p:calendar value="${legislaturaCRUD.fechaTermino}" mode="popup" converter="DateConverter" pattern="dd/MM/yyyy" />
+						<p:outputLabel value="Nombre" />
+						<p:inputText value="${legislaturaCRUD.nombre}" size="50" />
+						<p:outputLabel value="Número" />
+						<p:spinner value="${legislaturaCRUD.numero}" min="1" max="99" />
+						<f:facet name="footer">
+							<p:commandButton value="Guardar"  action="guardar" />
+							<p:commandButton value="Cancelar" action="cancelar" immediate="true" />
+						</f:facet>
+					</p:panelGrid>
+            		
+            		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>            
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

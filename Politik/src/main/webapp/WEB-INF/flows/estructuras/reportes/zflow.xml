@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="filtros">
+		<on-entry>
+			<evaluate expression="UtilidadesDominiosC.modeloEstructurasReportes()" result="viewScope.modeloReportes" />
+		</on-entry>
+		
+		<transition on="verReporte" to="elegirReporte">
+			<set name="requestScope.reporte" value="viewScope.modeloReportes.seleccionado" />
+		</transition>
+	</view-state>
+
+	<action-state id="elegirReporte">
+		<evaluate expression="EstructurasReportesC.elegirReporte(requestScope.reporte)" />
+		
+		<transition on="gobernadores" to="reporteGobernadores" />
+		
+		<transition on="concentradoEstatal" to="concentradoEstatal">
+			<set name="flowScope.vista" value="'Ninguna'" />
+			<evaluate expression="EstructurasReportesC.modeloEntidades()" result="flowScope.modeloEntidades" />
+		</transition>
+		
+		<transition on="concentradoNacional" to="concentradoNacional" />
+		
+		<transition on="estructuraOperativa2018" to="estructuraOperativa2018" />
+		
+	</action-state>
+	
+	<view-state id="estructuraOperativa2018">
+		<on-entry>
+			<evaluate expression="EstructurasReportesC.nivelPredeterminado()" result="viewScope.nivel" />
+			<evaluate expression="EstructurasReportesC.modeloNiveles()" result="viewScope.modeloNiveles" />
+			
+			<evaluate expression="EstructurasReportesC.actualizarCombos(flowRequestContext)" />
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018(viewScope.nivel, flowRequestContext)" />
+		</on-entry>
+		
+		<transition on="actualizarCombos">
+			<evaluate expression="EstructurasReportesC.actualizarCombos(flowRequestContext)" />
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018(viewScope.nivel, flowRequestContext)" />
+		</transition>
+		
+		<transition on="desgloseEntidad" to="estructuraOperativa2018_desgloseEntidad" />
+	</view-state>
+	
+	<view-state id="estructuraOperativa2018_desgloseEntidad">
+		<on-entry>
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018_desgloseEntidad(flowRequestContext)" />
+		</on-entry>
+		
+		<transition on="nivelMunicipios" to="estructuraOperativa2018_desgloseMunicipio">
+			<set name="requestScope.seleccionado" value="viewScope.seleccionado" />
+		</transition>
+		
+		<transition on="nivelDFederales" to="estructuraOperativa2018_desgloseDFederal">
+			<set name="requestScope.seleccionado" value="viewScope.seleccionado" />
+		</transition>
+		
+		<transition on="regresar" to="estructuraOperativa2018" />
+	</view-state>
+	
+	<view-state id="estructuraOperativa2018_desgloseMunicipio">
+		<on-entry>
+			<set name="viewScope.padre" value="requestScope.seleccionado" />
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018_desgloseMunicipio(flowRequestContext)" />
+		</on-entry>
+		
+		<transition on="regresar" to="estructuraOperativa2018_desgloseEntidad" />
+	</view-state>
+	
+	<view-state id="estructuraOperativa2018_desgloseDFederal">
+		<on-entry>
+			<set name="viewScope.padre" value="requestScope.seleccionado" />
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018_desgloseDFederal(flowRequestContext)" />
+		</on-entry>
+		
+		<transition on="regresar" to="estructuraOperativa2018_desgloseEntidad" />
+	</view-state>
+	
+	<view-state id="reporteGobernadores">
+		<on-entry>
+			<!-- <evaluate expression="CatalogosEntidadesC.modelo()" result="viewScope.modeloEntidades" /> -->
+			<evaluate expression="EstructurasReportesC.modeloEntidades()" result="viewScope.modeloEntidades" />
+		</on-entry>
+	</view-state>
+	
+	<view-state id="concentradoEstatal" view="concentradoEstatal.xhtml">
+		<on-entry>
+			<evaluate expression="EstructurasReportesC.concentradoEstatal(flowScope.vista, flowScope.modeloEntidades.seleccionado, flowRequestContext)" />
+		</on-entry>
+		
+		<transition on="cambiarEntidad">
+			<set name="flowScope.vista" value="'Ninguna'" />
+		</transition>
+		
+		<transition on="datoGobernador">
+			<set name="flowScope.vista" value="'Gobernador'" />
+			<evaluate expression="EstructurasReportesC.infoGobernador(flowScope.modeloEntidades.seleccionado)" result="viewScope.gobernador" />
+		</transition>
+		
+		<transition on="datoExGobernadores">
+			<set name="flowScope.vista" value="'ExGobernadores'" />
+			<evaluate expression="EstructurasReportesC.infoExGobernadores(flowScope.modeloEntidades.seleccionado)" result="viewScope.modeloExGobernadores" />
+		</transition>
+		
+		<transition on="datoSenadoresMR">
+			<set name="flowScope.vista" value="'Senadores de MR'" />
+			<evaluate expression="EstructurasReportesC.infoSenadoresMR(flowScope.modeloEntidades.seleccionado)" result="viewScope.modeloSenadoresMR" />
+		</transition>
+		
+		<transition on="datoPresidentesMunicipales">
+			<set name="flowScope.vista" value="'Presidentes Municipales'" />
+			<evaluate expression="EstructurasReportesC.infoPresidentesMunicipales(flowScope.modeloEntidades.seleccionado)" result="viewScope.modeloPresidentesMunicipales" />
+		</transition>
+		
+		<transition on="datoSenadoresRP">
+			<set name="flowScope.vista" value="'Senadores de RP'" />
+			<evaluate expression="EstructurasReportesC.infoSenadoresRP(flowScope.modeloEntidades.seleccionado)" result="viewScope.modeloSenadoresRP" />
+		</transition>
+		
+		<transition on="datoDiputadosMR">
+			<set name="flowScope.vista" value="'Diputados de MR'" />
+			<evaluate expression="EstructurasReportesC.infoDiputadosMR(flowScope.modeloEntidades.seleccionado)" result="viewScope.modeloDiputadosMR" />
+		</transition>
+		
+		<transition on="perfilGobernador" to="perfilPersona">
+			<set name="requestScope.persona" value="viewScope.gobernador.persona" />
+		</transition>
+		
+		<transition on="perfilExGobernador" to="perfilPersona">
+			<set name="requestScope.persona" value="viewScope.modeloExGobernadores.seleccionado" />
+		</transition>
+		
+		<transition on="perfilPersona" to="perfilPersona">
+			<evaluate expression="MDMPersonasC.personaSimplePorId(requestParameters.idPersona, requestParameters.idEntidadNacimiento)" result="requestScope.persona" />
+		</transition>
+		
+		<transition on="perfilSenador" to="perfilPersona">
+			<set name="requestScope.persona" value="viewScope.modeloSenadores.seleccionado" />
+		</transition>
+		
+		<transition on="territorioEnCoordenadas">
+			<evaluate expression="EstructurasReportesC.territorioEnCoordenadas(requestParameters.coordenadas)" result="viewScope.territorioSeleccionado" />
+		</transition>
+	</view-state>
+	
+	<view-state id="concentradoNacional">
+		
+	</view-state>
+	
+	<subflow-state id="perfilPersona" subflow="mdm/perfiles">
+		<on-entry>
+			<set name="conversationScope.persona" value="requestScope.persona" />
+			<evaluate expression="MDMPersonasC.completarPersona(conversationScope.persona)" />
+		</on-entry>
+		<input name="flagPerfil" value="true" />
+		<transition on="fin" to="concentradoEstatal" />
+	</subflow-state>
+	
+</flow>

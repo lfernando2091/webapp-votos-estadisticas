@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="head">
+		<h:outputScript library="openlayers" name="ol.js" />
+		<h:outputStylesheet library="openlayers" name="ol.css" />
+		<h:outputScript library="openlayers" name="politikMapas.js" />
+	</ui:define>
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Listado de Distritos Federales">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Entidad" />
+							<p:selectOneMenu value="${modeloEntidades.seleccionado}"
+								converter="ObjectConverter" style="width: 200px;">
+								<f:selectItems value="${modeloEntidades.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+								<p:ajax event="itemSelect" onstart="actualizarTabla();" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<p:separator />
+						<p:panelGrid columns="2" columnClasses="topAlign, topAlign">
+							<p:dataTable id="tablaDFederales"
+								value="${modeloDFederales.listado}" var="fila" 
+								rowKey="${fila.id}" selection="${modeloDFederales.seleccionado}" selectionMode="single"
+								paginator="true" rows="10" paginatorAlwaysVisible="false"
+								paginatorPosition="bottom">
+								<f:facet name="header">Distritos Federales de ${modeloEntidades.seleccionado.nombre}</f:facet>
+								<p:ajax event="rowSelect" update="panelRefreshMap" oncomplete="refreshCapaDFederales();" />
+								<p:column headerText="Id" width="50">${fila.idDFederal}</p:column>
+								<p:column headerText="Nombre">${fila.nombre}</p:column>
+								<p:column headerText="Llave" width="80">${fila.llave}</p:column>
+							</p:dataTable>
+							<h:panelGroup id="panelMapa" layout="block"
+								style="width:400px; height: 400px;" />
+						</p:panelGrid>
+					</p:panel>
+
+					<p:remoteCommand name="actualizarTabla" action="actualizarDatos"
+						update="tablaDFederales panelRefreshMap" oncomplete="refreshMap();" />
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+				
+				<h:outputScript>
+					iniciarMapa(
+						[${modeloEntidades.seleccionado.geoData.bounds}],
+						'', 
+						'politik:dfederales', 
+						'id_entidad = ${modeloEntidades.seleccionado.id}',
+						'#{p:component('panelMapa')}'
+					);
+					
+					agregarCapa('politik:dfederales','poligono_rojo',"llave = '${modeloDFederales.seleccionado.llave}'");
+				</h:outputScript>
+				
+				<h:panelGroup id="panelRefreshMap">
+					<h:outputScript>
+						function refreshMap(){
+							actualizarCapa(1, 'id_entidad = ${modeloEntidades.seleccionado.id}');
+							actualizarCapa(2, "llave = '${modeloDFederales.seleccionado.llave}'");
+							actualizarMapa([${modeloEntidades.seleccionado.geoData.bounds}]);
+						}
+						
+						function refreshCapaDFederales(){
+							actualizarCapa(2, "llave = '${modeloDFederales.seleccionado.llave}'");
+						}
+					</h:outputScript>
+				</h:panelGroup>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

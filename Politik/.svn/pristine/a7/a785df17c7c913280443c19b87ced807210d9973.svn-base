@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mdm.tablasPersonas">
+	<cache />
+	
+	<resultMap type="TablaPersonaEO" id="tablaPersona">
+		<id column="TablaPersonaEO_id" property="id" javaType="Integer"/>
+		<result column="TablaPersonaEO_idPolitik" property="idPolitik" javaType="Integer"/>
+		<association property="tabla" resultMap="catalogos.tablas.tabla" />
+		<association property="particion" resultMap="catalogos.tablasParticiones.tablaParticion" columnPrefix="TP_" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			TablaPersonaEO.id_tabla_persona 		TablaPersonaEO_id, 
+			TablaPersonaEO.id_politik 				TablaPersonaEO_idPolitik,
+			TablaEO.id_tabla						TablaEO_id,
+			TablaEO.tabla							TablaEO_tabla,
+			TablaEO.descripcion						TablaEO_descripcion,
+			TablaEO.campo_particion					TablaEO_campoParticion,
+			TablaEO.particionada					TablaEO_particionada,
+			TablaParticionEO.id_tabla_particion		TablaParticionEO_id,
+			TablaParticionEO.id_tabla				TablaParticionEO_idTabla,
+			TablaParticionEO.id_particion			TablaParticionEO_idParticion,
+			TablaParticionEO.particion				TablaEO_particion,
+			TP_TablaParticionEO.id_tabla_particion	TP_TablaParticionEO_id,
+			TP_TablaParticionEO.id_tabla			TP_TablaParticionEO_idTabla,
+			TP_TablaParticionEO.id_particion		TP_TablaParticionEO_idParticion,
+			TP_TablaParticionEO.particion			TP_TablaEO_particion
+  		FROM mdm.tablas_personas TablaPersonaEO
+  		JOIN catalogos.tablas TablaEO on (TablaPersonaEO.id_tabla = TablaEO.id_tabla)
+  		LEFT JOIN catalogos.tablas_particiones TablaParticionEO on (TablaEO.id_tabla = TablaParticionEO.id_tabla)
+  		LEFT JOIN catalogos.tablas_particiones TP_TablaParticionEO on (TablaPersonaEO.id_tabla = TP_TablaParticionEO.id_tabla AND TablaPersonaEO.id_particion = TP_TablaParticionEO.id_particion)
+	</sql>
+	
+	<select id="buscarPorPersona" resultMap="tablaPersona" parameterType="PersonaEO">
+		<include refid="query" />
+		WHERE TablaPersonaEO.id_entidad_nacimiento = #{entidadNacimiento.id} AND TablaPersonaEO.id_persona = #{id}
+		ORDER BY TablaPersonaEO.id_tabla_persona desc
+	</select>
+	
+	<select id="datosPorTablaPersona" resultType="hashmap" parameterType="TablaPersonaEO">
+		SELECT *
+		FROM warehouse.${tabla.tabla} Tabla
+		<where>
+			Tabla.id_politik = #{idPolitik}
+			<if test="tabla.particionada">
+				AND Tabla.${tabla.campoParticion} = #{particion.idParticion}
+			</if>
+		</where>
+		ORDER BY Tabla.id_politik desc
+	</select>
+	
+	<insert id="insertar" parameterType="hashmap">
+		INSERT INTO mdm_particiones.tablas_personas_${particion}(id_persona, id_entidad_nacimiento, id_tabla, id_politik, id_particion)
+    	VALUES (#{persona.id}, #{persona.entidadNacimiento.id}, #{tablaPersona.tabla.id}, #{tablaPersona.idPolitik}, #{tablaPersona.particion.idParticion});
+	</insert>	
+</mapper>

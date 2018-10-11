@@ -1,0 +1,219 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panelGrid columns="2" columnClasses="topAlign,topAlign">
+						<p:panel header="Listado de Programas" id="pnlListadoProgramas">
+							<p:dataTable value="${modeloProgramas.listado}" var="fila"
+								rowKey="${fila.id}" selection="${modeloProgramas.seleccionado}"
+								selectionMode="single" paginator="true" rows="10"
+								paginatorAlwaysVisible="false" paginatorPosition="bottom"
+								emptyMessage="No se han capturado programas">
+								<p:ajax event="rowSelect"
+									onstart="llenarEjercicios(); llenarPoblacionObjetivo();" />
+								<p:column headerText="Programa Padre" sortable="true"
+									sortBy="${fila.programaPadre.programa}"
+									filterable="${modeloProgramas.listado.size()>=10?'true':'false'}"
+									filterBy="${fila.programaPadre.programa}"
+									filterMatchMode="contains" filterStyle="width: 90%">
+				${fila.programaPadre.programa}
+				</p:column>
+								<p:column headerText="Programa" sortBy="${fila.programa}"
+									filterable="${modeloProgramas.listado.size()>=10?'true':'false'}"
+									filterBy="${fila.programa}" filterMatchMode="contains"
+									filterStyle="width: 90%">
+				${fila.programa}
+				</p:column>
+
+								<p:column headerText="Estrategia" style="width:15%">
+				${fila.estrategia==1?'Si':'No'}
+				</p:column>
+							</p:dataTable>
+
+							<f:facet name="footer">
+							
+								<p:remoteCommand name="llenarPoblacionObjetivo" update="dlgDetallePrograma"
+									action="llenarPoblacionObjetivo" />
+								<p:remoteCommand name="llenarEjercicios"
+									action="llenarEjercicios"
+									update="pnlEjercicios pnlListadoProgramas" />
+
+
+								<p:commandLink title="Agregar Nuevo Programa" action="agregar" id="btnAgregar">
+									<p:graphicImage value="/resources/botones/AGREGAR.png" />
+								</p:commandLink>
+
+
+								<p:commandLink title="Agregar  un SubPrograma al Seleccionado"
+									action="agregarSubnivel"
+									rendered="${modeloProgramas.listado.isEmpty()?false:true}" id="btnAgregarSubnivel">
+									<p:graphicImage value="/resources/botones/AGREGAR SUBNIVEL.png" />
+								</p:commandLink>
+
+
+								<p:commandLink title="Eliminar el Programa Seleccionado"
+									rendered="${modeloEjercicios.listado.isEmpty() and !modeloProgramas.listado.isEmpty()?true:false}"
+									action="eliminar" id="btnEliminar">
+									<p:graphicImage value="/resources/botones/ELIMINAR.png" />
+									<p:confirm header="Confirmación"
+										message="¿Está seguro de eliminar el programa seleccionado, considere que tambien eliminará el ejercicio?"
+										icon="ui-icon-alert" />
+								</p:commandLink>
+
+								<p:commandLink type="button"
+									onclick="PF('dlgDetallePrograma').show();"
+									title="Detalle del programa seleccionado"
+									rendered="${modeloProgramas.listado.isEmpty()?false:true}" id="btnDetalle">
+									<p:graphicImage value="/resources/botones/DETALLE.png" />
+								</p:commandLink>
+
+<!-- 								<p:commandButton value="Editar" rendered="false" title="Editar" -->
+<!-- 									action="editar" icon="fa fa-refresh" /> -->
+								<p:commandLink action="editar" rendered="false"> 
+									<p:graphicImage value="/resources/botones/EDITAR.png" />
+								</p:commandLink>	
+									
+								<p:confirmDialog global="true" showEffect="fade"
+									hideEffect="fade">
+										<p:commandLink  styleClass="ui-confirmdialog-yes">
+												<p:graphicImage value="/resources/botones/SI.png" />
+										</p:commandLink>
+									 	<p:commandLink  styleClass="ui-confirmdialog-no">
+												<p:graphicImage value="/resources/botones/NO.png" />
+										</p:commandLink>
+<!-- 									<p:commandButton value="Si" type="button" -->
+<!-- 										styleClass="ui-confirmdialog-yes" icon="ui-icon-check" /> -->
+<!-- 									<p:commandButton value="No" type="button" -->
+<!-- 										styleClass="ui-confirmdialog-no" icon="ui-icon-close" /> -->
+								</p:confirmDialog>
+
+								<p:dialog id="dlgDetallePrograma" widgetVar="dlgDetallePrograma"
+									header="Detalle de Programa" modal="true" style="width:50%">
+									<p:panelGrid columns="2" style="width:50%">
+										<p:outputLabel value="Nombre del Programa: " />
+										<p:outputLabel
+											value="${modeloProgramas.seleccionado.programa}" />
+										<p:outputLabel value="Programa Padre:" />
+										<p:outputLabel
+											value="${modeloProgramas.seleccionado.programaPadre.programa}" />
+										<p:outputLabel value="Descripción: " />
+										<p:outputLabel
+											value="${modeloProgramas.seleccionado.descripcion}" />
+										<p:outputLabel value="Observaciones: " />
+										<p:outputLabel
+											value="${modeloProgramas.seleccionado.observaciones}" />
+										<p:outputLabel value="¿Es estrategia?" />
+										<p:outputLabel
+											value="${modeloProgramas.seleccionado.estrategia==1?'Si':'No'}" />
+										<p:outputLabel value="Nick: " />
+										<p:outputLabel
+											values="${modeloDependencias.seleccionado.nick}" />
+										<p:outputLabel value="Fecha: " />
+										<p:outputLabel
+											value="${modeloDependencias.seleccionado.fecha}" />
+
+
+									</p:panelGrid>
+									<p:spacer height="20px" />
+
+									<p:panel header="Poblaciones Objetivo">
+										<p:dataTable value="${modeloPoblacionObjetivo.listado}"
+											var="fila"
+											rowKey="${fila.poblacion}${fila.beneficiariosProyectados}"
+											paginator="true" rows="10" paginatorAlwaysVisible="false"
+											paginatorPosition="bottom"
+											selection="${modeloPoblacionObjetivo.seleccionado}"
+											selectionMode="single" id="dtPoblaciones" reflow="true">
+											<p:ajax event="rowSelect"
+												update="#{p:component('dtPoblaciones')}" />
+											<p:column headerText="Población">
+					   ${fila.poblacion}
+					   </p:column>
+											<p:column headerText="Beneficiarios Proyectados">
+					   ${fila.beneficiariosProyectados}
+					   </p:column>
+
+										</p:dataTable>
+
+									</p:panel>
+
+									<p:spacer height="10px" />
+
+									<p:panel header="Contenido de Estrategia">
+										<p:dataTable value="${contenidoEstrategia.listado}"
+											var="contenido">
+											<p:column headerText="Programa">
+						${contenido.programa}
+						</p:column>
+											<p:column headerText="Dependencia">
+						${contenido.dependencia.dependencia}
+						</p:column>
+										</p:dataTable>
+									</p:panel>
+								</p:dialog>
+							</f:facet>
+
+
+						</p:panel>
+						<p:panel header="Ejercicios Fiscales" id="pnlEjercicios">
+							<p:dataTable id="dtEjercicios" value="${modeloEjercicios.listado}" var="fila"
+								rowKey="${fila.id}" selection="${modeloEjercicios.seleccionado}"
+								selectionMode="single" rows="10" paginator="true"
+								paginatorAlwaysVisible="false" paginatorPosition="bottom"
+								emptyMessage="No se han creado Ejercicios">
+								<p:column headerText="Ejercicio" sortable="true"
+									sortBy="${fila.ejercicio}">
+${fila.ejercicio} (${fila.fechaInicio} - ${fila.fechaTermino})
+</p:column>
+							</p:dataTable>
+							<f:facet name="footer">
+
+								<!-- 								<p:commandButton value="Detalle" process="@form" -->
+								<!-- 									action="detalle" icon="fa fa-clipboard" -->
+								<!-- 									rendered="${modeloEjercicios.seleccionado!=null and modeloEjercicios.seleccionado!=null?true:false}" /> -->
+
+								<p:commandLink action="detalle" title="Detalle"
+									rendered="${modeloEjercicios.listado.isEmpty()?'false':'true'}">
+									<p:graphicImage value="/resources/botones/DETALLE.png" />
+								</p:commandLink>
+
+								<!-- 								<p:commandButton value="Ejercicio" icon="fa fa-plus-circle" -->
+								<!-- 									action="agregarEjercicio" -->
+								<!-- 									rendered="${modeloProgramas.seleccionado!=null?true:false}" /> -->
+
+								<p:commandLink title="Agregar Ejercicio"
+									action="agregarEjercicio"
+									rendered="${modeloProgramas.seleccionado!=null?true:false}">
+									<p:graphicImage value="/resources/botones/AGREGAR.png" />
+								</p:commandLink>
+							</f:facet>
+
+						</p:panel>
+						<f:facet name="footer">
+
+						</f:facet>
+					</p:panelGrid>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

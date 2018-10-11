@@ -1,0 +1,127 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Dependencia">
+						<p:panelGrid>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Nivel Geográfico: " />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu value="${dependencia.nivelGeografico}">
+										<p:ajax event="change"   onstart="llenarModeloEntidades()" update="entidades" />
+										<f:selectItems value="${nivelesGeograficos}" var="fila"
+											itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Entidad(s):" />
+								</p:column>
+								<p:column>
+									<p:selectCheckboxMenu id="entidades"
+										value="${modeloEntidades.seleccionMultiple}"
+										converter="ObjectConverter" label="Entidades"
+										style="width: 215px;" filter="true" filterMatchMode="contains">
+										<!-- antes <p:ajax event="change" update="display panelBotones" para llenar el datalist ahora <p:ajax event="change" update="panelBotones" -->
+										<p:ajax event="change" 
+											onstart="llenarModeloDFderales()" update="dfederales" />
+										<p:ajax event="toggleSelect"
+											onstart="actualizar();" />
+										<f:selectItems value="${modeloEntidades.listado}" var="fila"
+											itemLabel="${fila.id} - ${fila.nombre}" itemValue="${fila}" />
+									</p:selectCheckboxMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Distritos(s) Federal(es): " />
+								</p:column>
+								<p:column>
+									<p:selectCheckboxMenu id="dfederales"
+										value="${modeloDFederales.seleccionMultiple}"
+										converter="ObjectConverter" label="Distritos Federales"
+										style="width: 215px;" filter="true" filterMatchMode="contains">
+										<!-- antes <p:ajax event="change" update="display panelBotones" para llenar el datalist ahora <p:ajax event="change" update="panelBotones" -->
+										<p:ajax event="change" 
+											onstart="actualizar();" />
+										<p:ajax event="toggleSelect"
+											onstart="actualizar();" />
+										<f:selectItems value="${modeloDFederales.listado}" var="fila"
+											itemLabel="${fila.id} - ${fila.nombre}" itemValue="${fila}" />
+									</p:selectCheckboxMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Nivel Dependencia: " />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu value="${dependencia.nivelDependencia}">
+										<f:selectItems value="${nivelesDependencias}" var="fila"
+											itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Dependencia: " />
+								</p:column>
+								<p:column>
+									<p:inputTextarea value="${dependencia.dependencia}" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Siglas: " />
+								</p:column>
+								<p:column>
+									<p:inputText value="${dependencia.siglas}" required="true" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Dependencia Padre:" />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu value="${dependencia.idDependenciaPadre}">
+										<f:selectItems value="${modeloDependencias.listado}"
+											var="fila" itemLabel="${fila.dependencia} ${fila.id}"
+											itemValue="${fila.id}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="insertar"
+								icon="fa fa-save"  />
+							<p:commandButton value="Actualizar" action="actualizar"
+								icon="fa fa-refresh" rendered="${tipoEdicion==2}" />
+						</f:facet>
+					</p:panel>
+<p:remoteCommand name="llenarModeloEntidades" action="llenarModeloEntidades"/>
+<p:remoteCommand name="llenarModeloDFderales" action="llenarModeloDFderales"/>
+<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

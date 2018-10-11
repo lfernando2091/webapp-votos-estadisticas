@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="filtros">
+		<on-entry>
+			<evaluate expression="UtilidadesDominiosC.modeloAmbitos()" result="viewScope.modeloAmbitos" />
+			<evaluate expression="CatalogosEleccionesC.modelo(false, false, true, false)" result="viewScope.modeloElecciones" />
+			<evaluate expression="EstructurasEstructurasC.modelo(viewScope.modeloAmbitos.seleccionado, null, viewScope.modeloElecciones.seleccionado, false)" result="viewScope.modeloEstructuras" />
+		</on-entry>
+		
+		<transition on="actualizarCombos">
+			<evaluate expression="EstructurasEstructurasC.modelo(viewScope.modeloAmbitos.seleccionado, null, viewScope.modeloElecciones.seleccionado, false)" result="viewScope.modeloEstructuras" />
+		</transition>
+		
+		<transition on="iniciarCaptura" to="captura">
+			<evaluate expression="EstructurasCapturaC.iniciarMapaCaptura(flowRequestContext)" result="flowScope.mapaCaptura" />
+		</transition>
+		
+	</view-state>
+	
+	<view-state id="captura">
+		<var name="CapturaBean" class="com.saganet.politik.beans.estructuras.CapturaB"/>
+		
+		<transition on="agregarPersona" to="buscarPersona">
+			<set name="flowScope.mapaCaptura.idNodoRequest" value="requestParameters.idNodo" type="java.lang.Integer" />
+		</transition>
+		
+		<transition on="avanzarNivel" to="captura">
+			<set name="flowScope.mapaCaptura.idNodoRequest" value="requestParameters.idNodo" type="java.lang.Integer" />
+			<set name="flowScope.mapaCaptura.idPolitikRequest" value="requestParameters.idPolitik" type="java.lang.Integer" />
+			<evaluate expression="EstructurasCapturaC.avanzarNivel(flowScope.mapaCaptura, CapturaBean)" />
+		</transition>
+		
+		<transition on="regresarNivel" to="captura">
+			<evaluate expression="EstructurasCapturaC.regresarNivel(flowScope.mapaCaptura)" />
+		</transition>
+		
+		<transition on="perfilPersona" to="perfilPersona2">
+			<set name="requestScope.persona" value="CapturaBean.seleccionado.persona" />
+		</transition>
+		
+		<transition on="editar" to="capturaPersona">
+			<evaluate expression="EstructurasCapturaC.editarCaptura(CapturaBean.seleccionado)" result="flowScope.capturaCRUD" />
+			<evaluate expression="EstructurasCapturaC.llenarAtributos(flowScope.mapaCaptura.estructura, flowScope.capturaCRUD)" />
+		</transition>
+		
+		<transition on="cancelar" to="filtros" />
+	</view-state>
+	
+	<subflow-state id="buscarPersona" subflow="mdm/buscadores/personas">
+		<input name="flag" value="true"/>
+		<transition on="personaLocalizada" to="capturaPersona">
+			<evaluate expression="EstructurasCapturaC.nuevaCaptura(flowScope.mapaCaptura.idNodoRequest)" result="flowScope.capturaCRUD" />
+			<evaluate expression="flowScope.capturaCRUD.setPersona(conversationScope.persona)" />
+			<evaluate expression="EstructurasCapturaC.verificarDuplicado(flowScope.mapaCaptura, flowScope.capturaCRUD)" />
+		</transition>
+		<transition on="personaNoLocalizada" to="captura" />
+	</subflow-state>
+	
+	<view-state id="capturaPersona">
+		<on-entry>
+			<evaluate expression="EstructurasCapturaC.generarModelos(flowScope.mapaCaptura, flowScope.capturaCRUD)" result="viewScope.modelos" />
+			
+			<evaluate expression="DependenciasC.modeloByUsuario()" result="viewScope.modeloDependencias" />
+			<evaluate expression="UtilidadesDominiosC.modeloCargosDependencia()" result="viewScope.modeloCargos" />
+			<evaluate expression="EstructurasProgramasPromocionC.modelo(flowScope.mapaCaptura)" result="viewScope.modeloProgramasPromocion" />
+			<evaluate expression="CatalogosPartidosC.modelo()" result="viewScope.modeloPartidosPoliticos" />
+			<evaluate expression="EstructurasLegislaturasC.modeloSinTerritorio()" result="viewScope.modeloLegislaturas" />
+			<evaluate expression="UtilidadesDominiosC.modeloTiposSenador()" result="viewScope.modeloTiposSenador" />
+		</on-entry>
+		
+		<transition on="actualizarTerritorios">
+			<evaluate expression="EstructurasCapturaC.actualizarModelos(viewScope.modelos, flowScope.capturaCRUD.nodo.figura.nivel)" />
+		</transition>
+		
+		<transition on="perfilPersona" to="perfilPersona">
+			<set name="requestScope.persona" value="flowScope.capturaCRUD.getPersona()" />
+		</transition>
+		
+		<transition on="agregarProgramaPromocion">
+			<evaluate expression="EstructurasCapturaC.agregarProgramaPromocion(flowScope.capturaCRUD, viewScope.modeloProgramasPromocion.seleccionado)" />
+		</transition>
+		
+		<transition on="agregarLegislatura">
+			<evaluate expression="EstructurasCapturaC.agregarLegislatura(flowScope.capturaCRUD, viewScope.modeloLegislaturas.seleccionado)" />
+		</transition>
+		
+		<transition on="guardar" to="captura">
+			<evaluate expression="EstructurasCapturaC.capturar(flowRequestContext)" />
+		</transition>
+		
+		<transition on="cancelar" to="captura" />
+	</view-state>
+	
+	<subflow-state id="perfilPersona" subflow="mdm/perfiles">
+		<on-entry>
+			<set name="conversationScope.persona" value="requestScope.persona" />
+		</on-entry>
+		<input name="flagPerfil" value="true" />
+		<transition on="fin" to="capturaPersona" />
+	</subflow-state>
+	
+	<subflow-state id="perfilPersona2" subflow="mdm/perfiles">
+		<on-entry>
+			<set name="conversationScope.persona" value="requestScope.persona" />
+			<evaluate expression="MDMPersonasC.completarPersona(conversationScope.persona)" />
+		</on-entry>
+		<input name="flagPerfil" value="true" />
+		<transition on="fin" to="captura" />
+	</subflow-state>
+</flow>

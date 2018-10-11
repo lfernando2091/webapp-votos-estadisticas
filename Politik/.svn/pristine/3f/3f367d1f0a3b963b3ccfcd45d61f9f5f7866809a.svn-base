@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+	<ui:define name="content">
+	
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				 <p:messages id="messages" showDetail="true"  autoUpdate="true"  closable="true"/>
+					
+						 <p:toolbar>
+							 <f:facet name="left">
+							 	<p:commandButton value="AGREGAR" action="agregar"/>
+							 </f:facet>
+						 </p:toolbar>
+					<p:panel header="Listado Capturista">
+						<p:dataTable id="capturistas"  value="${capturistas.listado}" var="fila" selectionMode="single" rowKey="${fila.id}" selection="${capturistas.seleccionado}" paginator="true" rows="15" paginatorPosition="bottom" paginatorAlwaysVisible="false"
+						   reflow="true" style="margin-top:20px">
+						 	<p:column headerText="NOMBRE" filterable="true" filterBy="${fila.nombre}"  sortable="true" sortBy="${fila.nombre}" filterStyle="width:90%;" width="100">
+						 	<p:outputLabel value="${fila.usuario.nombre}"/>
+						 	</p:column>
+						 	<p:column headerText="CELULAR" width="100">
+						 	<p:outputLabel value="${fila.usuario.celular}"/>
+						 	</p:column>
+						 	<p:column headerText="EMAIL" width="100">
+						 	<p:outputLabel value="${fila.usuario.mail}"/>
+						 	</p:column>
+						</p:dataTable>
+					</p:panel>
+
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

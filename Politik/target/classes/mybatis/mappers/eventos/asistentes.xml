@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventos.asistentes">
+	<cache />
+
+	<resultMap type="AsistenteEO" id="asistente">
+		<id column="AsistenteEO_id" property="id" javaType="Integer" />
+		<association column="AsistenteEO_id_evento_social" property="evento" select="eventos.eventos.buscarID"/>
+		<association column="AsistenteEO_id_persona" property="persona" select="mdm.personas.buscarPorIdPersona" />
+	</resultMap>
+
+
+	<sql id="queryReg">
+		SELECT 
+			AsistenteEO.pkey 					AsistenteEO_id, 
+			AsistenteEO.id_evento_social 		AsistenteEO_id_evento_social, 
+			AsistenteEO.id_persona 				AsistenteEO_id_persona
+ 	  FROM eventos_sociales.asistentes AsistenteEO
+	</sql>
+	
+	<select id="listado" resultMap="asistente">
+		<include refid="queryReg"/>
+			ORDER BY AsistenteEO.pkey 
+	</select>
+	
+	<select id="listadoPorEvento" resultMap="asistente" parameterType="Integer">
+			<include refid="queryReg"/>
+			WHERE AsistenteEO.id_evento_social=#{value}
+			ORDER BY AsistenteEO.pkey, AsistenteEO.id_evento_social
+	</select>
+	
+	<select id="buscarPorId" resultMap="asistente" parameterType="Integer">
+		<include refid="queryReg"/>
+			WHERE AsistenteEO.pkey = #{value}
+			ORDER BY AsistenteEO.pkey 
+	</select>
+	
+	<insert id="insertar" parameterType="AsistenteEO">
+	   INSERT INTO 
+	   eventos_sociales.asistentes(id_evento_social, id_persona)
+	   VALUES (#{evento.id},#{persona.id})
+	</insert>
+	
+	<delete id="eliminar" parameterType="AsistenteEO">
+		DELETE FROM eventos_sociales.asistentes
+		WHERE pkey=#{id}
+	</delete>
+	
+</mapper>

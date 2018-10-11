@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Importación" />
+					</p:breadCrumb>
+					<p:panel header="Importaciones">
+						<p:dataTable id="tabView" value="${historicos.listado}" var="fila"  
+								selectionMode="single" rowKey="${fila.id}" selection="${historicos.seleccionado}"
+								scrollable="true" scrollWidth="100%">
+								<p:column headerText="Nombre de Archivo" filterStyle="width:60%;">
+									<p:outputLabel value="${fila.mapeoImportacion.archivo.getName()}" />
+								</p:column>
+								<p:column headerText="Nombre de Tabla"	filterStyle="width:60%;">
+									<p:outputLabel value="${fila.mapeoImportacion.nombreTablaImportacion}" />
+								</p:column>
+								<p:column headerText="Fecha" filterStyle="width:60%;">
+									<p:outputLabel value="${fila.fecha}" />
+								</p:column>
+								<p:column headerText="Estatus" filterStyle="width:60%;">
+									<p:outputLabel value="${fila.estatus}" />
+								</p:column>
+							</p:dataTable>
+							<f:facet name="footer">
+								<p:commandButton action="nuevaImportacion" value="Nueva Importación"/> 
+								<p:commandButton action="log" value="Ver Log"/> 
+<!-- 								<p:commandButton action="nuevaImportacion" value="Nueva Importación"  rendered="${!flag}"/>  -->
+<!-- 								<p:commandButton action="log" value="Ver Log"  rendered="${!flag}"/>  -->
+								<p:commandButton action="siguiente" value="Siguiente" rendered="${flag}"/> 
+							</f:facet>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

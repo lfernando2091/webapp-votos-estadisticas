@@ -1,0 +1,262 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Respuestas Region">
+						<p:panel id="gridEncuestas">
+							<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}" summary="true"
+									selectionMode="single" paginator="true" rows="15" id="tablaResultados" paginatorPosition="bottom">
+									<p:column headerText="Region"  width="200" filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.nombre}">
+										<p:outputLabel value="${fila.nombre}"/>
+									</p:column>
+									<p:column headerText="PREG. 1 SI"  width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p1Si}"/>
+									</p:column>
+									<p:column headerText="PREG. 1 NO" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p1NO}"/>
+									         </p:column>
+									<p:column headerText="PREG. 1 NS NC" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p1NS}"/>
+									         </p:column>
+									<p:column headerText="PREG. 2 JOSEFINA VAZQUEZ MOTA" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p2Josefina}"/>
+									         </p:column>
+									<p:column headerText="PREG. 2 ALFREDO DEL MAZO MAZA" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p2Alfredo}"/>
+									         </p:column>
+									<p:column headerText="PREG. 2 JUAN ZEPREG.EDA HERNANDEZ" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p2Juan}"/>
+									         </p:column>
+									<p:column headerText="PREG. 2 DELFINA GOMEZ ALVAREZ" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p2Delfina}"/>
+									         </p:column>
+									<p:column headerText="PREG. 2 OSCAR GONZALEZ YANEZ" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p2Oscar}"/>
+									         </p:column>
+									<p:column headerText="PREG. 2 ISIDRO PREG.ASTOR MEDRANO" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p2Isidro}"/>
+									         </p:column>
+									<p:column headerText="PREG. 2 NS NC" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p2nsNc}"/>
+									         </p:column>
+									<p:column headerText="PREG. 3 SI" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p3Si}"/>
+									         </p:column>
+									<p:column headerText="PREG. 3 NO" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p3NO}"/>
+									         </p:column>
+									<p:column headerText="PREG. 3 NS NC" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p3NS}"/>
+									         </p:column>
+									<p:column headerText="PREG. 4 SABE FECHA" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p4sabe}"/>
+									         </p:column>
+									<p:column headerText="PREG. 4 NO SABE FECHA" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p4noSabe}"/>
+									         </p:column>
+									<p:column headerText="PREG. 5 PREG.AN" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p5pan}"/>
+									         </p:column>
+									<p:column headerText="PREG. 5 PREG.RI" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p5pri}"/>
+									         </p:column>
+									<p:column headerText="PREG. 5 PREG.RD" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p5prd}"/>
+									         </p:column>
+									<p:column headerText="PREG. 5 PREG.T" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p5pt}"/>
+									         </p:column>
+									<p:column headerText="PREG. 5 PREG.VEM" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p5pvem}"/>
+									         </p:column>
+									<p:column headerText="PREG. 5 PREG.ES" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p5pes}"/>
+									         </p:column>
+									<p:column headerText="PREG. 5 MORENA" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p5morena}"/>
+									         </p:column>
+									<p:column headerText="PREG. 5 INDEPREG.ENDIENTE" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p5independiente}"/>
+									         </p:column>
+									<p:column headerText="PREG. 5 NO" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p5no}"/>
+									         </p:column>
+									<p:column headerText="PREG. 5 NS NC	" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p5nsNc}"/>
+									         </p:column>
+									<p:column headerText="PREG. 6 SI" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p6Si}"/>
+									         </p:column>
+									<p:column headerText="PREG. 6 NO" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p6NO}"/>
+									         </p:column>
+									<p:column headerText="PREG. 6 NS NC	" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p6NS}"/>
+									         </p:column>
+									<p:column headerText="PREG. 7 PREG.AN" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p7pan}"/>
+									         </p:column>
+									<p:column headerText="PREG. 7 PREG.RI" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p7pri}"/>
+									         </p:column>
+									<p:column headerText="PREG. 7 PREG.RD" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p7prd}"/>
+									         </p:column>
+									<p:column headerText="PREG. 7 PREG.T" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p7pt}"/>
+									         </p:column>
+									<p:column headerText="PREG. 7 PREG.VEM" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p7pvem}"/>
+									         </p:column>
+									<p:column headerText="PREG. 7 PREG.ES" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p7pes}"/>
+									         </p:column>
+									<p:column headerText="PREG. 7 MORENA" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p7morena}"/>
+									         </p:column>
+									<p:column headerText="PREG. 7 INDEPREG.ENDIENTE" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p7independiente}"/>
+									         </p:column>
+									<p:column headerText="PREG. 7 NO" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p7no}"/>
+									         </p:column>
+									<p:column headerText="PREG. 7 NS NC	" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p7nsNc}"/>
+									         </p:column>
+									<p:column headerText="PREG. 8 PREG.AN" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p8pan}"/>
+									         </p:column>
+									<p:column headerText="PREG. 8 PREG.RI" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p8pri}"/>
+									         </p:column>
+									<p:column headerText="PREG. 8 PREG.RD" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p8prd}"/>
+									         </p:column>
+									<p:column headerText="PREG. 8 PREG.T" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p8pt}"/>
+									         </p:column>
+									<p:column headerText="PREG. 8 PREG.VEM" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p8pvem}"/>
+									         </p:column>
+									<p:column headerText="PREG. 8 PREG.ES" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p8pes}"/>
+									         </p:column>
+									<p:column headerText="PREG. 8 MORENA" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p8morena}"/>
+									         </p:column>
+									<p:column headerText="PREG. 8 INDEPREG.ENDIENTE" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p8independiente}"/>
+									         </p:column>
+									<p:column headerText="PREG. 8 NO" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p8no}"/>
+									         </p:column>
+									<p:column headerText="PREG. 8 NS NC" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p8nsNc}"/>
+									         </p:column>
+									<p:column headerText="PREG. 9 JOSEFINA VAZQUEZ MOTA" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p9Josefina}"/>
+									         </p:column>
+									<p:column headerText="PREG. 9 ALFREDO DEL MAZO MAZA" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p9Alfredo}"/>
+									         </p:column>
+									<p:column headerText="PREG. 9 JUAN ZEPREG.EDA HERNANDEZ" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p9Juan}"/>
+									         </p:column>
+									<p:column headerText="PREG. 9 DELFINA GOMEZ ALVAREZ" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p9Delfina}"/>
+									         </p:column>
+									<p:column headerText="PREG. 9 OSCAR GONZALEZ YANEZ" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p9Oscar}"/>
+									         </p:column>
+									<p:column headerText="PREG. 9 ISIDRO PREG.ASTOR MEDRANO" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p9Isidro}"/>
+									         </p:column>
+									<p:column headerText="PREG. 9 NS NC" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.p9nsNc}"/>
+									         </p:column>
+									
+									<p:columnGroup type="footer">
+										 <p:row>
+								            <p:column style="text-align:right" footerText="Total:" />
+								            <p:column footerText="${filaTotal.p1Si}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p1NO}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p1NS}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p2Josefina}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p2Alfredo}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p2Juan}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p2Delfina}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p2Oscar}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p2Isidro}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p2nsNc}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p3Si}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p3NO}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p3NS}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p4sabe}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p4noSabe}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p5pan}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p5pri}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p5prd}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p5pt}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p5pvem}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p5pes}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p5morena}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p5independiente}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p5no}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p5nsNc}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p6Si}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p6NO}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p6NS}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p7pan}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p7pri}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p7prd}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p7pt}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p7pvem}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p7pes}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p7morena}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p7independiente}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p7no}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p7nsNc}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p8pan}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p8pri}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p8prd}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p8pt}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p8pvem}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p8pes}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p8morena}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p8independiente}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p8no}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p8nsNc}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p9Josefina}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p9Alfredo}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p9Juan}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p9Delfina}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p9Oscar}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p9Isidro}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.p9nsNc}"  style="text-align:right"/> 
+										</p:row>
+							        </p:columnGroup>
+									<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tablaResultados" fileName="RespuestasRegiones"/>
+										</h:commandLink>
+									</f:facet>
+							</p:dataTable>
+						</p:panel>
+					</p:panel>	
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

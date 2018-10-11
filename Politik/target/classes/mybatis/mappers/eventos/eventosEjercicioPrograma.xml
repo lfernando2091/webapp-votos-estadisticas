@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventos.eventosEjercicioPrograma">
+	<cache />
+
+	<resultMap type="EventoEjercicioProgramaEO" id="eventoEjercicioPrograma">
+		<id column="EventoEjercicioProgramaEO_id" property="id" javaType="Integer" />
+		<association column="EventoEjercicioProgramaEO_idEventoSocial" property="eventoSocial" select="eventos.eventos.buscarID"/>
+		<association column="EventoEjercicioProgramaEO_idEjercicioPrograma" property="programaEjercicio" select="catalogos.programasEjercicios.buscarID"/>
+	</resultMap>
+
+	<sql id="query">
+		SELECT
+		EventoEjercicioProgramaEO.pkey EventoEjercicioProgramaEO_id,
+		EventoEjercicioProgramaEO.id_evento_social EventoEjercicioProgramaEO_idEventoSocial,
+		EventoEjercicioProgramaEO.id_ejercicio_programa EventoEjercicioProgramaEO_idEjercicioPrograma
+		FROM eventos_sociales.eventos_programas EventoEjercicioProgramaEO
+	</sql>
+	
+	<select id="listado" resultMap="eventoEjercicioPrograma">
+		<include refid="query"/>
+		ORDER BY EventoEjercicioProgramaEO.pkey
+	</select>
+	
+	<select id="listadoPorEvento" resultMap="eventoEjercicioPrograma" parameterType="EventoSocialEO">
+		<include refid="query"/>
+		WHERE EventoEjercicioProgramaEO.id_evento_social=#{id}
+		ORDER BY EventoEjercicioProgramaEO.pkey
+	</select>
+	
+
+	<delete id="eliminar" parameterType="EventoEjercicioProgramaEO">
+			DELETE FROM eventos_sociales.eventos_programas WHERE pkey=#{id}
+	</delete>
+	
+	<insert id="agregarEjercicioPrograma"  parameterType="EventoEjercicioProgramaEO" >
+		INSERT INTO eventos_sociales.eventos_programas(id_evento_social, id_ejercicio_programa)
+    	VALUES ( #{eventoSocial.id}, #{programaEjercicio.id});
+	</insert>	
+</mapper>

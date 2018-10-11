@@ -1,0 +1,292 @@
+package com.saganet.politik.components.diaD;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.GeozonaParticionEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.catalogos.SeccionEO;
+import com.saganet.politik.database.diaD.MovilizadoEO;
+import com.saganet.politik.database.diaD.MovilizadorEO;
+import com.saganet.politik.dominios.DiaDBusquedasDO;
+import com.saganet.politik.dominios.MesDO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("DiaDMovilizados")
+public class MovilizadosC {
+	private static final Logger logger = LoggerFactory.getLogger(MovilizadosC.class);
+	
+	@Autowired
+	SqlSession sqlSession;
+
+	private UsuarioEO getUsuario() {
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+	
+	public MovilizadorEO getMovilizador() {
+		MovilizadorEO movlilizador=sqlSession.selectOne("diaD.capturaMovilizador.buscarPorNick",getUsuario().getNick());
+		return movlilizador;
+	}
+	
+	public MovilizadoEO nuevo(MovilizadorEO movlilizador){
+		MovilizadoEO nuevo=new MovilizadoEO();
+		nuevo.setMovilizador(movlilizador);
+		nuevo.setDirecto(true);
+		nuevo.setPrograma(movlilizador.getPrograma());
+		return nuevo;
+	}
+	
+	public Modelo<MovilizadoEO> modelo(MovilizadorEO movlilizador){
+		logger.debug("Movilizador2: {}",movlilizador);
+		List<MovilizadoEO> listado=new ArrayList<>();
+		listado=sqlSession.selectList("diaD.movilizado.listadoPorMovilizador",movlilizador.getId());
+		logger.debug("listado : {}",listado);
+		return new Modelo<>(listado);
+	}
+
+	public Modelo<MovilizadoEO> modeloVacio() {
+		List<MovilizadoEO> listado=new ArrayList<>();
+		return new Modelo<>(listado);
+	}
+	
+	public Modelo<MovilizadoEO> busquedasModelo(MovilizadorEO movlilizador, DiaDBusquedasDO tipo, String nombre, String primerApellido, String segundoApellido, String folio, String seccion, String clave, String dia, MesDO mes, String anho){
+		logger.debug("tipo: {}",tipo);
+		List<MovilizadoEO> listado=new ArrayList<>();
+		HashMap<String, Object> mapa=new HashMap<>();
+		mapa.put("idMovilizador", movlilizador.getId());
+		mapa.put("programa", movlilizador.getPrograma());
+		switch (tipo) {
+			case POR_FOLIO:
+				mapa.put("folio", Integer.parseInt(!folio.equals("")?folio:"0"));
+				listado=sqlSession.selectList("diaD.movilizado.buscarPorFolio",mapa);
+			break;
+			case POR_SECCION:
+				mapa.put("seccion", Integer.parseInt(!seccion.equals("")?seccion:"0"));
+				listado=sqlSession.selectList("diaD.movilizado.buscarPorSeccion",mapa);				
+			break;
+		/*	case POR_NOMBRE:
+				if (nombre!=null && !nombre.equals("") && primerApellido!=null && !primerApellido.equals("")) {
+					mapa.put("nombre", nombre);
+					mapa.put("primerApellido", primerApellido);
+					mapa.put("segundoApellido", segundoApellido);
+					listado=sqlSession.selectList("diaD.movilizado.buscarPorNombre",mapa);	
+				}
+				else {
+					FacesContext.getCurrentInstance().addMessage( null ,new FacesMessage(FacesMessage.SEVERITY_ERROR, "Nombre y Primer Apellido Es Requerido", ""));		
+				}
+			break;
+			*/
+			/*
+			case AVANZADA:
+				if (nombre!=null && !nombre.equals("") && primerApellido!=null && !primerApellido.equals("")) {
+					if (!clave.equals("") && !clave.equals("0")) {
+						mapa.put("clave", clave);
+					}
+					if (!dia.equals("0") && !dia.equals("") && dia!=null) {
+						mapa.put("dia", (dia.toString().length()==1?"0"+dia:dia.toString()));
+					}
+					if (mes.getId()!=0) {
+						mapa.put("mes", (mes.getId().toString().length()==1?"0"+mes.getId():mes.getId().toString()));
+					}
+					if (!anho.equals("0") && !anho.equals("") && anho!=null) {
+						mapa.put("anho", anho.toString());
+					}
+					mapa.put("nombre", nombre);
+					mapa.put("primerApellido", primerApellido);
+					mapa.put("segundoApellido", segundoApellido);
+					logger.debug("Mapa : {}",mapa);
+					listado=sqlSession.selectList("diaD.movilizado.buscarPorNombreAvanzado",mapa);	
+				}
+				else {
+					FacesContext.getCurrentInstance().addMessage( null ,new FacesMessage(FacesMessage.SEVERITY_ERROR, "Nombre y Primer Apellido Es Requerido", ""));		
+				}
+			break;
+			*/
+		}
+		return new Modelo<>(listado);
+	}
+	
+
+	public Modelo<MovilizadoEO> busquedasModeloPadron(MovilizadorEO movlilizador, DiaDBusquedasDO tipo, String nombre, String primerApellido, String segundoApellido, String folio, String seccion, String clave, String dia, MesDO mes, String anho){
+		List<MovilizadoEO> listado=new ArrayList<>();
+		if (nombre!=null && !nombre.equals("") && primerApellido!=null && !primerApellido.equals("")) {
+			/*if (tipo.equals(DiaDBusquedasDO.AVANZADA)) {
+					HashMap<String, Object> mapa=new HashMap<>();
+					mapa.put("nombre", nombre);
+					mapa.put("primerApellido", primerApellido);
+					mapa.put("segundoApellido", segundoApellido);
+					mapa.put("idMovilizador", movlilizador.getId());
+					mapa.put("programa", movlilizador.getPrograma());
+					if (!clave.equals("") && !clave.equals("0")) {
+						mapa.put("clave", clave);
+					}
+					if (!dia.equals("0") && !dia.equals("") && dia!=null) {
+						mapa.put("dia", (dia.toString().length()==1?"0"+dia:dia.toString()));
+					}
+					if (mes.getId()!=0) {
+						mapa.put("mes", (mes.getId().toString().length()==1?"0"+mes.getId():mes.getId().toString()));
+					}
+					if (!anho.equals("0") && !anho.equals("") && anho!=null) {
+						mapa.put("anho", anho.toString());
+					}
+					logger.debug("Mapa : {}",mapa);
+					listado=sqlSession.selectList("diaD.movilizado.buscarPorNombreAvanzadoPadron",mapa);	
+			}
+			*/
+		}
+		else {
+			FacesContext.getCurrentInstance().addMessage( null ,new FacesMessage(FacesMessage.SEVERITY_ERROR, "Nombre y Primer Apellido Es Requerido", ""));		
+		}
+		return new Modelo<>(listado);
+	}
+	
+	public void guardarMovilizado(MovilizadorEO movlilizador, MovilizadoEO movilizado, DiaDBusquedasDO tipo){
+		logger.debug("movilizado : {}",movilizado);
+//		RequestContext requestContext = RequestContext.getCurrentInstance();
+//		requestContext.execute("PF('tabla').clearFilters()");	
+		FacesContext context=FacesContext.getCurrentInstance();
+		movilizado.setId(null);
+		movilizado.setUsuario(getUsuario());
+		Integer conteo=0;
+		conteo=sqlSession.selectOne("diaD.movilizado.conteo",movilizado);
+		switch (tipo) {
+		/*
+			case AVANZADA:
+				
+				if (movilizado.getPadron()) {
+					HashMap<String, Object> mapa=new HashMap<>();
+					mapa.put("clave", movilizado.getClave());
+					mapa.put("programa", movilizado.getPrograma());
+					mapa.put("idMovilizador", movlilizador.getId());
+					logger.debug("--------------  Mapa --------------  : {}",mapa);
+					Integer con=sqlSession.selectOne("diaD.movilizado.conteoMovilibles",mapa);
+					if (con==0) {
+						sqlSession.insert("diaD.movilizado.insertMovilizable",movilizado);
+						movilizado.setMovilizador(movlilizador);
+						sqlSession.insert("diaD.movilizado.insert",movilizado);
+					}
+					else {
+						movilizado=sqlSession.selectOne("diaD.movilizado.idMovilible",mapa);
+						movilizado.setMovilizador(movlilizador);
+						logger.debug("--------------  Movilizado -------------- : {}",movilizado);
+						sqlSession.insert("diaD.movilizado.insert",movilizado);
+					}
+				}
+				else {
+					sqlSession.insert("diaD.movilizado.insert",movilizado);
+				}
+			break;
+			*/
+			default:
+				sqlSession.insert("diaD.movilizado.insert",movilizado);
+			break;
+		}
+		if (conteo!=0) {
+			context.addMessage( null ,new FacesMessage(FacesMessage.SEVERITY_INFO, "Movilizado Asigando (Otro Movilizador Lo Tiene Asignado También)", "Con Folio: "+movilizado.getFolio()));
+		}
+		else {
+			context.addMessage( null ,new FacesMessage(FacesMessage.SEVERITY_INFO, "Movilizado Asigando", "Con Folio: "+movilizado.getFolio()));
+		}	
+	}
+	
+	public Modelo<HashMap<String, Object>> modeloPorSeccion(SeccionEO  seccion){
+		HashMap<String, Object> mapa;
+		List<HashMap<String, Object>> movilizados;
+		
+		mapa = new HashMap<>();
+		
+		mapa.put("seccion", seccion);
+		movilizados = sqlSession.selectList("diaD.movilizado.porSeccion_jornada", mapa);
+		
+		return new Modelo<>(movilizados);
+	}
+	public Modelo<MovilizadoEO> modeloPorSeccionFaltantes(SeccionEO seccion){
+		HashMap<String, Object> mapa;
+		List<MovilizadoEO> movilizados;
+		
+		mapa = new HashMap<>();
+		
+		mapa.put("seccion", seccion);
+		movilizados = sqlSession.selectList("diaD.movilizado.porSeccion_jornada_no", mapa);
+		logger.debug("Listado: {} ", movilizados);
+		return new Modelo<>(movilizados);
+	}
+	
+	public void guardarDirecto(MovilizadoEO movilizado, String anho, String mes, String dia, GeozonaParticionEO region, MunicipioEO municipio, SeccionEO seccion){
+		String fechaNacimiento=new String("");
+		MovilizadoEO nuevoMov;
+		movilizado.setUsuario(getUsuario());
+		nuevoMov =  new MovilizadoEO();
+		if (!anho.equals("0") && !anho.equals("") && anho!=null) {
+			fechaNacimiento=fechaNacimiento+anho.toString();
+		}
+		else{
+			fechaNacimiento=fechaNacimiento+"0000";
+		}
+		if (mes!="0" && !mes.equals("") && mes!=null) {
+			fechaNacimiento=fechaNacimiento+(mes.toString().length()==1?"0"+mes:mes.toString());
+		}
+		else{
+			fechaNacimiento=fechaNacimiento+"00";
+		}
+		if (!dia.equals("0") && !dia.equals("") && dia!=null) {
+			fechaNacimiento=fechaNacimiento+(dia.toString().length()==1?"0"+dia:dia.toString());
+		}
+		else{
+			fechaNacimiento=fechaNacimiento+"00";
+		}
+		movilizado.setFechaNac(fechaNacimiento);
+		movilizado.setRegion(region.getNombre());
+		movilizado.setIdRegion(region.getIdParticion());
+		movilizado.setMunicipio(municipio.getNombre());
+		movilizado.setIdMunicipio(municipio.getIdMunicipio());
+		movilizado.setSeccion(seccion.getIdSeccion());
+		movilizado.setUsuario(getUsuario());
+		FacesContext context=FacesContext.getCurrentInstance();
+		if (!movilizado.getNombre().equals("") && movilizado.getNombre()!=null && !movilizado.getPrimerApellido().equals("") && movilizado.getPrimerApellido()!=null ) {
+			
+			HashMap<String, Object> mapa=new HashMap<>();
+			mapa.put("clave", movilizado.getClave());
+			mapa.put("programa", movilizado.getMovilizador().getPrograma());
+			mapa.put("idMovilizador", movilizado.getMovilizador().getId());
+			logger.debug("--------------  Mapa --------------  : {}",mapa);
+			Integer con=sqlSession.selectOne("diaD.movilizado.conteoMovilibles",mapa);
+			if (con==0) {
+				sqlSession.insert("diaD.movilizado.insertMovilizable",movilizado);
+				movilizado.setMovilizador(movilizado.getMovilizador());
+				sqlSession.insert("diaD.movilizado.insert",movilizado);
+				logger.debug("--------------  Movilizado No Existe-------------- : {}",movilizado);
+			}
+			else {
+				logger.debug("--------------  Movilizado Existe-------------- : {}",movilizado);
+				nuevoMov=sqlSession.selectOne("diaD.movilizado.idMovilible",mapa);
+				nuevoMov.setUsuario(getUsuario());
+				nuevoMov.setMovilizador(movilizado.getMovilizador());
+				logger.debug("mov: {}",nuevoMov);
+				sqlSession.insert("diaD.movilizado.insert",nuevoMov);
+			}
+			
+			//sqlSession.insert("diaD.movilizado.insertMovilizable",movilizado);
+			//sqlSession.insert("diaD.movilizado.insert",movilizado);
+		}
+		else{
+			context.addMessage(null ,new FacesMessage(FacesMessage.SEVERITY_ERROR, "Nombre y Apellido Paterno Requerido", ""));
+		}
+	}
+	
+	
+	public void desAsignar(MovilizadoEO movilizado){
+		sqlSession.delete("diaD.movilizado.desAsignar",movilizado);
+	}
+}

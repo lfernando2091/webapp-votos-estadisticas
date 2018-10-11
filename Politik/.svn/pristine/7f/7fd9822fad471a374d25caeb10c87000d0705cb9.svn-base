@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listadoEncuestas">
+		<on-entry>
+			<evaluate expression="EncuestasC.modelo()" result="viewScope.modeloEncuestas" />
+			<evaluate expression="CampaniasC.modelo(viewScope.modeloEncuestas.seleccionado)"
+				result="viewScope.modeloCampanias" />
+		</on-entry>
+		<transition on="agregarEncuesta" to="agregarEncuesta" />
+		<transition on="preguntasEncuesta" to="preguntasEncuesta">
+			<set name="requestScope.modeloEncuestaSeleccionado" value="viewScope.modeloEncuestas.seleccionado" />
+		</transition>
+		<transition on="campaniasEncuesta">
+			<evaluate expression="CampaniasC.modelo(viewScope.modeloEncuestas.seleccionado)"
+				result="viewScope.modeloCampanias" />
+		</transition>
+	</view-state>
+
+	<view-state id="preguntasEncuesta">
+		<on-entry>
+			<set name="viewScope.modeloEncuestaSeleccionado" value="requestScope.modeloEncuestaSeleccionado" />
+			<set name="viewScope.preguntaSeleccionado" value="requestScope.preguntaSeleccionada"/>
+			<evaluate expression="PreguntasC.modelo(viewScope.modeloEncuestaSeleccionado, requestScope.preguntaSeleccionada)"
+				result="viewScope.modeloPreguntas" />
+			<evaluate
+				expression="RespuestasCerradasC.modelo(viewScope.modeloPreguntas.seleccionado)"
+				result="viewScope.modeloRespuestasCerradas" />
+		</on-entry>
+		<transition on="respuestasCerradas">
+			<evaluate
+				expression="RespuestasCerradasC.modelo(viewScope.modeloPreguntas.seleccionado)"
+				result="viewScope.modeloRespuestasCerradas" />
+		</transition>
+		<transition on="nuevaPregunta" to="nuevaPregunta">
+		<set name="requestScope.modeloEncuestaSeleccionada" value="viewScope.modeloEncuestaSeleccionado"/>
+		</transition>
+		<transition on="salirPreguntas" to="fin" />
+		<transition on="nuevaRespuestaCerrada" to="nuevaRespuestaCerrada">
+			<set name="requestScope.modeloPreguntaSeleccionada" value="viewScope.modeloPreguntas.seleccionado" />
+			<set name="requestScope.modeloEncuestaSeleccionada" value="viewScope.modeloEncuestaSeleccionado" />
+
+		</transition>
+	</view-state>
+
+	<view-state id="nuevaRespuestaCerrada">
+		<on-entry>
+			<set name="viewScope.modeloPreguntaSeleccionada" value="requestScope.modeloPreguntaSeleccionada" />
+			<set name="viewScope.modeloEncuestaSeleccionada" value="requestScope.modeloEncuestaSeleccionada" />
+
+			<evaluate
+				expression="RespuestasCerradasC.nuevo(viewScope.modeloPreguntaSeleccionada)"
+				result="viewScope.nuevaRespuestaCerradaI" />
+		</on-entry>
+		<transition on="insertarRespuestaCerrada" to="preguntasEncuesta">
+			<evaluate
+				expression="RespuestasCerradasC.insertar(viewScope.nuevaRespuestaCerradaI)" />
+				<set name="requestScope.modeloEncuestaSeleccionado" value="viewScope.modeloEncuestaSeleccionada"/>
+				<set name="requestScope.preguntaSeleccionada" value="viewScope.modeloPreguntaSeleccionada"/>
+		</transition>
+		<transition on="cancelar" to="preguntasEncuesta">
+		<set name="requestScope.modeloEncuestaSeleccionado" value="viewScope.modeloEncuestaSeleccionada"/>
+		<set name="requestScope.preguntaSeleccionada" value="viewScope.modeloPreguntaSeleccionada"/>
+		</transition>
+	</view-state>
+
+
+	<view-state id="agregarEncuesta">
+		<on-entry>
+			<evaluate expression="EncuestasC.nuevo()" result="viewScope.nuevaEncuesta" />
+		</on-entry>
+		<transition on="insertar" to="fin">
+			<evaluate expression="EncuestasC.insertar(viewScope.nuevaEncuesta)" />
+		</transition>
+		<transition on="cancelar" to="fin" />
+	</view-state>
+	
+	<view-state id="nuevaPregunta">
+	<on-entry>
+	<set name="viewScope.modeloEncuestaSeleccionada" value="requestScope.modeloEncuestaSeleccionada"/>
+<evaluate expression="PreguntasC.nuevo(viewScope.modeloEncuestaSeleccionada)" result="viewScope.nuevaPregunta"></evaluate>
+	</on-entry>
+	<transition on="insertar" to="preguntasEncuesta">
+	<set name="requestScope.modeloEncuestaSeleccionado" value="viewScope.modeloEncuestaSeleccionada" />
+	<evaluate expression="PreguntasC.insertar(viewScope.nuevaPregunta)"/>
+	</transition>
+	</view-state>
+	
+	
+	<end-state id="fin"></end-state>
+</flow>

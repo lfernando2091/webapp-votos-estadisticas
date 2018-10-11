@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form id="form">
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Estructuras" action="cancelar" immediate="true" />
+						<p:menuitem
+							value="${estructura.id == null ? 'Agregar' : 'Editar'} Estructura"
+							action="regresar" immediate="true" />
+						<p:menuitem value="Crear Diagrama" />
+					</p:breadCrumb>
+					<p:panel id="panel" header="Crear Diagrama de Estructura">
+						<p:panelGrid columns="2">
+							<f:facet name="header">Estructura</f:facet>
+							<p:outputLabel value="Nivel" />
+							<p:outputLabel value="${estructura.nivel.nombre}" />
+							<p:outputLabel value="Ámbito" />
+							<p:outputLabel value="${estructura.ambito.nombre}" />
+							<p:outputLabel value="Nombre" />
+							<p:outputLabel value="${estructura.nombre}" />
+							<p:outputLabel value="Observaciones" />
+							<p:outputLabel value="${estructura.observaciones}" />
+						</p:panelGrid>
+						<p:messages id="mensajeDiagrama" />
+						<p:panelGrid columns="2" columnClasses="columna1, columna2">
+							<p:diagram id="diagrama" value="${DiagramaBean.diagrama}" style="height:30em"
+								styleClass="ui-widget-content" var="el">
+								<f:facet name="element">
+									<div onmouseup="moverElemento(this)">
+										<p:outputLabel value="#{el.nombre}" />
+									</div>
+								</f:facet>
+								<p:droppable tolerance="touch" datasource="tablaFiguras">
+									<p:ajax listener="${DiagramaBean.onDrop}" update="diagrama" />
+								</p:droppable>
+								<p:ajax event="connect" listener="${DiagramaBean.onConnect}" />
+							</p:diagram>
+							<p:dataTable id="tablaFiguras" value="${modeloFiguras.listado}"
+								var="fila">
+								<f:facet name="header">Figuras Disponibles</f:facet>
+								<p:column style="width:20px">
+									<h:outputText id="dragIcon"
+										styleClass="ui-icon ui-icon-arrow-4" />
+									<p:draggable for="dragIcon" revert="true" helper="clone" />
+								</p:column>
+								<p:column headerText="Nombre">${fila.nombre}</p:column>
+							</p:dataTable>
+						</p:panelGrid>
+
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="guardar" update="mensajeDiagrama" />
+							<p:commandButton value="Regresar" action="regresar" immediate="true" />
+							<p:commandButton value="Reiniciar Diagrama" actionListener="${DiagramaBean.iniciar}" update="diagrama tablaFiguras" />
+							<p:commandButton value="Cancelar" action="cancelar" immediate="true" />
+						</f:facet>
+					</p:panel>
+					
+					<p:remoteCommand name="diagramaMoverElemento" actionListener="${DiagramaBean.moverElemento}" />
+					
+					<h:outputScript>
+						function moverElemento(divElemento){
+							var elemento = divElemento.parentElement;
+							diagramaMoverElemento([
+								{name: 'elemento', value: elemento},
+								{name: 'idElemento', value: elemento.id},
+								{name: 'x', value: elemento.style['left']},
+								{name: 'y', value: elemento.style['top']}
+							]);
+						}
+					</h:outputScript>
+
+					<h:outputStylesheet>
+						.columna1 {
+							vertical-align: top;
+							width:70%;
+						}
+						
+						.columna2 {
+							vertical-align: top;
+						}
+						
+						.ui-diagram-element {
+					        border:2px solid #999999;
+					        padding-left: 3px;    
+					        padding-right: 5px;
+					        line-height:3em;
+					        text-align: center;
+					    }
+					</h:outputStylesheet>
+					
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

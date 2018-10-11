@@ -1,0 +1,29 @@
+package com.saganet.politik.components.diaD.reportes;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("diaDReportesMetasJornada")
+public class MetasJornadaC {
+	@SuppressWarnings("unused")
+	private static final Logger logger = LoggerFactory.getLogger(MetasJornadaC.class);
+	
+	@Autowired SqlSession sqlSession;
+	
+	public Modelo<HashMap<String, Object>> metasJornada(MunicipioEO municipio){
+		List<HashMap<String, Object>> listado;
+		
+		listado = sqlSession.selectList("diaD.reportes.metasJornada.seccionesPorMunicipio", municipio);
+		
+		return new Modelo<>(listado);
+	}
+}

@@ -1,0 +1,124 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:messages autoUpdate="true" />
+					<p:panel header="Datos de Contacto">
+						<p:panelGrid columns="2" styleClass="panelNoBorder panelNoBorder">
+							<p:outputLabel value="Id:" styleClass="negritas" />
+							<p:outputLabel value="${contacto.get('id_interno')}" />
+							<p:outputLabel value="Dirección: " styleClass="negritas" />
+							<p:outputLabel
+								value="${contacto.get('calle')} ${contacto.get('num_exterior')} ${contacto.get('num_ixterior')} ${contacto.get('colonia')} ${contacto.get('nombre_municipio')}" />
+
+						</p:panelGrid>
+					</p:panel>
+					<p:separator />
+					<p:panel header="CONTRALORIA SOCIAL	CUESTIONARIO">
+						<p:panelGrid columns="1" styleClass="panelNoBorder">
+							<p:outputLabel
+								value="1.- Sabe si el apoyo de PROSPERA que usted recibe es de.." />
+							<p:selectOneRadio value="${encuesta.r1}"
+								converter="ObjectConverter" style="width: 300px" required="true"
+								requiredMessage="Pregunta 1: es requerida" styleClass="negritas">
+								<f:selectItems value="${modeloGobiernos.listado}" var="s"
+									itemLabel="${s}" itemValue="${s}" />
+							</p:selectOneRadio>
+							<p:outputLabel
+								value="2.- ¿Se siente usted apoyado por el Gobierno de la República a través de sus Programas Sociales?" />
+							<p:selectOneRadio value="${encuesta.r2}"
+								converter="ObjectConverter" style="width: 300px" required="true"
+								requiredMessage="Pregunta 2: es requerida" styleClass="negritas">
+								<f:selectItems value="${sino.listado}" var="s"
+									itemLabel="${s}" itemValue="${s}" />
+							</p:selectOneRadio>
+							<p:outputLabel
+								value="3.- ¿Cómo calificaría el desempeño del Gobierno de la República con PROSPERA en su Estado?" />
+							<p:selectOneRadio value="${encuesta.r3}"
+								converter="ObjectConverter" style="width: 300px" required="true"
+								requiredMessage="Pregunta 3: es requerida">
+								<f:selectItems value="${buenaRegularMalo.listado}" var="s"
+									itemLabel="${s}" itemValue="${s}" />
+							</p:selectOneRadio>
+							<p:outputLabel
+								value="4.- ¿Cómo calificaría los Programas Sociales que recibe por parte del Gobierno del Estado?" />
+							<p:selectOneRadio value="${encuesta.r4}"
+								converter="ObjectConverter" style="width: 300px" required="true"
+								requiredMessage="Pregunta 4: es requerida">
+								<f:selectItems value="${modeloBuenoRegularMaloNoRecibo.listado}" var="s"
+									itemLabel="${s}" itemValue="${s}" />
+							</p:selectOneRadio>
+							<p:outputLabel
+								value="5.- ¿Le gustaría que los Programas se mantengan coomo hasta ahora lo han hecho?" />
+							<p:selectOneRadio value="${encuesta.r5}"
+								converter="ObjectConverter" style="width: 300px" required="true"
+								requiredMessage="Pregunta 5: es requerida">
+								<f:selectItems value="${sino.listado}" var="s" itemLabel="${s}"
+									itemValue="${s}" />
+							</p:selectOneRadio>
+							<p:outputLabel
+								value="Encuestador" />
+							<p:selectOneMenu value="${encuesta.encuestador}"
+								converter="ObjectConverter" style="width: 300px" required="true" requiredMessage="Encuestador: requerido">
+								<f:selectItems value="${modeloEncuestadores.listado}" var="s" itemLabel="${s.nombre} ${s.primerApellido} ${s.segundoApellido}"
+									itemValue="${s}" />
+							</p:selectOneMenu>
+							<p:outputLabel
+								value="Resultado" />
+							<p:selectOneMenu value="${encuesta.resultado}"
+								converter="ObjectConverter" style="width: 300px">
+								<f:selectItems value="${modeloResultadoEncuesta.listado}" var="s" itemLabel="${s.nombre}"
+									itemValue="${s}" />
+							</p:selectOneMenu>
+							
+							
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="guardar"
+								icon="fa fa-save"
+								rendered="#{contacto.get('estatus') ne 'PENDIENTE'?'false':'true'}" />
+							<p:commandButton value="Actualizar" action="actualizar"
+								icon="fa fa-save"
+								rendered="#{contacto.get('estatus') ne 'PENDIENTE'?'true':'false'}" />
+							<p:commandButton value="Salir" action="salir" icon="fa fa-close"
+								immediate="true" />
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			} 
+			.ui-selectoneradio.ui-widget td {
+     border: 0 none !important;
+}
+.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+border: hidden;
+border-color: white;
+}
+.negritas{
+			font-weight: bold !important;
+			}
+		</h:outputStylesheet>
+
+		<h:outputScript>
+			window.onload = function() {
+				gmap = PF('mapaWV').getMap();
+			}
+		</h:outputScript>
+
+	</ui:define>
+
+</ui:composition>

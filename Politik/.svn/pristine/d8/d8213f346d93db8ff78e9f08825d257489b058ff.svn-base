@@ -1,0 +1,115 @@
+package com.saganet.politik.components.diaD;
+
+import java.util.HashMap;
+
+import javax.faces.event.ValueChangeEvent;
+
+import org.apache.ibatis.session.SqlSession;
+import org.primefaces.component.inputswitch.InputSwitch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.binding.message.MessageBuilder;
+import org.springframework.binding.message.MessageContext;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContextHolder;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.diaD.MovilizadoEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("diaDJornadaC")
+public class JornadaC {
+	private static final Logger logger = LoggerFactory.getLogger(JornadaC.class);
+	
+	@Autowired SqlSession sqlSession;
+	
+	public HashMap<String, Object> nuevoMapa(){
+		return new HashMap<>();
+	}
+	
+	public void registrarFolio(HashMap<String, Object> mapa){
+		MessageContext messageContext;
+		Boolean flag;
+		Integer folio;
+		HashMap<String, Object> parametros;
+		
+		parametros = new HashMap<>();
+		
+		messageContext = RequestContextHolder.getRequestContext().getMessageContext();
+		folio = Integer.parseInt((String) mapa.get("folio"));
+		
+		parametros.put("folio", folio);
+		parametros.put("grupos", getUsuario().getProgamas());
+		parametros.put("nick", getUsuario().getNick());
+		
+		flag = sqlSession.selectOne("diaD.movilizado.estadoRegistroJornada", parametros);
+		 
+		if (flag != null) {
+
+			if (flag) {
+				messageContext.addMessage(new MessageBuilder().error().source("registroFolio")
+						.defaultText("El Folio " + folio + " ya estaba asignado").build());
+			} else {
+				sqlSession.update("diaD.movilizado.registrarJornada", parametros);
+				messageContext.addMessage(new MessageBuilder().info().source("registroFolio")
+						.defaultText("Folio " + folio + " registrado exitosamente").build());
+			}
+		} else {
+			messageContext.addMessage(new MessageBuilder().error().source("registroFolio")
+					.defaultText("El Folio " + folio + " no existe").build());
+		}
+		
+		mapa.remove("folio");
+	}
+	
+	public void registrarFolio2(HashMap<String, Object> mapa, Modelo<MovilizadoEO> modeloMovilizados){
+		Integer folio;
+		Boolean registroJornada, registroJornadaNuevo;
+		HashMap<String, Object> parametros;
+		
+		parametros = new HashMap<>();
+		
+		folio = (Integer) mapa.get("folio2");
+		registroJornada = (Boolean) mapa.get("registroJornada2");
+		registroJornadaNuevo = !registroJornada.booleanValue();
+		
+		parametros.put("folio", folio);
+		parametros.put("registroJornada", registroJornadaNuevo);
+		
+		sqlSession.update("diaD.movilizado.registrarJornada2", parametros);
+		
+		for(MovilizadoEO m : modeloMovilizados.getListado()){
+			if(m.getFolio().equals(folio)){
+				m.setRegistroJornada(registroJornadaNuevo.booleanValue());
+			}
+		}
+	}
+	
+	public void registrarFolioX(ValueChangeEvent e){
+		InputSwitch inputSwitch;
+		Integer folio;
+		Boolean registroJornada;
+		HashMap<String, Object> parametros;
+		
+		parametros = new HashMap<>();
+		
+		inputSwitch = (InputSwitch) e.getSource();
+		folio = Integer.parseInt(inputSwitch.getId().substring(6));
+		registroJornada = (Boolean) inputSwitch.getValue();
+		
+		parametros.put("folio", folio);
+		parametros.put("registroJornada", registroJornada);
+		parametros.put("grupos", getUsuario().getProgamas());
+		parametros.put("nick", getUsuario().getNick());
+		
+		sqlSession.update("diaD.movilizado.registrarJornada2", parametros);
+	}
+	
+	private UsuarioEO getUsuario() {
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+}

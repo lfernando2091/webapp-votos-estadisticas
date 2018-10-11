@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.tiposRedesSociales">
+	<cache />
+	<resultMap type="TipoRedSocialEO" id="tipoRedSocial">
+		<id column="TipoRedSocialEO_id" property="id" javaType="Integer" />
+		<result column="TipoRedSocialEO_nombre" property="nombre" javaType="String" />
+		<result column="TipoRedSocialEO_direccion" property="direccion" javaType="String" />
+		<result column="TipoRedSocialEO_logo" property="logo" javaType="String" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			TipoRedSocialEO.id_tipo_red_social 	TipoRedSocialEO_id, 
+			TipoRedSocialEO.tipo_red_social 	TipoRedSocialEO_nombre, 
+			TipoRedSocialEO.direccion 			TipoRedSocialEO_direccion, 
+			TipoRedSocialEO.logo 				TipoRedSocialEO_logo
+	  	FROM catalogos.tipos_redes_sociales TipoRedSocialEO
+	</sql>
+	
+	<select id="listado" resultMap="tipoRedSocial">
+		<include refid="query" />
+		ORDER BY TipoRedSocialEO.tipo_red_social
+	</select>
+</mapper>

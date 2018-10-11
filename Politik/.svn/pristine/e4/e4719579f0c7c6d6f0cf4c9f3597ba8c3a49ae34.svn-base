@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="encuestas.edomex2017.registroUsuarios">
+	
+
+	
+	<select id="validarCodigo" parameterType="String" resultType="Integer">
+	select count(*) from encuestas.encuesta_edomex_registro_usuarios where codigo_alfanumerico = #{value} and estado = 'PENDIENTE'
+	</select>
+	
+	<update id="actualizarUsuario" parameterType="hashmap">
+	UPDATE encuestas.encuesta_edomex_registro_usuarios
+   SET   
+       estado='AIGNADO', nombre=#{nombre}, primer_apellido=#{primerApellido}, segundo_apellido=#{segundoApellido}, email=#{email}, 
+       movil=#{nombre}
+ WHERE codigo_alfanumerico = #{codigo}
+	
+	</update>
+</mapper>

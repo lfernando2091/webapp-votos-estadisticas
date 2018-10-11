@@ -1,0 +1,91 @@
+package com.saganet.politik.database.catalogos;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.dominios.EsquemasDO;
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("TablaEO")
+public class TablaEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = -6093337381559042122L;
+
+	private Integer id;
+	private String tabla;
+	private String descripcion;
+	private String campoParticion;
+	private Boolean particionada;
+	private List<TablaParticionEO> particiones;
+	private EsquemasDO esquema;
+	
+	public TablaEO() {
+		particiones = new ArrayList<>();
+	}
+
+	@Override
+	public String toString() {
+		return "TablaEO [id=" + id + ", tabla=" + tabla + ", descripcion=" + descripcion + ", campoParticion="
+				+ campoParticion + ", particionada=" + particionada + ", particiones=" + particiones + ", esquema="
+				+ esquema + "]";
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getTabla() {
+		return tabla;
+	}
+
+	public void setTabla(String tabla) {
+		this.tabla = tabla;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public String getCampoParticion() {
+		return campoParticion;
+	}
+
+	public void setCampoParticion(String campoParticion) {
+		this.campoParticion = campoParticion;
+	}
+
+	public Boolean getParticionada() {
+		return particionada;
+	}
+
+	public void setParticionada(Boolean particionada) {
+		this.particionada = particionada;
+	}
+
+	public List<TablaParticionEO> getParticiones() {
+		return particiones;
+	}
+
+	public void setParticiones(List<TablaParticionEO> particiones) {
+		this.particiones = particiones;
+	}
+
+	public EsquemasDO getEsquema() {
+		return esquema;
+	}
+
+	public void setEsquema(EsquemasDO esquema) {
+		this.esquema = esquema;
+	}
+	
+}

@@ -1,0 +1,195 @@
+package com.saganet.politik.database.encuestas.edomex2017.v2;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("EcnuestaEdomex2017V2ReporteRangoEdadEO")
+public class ReporteRangoEdadEO extends JavaBeanT {
+
+	private Integer idRegion;
+	private String nombreRegion;
+	private Integer idMunicipio;
+	private String nombreMunicipio;
+	private Integer seccion;
+	
+	// campos de concentrado
+	
+	private Integer edad1830Exitosas;
+	private Integer edad1831aFavor;
+	private Integer edad1832IndecisosAFavor;
+	private Integer edad1833Indecisos;
+	private Integer edad1834IndecisosEnContra;
+	private Integer edad1835EnContra;
+
+	
+	private Integer edad3164Exitosas;
+	private Integer edad3165aFavor;
+	private Integer edad3166IndecisosAFavor;
+	private Integer edad3167Indecisos;
+	private Integer edad3168IndecisosEnContra;
+	private Integer edad3169EnContra;
+
+
+	private Integer edad65masExitosas;
+	private Integer edad65masaFavor;
+	private Integer edad65masIndecisosAFavor;
+	private Integer edad65masIndecisos;
+	private Integer edad65masIndecisosEnContra;
+	private Integer edad65masEnContra;
+	@Override
+	public String toString() {
+		return "ReporteRangoEdadEO [idRegion=" + idRegion + ", nombreRegion=" + nombreRegion + ", idMunicipio="
+				+ idMunicipio + ", nombreMunicipio=" + nombreMunicipio + ", seccion=" + seccion + ", edad1830Exitosas="
+				+ edad1830Exitosas + ", edad1831aFavor=" + edad1831aFavor + ", edad1832IndecisosAFavor="
+				+ edad1832IndecisosAFavor + ", edad1833Indecisos=" + edad1833Indecisos + ", edad1834IndecisosEnContra="
+				+ edad1834IndecisosEnContra + ", edad1835EnContra=" + edad1835EnContra + ", edad3164Exitosas="
+				+ edad3164Exitosas + ", edad3165aFavor=" + edad3165aFavor + ", edad3166IndecisosAFavor="
+				+ edad3166IndecisosAFavor + ", edad3167Indecisos=" + edad3167Indecisos + ", edad3168IndecisosEnContra="
+				+ edad3168IndecisosEnContra + ", edad3169EnContra=" + edad3169EnContra + ", edad65masExitosas="
+				+ edad65masExitosas + ", edad65masaFavor=" + edad65masaFavor + ", edad65masIndecisosAFavor="
+				+ edad65masIndecisosAFavor + ", edad65masIndecisos=" + edad65masIndecisos
+				+ ", edad65masIndecisosEnContra=" + edad65masIndecisosEnContra + ", edad65masEnContra="
+				+ edad65masEnContra + "]";
+	}
+	public Integer getIdRegion() {
+		return idRegion;
+	}
+	public void setIdRegion(Integer idRegion) {
+		this.idRegion = idRegion;
+	}
+	public String getNombreRegion() {
+		return nombreRegion;
+	}
+	public void setNombreRegion(String nombreRegion) {
+		this.nombreRegion = nombreRegion;
+	}
+	public Integer getIdMunicipio() {
+		return idMunicipio;
+	}
+	public void setIdMunicipio(Integer idMunicipio) {
+		this.idMunicipio = idMunicipio;
+	}
+	public String getNombreMunicipio() {
+		return nombreMunicipio;
+	}
+	public void setNombreMunicipio(String nombreMunicipio) {
+		this.nombreMunicipio = nombreMunicipio;
+	}
+	public Integer getSeccion() {
+		return seccion;
+	}
+	public void setSeccion(Integer seccion) {
+		this.seccion = seccion;
+	}
+	public Integer getEdad1830Exitosas() {
+		return edad1830Exitosas;
+	}
+	public void setEdad1830Exitosas(Integer edad1830Exitosas) {
+		this.edad1830Exitosas = edad1830Exitosas;
+	}
+	public Integer getEdad1831aFavor() {
+		return edad1831aFavor;
+	}
+	public void setEdad1831aFavor(Integer edad1831aFavor) {
+		this.edad1831aFavor = edad1831aFavor;
+	}
+	public Integer getEdad1832IndecisosAFavor() {
+		return edad1832IndecisosAFavor;
+	}
+	public void setEdad1832IndecisosAFavor(Integer edad1832IndecisosAFavor) {
+		this.edad1832IndecisosAFavor = edad1832IndecisosAFavor;
+	}
+	public Integer getEdad1833Indecisos() {
+		return edad1833Indecisos;
+	}
+	public void setEdad1833Indecisos(Integer edad1833Indecisos) {
+		this.edad1833Indecisos = edad1833Indecisos;
+	}
+	public Integer getEdad1834IndecisosEnContra() {
+		return edad1834IndecisosEnContra;
+	}
+	public void setEdad1834IndecisosEnContra(Integer edad1834IndecisosEnContra) {
+		this.edad1834IndecisosEnContra = edad1834IndecisosEnContra;
+	}
+	public Integer getEdad1835EnContra() {
+		return edad1835EnContra;
+	}
+	public void setEdad1835EnContra(Integer edad1835EnContra) {
+		this.edad1835EnContra = edad1835EnContra;
+	}
+	public Integer getEdad3164Exitosas() {
+		return edad3164Exitosas;
+	}
+	public void setEdad3164Exitosas(Integer edad3164Exitosas) {
+		this.edad3164Exitosas = edad3164Exitosas;
+	}
+	public Integer getEdad3165aFavor() {
+		return edad3165aFavor;
+	}
+	public void setEdad3165aFavor(Integer edad3165aFavor) {
+		this.edad3165aFavor = edad3165aFavor;
+	}
+	public Integer getEdad3166IndecisosAFavor() {
+		return edad3166IndecisosAFavor;
+	}
+	public void setEdad3166IndecisosAFavor(Integer edad3166IndecisosAFavor) {
+		this.edad3166IndecisosAFavor = edad3166IndecisosAFavor;
+	}
+	public Integer getEdad3167Indecisos() {
+		return edad3167Indecisos;
+	}
+	public void setEdad3167Indecisos(Integer edad3167Indecisos) {
+		this.edad3167Indecisos = edad3167Indecisos;
+	}
+	public Integer getEdad3168IndecisosEnContra() {
+		return edad3168IndecisosEnContra;
+	}
+	public void setEdad3168IndecisosEnContra(Integer edad3168IndecisosEnContra) {
+		this.edad3168IndecisosEnContra = edad3168IndecisosEnContra;
+	}
+	public Integer getEdad3169EnContra() {
+		return edad3169EnContra;
+	}
+	public void setEdad3169EnContra(Integer edad3169EnContra) {
+		this.edad3169EnContra = edad3169EnContra;
+	}
+	public Integer getEdad65masExitosas() {
+		return edad65masExitosas;
+	}
+	public void setEdad65masExitosas(Integer edad65masExitosas) {
+		this.edad65masExitosas = edad65masExitosas;
+	}
+	public Integer getEdad65masaFavor() {
+		return edad65masaFavor;
+	}
+	public void setEdad65masaFavor(Integer edad65masaFavor) {
+		this.edad65masaFavor = edad65masaFavor;
+	}
+	public Integer getEdad65masIndecisosAFavor() {
+		return edad65masIndecisosAFavor;
+	}
+	public void setEdad65masIndecisosAFavor(Integer edad65masIndecisosAFavor) {
+		this.edad65masIndecisosAFavor = edad65masIndecisosAFavor;
+	}
+	public Integer getEdad65masIndecisos() {
+		return edad65masIndecisos;
+	}
+	public void setEdad65masIndecisos(Integer edad65masIndecisos) {
+		this.edad65masIndecisos = edad65masIndecisos;
+	}
+	public Integer getEdad65masIndecisosEnContra() {
+		return edad65masIndecisosEnContra;
+	}
+	public void setEdad65masIndecisosEnContra(Integer edad65masIndecisosEnContra) {
+		this.edad65masIndecisosEnContra = edad65masIndecisosEnContra;
+	}
+	public Integer getEdad65masEnContra() {
+		return edad65masEnContra;
+	}
+	public void setEdad65masEnContra(Integer edad65masEnContra) {
+		this.edad65masEnContra = edad65masEnContra;
+	}
+
+	
+}

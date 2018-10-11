@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="elecciones.candidatos">
+	<cache />
+
+	<select id="listadoPorEleccion" parameterType="EleccionEO"
+		resultType="hashmap">
+		SELECT
+		CandidatoEO.pkey id,
+		CandidatoEO.id_eleccion idEleccion,
+		CandidatoEO.llave llave,
+		CandidatoEO.id_persona_candidato idPersona,
+		CandidatoEO.id_entidad_nacimiento_candidato idEntidadNacimiento,
+		CandidatoEO.id_partido idPartido
+		FROM elecciones.candidatos CandidatoEO
+		WHERE CandidatoEO.id_eleccion = #{id}
+	</select>
+
+	<insert id="insertar" parameterType="hashmap">
+		INSERT INTO elecciones.candidatos(
+			id_eleccion, llave, id_persona_candidato,
+			id_entidad_nacimiento_candidato, id_partido
+		)
+		VALUES (
+			#{eleccion.id}, #{candidato.territorio.llave, jdbcType=VARCHAR}, #{candidato.persona.id}, 
+			#{candidato.persona.entidadNacimiento.id}, #{candidato.partido.id}
+		)
+	</insert>
+
+</mapper>

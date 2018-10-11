@@ -1,0 +1,52 @@
+package com.saganet.politik.database.importaciones;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.dominios.EstatusImportacionDO;
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("ImportacionesEO")
+public class ImportacionesEO extends JavaBeanT implements Serializable {
+
+	private static final long serialVersionUID = 5000048663022904465L;
+
+	@Override
+	public String toString() {
+		return "ImportacionesEO [id=" + id + ", fecha=" + fecha + ", mapeoImportacion=" + mapeoImportacion
+				+ ", estatus=" + estatus + "]";
+	}
+	
+	private Integer id;
+	private Date fecha;
+	private MapeoImportacionEO mapeoImportacion;
+	private EstatusImportacionDO estatus;
+
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public Date getFecha() {
+		return fecha;
+	}
+	public void setFecha(Date fecha) {
+		this.fecha = fecha;
+	}
+	public MapeoImportacionEO getMapeoImportacion() {
+		return mapeoImportacion;
+	}
+	public void setMapeoImportacion(MapeoImportacionEO mapeoImportacion) {
+		this.mapeoImportacion = mapeoImportacion;
+	}
+	public EstatusImportacionDO getEstatus() {
+		return estatus;
+	}
+	public void setEstatus(EstatusImportacionDO estatus) {
+		this.estatus = estatus;
+	}
+
+}

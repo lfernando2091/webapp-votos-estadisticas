@@ -1,0 +1,22 @@
+package com.saganet.politik.components.diaD.reportes;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.diaD.reportes.ExitosoNoExitosoEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("Diad")
+public class ExitososNoExitososC {
+@Autowired
+SqlSession sqlSession;
+	
+	public Modelo<ExitosoNoExitosoEO> modelo(){
+		List<ExitosoNoExitosoEO> listado;
+		listado = sqlSession.selectList("");
+		return new Modelo<>(listado);
+	}
+}

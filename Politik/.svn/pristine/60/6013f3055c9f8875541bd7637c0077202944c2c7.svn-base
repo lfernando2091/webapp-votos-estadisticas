@@ -1,0 +1,61 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Filtro">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nivel :" />
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${modeloNiveles.seleccionado}"
+									style="width:300px">
+									<p:ajax event="itemSelect" onsuccess="actualizar()" />
+									<f:selectItems value="${modeloNiveles.listado}" var="fila"
+										itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Grupos :" />
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${modeloProgramas.seleccionado}"
+									style="width:300px">
+									<p:ajax event="itemSelect" onsuccess="actualizar()" />
+									<f:selectItems value="${modeloProgramas.listado}" var="fila"
+										itemLabel="${fila.nombre2}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+						</p:panelGrid>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			}
+			.negritas{
+			font-weight: bold;
+			}
+		</h:outputStylesheet>
+
+		<h:outputScript>
+			window.onload = function() {
+				gmap = PF('mapaWV').getMap();
+			}
+		</h:outputScript>
+
+	</ui:define>
+
+</ui:composition>

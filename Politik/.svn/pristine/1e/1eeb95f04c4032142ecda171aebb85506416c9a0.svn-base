@@ -1,0 +1,807 @@
+package com.saganet.politik.components.estadisticas;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+import com.saganet.politik.database.catalogos.CampoTablaEO;
+import com.saganet.politik.database.catalogos.GeozonaEO;
+import com.saganet.politik.database.catalogos.TablaParticionEO;
+import com.saganet.politik.database.estadisticas.LogEO;
+import com.saganet.politik.database.estadisticas.VariableEO;
+import com.saganet.politik.database.importaciones.ImportacionesEO;
+import com.saganet.politik.dominios.EstatusVariableDO;
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.dominios.OperadoresDO;
+import com.saganet.politik.dominios.TipoVariableDO;
+import com.saganet.politik.dominios.TiposCampoDO;
+import com.saganet.politik.modelos.Modelo;
+import com.saganet.politik.modelos.estadisticas.LogsT;
+import com.saganet.politik.modelos.estadisticas.VariablesT;
+
+@Component("EstadisticasVariablesC")
+public class VariablesC {
+	private static final Logger logger = LoggerFactory.getLogger(VariablesC.class);
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	public VariablesT tabla(){
+		VariablesT tabla;
+		List<VariableEO> listado;
+		
+		tabla = new VariablesT();
+		listado = sqlSession.selectList("estadisticas.variables.listado");
+		tabla.setListado(listado);
+		if(!listado.isEmpty()){
+			tabla.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado de Variables: {}", listado);
+		
+		return tabla;
+	}
+	
+	public VariablesT tabla(NivelesDO nivel, GeozonaEO geozona, Boolean agruparTerritorios){
+		VariablesT tabla;
+		List<VariableEO> listado;
+		boolean esGeozona;
+		
+		tabla = tabla();
+		listado = new ArrayList<VariableEO>(tabla.getListado());
+		
+		esGeozona = false;
+		if(nivel.equals(NivelesDO.GEOZONA)){
+			nivel = geozona.getNivel();
+			esGeozona = true;
+		}
+		
+		for(VariableEO var : tabla.getListado()){
+			switch(nivel){
+			case DFEDERAL:
+				if(!var.getDfederal()) listado.remove(var);
+				break;
+			case DLOCAL:
+				if(!var.getDlocal()) listado.remove(var);
+				break;
+			case ENTIDAD:
+				if(!var.getEntidad()) listado.remove(var);
+				break;
+			case LOCALIDAD:
+				if(!var.getLocalidad()) listado.remove(var);
+				break;
+			case MANZANA:
+				if(!var.getManzana()) listado.remove(var);
+				break;
+			case MUNICIPIO:
+				if(!var.getMunicipio()) listado.remove(var);
+				break;
+			case SECCION:
+				if(!var.getSeccion()) listado.remove(var);
+				break;
+			case NACIONAL:
+				break;
+			default:
+				break;
+			}
+			if(esGeozona && agruparTerritorios)
+				if(!var.getAgruparGeozona())
+					listado.remove(var);
+		}
+		
+		tabla.setListado(listado);
+		
+		logger.debug("Se obtiene listado de Variables Filtradas: {}", listado);
+		
+		return tabla;
+	}
+	
+	public VariableEO nuevo(){
+		logger.debug("Se genera nuevo objeto VariableEO");
+		return new VariableEO();
+	}
+	
+	public NivelesDO[] listadoNiveles(){
+		logger.debug("Se genera listado de Niveles");
+		return NivelesDO.values();
+	}
+	
+	public NivelesDO nivelDefault(){
+		return NivelesDO.ENTIDAD;
+	}
+	
+	public TiposCampoDO[] listadoTiposCampo(){
+		logger.debug("Se genera listado de Tipos de Campo");
+		return TiposCampoDO.values();
+	}
+	
+	public OperadoresDO[] listadoOperadores(){
+		logger.debug("Se genera listado de Operadores");
+		return OperadoresDO.values();
+	}
+	
+	public void guardar(VariableEO variable){
+		logger.debug("Variable a guardar: {}", variable);
+		
+		if(variable.getNivelCalculo().equals(NivelesDO.MANZANA))
+			variable.setManzana(true);
+		
+		sqlSession.insert("estadisticas.variables.insertar", variable);
+		logger.debug("Id de Variable guardada: {}", variable.getId());
+		
+		variable.getConsulta().setIdVariable(variable.getId());
+		sqlSession.insert("estadisticas.consultas.insertar", variable.getConsulta());
+		logger.debug("Id de Consulta guardada: {}", variable.getConsulta().getId());
+	}
+	
+	public void generarAsync(VariableEO variable) {
+		HashMap<String, Object> mapa, camposConsulta;
+		List<String> camposPropagacion;
+		LogEO log;
+		
+		log = new LogEO();
+		log.setIdVariable(variable.getId());
+		
+		log.setDescripcion("Se inicia Proceso Asincrono de Generacion de Variable");
+		sqlSession.insert("estadisticas.logs.insertar", log);
+		logger.debug("Se inicia Proceso Asincrono de Generacion de Variable");
+		
+		variable.setEstatus(EstatusVariableDO.EJECUTANDO);
+		
+		sqlSession.update("estadisticas.variables.actualizarEstatus", variable);
+		
+		log.setDescripcion("Variable colocada en Pendiente");
+		sqlSession.insert("estadisticas.logs.insertar", log);
+		logger.debug("Variable colocada en Pendiente");
+		
+		mapa = new HashMap<String, Object>();
+		camposConsulta = new HashMap<String, Object>();
+		
+		mapa.put("esquemaVariable", "estadisticas");
+		mapa.put("esquemaConsulta", "warehouse");
+		mapa.put("tipo", variable.getTipo().getTipo());
+		mapa.put("campo", variable.getCampo());
+		
+		mapa.put("tablaConsulta", variable.getConsulta().getTabla().getTabla());
+		mapa.put("operador", variable.getConsulta().getOperador().getCodigo());
+		
+		if (variable.getConsulta().getTabla().getParticionada()) {
+			mapa.put("campoParticion", variable.getConsulta().getTabla().getCampoParticion());
+		}
+		
+		switch (variable.getNivelCalculo()) {
+		case DFEDERAL:
+			mapa.put("tabla", "dfederales");
+			camposConsulta.put("id_entidad", variable.getConsulta().getCampoEntidad());
+			camposConsulta.put("id_dfederal", variable.getConsulta().getCampoDFederal());
+			break;
+		case DLOCAL:
+			mapa.put("tabla", "dlocales");
+			camposConsulta.put("id_entidad", variable.getConsulta().getCampoEntidad());
+			camposConsulta.put("id_dlocal", variable.getConsulta().getCampoDLocal());
+			break;
+		case ENTIDAD:
+			mapa.put("tabla", "entidades");
+			camposConsulta.put("id_entidad", variable.getConsulta().getCampoEntidad());
+			break;
+		case LOCALIDAD:
+			mapa.put("tabla", "localidades");
+			camposConsulta.put("id_entidad", variable.getConsulta().getCampoEntidad());
+			camposConsulta.put("id_municipio", variable.getConsulta().getCampoMunicipio());
+			camposConsulta.put("id_localidad", variable.getConsulta().getCampoLocalidad());
+			break;
+		case MANZANA:
+			mapa.put("tabla", "manzanas");
+			camposConsulta.put("id_entidad", variable.getConsulta().getCampoEntidad());
+			camposConsulta.put("id_municipio", variable.getConsulta().getCampoMunicipio());
+			camposConsulta.put("id_seccion", variable.getConsulta().getCampoSeccion());
+			camposConsulta.put("id_localidad", variable.getConsulta().getCampoLocalidad());
+			camposConsulta.put("id_manzana", variable.getConsulta().getCampoManzana());
+			break;
+		case MUNICIPIO:
+			mapa.put("tabla", "municipios");
+			camposConsulta.put("id_entidad", variable.getConsulta().getCampoEntidad());
+			camposConsulta.put("id_municipio", variable.getConsulta().getCampoMunicipio());
+			break;
+		case SECCION:
+			mapa.put("tabla", "secciones");
+			camposConsulta.put("id_entidad", variable.getConsulta().getCampoEntidad());
+			camposConsulta.put("id_seccion", variable.getConsulta().getCampoSeccion());
+			break;
+		case NACIONAL:
+			break;
+		default:
+			break;
+		}
+		
+		mapa.put("camposConsulta", camposConsulta);
+		
+		switch(variable.getTipo()){
+		case INTEGER:
+		case NUMERIC:
+			if(variable.getValorDefault() != null)
+				mapa.put("valorDefault", variable.getValorDefault());
+			break;
+		case TEXT:
+			if(variable.getValorDefault() != null)
+				mapa.put("valorDefault", "'" + variable.getValorDefault() + "'");
+			break;
+		}
+		
+		if(variable.getValorDefault() != null)
+			mapa.put("valorDefault", variable.getValorDefault());
+		
+		if(variable.getConsulta().getCondicion() != null)
+			if(!variable.getConsulta().getCondicion().equals(""))
+				mapa.put("condicion", variable.getConsulta().getCondicion());
+		
+		//Agregar Campo en la tabla de calculo
+		sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+		
+		log.setDescripcion("Se Agrega Campo a Tabla de Calculo " + mapa.get("tabla"));
+		sqlSession.insert("estadisticas.logs.insertar", log);
+		logger.debug("Se Agrega Campo a Tabla de Calculo {}", mapa.get("tabla"));
+		
+		//Generar el Query para realizar el calculo
+		if (variable.getConsulta().getTabla().getParticionada()) {
+			
+			log.setDescripcion("La tabla de calculo esta particionada");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("La tabla de calculo esta particionada");
+			for (TablaParticionEO tablaParticion : variable.getConsulta().getTabla().getParticiones()) {
+				mapa.put("valorParticion", tablaParticion.getIdParticion().toString());
+				sqlSession.update("catalogos.camposTabla.actualizarVariable", mapa);
+				
+				log.setDescripcion("Se calcula particion: " + mapa.get("valorParticion"));
+				sqlSession.insert("estadisticas.logs.insertar", log);
+				logger.debug("Se calcula particion: {}", mapa.get("valorParticion"));
+			}
+		} else {
+			log.setDescripcion("La tabla de calculo no esta particionada");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("La tabla de calculo no esta particionada");
+			
+			sqlSession.update("catalogos.camposTabla.actualizarVariable", mapa);
+		}		
+		
+		mapa.put("tablaOrigen", mapa.get("tabla"));
+		
+		//Propagar resultados a tablas superiores
+		if(variable.getEntidad()){
+			mapa.put("tabla", "entidades");
+			sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+			
+			log.setDescripcion("Se Agrega Campo a Tabla de Propagacion Entidades");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se Agrega Campo a Tabla de Propagacion Entidades");
+			
+			mapa.put("tablaPropagacion", "entidades");
+			camposPropagacion = new ArrayList<String>();
+			camposPropagacion.add("id_entidad");
+			mapa.put("camposPropagacion", camposPropagacion);
+			sqlSession.update("catalogos.camposTabla.propagarVariable", mapa);
+			
+			log.setDescripcion("Se propagan resultados a Entidades");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se propagan resultados a Entidades");
+		}
+		
+		if(variable.getLocalidad()){
+			mapa.put("tabla", "localidades");
+			sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+			
+			log.setDescripcion("Se Agrega Campo a Tabla de Propagacion Localidades");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se Agrega Campo a Tabla de Propagacion Localidades");
+			
+			mapa.put("tablaPropagacion", "localidades");
+			camposPropagacion = new ArrayList<String>();
+			camposPropagacion.add("id_entidad");
+			camposPropagacion.add("id_municipio");
+			camposPropagacion.add("id_localidad");
+			mapa.put("camposPropagacion", camposPropagacion);
+			sqlSession.update("catalogos.camposTabla.propagarVariable", mapa);
+			
+			log.setDescripcion("Se propagan resultados a Localidad");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se propagan resultados a Localidad");
+		}
+		
+		if(variable.getSeccion()){
+			mapa.put("tabla", "secciones");
+			sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+			
+			log.setDescripcion("Se Agrega Campo a Tabla de Propagacion Secciones");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se Agrega Campo a Tabla de Propagacion Secciones");
+			
+			mapa.put("tablaPropagacion", "secciones");
+			camposPropagacion = new ArrayList<String>();
+			camposPropagacion.add("id_entidad");
+			camposPropagacion.add("id_seccion");
+			mapa.put("camposPropagacion", camposPropagacion);
+			sqlSession.update("catalogos.camposTabla.propagarVariable", mapa);
+			
+			log.setDescripcion("Se propagan resultados a Seccion");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se propagan resultados a Seccion");
+		}
+		
+		if(variable.getMunicipio()){
+			mapa.put("tabla", "municipios");
+			sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+			
+			log.setDescripcion("Se Agrega Campo a Tabla de Propagacion Municipios");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se Agrega Campo a Tabla de Propagacion Municipios");
+			
+			mapa.put("tablaPropagacion", "municipios");
+			camposPropagacion = new ArrayList<String>();
+			camposPropagacion.add("id_entidad");
+			camposPropagacion.add("id_municipio");
+			mapa.put("camposPropagacion", camposPropagacion);
+			sqlSession.update("catalogos.camposTabla.propagarVariable", mapa);
+			
+			log.setDescripcion("Se propagan resultados a Seccion");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se propagan resultados a Seccion");
+		}
+		
+		if(variable.getDlocal()){
+			mapa.put("tabla", "dlocales");
+			sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+			
+			log.setDescripcion("Se Agrega Campo a Tabla de Propagacion DLocales");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se Agrega Campo a Tabla de Propagacion DLocales");
+			
+			mapa.put("tablaPropagacion", "dlocales");
+			mapa.put("tablaOrigen", "secciones");
+			camposPropagacion = new ArrayList<String>();
+			camposPropagacion.add("id_entidad");
+			camposPropagacion.add("id_dlocal");
+			mapa.put("camposPropagacion", camposPropagacion);
+			sqlSession.update("catalogos.camposTabla.propagarVariable", mapa);
+			
+			log.setDescripcion("Se propagan resultados a DLocal");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se propagan resultados a DLocal");
+		}
+		
+		if(variable.getDfederal()){
+			mapa.put("tabla", "dfederales");
+			sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+			
+			log.setDescripcion("Se Agrega Campo a Tabla de Propagacion DFederales");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se Agrega Campo a Tabla de Propagacion DFederales");
+			
+			mapa.put("tablaPropagacion", "dfederales");
+			mapa.put("tablaOrigen", "secciones");
+			camposPropagacion = new ArrayList<String>();
+			camposPropagacion.add("id_entidad");
+			camposPropagacion.add("id_dfederal");
+			mapa.put("camposPropagacion", camposPropagacion);
+			sqlSession.update("catalogos.camposTabla.propagarVariable", mapa);
+			
+			log.setDescripcion("Se propagan resultados a DFederal");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se propagan resultados a DFederal");
+		}
+		
+		variable.setEstatus(EstatusVariableDO.CREADA);
+		
+		sqlSession.update("estadisticas.variables.actualizarEstatus", variable);
+		
+		log.setDescripcion("Variable colocada en Creada");
+		sqlSession.insert("estadisticas.logs.insertar", log);
+		logger.debug("Variable colocada en Creada");
+		
+		
+		log.setDescripcion("Proceso de Generacion de Variable termindo con exito");
+		sqlSession.insert("estadisticas.logs.insertar", log);
+		logger.debug("Proceso de Generacion de Variable termindo con exito");
+	}
+	
+	public LogsT tablaLog(VariableEO variable){
+		LogsT tabla;
+		List<LogEO> listado;
+		
+		tabla = new LogsT();
+		
+		listado = sqlSession.selectList("estadisticas.logs.listadoPorVariable", variable);
+		tabla.setListado(listado);
+		if(!listado.isEmpty()){
+			tabla.setSeleccionado(listado.get(0));
+		}
+		
+		return tabla;
+	}
+	
+	
+	public HashMap<String, String> modelo(ImportacionesEO importacion){
+		HashMap<String, String> mapa;
+		mapa = new HashMap<>();
+		switch (importacion.getTipo()) {
+			case COMPLETA:
+				mapa.put("esquema", "importaciones");
+			break;
+			case PARCIAL:
+				if (importacion.getMapeoImportacion().getTablaSeleccionada().getParticionada()) {
+					mapa.put("esquema", "wh_particiones");
+				}
+				else{
+					mapa.put("esquema", "warehouse");
+				}
+			break;
+		}
+		mapa.put("nombreTabla", importacion.getMapeoImportacion().getNombreTablaImportacion());
+		return mapa;
+	}
+	
+	public Modelo<VariableEO> crearListado(VariableEO variableAux, List<CampoTablaEO> listadoCampos, HashMap<String,String> mapa) {
+		Modelo<VariableEO> tabla=new Modelo<>();
+		List<VariableEO> listado= new ArrayList<>();
+		
+		logger.debug("El listadoCampos es :{}",listadoCampos);
+		for (CampoTablaEO campos : listadoCampos) {
+			VariableEO variable=new VariableEO();
+			
+			switch (variableAux.getNivelCalculo()) {
+				case ENTIDAD:
+					variable.setEntidad(true);
+				break;
+				case MUNICIPIO:
+					variable.setMunicipio(true);
+				break;
+				case DLOCAL:
+					variable.setDlocal(true);
+				break;
+				case DFEDERAL:
+					variable.setDfederal(true);
+				break;
+				case SECCION:
+					variable.setSeccion(true);
+				break;
+				case MANZANA:
+					variable.setManzana(true);
+				break;
+				case LOCALIDAD:
+					variable.setLocalidad(true);
+				break;
+				default:
+				break;
+			}
+			variable.getImportacion().setCampoDFederal(variableAux.getImportacion().getCampoDFederal());
+			variable.getImportacion().setCampoDLocal(variableAux.getImportacion().getCampoDLocal());
+			variable.getImportacion().setCampoEntidad(variableAux.getImportacion().getCampoEntidad());
+			variable.getImportacion().setCampoSeccion(variableAux.getImportacion().getCampoSeccion());
+			variable.getImportacion().setCampoMunicipio(variableAux.getImportacion().getCampoMunicipio());
+			variable.getImportacion().setCampoManzana(variableAux.getImportacion().getCampoManzana());
+			variable.getImportacion().setCampoLocalidad(variableAux.getImportacion().getCampoLocalidad());
+			variable.getImportacion().setTabla(mapa.get("nombreTabla"));
+			variable.getImportacion().setEsquema(mapa.get("esquema"));
+			variable.getImportacion().setCampo(campos);
+			variable.setCampo(campos.getNombre());
+			variable.setNivelCalculo(variableAux.getNivelCalculo());
+			Integer id=sqlSession.selectOne("estadisticas.variablesSinCache.selecNextID");
+			logger.debug("Del campo {} el id  es  {}",campos.getNombre(),id);
+			variable.setId(id);
+			variable.getImportacion().setIdVariable(id);
+			listado.add(variable);
+		}
+		logger.debug("El listado de variables es :{}",listado);
+		tabla.setListado(listado);
+		if (!listado.isEmpty()) {
+			tabla.setSeleccionado(listado.get(0));
+		}
+		logger.debug("El seleccionado del listado  de variables es :{}",tabla.getSeleccionado());
+		return tabla;
+	}
+	
+	public Modelo<VariableEO> nuevoSeleccionado(Modelo<VariableEO> tabla, VariableEO variableNueva) {
+		logger.debug("El valor nuevo es {}", variableNueva);
+		for (VariableEO variable : tabla.getListado()) {
+			logger.debug("EL VARIABLE DEL LISTADO ES {}", variable);
+			if (variable.getId().equals(variableNueva.getId())) {
+				variable=variableNueva;
+				logger.debug("Son iguales y se remplaza {}",variable);
+			}
+			else{
+				logger.debug("Son diferentes las variables {} y los id´s dson iguales {}",!variable.equals(variableNueva),variable.getId().equals(variableNueva.getId()));
+			}
+			if (variable.getId().equals(tabla.getSeleccionado().getId())) {
+				tabla.setSeleccionado(variable);
+			}
+		}
+		return tabla;
+	}
+	
+	public void guardarVariables(Modelo<VariableEO> modelo){
+		logger.debug("Listado: {}",modelo.getListado());
+		for (VariableEO variable : modelo.getListado()) {
+			if(variable.getNivelCalculo().equals(NivelesDO.MANZANA))
+				variable.setManzana(true);
+			
+			variable.setTipoVariable(TipoVariableDO.IMPORTACION);
+			sqlSession.insert("estadisticas.variables.insertarImportacion", variable);
+			logger.debug("Id de Variable guardada: {}", variable.getId());
+
+			logger.debug("El campo entidad es : {}", variable.getImportacion().getCampoEntidad());
+			
+			variable.getConsulta().setIdVariable(variable.getId());
+			sqlSession.insert("estadisticas.importaciones.insertar", variable.getImportacion());
+			logger.debug("Id de Consulta guardada: {}", variable.getImportacion().getId());
+		}
+		
+	}
+	
+
+	@Async
+	public void generarGenrricoAsync(VariableEO variable) {
+		logger.debug("Tipo de Variable {}",variable.getTipoVariable());
+		switch (variable.getTipoVariable()) {
+			case CALCULO:
+				generarAsync(variable);
+			break;
+			case IMPORTACION:
+				generarImportacionAsync(variable);
+			break;
+		}
+	}
+	
+	public void generarImportacionAsync(VariableEO variable){
+		HashMap<String, Object> mapa, camposConsulta;
+		List<String> camposPropagacion;
+		LogEO log;
+		
+		log = new LogEO();
+		log.setIdVariable(variable.getId());
+		
+		log.setDescripcion("Se inicia Proceso Asincrono de Generacion de Variable");
+		sqlSession.insert("estadisticas.logs.insertar", log);
+		logger.debug("Se inicia Proceso Asincrono de Generacion de Variable");
+		
+		variable.setEstatus(EstatusVariableDO.EJECUTANDO);
+		
+		sqlSession.update("estadisticas.variables.actualizarEstatus", variable);
+		
+		log.setDescripcion("Variable colocada en Pendiente");
+		sqlSession.insert("estadisticas.logs.insertar", log);
+		logger.debug("Variable colocada en Pendiente");
+		
+		mapa = new HashMap<String, Object>();
+		camposConsulta = new HashMap<String, Object>();
+		
+		mapa.put("esquemaVariable", "estadisticas");
+		mapa.put("esquemaConsulta", variable.getImportacion().getEsquema());
+		mapa.put("tablaConsulta", variable.getImportacion().getTabla());
+		mapa.put("tipo", variable.getTipo().getTipo());
+		mapa.put("campo", variable.getCampo());
+		
+
+		mapa.put("operador", variable.getImportacion().getCampo().getNombre());
+				
+		switch (variable.getNivelCalculo()) {
+			case DFEDERAL:
+				mapa.put("tabla", "dfederales");
+				camposConsulta.put("id_entidad", variable.getImportacion().getCampoEntidad());
+				camposConsulta.put("id_dfederal", variable.getImportacion().getCampoDFederal());
+				break;
+			case DLOCAL:
+				mapa.put("tabla", "dlocales");
+				camposConsulta.put("id_entidad", variable.getImportacion().getCampoEntidad());
+				camposConsulta.put("id_dlocal", variable.getImportacion().getCampoDLocal());
+				break;
+			case ENTIDAD:
+				mapa.put("tabla", "entidades");
+				camposConsulta.put("id_entidad", variable.getImportacion().getCampoEntidad());
+				break;
+			case LOCALIDAD:
+				mapa.put("tabla", "localidades");
+				camposConsulta.put("id_entidad", variable.getImportacion().getCampoEntidad());
+				camposConsulta.put("id_municipio", variable.getImportacion().getCampoMunicipio());
+				camposConsulta.put("id_localidad", variable.getImportacion().getCampoLocalidad());
+				break;
+			case MANZANA:
+				mapa.put("tabla", "manzanas");
+				camposConsulta.put("id_entidad", variable.getImportacion().getCampoEntidad());
+				camposConsulta.put("id_municipio", variable.getImportacion().getCampoMunicipio());
+				camposConsulta.put("id_seccion", variable.getImportacion().getCampoSeccion());
+				camposConsulta.put("id_localidad", variable.getImportacion().getCampoLocalidad());
+				camposConsulta.put("id_manzana", variable.getImportacion().getCampoManzana());
+				break;
+			case MUNICIPIO:
+				mapa.put("tabla", "municipios");
+				camposConsulta.put("id_entidad", variable.getImportacion().getCampoEntidad());
+				camposConsulta.put("id_municipio", variable.getImportacion().getCampoMunicipio());
+				break;
+			case SECCION:
+				mapa.put("tabla", "secciones");
+				camposConsulta.put("id_entidad", variable.getImportacion().getCampoEntidad());
+				camposConsulta.put("id_seccion", variable.getImportacion().getCampoSeccion());
+				break;
+			default:
+				break;
+		}
+		logger.debug("camposConsulta {}", camposConsulta);
+		mapa.put("camposConsulta", camposConsulta);
+		
+		switch(variable.getTipo()){
+		case INTEGER:
+			if(variable.getValorDefault() != null)
+				mapa.put("valorDefault", variable.getValorDefault());
+			break;
+		case NUMERIC:
+			if(variable.getValorDefault() != null)
+				mapa.put("valorDefault", variable.getValorDefault());
+			break;
+		case TEXT:
+			if(variable.getValorDefault() != null)
+				mapa.put("valorDefault", "'" + variable.getValorDefault() + "'");
+			break;
+		}
+		
+//		if(variable.getValorDefault() != null)
+//			mapa.put("valorDefault", variable.getValorDefault());
+
+
+		//Agregar Campo en la tabla de calculo
+		sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+		
+		log.setDescripcion("Se Agrega Campo a Tabla de Calculo " + mapa.get("tabla"));
+		sqlSession.insert("estadisticas.logs.insertar", log);
+		logger.debug("Se Agrega Campo a Tabla de Calculo {}", mapa.get("tabla"));
+		logger.debug("Se Agrega Campo a Tabla Consulta {}", mapa.get("tablaConsulta"));
+		
+		//Generar el Query para realizar el calculo
+		log.setDescripcion("Actualización de Campo");
+		sqlSession.insert("estadisticas.logs.insertar", log);
+		sqlSession.update("catalogos.camposTabla.actualizarVariable2", mapa);
+		
+		mapa.put("tablaOrigen", mapa.get("tabla"));
+		
+		//Propagar resultados a tablas superiores
+		if(variable.getEntidad()){
+			mapa.put("tabla", "entidades");
+			sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+			
+			log.setDescripcion("Se Agrega Campo a Tabla de Propagacion Entidades");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se Agrega Campo a Tabla de Propagacion Entidades");
+			
+			mapa.put("tablaPropagacion", "entidades");
+			camposPropagacion = new ArrayList<String>();
+			camposPropagacion.add("id_entidad");
+			mapa.put("camposPropagacion", camposPropagacion);
+			sqlSession.update("catalogos.camposTabla.propagarVariable", mapa);
+			
+			log.setDescripcion("Se propagan resultados a Entidades");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se propagan resultados a Entidades");
+		}
+		
+		if(variable.getLocalidad()){
+			mapa.put("tabla", "localidades");
+			sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+			
+			log.setDescripcion("Se Agrega Campo a Tabla de Propagacion Localidades");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se Agrega Campo a Tabla de Propagacion Localidades");
+			
+			mapa.put("tablaPropagacion", "localidades");
+			camposPropagacion = new ArrayList<String>();
+			camposPropagacion.add("id_entidad");
+			camposPropagacion.add("id_municipio");
+			camposPropagacion.add("id_localidad");
+			mapa.put("camposPropagacion", camposPropagacion);
+			sqlSession.update("catalogos.camposTabla.propagarVariable", mapa);
+			
+			log.setDescripcion("Se propagan resultados a Localidad");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se propagan resultados a Localidad");
+		}
+		
+		if(variable.getSeccion()){
+			mapa.put("tabla", "secciones");
+			sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+			
+			log.setDescripcion("Se Agrega Campo a Tabla de Propagacion Secciones");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se Agrega Campo a Tabla de Propagacion Secciones");
+			
+			mapa.put("tablaPropagacion", "secciones");
+			camposPropagacion = new ArrayList<String>();
+			camposPropagacion.add("id_entidad");
+			camposPropagacion.add("id_seccion");
+			mapa.put("camposPropagacion", camposPropagacion);
+			sqlSession.update("catalogos.camposTabla.propagarVariable", mapa);
+			
+			log.setDescripcion("Se propagan resultados a Seccion");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se propagan resultados a Seccion");
+		}
+		
+		if(variable.getMunicipio()){
+			mapa.put("tabla", "municipios");
+			sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+			
+			log.setDescripcion("Se Agrega Campo a Tabla de Propagacion Municipios");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se Agrega Campo a Tabla de Propagacion Municipios");
+			
+			mapa.put("tablaPropagacion", "municipios");
+			camposPropagacion = new ArrayList<String>();
+			camposPropagacion.add("id_entidad");
+			camposPropagacion.add("id_municipio");
+			mapa.put("camposPropagacion", camposPropagacion);
+			sqlSession.update("catalogos.camposTabla.propagarVariable", mapa);
+			
+			log.setDescripcion("Se propagan resultados a Seccion");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se propagan resultados a Seccion");
+		}
+		
+		if(variable.getDlocal()){
+			mapa.put("tabla", "dlocales");
+			sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+			
+			log.setDescripcion("Se Agrega Campo a Tabla de Propagacion DLocales");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se Agrega Campo a Tabla de Propagacion DLocales");
+			
+			mapa.put("tablaPropagacion", "dlocales");
+			mapa.put("tablaOrigen", "secciones");
+			camposPropagacion = new ArrayList<String>();
+			camposPropagacion.add("id_entidad");
+			camposPropagacion.add("id_dlocal");
+			mapa.put("camposPropagacion", camposPropagacion);
+			sqlSession.update("catalogos.camposTabla.propagarVariable", mapa);
+			
+			log.setDescripcion("Se propagan resultados a DLocal");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se propagan resultados a DLocal");
+		}
+		
+		if(variable.getDfederal()){
+			mapa.put("tabla", "dfederales");
+			sqlSession.update("catalogos.camposTabla.agregarCampo", mapa);
+			
+			log.setDescripcion("Se Agrega Campo a Tabla de Propagacion DFederales");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se Agrega Campo a Tabla de Propagacion DFederales");
+			
+			mapa.put("tablaPropagacion", "dfederales");
+			mapa.put("tablaOrigen", "secciones");
+			camposPropagacion = new ArrayList<String>();
+			camposPropagacion.add("id_entidad");
+			camposPropagacion.add("id_dfederal");
+			mapa.put("camposPropagacion", camposPropagacion);
+			sqlSession.update("catalogos.camposTabla.propagarVariable", mapa);
+			
+			log.setDescripcion("Se propagan resultados a DFederal");
+			sqlSession.insert("estadisticas.logs.insertar", log);
+			logger.debug("Se propagan resultados a DFederal");
+		}
+		
+		variable.setEstatus(EstatusVariableDO.CREADA);
+		
+		sqlSession.update("estadisticas.variables.actualizarEstatus", variable);
+		
+		log.setDescripcion("Variable colocada en Creada");
+		sqlSession.insert("estadisticas.logs.insertar", log);
+		logger.debug("Variable colocada en Creada");
+		
+		
+		log.setDescripcion("Proceso de Generacion de Variable termindo con exito");
+		sqlSession.insert("estadisticas.logs.insertar", log);
+		logger.debug("Proceso de Generacion de Variable termindo con exito");
+		
+	}
+}

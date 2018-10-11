@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+<var name="mapaSyncDM" class="com.saganet.politik.beans.estadisticas.syncdm.MapaEncuestas"/>
+	<view-state id="busquedaFolio">
+	<on-entry>
+	<set name="viewScope.folio" value="''"/>
+	</on-entry>
+	<transition on="buscar" to="vistaEncuesta">
+	<evaluate expression="SyncDMResultadoEncuestasC.buscar(viewScope.folio)" result="requestScope.respuestasEncuestas"/>
+	</transition>
+	</view-state>
+	
+	<view-state id="vistaEncuesta">
+	<on-entry>
+	<set name="viewScope.respuestasEncuestas" value="requestScope.respuestasEncuestas.get(0)"/>
+	<set name="viewScope.listadoRespuestasEncuestas" value="requestScope.respuestasEncuestas"/>
+	<evaluate expression="SyncDMResultadoEncuestasC.nuevaPersona(viewScope.respuestasEncuestas)" result="viewScope.persona"/>
+	<evaluate expression="SyncDMResultadoEncuestasC.modeloPersonas(viewScope.respuestasEncuestas)" result="viewScope.modeloPersonas"/>
+	</on-entry>
+	<transition on="agregarPersona">
+	<evaluate expression="SyncDMResultadoEncuestasC.nuevaPersona(viewScope.respuestasEncuestas)" result="viewScope.persona"/>
+	<evaluate expression="SyncDMRespuestasC.modelo(153)" result="viewScope.modeloSexo"/>
+	<evaluate expression="SyncDMRespuestasC.modelo(155)" result="viewScope.modeloNivelEstudios"/>
+	<evaluate expression="SyncDMRespuestasC.modelo(156)" result="viewScope.modeloEstudia"/>
+	<evaluate expression="SyncDMRespuestasC.modelo(157)" result="viewScope.modeloOcupacion"/>
+	<evaluate expression="SyncDMRespuestasC.modelo(158)" result="viewScope.modeloAfiliado"/>
+	<evaluate expression="SyncDMRespuestasC.modelo(159)" result="viewScope.modeloEstado"/>
+	<evaluate expression="SyncDMRespuestasC.modelo(161)" result="viewScope.modeloJefe"/>
+	<evaluate expression="SyncDMRespuestasC.modelo(163)" result="viewScope.modeloDonado"/>
+	
+	</transition>
+	<transition on="guardarPersona" to="vistaEncuesta">
+	<evaluate expression="SyncDMResultadoEncuestasC.guardarPersona(viewScope.respuestasEncuestas.get('id_contacto'),viewScope.persona,viewScope.respuestasEncuestas.get('pkey'))"/>
+	<evaluate expression="SyncDMResultadoEncuestasC.buscar(viewScope.respuestasEncuestas.get('id_contacto'))" result="requestScope.respuestasEncuestas"/>
+	</transition>
+	<transition on="eliminar" to="vistaEncuesta">
+	<evaluate expression="SyncDMResultadoEncuestasC.eliminar(viewScope.modeloPersonas.seleccionado, viewScope.respuestasEncuestas.get('pkey'))"/>
+	<evaluate expression="SyncDMResultadoEncuestasC.buscar(viewScope.respuestasEncuestas.get('id_contacto'))" result="requestScope.respuestasEncuestas"/>
+	</transition>
+	<transition on="salir" to="salir"/>
+	</view-state>
+<end-state id="salir"/>
+</flow>

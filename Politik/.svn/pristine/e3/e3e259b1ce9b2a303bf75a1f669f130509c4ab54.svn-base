@@ -1,0 +1,135 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:panel header="Accesos Directos">
+					<p:panelGrid  styleClass="panelNoBorder panelGridCenter my-panel-grid">
+						<p:row >
+							<p:column  style="padding-left: 20px;padding-right:20px ">
+								<p:panel header="Buscador" id="buscador"  style="width: 180px">
+									<p:link href="/app/mdm/perfiles">
+										<p:graphicImage name="iconos/PERFILES.svg" width="150px"
+											height="150px" />
+									</p:link>
+								</p:panel>
+								<p:draggable for="buscador" revert="true"
+									handle=".ui-panel-titlebar" stack=".ui-panel" />
+							</p:column>
+
+							<p:column style="padding-left: 20px;padding-right:20px "  styleClass="panelNoBorder">
+								<p:panel header="Estructura" id="estructura"  style="width: 180px">
+									<p:link href="/app/estructuras/estructuras">
+										<p:graphicImage name="iconos/ESTRUCTURAS.svg" width="150px"
+											height="150px" />
+									</p:link>
+								</p:panel>
+								<p:draggable for="estructura" revert="true"
+									handle=".ui-panel-titlebar" stack=".ui-panel" />
+							</p:column>
+							<p:column style="padding-left: 20px;padding-right:20px "  styleClass="panelNoBorder">
+								<p:panel header="Linea del Tiempo" id="linea" style="width: 180px">
+									<p:link href="/app/cronograma/timeline">
+										<p:graphicImage name="iconos/CRONOGRAMA.svg" width="150px"
+											height="150px" />
+									</p:link>
+								</p:panel>
+								<p:draggable for="linea" revert="true"
+									handle=".ui-panel-titlebar" stack=".ui-panel" />
+							</p:column>
+							
+							<p:column style="padding-left: 20px;padding-right:20px " styleClass="panelNoBorder">
+								<p:panel header="Estruc. Estatal" id="estructuras" style="width: 180px">
+									<p:link href="/app/estructuras/reportes/estatal">
+										<p:graphicImage name="iconos/ESTADISTICAS.svg" width="150px"
+											height="150px" />
+									</p:link>
+								</p:panel>
+								<p:draggable for="estadisticas" revert="true"
+									handle=".ui-panel-titlebar" stack=".ui-panel" />
+							</p:column>
+							<p:column style="padding-left: 20px;padding-right:20px " styleClass="panelNoBorder">
+								<p:panel header="Estruc. Operativa" id="estructuras" style="width: 180px">
+									<p:link href="/app/estructuras/reportes/estructura2018">
+										<p:graphicImage name="iconos/ESTADISTICAS.svg" width="150px"
+											height="150px" />
+									</p:link>
+								</p:panel>
+								<p:draggable for="estadisticas" revert="true"
+									handle=".ui-panel-titlebar" stack=".ui-panel" />
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column style="padding-left: 20px;padding-right:20px " styleClass="panelNoBorder">
+								<p:panel header="Eventos" id="eventos" style="width: 180px">
+									<p:link href="/app/eventos">
+										<p:graphicImage name="iconos/EVENTOS.svg" width="150px"
+											height="150px" />
+									</p:link>
+								</p:panel>
+								<p:draggable for="eventos" revert="true"
+									handle=".ui-panel-titlebar" stack=".ui-panel" />
+							</p:column>
+
+							<p:column style="padding-left: 20px;padding-right:20px " styleClass="panelNoBorder">
+								<p:panel header="Encuestas" id="encuestas" style="width: 180px">
+									<p:link href="/app/encuestas/admin">
+										<p:graphicImage name="iconos/ENCUESTAS.svg" width="150px"
+											height="150px" />
+									</p:link>
+								</p:panel>
+								<p:draggable for="encuestas" revert="true"
+									handle=".ui-panel-titlebar" stack=".ui-panel" />
+							</p:column>
+							<p:column style="padding-left: 20px;padding-right:20px " styleClass="panelNoBorder">
+								<p:panel header="Estadisticas" id="estadisticas" style="width: 180px">
+									<p:link href="/app/estadisticas/reportes">
+										<p:graphicImage name="iconos/ESTADISTICAS.svg" width="150px"
+											height="150px" />
+									</p:link>
+								</p:panel>
+								<p:draggable for="estadisticas" revert="true"
+									handle=".ui-panel-titlebar" stack=".ui-panel" />
+							</p:column>
+							<p:column style="padding-left: 20px;padding-right:20px " styleClass="panelNoBorder">
+								<p:panel header="Estruc. Desglose" id="estructuras" style="width: 180px">
+									<p:link href="/app/estructuras/reportes/desglose">
+										<p:graphicImage name="iconos/ESTADISTICAS.svg" width="150px"
+											height="150px" />
+									</p:link>
+								</p:panel>
+								<p:draggable for="estadisticas" revert="true"
+									handle=".ui-panel-titlebar" stack=".ui-panel" />
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+					
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+					<h:outputStylesheet>
+            		.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+border: hidden;
+border-color: white;
+}
+.panelGridCenter {
+    margin: 0 auto;
+}
+.my-panel-grid tr td {
+2    padding: 30px;
+3}
+
+            		</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

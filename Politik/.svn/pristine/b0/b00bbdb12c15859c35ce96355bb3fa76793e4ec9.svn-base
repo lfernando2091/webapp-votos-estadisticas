@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:messages autoUpdate="true"/>
+				<p:panel header="Registro Movilizadores">
+				<p:panelGrid columns="1" style="width: 300px" styleClass="panelNoBorder">
+				<p:outputLabel value="Nombre:" />
+					<p:inputText value="${nuevo.nombre}" required="true"  requiredMessage="Nombre: requerido" style="width: 300px" maxlength="100" />
+				<p:outputLabel value="Primer Apellido:"/>
+					<p:inputText value="${nuevo.primerApellido}"  required="true" requiredMessage="Primer Apellido: requerido" style="width: 300px" maxlength="100"/>
+				<p:outputLabel value="Segundo Apellido"/>
+					<p:inputText value="${nuevo.segundoApellido}" style="width: 300px" maxlength="100" />
+				<p:outputLabel value="Fecha de Nacimiento:"/>
+					<p:inputMask  value= "${nuevo.fechaNacimiento}" mask="99/99/9999"/>
+				<p:outputLabel value="Genero:"/>
+					<p:selectOneMenu value="${nuevo.genero}"  style="width: 300px"  layout="grid" columns="1">
+						<f:selectItems value="${modeloGeneros.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" required="true" requiredMessage="Genero: requerido"/>
+					</p:selectOneMenu>
+				<p:outputLabel value="Email:"/>
+					<p:inputText value="${nuevo.email}"  requiredMessage="Email: requerido" style="width: 300px" maxlength="100" validatorMessage="Email: error de captura">
+						<f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+					</p:inputText>
+				<p:outputLabel value="Celular:"/>
+					<p:inputText value="${nuevo.celular}"  requiredMessage="Celuelar: requerido" validatorMessage="Celular: número invalido (10 digitos numéricos)" style="width: 300px" maxlength="10" >
+						<f:validateRegex pattern="^[+]?[0-9]+$" />
+						<f:validateLength minimum="10" maximum="10" validatorMessage="Celular: número invalido (10 digitos numéricos)" />
+					</p:inputText>
+				<p:outputLabel value="Teléfono Fijo:"/>
+					<p:inputText value="${nuevo.telefono}"   style="width: 200px" maxlength="10" >
+						<f:validateRegex pattern="^[+]?[0-9]+$" />
+						<f:validateLength minimum="10" maximum="10" validatorMessage="Celular: número invalido (10 digitos numéricos)" />
+					</p:inputText>
+				<p:outputLabel value="Calle: "/>
+					<p:inputText value="${nuevo.calle}"  requiredMessage="Calle: requerido" validatorMessage="Ingresar el nombre de tu calle" style="width: 300px"/>
+				<p:outputLabel value="Número Exterior: "/>
+					<p:inputText value="${nuevo.numeroExterior}"  equiredMessage="Numero Exterior: requerido" validatorMessage="Ingresar el numero extarior de tu domicilio"  style="width: 100px"/>
+				<p:outputLabel value="Número Interior: "/>
+					<p:inputText value="${nuevo.numeroInterior}" style="width: 100px"/>
+				<p:outputLabel value="Colonia: "/>
+					<p:inputText value="${nuevo.colonia}"  equiredMessage="Colonia: requerido" validatorMessage="Ingresar la colonia a la que perteneces"  style="width: 300px"/>
+				<p:outputLabel value="C.P.: "/>
+					<p:inputText value="${nuevo.cp}" equiredMessage="Codigo Postal: requerido" validatorMessage="Ingresar el codigo postal"  style="width: 100px"/>
+				<p:outputLabel value="Código:"/>
+					<p:inputText value="${nuevo.codigoAlfanumerico}"  requiredMessage="Código: Requerido" style="width: 100px"/>
+				<p:outputLabel value="Municipio: "/>
+					<p:selectOneMenu value="${nuevo.municipio}" filter="true" filterMatchMode="contains" converter="ObjectConverter" required="true" requiredMessage="Municipio: es requerido" style="width: 300px">
+						<p:ajax event="itemSelect" onstart="actualizarSecciones();" />
+						<f:selectItems value="${modeloMunicipios.listado}" var="m" itemLabel="${m.idMunicipio} - ${m.nombre}" itemValue="${m}"/>
+					</p:selectOneMenu>
+				<p:outputLabel value="Sección: "/>	
+					<p:selectOneMenu value="${nuevo.seccion}" id="seccionId" converter="ObjectConverter" filter="true" filterMatchMode="contains"  style="width: 200px">
+						<f:selectItems value="${modeloSecciones.listado}" var="s" itemLabel="${s.idSeccion}" itemValue="${s}"/>
+					</p:selectOneMenu>	
+				</p:panelGrid>
+				<p:remoteCommand action="actualizarSecciones"  name="actualizarSecciones"  update="seccionId" immediate="true"/>
+				<f:facet name="footer">
+					<p:commandButton value="Registrar" action="registrar" icon="fa fa-save"/>
+					<p:commandButton value="Limpiar" action="fin" immediate="true" icon="fa fa-caret-left"/>
+				</f:facet>
+				</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				<h:outputStylesheet>
+				.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+border: hidden;
+border-color: white;
+}
+				</h:outputStylesheet>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

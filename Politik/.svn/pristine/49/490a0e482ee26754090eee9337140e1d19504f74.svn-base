@@ -1,0 +1,87 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Resultados Entrevistas">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nivel :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloNiveles.seleccionado}" style="width:300px">
+										<p:ajax event="itemSelect" onsuccess="actualizar()" />
+					            		<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+									</p:selectOneMenu>
+							</p:column>
+						</p:panelGrid>
+						<p:panel id="Entrevistas">
+							<p:dataTable id="dtCalificacion" value="${modelo.modelo.listado}" var="fila"  paginator="true" rows="15" paginatorPosition="bottom">
+							<p:column headerText="Region"  width="200" filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.nombreRegion}">
+										<p:outputLabel value="${fila.nombreRegion}"/>
+									</p:column>
+									<p:column headerText="Municipio"  width="200" filterable="true" filterMatchMode="contains" filterStyle="width:90%;"
+										 filterBy="${fila.idMunicipio} ${fila.nombreMunicipio}" rendered="${modeloNiveles.seleccionado!='REGION'}">
+										<p:outputLabel value="${fila.idMunicipio} ${fila.nombreMunicipio}"/>
+									</p:column>
+							<p:column headerText="A Favor" sortable="true" sortBy="${fila.aFavor}">
+							<p:outputLabel value="${fila.aFavor}"/>
+							</p:column>
+							<p:column headerText="Indecisos a Favor" sortable="true" sortBy="${fila.indecisoAFavor}">
+							<p:outputLabel value="${fila.indecisoAFavor}"/>
+							</p:column>
+							<p:column headerText="Indeciso" sortable="true" sortBy="${fila.indeciso}">
+							<p:outputLabel value="${fila.indeciso}"/>
+							</p:column>
+							<p:column headerText="Indeciso en Contra" sortable="true" sortBy="${fila.indecisoEnContra}">
+							<p:outputLabel value="${fila.indecisoEnContra}"/>
+							</p:column>
+							<p:column headerText="En contra" sortable="true" sortBy="${fila.enContra}">
+							<p:outputLabel value="${fila.enContra}"/>
+							</p:column>
+							<p:columnGroup type="footer">
+										 <p:row>
+								            <p:column colspan="2"  style="text-align:right" footerText="Total General:" />
+								            <p:column footerText="${modelo.t1}" style="text-align:right"/>
+											<p:column footerText="${modelo.t2}" style="text-align:center"/>
+											<p:column footerText="${modelo.t3}" style="text-align:right"/>
+											<p:column footerText="${modelo.t4}" style="text-align:right"/>
+											<p:column footerText="${modelo.t5}" style="text-align:center"/>
+								         </p:row>
+								    </p:columnGroup>
+							<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="dtCalificacion" fileName="Calificación Encuestas"/>
+										</h:commandLink>
+									</f:facet>
+							</p:dataTable>
+						</p:panel>
+					</p:panel>	
+					
+					<p:remoteCommand name="actualizar" action="actualizar" update="Entrevistas"/>
+					
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

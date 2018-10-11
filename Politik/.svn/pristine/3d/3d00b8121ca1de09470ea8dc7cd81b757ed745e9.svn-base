@@ -1,0 +1,16 @@
+package com.saganet.politik.dominios;
+
+public enum ModelosDispositivoDO {
+	TECH_PAD_3g16("Tech_pad_3g16"),
+	TECH_PAD_3gr("Tech_pad_3gr");
+	
+	private final String nombre;
+	
+	private ModelosDispositivoDO(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+}

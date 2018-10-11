@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form >
+					<p:panel header="Seccional">
+							<p:dataTable  value="${modelo.listado}" var="fila" rowKey="${fila.id}"
+							 selectionMode="single" selection="${modelo.seleccionado}" paginator="true" 
+							 paginatorPosition="bottom" rows="10">
+								 <p:column headerText="ID" width="10%">
+								 	<p:outputLabel value="${fila.id}"/>
+								 </p:column>
+								 <p:column headerText="NOMBRE">
+								 	<p:outputLabel value="${fila.nombre}"/>
+								 </p:column>	
+								 <p:column headerText="PRIMER APELLIDO">
+								 	<p:outputLabel value="${fila.primerApellido}"/>
+								 </p:column>	
+								 <p:column headerText="SEGUNDO APELLIDO">
+								 	<p:outputLabel value="${fila.segundoApellido}"/>
+								 </p:column>	
+								 <p:column headerText="FECHA DE NACIMIENTO">
+								 	<p:outputLabel value="${fila.fechaNacimiento}"/>
+								 </p:column>	
+								 <p:column headerText="GENERO">
+								 	<p:outputLabel value="${fila.genero}"/>
+								 </p:column>	
+								 <p:column headerText="CALLE">
+								 	<p:outputLabel value="${fila.calle}"/>
+								 </p:column>	
+								 <p:column headerText="NUMERO INTERIOR">
+								 	<p:outputLabel value="${fila.numeroInterior}"/>
+								 </p:column>
+								  <p:column headerText="NUMERO EXTERIOR">
+								 	<p:outputLabel value="${fila.numeroExterior}"/>
+								 </p:column>
+								  <p:column headerText="COLONIA">
+								 	<p:outputLabel value="${fila.colonia}"/>
+								 </p:column>
+								  <p:column headerText="CODIGO POSTAL">
+								 	<p:outputLabel value="${fila.codigoPostal}"/>
+								 </p:column>
+								  <p:column headerText="LLAVE SECCION">
+								 	<p:outputLabel value="${fila.llaveSeccion}"/>
+								 </p:column>			
+							</p:dataTable>			
+							<f:facet name="footer">
+								<p:commandButton value="Agregar" action="agregar"/>
+								<p:commandButton value="Eliminar" action="eliminar"/>
+								<p:commandButton value="Editar" action="editar"/>
+							</f:facet>
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+					</p:panel>		
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

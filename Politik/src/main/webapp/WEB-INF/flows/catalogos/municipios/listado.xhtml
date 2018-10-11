@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="head">
+		<h:outputScript library="openlayers" name="ol.js" />
+		<h:outputStylesheet library="openlayers" name="ol.css" />
+		<h:outputScript library="openlayers" name="politikMapas.js" />
+	</ui:define>
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Municipios" />
+					</p:breadCrumb>
+					<p:panel header="Listado de Municipios">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Entidad" />
+							<p:selectOneMenu value="${modeloEntidades.seleccionado}"
+								converter="ObjectConverter" style="width: 200px;" filter="true"
+								filterMatchMode="contains">
+								<p:ajax event="itemSelect" onstart="actualizarRC();" />
+								<f:selectItems value="${modeloEntidades.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<p:separator />
+						<p:panelGrid columns="2" columnClasses="topAlign, topAlign">
+							<p:dataTable id="tablaMunicipios"
+								value="${modeloMunicipios.listado}" var="fila" 
+								rowKey="${fila.id}" selection="${modeloMunicipios.seleccionado}" selectionMode="single" 
+								paginator="true" rows="10" paginatorPosition="bottom"
+								paginatorAlwaysVisible="false">
+								<f:facet name="header">Municipios de ${modeloEntidades.seleccionado.nombre}</f:facet>
+								<p:ajax event="rowSelect" update="panelRefreshMap" oncomplete="refreshCapaMunicipios();" />
+								<p:column headerText="Id" width="40">${fila.idMunicipio}</p:column>
+								<p:column headerText="Nombre">${fila.nombre}</p:column>
+								<p:column headerText="Llave" width="50">${fila.llave}</p:column>
+							</p:dataTable>
+							<h:panelGroup id="panelMapa" layout="block" style="width:400px; height:400px;" />
+						</p:panelGrid>
+					</p:panel>
+
+					<p:remoteCommand name="actualizarRC"
+						action="actualizarModeloMunicipios" update="tablaMunicipios, panelRefreshMap" oncomplete="refreshMap();" />
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+				
+				<h:outputScript>
+					iniciarMapa(
+						[${modeloMunicipios.seleccionado.entidad.geoData.bounds}],
+						'', 
+						'politik:municipios', 
+						'id_entidad = ${modeloMunicipios.seleccionado.entidad.id}',
+						'#{p:component('panelMapa')}'
+					);
+					
+					agregarCapa("politik:municipios","poligono_rojo","llave = '${modeloMunicipios.seleccionado.llave}'");
+				</h:outputScript>
+				
+				<h:panelGroup id="panelRefreshMap">
+					<h:outputScript>
+						function refreshMap(){
+							actualizarCapa(1, 'id_entidad = ${modeloMunicipios.seleccionado.entidad.id}');
+							actualizarCapa(2, "llave = '${modeloMunicipios.seleccionado.llave}'");
+							actualizarMapa([${modeloMunicipios.seleccionado.entidad.geoData.bounds}]);
+						}
+						
+						function refreshCapaMunicipios(){
+							actualizarCapa(2, "llave = '${modeloMunicipios.seleccionado.llave}'");
+						}
+					</h:outputScript>
+				</h:panelGroup>
+				
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

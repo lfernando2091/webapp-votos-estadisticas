@@ -1,0 +1,98 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Avance por Nick">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nivel :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloProgramas.seleccionado}" style="width: 200">
+									<p:ajax event="itemSelect" onsuccess="actualizar()" />
+						<f:selectItems value="${modeloProgramas.listado}" var="f" itemLabel="${f.nombre}" itemValue="${f.nombre}"/>
+						</p:selectOneMenu>
+							</p:column>
+						</p:panelGrid>
+						<p:panel id="pnEntrevistas">
+							<p:dataTable reflow="true" resizableColumns="true" value="${modelo.modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.modelo.seleccionado}"
+									selectionMode="single" paginator="true" rows="15" id="tablaResultados" paginatorPosition="bottom">
+<!-- 									<p:ajax event="rowSelect" oncomplete="actualizarGrafica()"/> -->
+									<p:column headerText="Usuario"  width="200" filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.usuario.nombre}">
+										<p:outputLabel value="${fila.usuario.nombre}" style="font-size: 12px!important"/>
+									</p:column>
+									<p:column headerText="NICK" sortable="true" sortBy="${fila.usuario.nick}" filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.usuario.nick}">
+										<p:outputLabel value="${fila.usuario.nick}" style="font-size: 12px!important"/>
+									</p:column>
+									<p:column headerText="Email" style="width: 15% !important; " >
+										<p:outputLabel value="${fila.visitador.email}" style="font-size: 12px!important"/>
+									</p:column>
+									<p:column headerText="Movil" >
+										<p:outputLabel value="${fila.visitador.movil}"/>
+									</p:column>
+									<p:column headerText="Exitoso" sortable="true" sortBy="${fila.exitoso}">
+										<p:outputLabel value="${fila.exitoso}"/>
+									</p:column>
+									<p:column headerText="No Hubo" sortable="true" sortBy="${fila.no_hubo}">
+										<p:outputLabel value="${fila.no_hubo}"/>
+									</p:column>
+									<p:column headerText="No Quisieron" sortable="true" sortBy="${fila.no_quisieron}">
+										<p:outputLabel value="${fila.no_quisieron}"/>
+									</p:column>
+									<p:column headerText="Domicilio No Encontrado" sortable="true" sortBy="${fila.domicilio_no_encontrado}">
+										<p:outputLabel value="${fila.domicilio_no_encontrado}"/>
+									</p:column>
+									<p:column headerText="Menor de Edad" sortable="true" sortBy="${fila.menor_edad}">
+										<p:outputLabel value="${fila.menor_edad}"/>
+									</p:column>
+									<p:column headerText="Otro" sortable="true" sortBy="${fila.otro}">
+										<p:outputLabel value="${fila.otro}"/>
+									</p:column>
+									<p:column headerText="Total" sortable="true" sortBy="${fila.total}">
+										<p:outputLabel value="${fila.total}"/>
+									</p:column>
+									<p:columnGroup type="footer">
+										 <p:row>
+								            <p:column colspan="4"  style="text-align:right" footerText="Total General:" />
+								            <p:column footerText="${modelo.t1}" style="text-align:right"/>
+											<p:column footerText="${modelo.t2}" style="text-align:center"/>
+											<p:column footerText="${modelo.t3}" style="text-align:right"/>
+											<p:column footerText="${modelo.t4}" style="text-align:right"/>
+											<p:column footerText="${modelo.t5}" style="text-align:center"/>
+											<p:column footerText="${modelo.t6}" style="text-align:right"/>
+											<p:column footerText="${modelo.t7}" style="text-align:right"/>
+								         </p:row>
+								    </p:columnGroup>
+							</p:dataTable>
+<!-- 							<p:chart type="bar" model="${chart}"  id="graficaBarras"  shadow="true" barPadding="60"/>		 -->
+						</p:panel>
+					</p:panel>	
+					
+<!-- 					<p:remoteCommand name="actualizarGrafica" action="actualizarGrafica" update="gridEncuestas"/> -->
+				<p:remoteCommand name="actualizar" action="actualizar" update="pnEntrevistas"/>
+					
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

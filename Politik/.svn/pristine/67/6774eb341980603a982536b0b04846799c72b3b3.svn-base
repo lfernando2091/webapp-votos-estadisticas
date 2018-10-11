@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="EstructurasFigurasC.modelo()" result="viewScope.modeloFiguras" />
+		</on-entry>
+		
+		<transition on="agregar" to="agregarEditar">
+			<evaluate expression="EstructurasFigurasC.nuevo()" result="flowScope.figura" />
+		</transition>
+	</view-state>
+	
+	<view-state id="agregarEditar">
+		<on-entry>
+			<evaluate expression="UtilidadesDominiosC.modeloNiveles()"  result="viewScope.modeloNiveles" />
+		</on-entry>
+		
+		<transition on="guardar" to="listado">
+			<evaluate expression="EstructurasFigurasC.insertar(flowScope.figura)" />
+			<set name="flowScope.figura" value="null" />
+		</transition>
+		<transition on="cancelar" to="listado">
+			<set name="flowScope.figura" value="null" />
+		</transition>
+	</view-state>
+</flow>

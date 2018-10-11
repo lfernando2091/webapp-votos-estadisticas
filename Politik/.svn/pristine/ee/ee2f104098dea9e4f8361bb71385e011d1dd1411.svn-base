@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.admin.preguntas">
+	<cache />
+	
+	<resultMap type="PreguntaEO" id="pregunta">
+	
+		<id column="PreguntaEO_id" property="id" javaType="Integer" />
+		<result column="PreguntaEO_idEncuesta" property="idEncuesta" javaType="Integer"/>
+		<result column="PreguntaEO_tipoPregunta" property="tipoPregunta" javaType="String"/>
+		<result column="PreguntaEO_inputArea" property="inputArea" javaType="Integer"/>
+		<result column="PreguntaEO_consecutivoPregunta" property="consecutivoPregunta" javaType="Integer"/>
+		<result column="PreguntaEO_pregunta" property="pregunta" javaType="String"/>
+		<result column="PreguntaEO_nick" property="nick" javaType="String"/>
+		<result column="PreguntaEO_fecha" property="fecha" javaType="String"/>
+		
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			pkey										PreguntaEO_id, 
+			id_encuesta									PreguntaEO_idEncuesta, 
+			tipo_pregunta								PreguntaEO_tipoPregunta, 
+			input_area									PreguntaEO_inputArea, 
+			consecutivo_pregunta						PreguntaEO_consecutivoPregunta, 
+       		pregunta									PreguntaEO_pregunta, 
+       		nick										PreguntaEO_nick, 
+       		to_char(fecha, 'YYYY-MM-DD HH12:MI:SS') 	PreguntaEO_fecha
+  		FROM encuestas.preguntas
+	</sql>
+	
+	<select id="listado" resultMap="pregunta" parameterType="EncuestaEO">
+		<include refid="query" />
+		where id_encuesta = #{id}
+		ORDER BY pkey desc
+	</select>
+	
+	<insert id="insertar" parameterType="PreguntaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('encuestas.preguntas_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas.preguntas(pkey, id_encuesta, tipo_pregunta, input_area, consecutivo_pregunta, pregunta, nick)
+    	VALUES (#{id}, #{idEncuesta}, #{tipoPregunta}, #{inputArea}, #{consecutivoPregunta}, #{pregunta}, #{nick});
+	</insert>
+	
+</mapper>

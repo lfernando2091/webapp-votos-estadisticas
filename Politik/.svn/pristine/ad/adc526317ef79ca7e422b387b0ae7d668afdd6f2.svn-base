@@ -1,0 +1,95 @@
+package com.saganet.politik.components.diaD;
+
+import java.util.HashMap;
+//import java.util.ArrayList;
+//import java.util.HashMap;
+import java.util.List;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.UsuarioEO;
+//import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.catalogos.SeccionEO;
+import com.saganet.politik.database.diaD.MovilizadoEO;
+import com.saganet.politik.database.diaD.MovilizadorEO;
+import com.saganet.politik.database.encuestas.admin.ParametrosEstadisticas;
+import com.saganet.politik.dominios.GenerosDO;
+import com.saganet.politik.modelos.Modelo;
+import com.saganet.politik.utilidades.ParametrosPDF;
+
+@Component("diaDMovilicadoresC")
+public class MovilizadoresC {
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(MovilizadoresC.class);
+
+	@Autowired
+	ParametrosEstadisticas parametros;
+	@Autowired
+	SqlSession sqlSession;
+	@Autowired
+	ParametrosPDF parametrosExcel;
+
+	private UsuarioEO getUsuario() {
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+
+	public Modelo<MovilizadorEO> modeloMovilizador(SeccionEO seccion) {
+		HashMap<String, Object> mapa = new HashMap<>();
+		mapa.put("programas", getUsuario().getProgamas());
+		mapa.put("seccion", seccion);
+		logger.debug("Usuario: {}", getUsuario().getTerritorios());
+		List<MovilizadorEO> listado = sqlSession.selectList("diaD.capturaMovilizador.listadoRegionMunicipio", mapa);
+		return new Modelo<>(listado);
+	}
+
+	public void guarda(MovilizadorEO movilizador) {
+		movilizador.setNickRegistro(getUsuario().getNick());
+		if ((movilizador.getNombre() != null) && (movilizador.getGenero() != null)
+				&& (movilizador.getPrimerApellido() != null)) {
+			if (movilizador.getId() == null) {
+
+				sqlSession.insert("diaD.capturaMovilizador.insertar", movilizador);
+			} else {
+
+				sqlSession.update("diaD.capturaMovilizador.actualizar", movilizador);
+			}
+		} else {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+					"Nombre, Primer Apellido, Genero Son Valores Requeridos", ""));
+		}
+		logger.debug("Valores del usuario --------------->>>>>>>>>>>><<<<<<{}", movilizador);
+	}
+
+	public void eliminar(MovilizadorEO movilizador) {
+		FacesContext context = FacesContext.getCurrentInstance();
+		if ((Integer) sqlSession.selectOne("diaD.capturaMovilizador.cuentaMovilizados", movilizador.getId()) == 0) {
+			sqlSession.delete("diaD.capturaMovilizador.eliminar", movilizador.getId());
+			context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Registro Eliminado", ""));
+		} else {
+			logger.debug("Resp NEG");
+			context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+					"No se puede eliminar el Registro tiene Movilizados", ""));
+		}
+	}
+
+	public MovilizadorEO nuevo() {
+		MovilizadorEO nuevo = new MovilizadorEO();
+		nuevo.setGenero(GenerosDO.M);
+		return nuevo;
+	}
+
+	public void listadoMovilizados(MovilizadorEO movilizador) {
+		logger.debug("movilizadorseleccionado : {}", movilizador);
+		parametros.setMovilizador(movilizador);
+		logger.debug("parametros : {}", parametros);
+	}
+
+	public void listadoMovilizadosExcel(Modelo<MovilizadoEO> modelo) {
+		parametrosExcel.setModelo(modelo);
+	}
+
+}

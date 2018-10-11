@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<package name="com.saganet.politik.database_dm" />
+	</typeAliases>
+	
+	<typeHandlers>
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.CatComunicacionDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.CatMapnDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.CatMbrmDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.CatMedioDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.CatMPINNDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.CatPartidoDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.CatPersonajeDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.CatPriPanDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.CatPriPrdDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.CatSNDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.CatSNNCDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.TiposSexoDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.EmpresaDO" />
+			
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios_dm.RegionesDO" />
+			
+	</typeHandlers>
+	
+</configuration>

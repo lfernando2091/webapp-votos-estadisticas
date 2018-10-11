@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:messages autoUpdate="true"/>
+					<p:panel header="Resultados Entrevistas - Preguntas">
+						<p:panelGrid columns="1">
+						<p:outputLabel value="Grupo"/>
+						<p:selectOneMenu value="${programa}" style="width: 200">
+							<f:selectItems value="${modeloProgramas.listado}" var="f" itemLabel="${f.nombre2}" itemValue="${f.nombre}"/>
+						<f:selectItem itemLabel="Todos" itemValue="TODOS" itemDisabled="#{modeloProgramas.listado.size()>1?'false':'true'}" noSelectionOption="#{modeloProgramas.listado.size()>1?'false':'true'}"/>
+						</p:selectOneMenu>
+						<p:outputLabel value="Seleccione la pregunta"/>
+						<p:selectOneMenu value="${pregunta}" required="true" requiredMessage="Pregunta: es requerido" disabled="#{modeloProgramas.listado.size()>0?'false':'true'}">
+						<f:selectItem itemLabel="1.- ¿Sabía usted que habrá elecciones para gobernador el próximo 4 de junio?" itemValue="1"/>
+						<f:selectItem itemLabel="2.- ¿Piensa usted ir a votar?" itemValue="2"/>
+						<f:selectItem itemLabel="3.- Independientemente de su afinidad partidista, si hoy fueran las elecciones para Gobernador, ¿Por cuál Partido votaría?" itemValue="3"/>
+						<f:selectItem itemLabel="4.- Independientemente de su afinidad partidista, si hoy fueran las elecciones para Gobernador, ¿Por cuál candidato votaría?" itemValue="4"/>
+						<f:selectItem itemLabel="5. ¿Le gustaría participar el día de la elección en su colonia?" itemValue="5"/>
+						</p:selectOneMenu>
+						</p:panelGrid>
+						<f:facet name="footer">
+						<p:commandButton value="Mostrar" action="mostrarEncuesta" icon="fa fa-search" disabled="#{modeloProgramas.listado.size()>0?'false':'true'}"/>
+						</f:facet>
+						</p:panel>
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

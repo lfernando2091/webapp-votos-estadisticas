@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="index">
+	<on-entry>
+	<set name="viewScope.region" value="0"/>
+	<set name="viewScope.semana" value="''"/>
+	<set name="viewScope.nivel" value="0"/>
+	<evaluate expression="EstadisticasSincronizacionC.regiones()" result="viewScope.regiones"/>
+	<evaluate expression="EstadisticasAvancesC.listadoSemanas()" result="viewScope.semanas"/>
+	</on-entry>
+	<transition on="listadoContestadas">
+	<set name="viewScope.region" value="viewScope.nivel eq 1 or viewScope.region eq 0 ? 0:viewScope.region"/>
+	<evaluate expression="EstadisticasAvancesC.listadoContestadas(viewScope.region, viewScope.semana, viewScope.nivel)" result="viewScope.listadoContestadas"/>
+	<evaluate expression="EstadisticasAvancesC.totalesConcentrados(viewScope.listadoContestadas)" result="viewScope.totalesContestados"/>
+    
+     <evaluate expression="EstadisticasAvancesC.listadoNoContestadas(viewScope.region, viewScope.semana, viewScope.nivel)" result="viewScope.listadoNoContestadas"/>
+	<evaluate expression="EstadisticasAvancesC.totalesNoConcentrados(viewScope.listadoNoContestadas)" result="viewScope.totalesNoContestados"/>
+	</transition >
+	
+	<transition on="cambiaSinContestar">
+	 <set name="viewScope.region" value="viewScope.region eq 1 or viewScope.region eq 0 ? 0:viewScope.region"/>
+     <evaluate expression="EstadisticasAvancesC.listadoNoContestadas(viewScope.region, viewScope.semana, viewScope.nivel)" result="viewScope.listadoNoContestadas"/>
+	<evaluate expression="EstadisticasAvancesC.totalesNoConcentrados(viewScope.listadoNoContestadas)" result="viewScope.totalesNoContestados"/>
+	</transition>
+	</view-state>
+
+</flow>

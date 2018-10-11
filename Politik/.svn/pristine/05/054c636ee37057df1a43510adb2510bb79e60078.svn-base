@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mdm.clavesPersonas">
+	<cache />
+	
+	<resultMap type="PersonaClaveEO" id="clavePersona">
+		<id column="PersonaClave_id" property="id" javaType="Integer"/>
+		<result column="PersonaClave_clave" property="clave" javaType="String"/>
+		<association property="tipo" resultMap="catalogos.tiposClave.tipoClave" />
+		<association property="entidad" resultMap="catalogos.entidades.entidad" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			PersonaClaveEO.id_clave_persona 	PersonaClave_id,
+			PersonaClaveEO.clave 				PersonaClave_clave,
+			TipoClaveEO.id_tipo_clave 			TipoClaveEO_id,
+			TipoClaveEO.tipo_clave 				TipoClaveEO_nombre,
+			EntidadEO.id_entidad 				EntidadEO_id,
+			EntidadEO.entidad 					EntidadEO_nombre
+  		FROM mdm.claves_personas PersonaClaveEO
+  		JOIN catalogos.tipos_clave TipoClaveEO on (PersonaClaveEO.id_tipo_clave = TipoClaveEO.id_tipo_clave)
+  		JOIN catalogos.entidades EntidadEO on (PersonaClaveEO.id_entidad_registro = EntidadEO.id_entidad)
+	</sql>
+	
+	<select id="buscarPorPersona" resultMap="clavePersona" parameterType="PersonaEO">
+		<include refid="query" />
+		WHERE PersonaClaveEO.id_entidad_nacimiento = #{entidadNacimiento.id} AND PersonaClaveEO.id_persona = #{id}
+		ORDER BY PersonaClaveEO.id_clave_persona
+	</select>
+</mapper>

@@ -1,0 +1,131 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Reportes" url="/app/estructuras/reportes" />
+						<p:menuitem value="Estructura Operativa 2018" />
+					</p:breadCrumb>
+
+					<p:panel header="Filtros">
+						<p:panelGrid id="panelFiltros">
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Nivel" />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu value="${nivel}" style="width: 150px;">
+										<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+										<p:ajax event="itemSelect" onstart="actualizarCombos();" />
+									</p:selectOneMenu>
+								</p:column>	
+							</p:row>
+							
+							<h:panelGroup rendered="${nivel != 'NACIONAL'}" layout="block">
+								<p:row>
+									<p:column>
+										<p:outputLabel value="Entidad" />
+									</p:column>
+									<p:column>
+										<p:selectOneMenu value="${modeloEntidades.seleccionado}"
+											converter="ObjectConverter" style="width: 250px;" >
+											<f:selectItems value="${modeloEntidades.listado}" var="fila"
+												itemLabel="${fila.nombre}" itemValue="${fila}" />
+											<p:ajax event="itemSelect" onstart="actualizarCombos();" />
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="${nivel == 'DFEDERAL'}" layout="block">
+								<p:row>
+									<p:column>
+										<p:outputLabel value="Distrito Federal" />
+									</p:column>
+									<p:column>
+										<p:selectOneMenu value="${modeloDFederales.seleccionado}"
+											converter="ObjectConverter" style="width: 250px;" >
+											<f:selectItems value="${modeloDFederales.listado}" var="fila"
+												itemLabel="${fila.idDFederal}: ${fila.nombre}" itemValue="${fila}" />
+											<p:ajax event="itemSelect" onstart="actualizarCombos();" />
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="${nivel == 'MUNICIPIO'}" layout="block">
+								<p:row>
+									<p:column>
+										<p:outputLabel value="Municipio" />
+									</p:column>
+									<p:column>
+										<p:selectOneMenu value="${modeloMunicipios.seleccionado}"
+											converter="ObjectConverter" style="width: 250px;" >
+											<f:selectItems value="${modeloMunicipios.listado}" var="fila"
+												itemLabel="${fila.idMunicipio}: ${fila.nombre}" itemValue="${fila}" />
+											<p:ajax event="itemSelect" onstart="actualizarCombos();" />
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="${nivel == 'SECCION'}" layout="block">
+								<p:row>
+									<p:column>
+										<p:outputLabel value="Sección" />
+									</p:column>
+									<p:column>
+										<p:selectOneMenu value="${modeloSecciones.seleccionado}"
+											converter="ObjectConverter" style="width: 250px;" >
+											<f:selectItems value="${modeloSecciones.listado}" var="fila"
+												itemLabel="${fila.idSeccion}: ${fila.nombre}" itemValue="${fila}" />
+											<p:ajax event="itemSelect" onstart="actualizarCombos();" />
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+							</h:panelGroup>
+							
+						</p:panelGrid>
+						
+						<p:separator />
+						
+						<p:panelGrid>
+							<f:facet name="header">
+								<p:row>
+									<p:column>Cargo</p:column>
+									<p:column>Capturados</p:column>
+									<p:column>Meta</p:column>
+									<p:column>Avance</p:column>
+								</p:row>
+							</f:facet>
+							<ui:repeat var="nodo" value="${estructura.nodos}">
+								<p:row>
+									<p:column>${nodo.figura.nombre}</p:column>
+									<p:column>${nodo.metas[0].avance}</p:column>
+									<p:column>${nodo.metas[0].meta}</p:column>
+									<p:column>${nodo.metas[0].avance / nodo.metas[0].meta}</p:column>
+								</p:row>
+							</ui:repeat>
+						</p:panelGrid>
+					</p:panel>
+
+
+					<p:remoteCommand name="actualizarCombos" action="actualizarCombos" update="@form" />
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

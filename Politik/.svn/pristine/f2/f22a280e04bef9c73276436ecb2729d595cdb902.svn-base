@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.admin.campania">
+	<cache />
+	
+	<resultMap type="CampaniaEO" id="campania">
+		<id column="CampaniaEO_id" property="id" javaType="Integer" />
+		<result column="CampaniaEO_nombre" property="nombre" javaType="String"/>
+		<result column="CampaniaEO_fecha" property="fecha" javaType="String"/>
+		<result column="CampaniaEO_tablaContactos" property="tablaContactos" javaType="String"/>
+		<result column="CampaniaEO_universoContactos" property="universoContactos" javaType="Integer"/>
+		<result column="CampaniaEO_avanceContactos" property="avanceContactos" javaType="Integer"/>
+		<result column="CampaniaEO_nick" property="nick" javaType="String"/>
+		<result column="CampaniaEO_fechaRegistro" property="fechaRegistro" javaType="String"/>
+	</resultMap>
+	
+	<resultMap type="CampaniaEO" id="campaniaCompleta" extends="campania">
+		<association column="CampaniaEO_idEncuesta" property="encuesta" select="encuestas.admin.encuestas.encuestaCompletaById"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			pkey													CampaniaEO_id, 
+			id_encuesta												CampaniaEO_idEncuesta,
+			nombre													CampaniaEO_nombre, 
+			fecha													CampaniaEO_fecha, 
+			tabla_contactos											CampaniaEO_tablaContactos,
+			universo_contactos 										CampaniaEO_universoContactos,
+  			avance_contactos 										CampaniaEO_avanceContactos,
+			nick													CampaniaEO_nick, 
+			to_char(fecha_registro, 'YYYY-MM-DD HH12:MI:SS')		CampaniaEO_fechaRegistro
+  		FROM encuestas.campanias
+	</sql>
+	
+	<select id="listado" resultMap="campania" parameterType="EncuestaEO">
+		<include refid="query" />
+		where id_encuesta = #{id}
+		order by fecha desc
+	</select>
+	
+	<select id="campaniaCompletaByNick" resultMap="campaniaCompleta" parameterType="String">
+		SELECT 
+		c.pkey														CampaniaEO_id, 
+		c.id_encuesta												CampaniaEO_idEncuesta, 
+		c.nombre													CampaniaEO_nombre, 
+		c.fecha														CampaniaEO_fecha, 
+		c.tabla_contactos											CampaniaEO_tablaContactos,
+		c.universo_contactos 										CampaniaEO_universoContactos,
+  		c.avance_contactos 											CampaniaEO_avanceContactos,
+		c.nick														CampaniaEO_nick, 
+		to_char(c.fecha_registro, 'YYYY-MM-DD HH12:MI:SS')			CampaniaEO_fechaRegistro
+  		FROM encuestas.campanias c
+		join encuestas.campanias_usuarios cu on (c.pkey = cu.id_campania)
+  		where cu.nick = #{value} order by cu.pkey desc limit 1
+	</select>
+	
+	<insert id="insertar" parameterType="CampaniaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('encuestas.campanias_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas.campanias(pkey, id_encuesta, nombre, fecha, tabla_contactos, nick)
+    	VALUES (#{id}, #{encuesta.id}, #{nombre}, #{fecha}, #{tablaContactos}, #{nick});
+	</insert>
+	
+	<update id="actualizarUniversosCampania" parameterType="CampaniaEO">
+		UPDATE encuestas.campanias
+   		SET universo_contactos = #{universoContactos}, avance_contactos = #{avanceContactos}
+ 		WHERE pkey = #{id}
+	</update>
+	
+	<select id="universoContactos" resultType="Integer" parameterType="CampaniaEO">
+		SELECT universo_contactos
+  		FROM encuestas.campanias
+  		where pkey = #{id}
+	</select>
+	
+	<select id="universoContactosAvance" resultType="Integer" parameterType="CampaniaEO">
+		SELECT avance_contactos
+  		FROM encuestas.campanias
+  		where pkey = #{id}
+	</select>
+	
+	 <update id="createTable" parameterType="hashmap">
+		CREATE TABLE encuestas_resultados.e_${idCampania}
+		(
+		   pkey serial NOT NULL,
+		   id_contacto TEXT,
+		   id_persona INTEGER,
+		   ${idPreguntas}
+		   estatus TEXT,
+		   dato1 TEXT,
+		   dato2 TEXT,
+		   dato3 TEXT,
+		   dato4 TEXT,
+		   nick TEXT,
+		   fecha timestamp with time zone NOT NULL DEFAULT now(),
+		   CONSTRAINT e_${idCampania}_pkey_pk PRIMARY KEY (pkey)
+		) 
+		WITH (
+		  OIDS = FALSE
+		)
+	</update>
+	
+	<update id="liberarContactos" parameterType="String">
+		UPDATE ${value}
+   		SET estatus = 'LIBRE'
+ 		WHERE estatus = 'OCUPADO'
+	</update>
+	
+	<update id="crearNuevaVuelta" parameterType="String">
+		UPDATE ${value}
+		SET estatus = 'LIBRE' 
+		 WHERE estatus in ('NO CONTESTAN', 'LLAMAR MAS TARDE', 'MENOR DE EDAD', 'CONTESTADOR AUTOMÁTICO', 'SE CORTO LA LLAMADA')
+	</update>
+	
+	<insert id="guardarRegistroVueltas" parameterType="hashmap">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('encuestas.campanias_vueltas_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas.campanias_vueltas(pkey, id_campania, vuelta, encuestado, no_encuestado, nick)
+    	VALUES (#{id}, #{idCampania}, #{vuelta}, #{encuestado}, #{noEncuestado}, #{nick})
+	</insert>
+	
+	<select id="avanceEncuesta" parameterType="String" resultType="hashmap">
+		SELECT 
+		a.nick_uso,
+		sum(case when estatus = 'OCUPADO' then 1 else 0 end)::integer ocupado,
+		sum(case when estatus = 'ENCUESTADO' then 1 else 0 end)::integer encuestado,
+		sum(case when estatus = 'NO CONTESTAN' then 1 else 0 end)::integer no_contestan,
+		sum(case when estatus = 'NÚMERO FUERA DE SERVICIO' then 1 else 0 end)::integer numero_fuera_de_servicio,
+		sum(case when estatus = 'LLAMAR MAS TARDE' then 1 else 0 end)::integer llamar_mas_tarde,
+		sum(case when estatus = 'NO QUISO CONTESTAR' then 1 else 0 end)::integer no_quiso_contestar,
+		sum(case when estatus = 'MÓDEM/FAX' then 1 else 0 end)::integer modem_fax,
+		sum(case when estatus = 'NÚMERO REPETIDO' then 1 else 0 end)::integer numero_repetido,
+		sum(case when estatus = 'MENOR DE EDAD' then 1 else 0 end)::integer menor_de_edad,
+		sum(case when estatus = 'CONTESTADOR AUTOMÁTICO' then 1 else 0 end)::integer contestador_automatico,
+		sum(case when estatus = 'NÚMERO DE EMPRESA' then 1 else 0 end)::integer numero_de_empresa,
+		sum(case when estatus = 'SE CORTO LA LLAMADA' then 1 else 0 end)::integer se_corto_la_llamada
+		
+		FROM ${value} a
+		where nick_uso IS NOT NULL
+		GROUP BY a.nick_uso
+	</select>
+	
+	<select id="listadoVueltas" parameterType="hashmap" resultType="hashmap">
+		SELECT 
+		a.vuelta, 
+		sum(case when a.estatus = 'ENCUESTADO' and a.vuelta = a.vuelta then 1 else 0 end) encuestados,
+		sum(case when a.estatus != 'ENCUESTADO' and a.vuelta = a.vuelta then 1 else 0 end) no_contactados,
+		to_char(cv.fecha, 'YYYY-MM-DD HH24:MI:SS') fecha
+		FROM ${tablaContactos} a
+		LEFT JOIN encuestas.campanias_vueltas cv ON (cv.id_campania = #{idCampania} and cv.vuelta = a.vuelta)
+		GROUP BY a.vuelta, cv.fecha
+		ORDER BY a.vuelta
+	</select>
+	
+	<select id="conteoContactados" parameterType="String" resultType="Integer">
+		SELECT count(*) num
+  		FROM ${value}
+  		WHERE estatus not in ('LIBRE','OCUPADO')
+	</select>
+
+</mapper>

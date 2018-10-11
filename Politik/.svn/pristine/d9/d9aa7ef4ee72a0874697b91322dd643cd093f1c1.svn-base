@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+    http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+    <view-state id="listado">
+		<on-entry>
+			<evaluate expression="CatalogoSeccionalC.modelo(requestScope.seccional)" result="viewScope.modelo" />
+		</on-entry>
+		<transition on="agregar" to="agregarEditar">
+			<evaluate expression="CatalogoSeccionalC.guardar(viewScope.modelo)"/>
+		</transition>
+		<transition on="eliminar" to="listado">
+			<evaluate expression="CatalogoSeccionalC.guardar(viewScope.modelo)"/>
+		</transition>
+		<transition on="editar" to="agregarEditar">
+			<evaluate expression="CatalogoSeccionalC.guardar(viewScope.modelo)"/>
+		</transition>
+	</view-state>
+	<view-state id="agregarEditar">
+		<on-entry>
+			<set name="viewScope.entidad" value="requestScope.entidad"/>
+			<set value="CatalogoSeccionalC.nuevo()" name="viewScope.modelo" />
+			<set name="viewScope.modeloGeneros" value="DominiosModelosC.modeloGenero()" />
+		</on-entry>
+		<transition on="fin" to="fin" >
+			<set value="CatalogoSeccionalC.nuevo()" name="viewScope.modelo" />
+		</transition>
+	</view-state>
+	
+	<end-state id="fin" />
+</flow>

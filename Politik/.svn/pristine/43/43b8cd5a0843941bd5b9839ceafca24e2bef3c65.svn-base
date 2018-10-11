@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+        
+	<secured attributes="ROLE_REPORTES_DM" />
+	
+	<view-state id="estadisticas">
+		<on-entry>
+			<evaluate expression="EstadisticasPorDiaC.listadoTiposFiltro()" result="viewScope.listadoTiposFiltro"/>
+			<set name="viewScope.tipoFiltro" value="viewScope.listadoTiposFiltro[0].get('id')"/>
+			
+			<evaluate expression="EstadisticasPorDiaC.getFechaAntras()" result="viewScope.fechaInicio"/>
+			<evaluate expression="EstadisticasPorDiaC.getFecha()" result="viewScope.fechaFin"/>
+			
+			<evaluate expression="EstadisticasPorDiaC.getRegionUser()" result="viewScope.region"/>
+			<evaluate expression="EstadisticasPorDiaC.regiones()" result="viewScope.listadoRegiones"/>
+			
+			<evaluate expression="EstadisticasPorDiaC.listadoMunicipios(viewScope.region)" result="viewScope.listadoMunicipios"/>
+			<set name="viewScope.municipio" value="viewScope.listadoMunicipios[0]"/>
+			
+			<evaluate expression="EstadisticasPorDiaC.listadoZonas(viewScope.region, viewScope.municipio, viewScope.tipoFiltro)" result="viewScope.listadoZonas"/>
+			<set name="viewScope.zona" value="viewScope.listadoZonas[0]"/>
+			
+			<set name="viewScope.seccion" value="0"/>
+			<evaluate expression="EstadisticasPorDiaC.listadoSecciones(viewScope.region, viewScope.municipio, viewScope.zona)" result="viewScope.listadoSecciones"/>
+			
+			<evaluate expression="EstadisticasPorDiaC.listado(EstadisticasPorDiaC.combierteDateToString(viewScope.fechaInicio), 
+			EstadisticasPorDiaC.combierteDateToString(viewScope.fechaFin), viewScope.tipoFiltro, viewScope.region, viewScope.municipio,
+			viewScope.zona, viewScope.seccion)" result="viewScope.listado"/>
+		</on-entry>
+		
+		<transition on="actualizarGrafica">
+			<evaluate expression="EstadisticasPorDiaC.listado(EstadisticasPorDiaC.combierteDateToString(viewScope.fechaInicio), 
+			EstadisticasPorDiaC.combierteDateToString(viewScope.fechaFin), viewScope.tipoFiltro, viewScope.region, viewScope.municipio,
+			viewScope.zona, viewScope.seccion)" result="viewScope.listado"/>
+		</transition>
+		
+		<transition on="actualizaMunicipios">
+			<evaluate expression="EstadisticasPorDiaC.listadoMunicipios(viewScope.region)" result="viewScope.listadoMunicipios"/>
+			<set name="viewScope.municipio" value="viewScope.listadoMunicipios[0]"/>
+			<evaluate expression="EstadisticasPorDiaC.listadoZonas(viewScope.region, viewScope.municipio, viewScope.tipoFiltro)" result="viewScope.listadoZonas"/>
+			<set name="viewScope.zona" value="viewScope.listadoZonas[0]"/>
+		</transition>
+		
+		<transition on="actualizaZonas">
+			<evaluate expression="EstadisticasPorDiaC.listadoZonas(viewScope.region, viewScope.municipio, viewScope.tipoFiltro)" result="viewScope.listadoZonas"/>
+			<set name="viewScope.zona" value="viewScope.listadoZonas[0]"/>
+			<evaluate expression="EstadisticasPorDiaC.listadoSecciones(viewScope.region, viewScope.municipio, viewScope.zona)" result="viewScope.listadoSecciones"/>
+<!-- 			<set name="viewScope.seccion" value="viewScope.listadoSecciones[0]"/> -->
+		</transition>
+		
+		<transition on="actualizaSecciones">
+			<evaluate expression="EstadisticasPorDiaC.listadoSecciones(viewScope.region, viewScope.municipio, viewScope.zona)" result="viewScope.listadoSecciones"/>
+<!-- 			<set name="viewScope.seccion" value="viewScope.listadoSecciones[0]"/> -->
+		</transition>
+		
+	</view-state>
+	
+</flow>

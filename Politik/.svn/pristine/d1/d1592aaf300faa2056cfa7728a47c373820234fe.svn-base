@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<input name="flagPerfil" type="java.lang.Boolean"/>
+	
+	<decision-state id="checarSubflow">
+		<on-entry>
+			<set name="flowScope.persona" value="conversationScope.persona" />
+		</on-entry>
+		<if test="flowScope.flagPerfil" then="general" else="buscador"/> 
+	</decision-state>
+	
+	<subflow-state id="buscador" subflow="mdm/buscadores/personas">
+		<input name="flag" value="true"/>
+		<transition on="personaLocalizada" to="general">
+			<set name="flowScope.persona" value="conversationScope.persona" />
+		</transition>
+		<transition on="personaNoLocalizada" to="sinPersona" />
+	</subflow-state>
+
+	<view-state id="general">
+		<on-entry>
+			<evaluate expression="CatalogosTiposTelefonoC.modelo()" result="viewScope.agregarTelefono_modeloTiposTelefono" />
+			<evaluate expression="WarehouseTelefonosC.nuevo()" result="viewScope.telefonoNuevo" />
+			<evaluate expression="WarehouseEMailsC.nuevo()" result="viewScope.eMailNuevo" />
+			<evaluate expression="CatalogosTiposRedesSocialesC.modelo()" result="viewScope.agregarRedSocial_modeloTiposRedSocial" />
+			<evaluate expression="WarehouseRedesSocialesC.nuevo()" result="viewScope.redSocialNueva" />
+		</on-entry>
+		
+		<transition on="buscar" to="buscador" />
+		
+		<transition on="detalleTabla" to="detalleTabla">
+			<set name="requestScope.tipoTabla" value="1" />
+		</transition>
+		<transition on="detalleTablaEstructura" to="detalleTabla">
+			<set name="requestScope.tipoTabla" value="2" />
+		</transition>
+		
+		<transition on="agregarTelefono" />
+		<transition on="guardarTelefono">
+			<evaluate expression="WarehouseTelefonosC.insertar(viewScope.telefonoNuevo, flowScope.persona)" />
+			<evaluate expression="WarehouseTelefonosC.nuevo()" result="viewScope.telefonoNuevo" />
+		</transition>
+		
+		<transition on="agregarEMail" />
+		<transition on="guardarEMail">
+			<evaluate expression="WarehouseEMailsC.insertar(viewScope.eMailNuevo, flowScope.persona)" />
+			<evaluate expression="WarehouseEMailsC.nuevo()" result="viewScope.eMailNuevo" />
+		</transition>
+		
+		<transition on="agregarRedSocial" />
+		<transition on="guardarRedSocial">
+			<evaluate expression="WarehouseRedesSocialesC.insertar(viewScope.redSocialNueva, flowScope.persona)" />
+			<evaluate expression="WarehouseRedesSocialesC.nuevo()" result="viewScope.redSocialNueva" />
+		</transition>
+		<transition on="regresar" to="fin"/>
+	</view-state>
+	
+	<view-state id="detalleTabla">
+		<on-entry>
+			<set name="viewScope.tipoTabla" value="requestScope.tipoTabla" />
+			<evaluate expression="MDMPersonasC.desagruparTabla(viewScope.tipoTabla, flowScope.persona)" result="viewScope.datos" />
+		</on-entry>
+		<transition on="general" to="general" />
+		<transition on="buscar" to="buscador" />
+	</view-state>
+	
+	<view-state id="sinPersona">
+		<transition on="buscar" to="buscador" />
+	</view-state>
+	<end-state id="fin"/>
+</flow>

@@ -1,0 +1,56 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Seccional" id="panelSeccional">
+						<p:panelGrid columns="2">
+							<p:column><p:outputLabel value="Nombre:"/></p:column>
+							<p:column><p:inputText value="${modelo.nombre}" required="true" requiredMessage="Nombre: requerido" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Primer Apellido:" /></p:column>
+							<p:column><p:inputText value="${modelo.primerApellido}" required="true" requiredMessage="Nombre: requerido" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Segundo Apellido:"  /></p:column>
+							<p:column><p:inputText value="${modelo.segundoApellido}" required="true" requiredMessage="Nombre: requerido" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Fecha Nacimiento:"  /></p:column>
+							<p:column><p:inputText value="${modelo.fechaNacimiento}" required="true" requiredMessage="Nombre: requerido" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Genero:"/></p:column>
+							<p:column>
+								<p:selectOneMenu value="${modelo.genero}" converter="ObjectConverter" style="width: 300px"  layout="grid" columns="1">
+									<f:selectItems value="${modeloGeneros.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}"/>
+								</p:selectOneMenu>
+							</p:column>
+							<p:column><p:outputLabel value="Calle:"/></p:column>
+							<p:column><p:inputText value="${modelo.calle}" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Numero Interior:"/></p:column>
+							<p:column><p:inputText value="${modelo.numeroInterior}" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Numero Exterior:"/></p:column>
+							<p:column><p:inputText value="${modelo.numeroExterior}" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Colonia:"/></p:column>
+							<p:column><p:inputText value="${modelo.colonia}" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Codigo Postal:"/></p:column>
+							<p:column>
+								<p:inputText value="${modelo.codigoPostal}" style="width: 300px"  layout="grid" columns="1">
+									<f:validateRegex pattern="^[+]?[0-9]+$" />
+									<f:validateLength minimum="5" maximum="5" />
+								</p:inputText>
+							</p:column>
+							<p:column><p:outputLabel value="Llave Seccion:"/></p:column>
+							<p:column><p:inputText value="${modelo.llaveSeccion}" style="width: 300px"  layout="grid" columns="1"/></p:column>
+						</p:panelGrid>
+						<p:panelGrid columns="3" >
+							<p:column ><p:commandButton value="Guardar" action="guardar" /></p:column>
+							<p:column ><p:commandButton value="Limpiar" action="fin" immediate="true" icon="fa fa-caret-left"/></p:column>
+						</p:panelGrid>
+					</p:panel>
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

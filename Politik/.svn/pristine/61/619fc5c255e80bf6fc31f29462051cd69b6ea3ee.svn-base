@@ -1,0 +1,39 @@
+package com.saganet.politik.components.encuestas.edomex2017.entrevistaEntrevistador;
+
+
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.estructurasEdoMex.VisitadorEO;
+
+@Component("Edomex2017EntrevistaEntrevistadorC")
+public class EntrevistaEntrevistadorC {
+
+	@Autowired
+	SqlSession sqlSession;
+
+	private static final Logger logger = LoggerFactory.getLogger(EntrevistaEntrevistadorC.class);
+	public String buscarFolio(Integer id){
+		VisitadorEO visitador;
+		visitador =  new VisitadorEO();
+		visitador  = sqlSession.selectOne("estructurasEdoMex.visitador.buscarFolio", id);
+		logger.debug("visitador: {}", visitador);
+		if(visitador.getId()==null){
+			return "succes";
+		}else{
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "No se encontró información", "Contact admin."));
+			return "error";
+		}
+	}
+	
+	
+	
+}

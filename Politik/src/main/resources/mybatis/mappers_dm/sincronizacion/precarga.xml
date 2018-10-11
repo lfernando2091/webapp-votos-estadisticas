@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sincronizacion.precarga">
+	
+	<cache/>
+	
+	<resultMap type="PrecargaEO" id="precarga">
+		<id column="PrecargaEO_id" property="id" javaType="Integer"/>
+		<result column="PrecargaEO_nombre" property="nombre" javaType="String"/>
+		<result column="PrecargaEO_primerApellido" property="primerApellido" javaType="String"/>
+		<result column="PrecargaEO_segundoApellido" property="segundoApellido" javaType="String"/>
+		<result column="PrecargaEO_fechaNacimiento" property="fechaNacimiento" javaType="String"/>
+		<result column="PrecargaEO_sexo" property="sexo" javaType="com.saganet.politik.dominios_dm.TiposSexoDO"/>
+		<result column="PrecargaEO_calle" property="calle" javaType="String"/>
+		<result column="PrecargaEO_numExterior" property="numExterior" javaType="String"/>
+		<result column="PrecargaEO_numInterior" property="numInterior" javaType="String"/>
+		<result column="PrecargaEO_colonia" property="colonia" javaType="String"/>
+		<result column="PrecargaEO_codigoPostal" property="codigoPostal" javaType="String"/>
+		<result column="PrecargaEO_seccion" property="seccion" javaType="Integer"/>
+		<result column="PrecargaEO_edoId" property="edoId" javaType="Integer"/>
+		<result column="PrecargaEO_mpioId" property="mpioId" javaType="Integer"/>
+		<association column="precargaUsuario_usuarioId" property="usuario" select="sincronizacion.usuario.buscarPorId"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			PrecargaEO.id							PrecargaEO_id, 
+			PrecargaEO.nombre						PrecargaEO_nombre, 
+			PrecargaEO.primer_apellido              PrecargaEO_primerApellido, 
+			PrecargaEO.segundo_apellido				PrecargaEO_segundoApellido, 
+			PrecargaEO.fecha_nacimiento				PrecargaEO_fechaNacimiento, 
+       		PrecargaEO.sexo							PrecargaEO_sexo, 
+       		PrecargaEO.calle						PrecargaEO_calle, 
+       		PrecargaEO.num_exterior					PrecargaEO_numExterior, 
+       		PrecargaEO.num_interior					PrecargaEO_numInterior, 
+       		PrecargaEO.colonia						PrecargaEO_colonia, 
+       		PrecargaEO.codigo_postal				PrecargaEO_codigoPostal, 
+       		PrecargaEO.seccion						PrecargaEO_seccion, 
+       		PrecargaEO.edo_id						PrecargaEO_edoId, 
+       		PrecargaEO.mpio_id						PrecargaEO_mpioId,
+       		precargaUsuario.usuario_id				precargaUsuario_usuarioId
+  		FROM precarga PrecargaEO
+  		JOIN precarga_usuario precargaUsuario on (PrecargaEO.id = precargaUsuario.precarga_id)
+	</sql>
+	
+		
+	<sql id="querySinUsuario">
+		SELECT 
+			PrecargaEO.id							PrecargaEO_id, 
+			PrecargaEO.nombre						PrecargaEO_nombre, 
+			PrecargaEO.primer_apellido              PrecargaEO_primerApellido, 
+			PrecargaEO.segundo_apellido				PrecargaEO_segundoApellido, 
+			PrecargaEO.fecha_nacimiento				PrecargaEO_fechaNacimiento, 
+       		PrecargaEO.sexo							PrecargaEO_sexo, 
+       		PrecargaEO.calle						PrecargaEO_calle, 
+       		PrecargaEO.num_exterior					PrecargaEO_numExterior, 
+       		PrecargaEO.num_interior					PrecargaEO_numInterior, 
+       		PrecargaEO.colonia						PrecargaEO_colonia, 
+       		PrecargaEO.codigo_postal				PrecargaEO_codigoPostal, 
+       		PrecargaEO.seccion						PrecargaEO_seccion, 
+       		PrecargaEO.edo_id						PrecargaEO_edoId, 
+       		PrecargaEO.mpio_id						PrecargaEO_mpioId
+  		FROM precarga PrecargaEO
+  	</sql>
+	
+	<select id="listado" resultMap="precarga">
+		<include refid="query"/>
+		ORDER BY PrecargaEO.id DESC
+	</select>
+	
+	<select id="buscarPorId" resultMap="precarga" parameterType="Integer">
+		<include refid="query"/>
+		WHERE PrecargaEO.id = #{value}
+		ORDER BY PrecargaEO.id DESC
+	</select>
+	
+	
+	<select id="buscarPorIdSinUsuario" resultMap="precarga" parameterType="Integer">
+		<include refid="querySinUsuario"/>
+		WHERE PrecargaEO.id = #{value}
+		ORDER BY PrecargaEO.id DESC
+	</select>
+	
+	<insert id="insertar" parameterType="PrecargaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT NEXTVAL('Precarga_id_seq')
+		</selectKey>
+		INSERT INTO precarga(
+            id, nombre, primer_apellido, segundo_apellido, fecha_nacimiento, 
+            sexo, calle, num_exterior, num_interior, colonia, codigo_postal, 
+            seccion, edo_id, mpio_id)
+    	VALUES (#{nombre}, #{primerApellido}, #{segundoApellido}, #{fechaNacimiento}, 
+            #{id}, #{sexo}, #{calle}, #{numExterior}, #{numInterior}, #{colonia}, #{codigoPostal}, 
+            #{seccion}, #{edoId}, #{mpioId})
+	</insert>
+	
+	<insert id="insertarPrecargaUsuario" parameterType="hashmap">
+		INSERT INTO precarga_usuario(usuario_id, precarga_id)
+    	VALUES (#{usuario.id}, #{precarga.id})
+	</insert>
+	
+	<update id="actualizar" parameterType="PrecargaEO">
+		UPDATE precarga
+   		SET nombre = #{nombre}, primer_apellido = #{primerApellido}, segundo_apellido = #{segundoApellido}, fecha_nacimiento = #{fechaNacimiento}, 
+       	sexo = #{sexo}, calle = #{calle}, num_exterior = #{numExterior}, num_interior = #{numInterior}, colonia = #{colonia}, codigo_postal = #{codigoPostal}, 
+       	seccion = #{seccion}, edo_id = #{edoId}, mpio_id = #{mpioId}
+ 		WHERE id = #{id}
+	</update>
+	
+	<update id="actualizarPrecargaUsuario" parameterType="hashmap">
+		UPDATE precarga_usuario
+   		SET usuario_id = #{usuario.id}, precarga_id = #{precarga.id}
+ 		WHERE usuario_id = #{usuario.id} and precarga_id = #{precarga.id} 
+	</update>
+	
+</mapper>

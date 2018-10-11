@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cronograma.eventos">
+	<cache />
+
+	<resultMap type="EventoEO" id="evento">
+		<id column="EventoEO_id" property="id" javaType="Integer" />
+		<result column="EventoEO_nombre" property="nombre" javaType="String" />
+		<result column="EventoEO_inicio" property="inicio" javaType="java.sql.Timestamp"
+			jdbcType="TIMESTAMP" />
+		<result column="EventoEO_fin" property="fin" javaType="java.sql.Timestamp"
+			jdbcType="TIMESTAMP" />
+		<result column="EventoEO_descripcion" property="descripcion"
+			javaType="String" />
+		<result column="EventoEO_descripcionHTML" property="descripcionHTML"
+			javaType="String" />
+		<result column="EventoEO_concentrador" property="concentrador" javaType="Boolean"/>
+		<result column="EventoEO_idPadre" property="idPadre" javaType="Integer"/>
+		<association property="grupo" resultMap="cronograma.grupos.grupo" />
+		<association property="icono" resultMap="cronograma.iconos.icono" />
+	</resultMap>
+
+	<select id="listado" resultMap="evento" parameterType="hashmap">
+		select
+		a.id_evento EventoEO_id,
+		a.evento EventoEO_nombre,
+		a.inicio EventoEO_inicio,
+		a.fin EventoEO_fin,
+		a.descripcion EventoEO_descripcion,
+		a.descripcion_html EventoEO_descripcionHTML,
+		a.concentrador EventoEO_concentrador,
+		a.id_padre EventoEO_idPadre,
+		b.id_grupo GrupoEO_id,
+		b.grupo GrupoEO_nombre,
+		c.id_icono IconoEO_id,
+		c.icono IconoEO_nombre,
+		c.ruta IconoEO_ruta
+		from cronograma.eventos a
+		join cronograma.grupos b on
+		(a.id_grupo = b.id_grupo)
+		left join cronograma.iconos c on (a.id_icono
+		= c.id_icono)
+		<where>
+			<choose>
+				<when test="padre != null">
+					a.id_padre = #{padre.id}
+				</when>
+				<otherwise>
+					a.id_padre is null
+				</otherwise>
+			</choose>
+		</where>
+		order by a.inicio, a.evento
+	</select>
+
+	<insert id="insertar" parameterType="EventoEO">
+		insert into
+		cronograma.eventos(evento, inicio, fin, id_grupo, descripcion,
+		descripcion_html, id_icono, concentrador, id_padre)
+		values(#{nombre}, #{inicio}, #{fin},
+		#{grupo.id}, #{descripcion}, #{descripcionHTML}, #{icono.id}, #{concentrador}, #{idPadre})
+	</insert>
+
+	<update id="actualizar" parameterType="EventoEO">
+		UPDATE cronograma.eventos
+		SET evento=#{nombre}, inicio=#{inicio}, fin=#{fin},
+		id_grupo=#{grupo.id}, descripcion=#{descripcion},
+		descripcion_html=#{descripcionHTML}, id_icono=#{icono.id}, concentrador = #{concentrador}, id_padre = #{idPadre}
+		WHERE id_evento = #{id};
+	</update>
+
+</mapper>

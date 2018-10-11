@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructuras.programasPromocion">
+	<cache />
+	
+	<resultMap type="ProgramaPromocionEO" id="programaPromocion">
+		<id column="ProgramaPromocionEO_id" property="id" javaType="Integer" />
+		<result column="ProgramaPromocionEO_nombre" property="nombre" javaType="String" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			ProgramaPromocionEO.id_programa_promocion 	ProgramaPromocionEO_id, 
+			ProgramaPromocionEO.programa_promocion 		ProgramaPromocionEO_nombre
+  		FROM estructuras.programas_promocion ProgramaPromocionEO
+	</sql>
+	<sql id="orderBy">
+		ORDER BY ProgramaPromocionEO.programa_promocion
+	</sql>
+	
+	<select id="listado" resultMap="programaPromocion">
+		<include refid="query" />
+		<include refid="orderBy" />
+	</select>
+	
+	<select id="porEleccion" parameterType="EleccionEO" resultMap="programaPromocion">
+		<include refid="query" />
+		WHERE ProgramaPromocionEO.id_programa_promocion in (
+			SELECT id_programa_promocion
+			FROM catalogos.elecciones_programas_promocion
+			WHERE id_eleccion = #{id}
+		)
+	</select>
+	
+	<insert id="insertar" parameterType="ProgramaPromocionEO">
+		INSERT INTO estructuras.programas_promocion(programa_promocion)
+    	VALUES (#{nombre});
+	</insert>
+	
+	<update id="actualizar" parameterType="ProgramaPromocionEO">
+		UPDATE estructuras.programas_promocion
+		SET programa_promocion = #{nombre}
+		WHERE id_programa_promocion = #{id}
+	</update>
+	
+	<insert id="insertarProgramaPromocionEnEleccion" parameterType="hashmap">
+		INSERT INTO catalogos.elecciones_programas_promocion(id_eleccion, id_programa_promocion)
+    	VALUES (#{eleccion.id}, #{programaPromocion.id});
+	</insert>
+	
+</mapper>

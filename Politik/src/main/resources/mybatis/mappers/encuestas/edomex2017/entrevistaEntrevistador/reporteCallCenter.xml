@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.edomex2017.entrevistaEntrevistador.reporteCallCenter">
+	
+	<resultMap type="Edomex2017EntrevistaReporteCallCenterEO" id="reporteCallCenter">
+		<id 		column="id" 		 				property="id" 							javaType="Integer"/>
+		<result 	column="lugar" 						property="lugar" 						javaType="String"/>
+		<result 	column="realizadas" 				property="realizadas" 					javaType="Integer"/>
+		<result 	column="meta" 						property="meta" 						javaType="Integer"/>
+	</resultMap>
+	
+	<resultMap type="Edomex2017EntrevistadosReporteCallCenterEO" id="reporteCallCenter2">
+		<id 		column="id" 		 				property="id" 							javaType="Integer"/>
+		<result 	column="lugar" 						property="lugar" 						javaType="String"/>
+		<result 	column="realizadas" 				property="realizadas" 					javaType="Integer"/>
+		<result 	column="meta" 						property="meta" 						javaType="Integer"/>
+	</resultMap>
+	
+	<select id="listado" resultMap="reporteCallCenter">
+		SELECT 
+			row_number() OVER (ORDER BY a.lugar_encuesta_telefonica) AS id, 
+			UPPER(a.lugar_encuesta_telefonica) lugar, 
+			SUM(CASE WHEN b.pkey is not null AND b.resultado!='PENDIENTE' THEN 1 ELSE 0 END) realizadas ,
+			count(distinct(a.pkey)) meta
+		FROM estructuras_edomex.visitadores a
+		LEFT JOIN encuestas_edomex.cuestionario_entrevistador b ON (a.pkey=b.id_visitador)  
+		WHERE a.para_encuesta_telefonica=true
+		GROUP BY a.lugar_encuesta_telefonica
+	</select>
+	
+	<select id="listado2" resultMap="reporteCallCenter2">
+		SELECT 
+			row_number() OVER (ORDER BY a.lugar_encuesta_telefonica) AS id, 
+			UPPER(a.lugar_encuesta_telefonica) lugar, 
+			SUM(CASE WHEN b.pkey is not null AND b.resultado!='PENDIENTE' THEN 1 ELSE 0 END) realizadas ,
+			count(distinct(a.pkey)) meta
+		FROM encuestas_edomex.e_edomex a
+		LEFT JOIN encuestas_edomex.cuestionario_entrevistados b ON (a.id_contacto::INTEGER=b.id_entrevistado)  
+		WHERE a.para_encuesta_telefonica=true
+		GROUP BY a.lugar_encuesta_telefonica
+	</select>
+	
+</mapper>

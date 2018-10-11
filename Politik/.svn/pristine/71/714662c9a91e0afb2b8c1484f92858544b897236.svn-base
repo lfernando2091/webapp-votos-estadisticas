@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Entrevistadores">
+						<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}" 
+									 selectionMode="single" paginator="true" rows="15" paginatorPosition="bottom">
+							<p:column headerText="Id" width="5%">
+								<p:outputLabel value="${fila.id}"/>
+							</p:column>
+							<p:column headerText="Nombre" filterBy="${fila.nombre} ${fila.primerApellido} ${fila.segundoApellido}" filterMatchMode="contains" filterStyle="width:90%;">
+								<p:outputLabel value="${fila.nombre} ${fila.primerApellido} ${fila.segundoApellido}"/>
+							</p:column>
+							<p:column headerText="E-mail" filterBy="${fila.email}" filterMatchMode="contains" filterStyle="width:90%;">
+								<p:outputLabel value="${fila.email}"/>
+							</p:column>
+							<p:column headerText="Telefono" filterBy="${fila.movil}" filterMatchMode="contains" filterStyle="width:90%;">
+								<p:outputLabel value="${fila.movil}"/>
+							</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregar"/>
+							<p:commandButton value="Eliminar" action="eliminar">
+								<p:confirm header="Confirmación" message="¿Esta Seguro De Eliminar El Entrevistador?" icon="ui-icon-alert" />
+							</p:commandButton>
+						</f:facet>
+					</p:panel>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" update="messages" />
+							<p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

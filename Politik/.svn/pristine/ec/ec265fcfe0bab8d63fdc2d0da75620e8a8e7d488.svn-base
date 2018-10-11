@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+
+	<action-state id="verificarPersona">
+		<set name="flowScope.persona" value="conversationScope.persona" />
+		<evaluate expression="PersonasController.verificaridPersona(flowScope.persona)" />
+		<transition on="si" to="agregarRedSocial">
+		</transition>
+		<transition on="no" to="buscador" />
+	</action-state>
+
+	<subflow-state id="buscador" subflow="mdm/buscadores/personas">
+		<transition on="personaLocalizada" to="agregarRedSocial">
+			<set name="idPersona" value="conversationScope.idPersona" />
+		</transition>
+		<transition on="personaNoLocalizada" to="salir"></transition>
+	</subflow-state>	
+
+	<view-state id="agregarRedSocial">
+		<on-entry>
+			<set name="viewScope.persona" value="conversationScope.idPersona"/>
+			<evaluate expression="RedesSocialesController.nuevo()" result="flowScope.nuevo"/>
+			<evaluate expression="TiposRedesSocialesController.tabla()" result="flowScope.tiposRedesSociales"/>
+			<evaluate expression="RedesSocialesController.tabla(viewScope.persona)" result="flowScope.tablaRedesSociales"/>
+		</on-entry>
+		<transition on="guardar" to="agregarRedSocial">
+			<set name="flowScope.tipoRedSocial" value="tiposRedesSociales.seleccionado"/>
+			<set name="flowScope.persona" value="viewScope.persona"/>
+			<evaluate expression="RedesSocialesController.insertar(nuevo, persona, tipoRedSocial)"/>
+		</transition>
+		<transition on="salirAgregar" to="salir" >
+			<set name="conversationScope.persona" value="viewScope.persona"/>
+		</transition>
+	</view-state>
+
+	<end-state id="salir"/>
+</flow>

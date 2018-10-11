@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="encuestas.entrevistaTelefonica.contacto2">
+
+	<resultMap type="Contacto2EO" id="contacto">
+		<id 	column="Contacto2EO_id" 				property="id" 				javaType="Integer"/>
+		<result column="Contacto2EO_region" 			property="region" 			javaType="Integer"/>
+		<result column="Contacto2EO_nombreRegion"		property="nombreRegion" 	javaType="String"/>
+		<result column="Contacto2EO_municipio" 			property="municipio" 		javaType="Integer"/>
+		<result column="Contacto2EO_nombreMunicipio" 	property="nombreMunicipio" 	javaType="String"/>
+		<result column="Contacto2EO_seccion" 			property="seccion" 			javaType="Integer"/>
+		<result column="Contacto2EO_claveElector" 		property="claveElector" 	javaType="String"/>
+		<result column="Contacto2EO_nombre" 			property="nombre" 			javaType="String"/>
+		<result column="Contacto2EO_primerApellido" 	property="primerApellido" 	javaType="String"/>
+		<result column="Contacto2EO_segundoApellido" 	property="segundoApellido" 	javaType="String"/>
+		<result column="Contacto2EO_email" 				property="email" 			javaType="String"/>
+		<result column="Contacto2EO_telefono1" 			property="telefono1" 		javaType="String"/>
+		<result column="Contacto2EO_telefono2" 			property="telefono2" 		javaType="String"/>
+		<result column="Contacto2EO_telefono3" 			property="telefono3" 		javaType="String"/>
+			<result column="Contacto2EO_estatus" 			property="estatus" 		javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			Contacto2EO.pkey Contacto2EO_id, 
+			Contacto2EO.region Contacto2EO_region,  
+			Contacto2EO.nombre_region Contacto2EO_nombreRegion, 
+			Contacto2EO.municipio Contacto2EO_municipio, 
+			Contacto2EO.nombre_municipio Contacto2EO_nombreMunicipio, 
+			Contacto2EO.seccion Contacto2EO_seccion, 
+       		Contacto2EO.clave_elector Contacto2EO_claveElector, 
+       		Contacto2EO.nombre Contacto2EO_nombre, 
+       		Contacto2EO.primer_apellido Contacto2EO_primerApellido, 
+       		Contacto2EO.segundo_apellido Contacto2EO_segundoApellido, 
+       		Contacto2EO.email Contacto2EO_email, 
+       		Contacto2EO.telefono1 Contacto2EO_telefono1, 
+       		Contacto2EO.telefono2 Contacto2EO_telefono2, 
+       		Contacto2EO.telefono3 Contacto2EO_telefono3,
+       		Contacto2EO.estatus Contacto2EO_estatus
+  		FROM entrevistas_telefonicas.contactos2 Contacto2EO
+	</sql>
+	
+	<select id="buscarFolio" parameterType="Integer" resultMap="contacto">
+		<include refid="query" />
+		where Contacto2EO.pkey  = #{value}
+	</select>
+	
+	<update id="actualizar" parameterType="Resultados2EO">
+	update 
+	entrevistas_telefonicas.contactos2
+	set estatus = #{resultado}
+	where pkey  = #{folio}
+	</update>
+	
+</mapper>

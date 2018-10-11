@@ -1,0 +1,102 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Datos de Contacto">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Contacto: " />
+							<p:outputLabel
+								value="${cuestionario.contacto.idContacto} - ${cuestionario.contacto.nombre} ${cuestionario.contacto.primerApellido} ${cuestionario.contacto.segundoApellido}" />
+							<p:outputLabel value="Telefono: " />
+							<p:outputLabel value="${cuestionario.contacto.telefono}" />
+							<p:outputLabel value="Celular: " />
+							<p:outputLabel value="${cuestionario.contacto.celular}" />
+						</p:panelGrid>
+					</p:panel>
+					<p:spacer />
+
+					<p:panel
+						header="Campaña: ${cuestionario.campania.nombre} - ${cuestionario.campania.encuesta.descripcion}">
+						<p:panelGrid style="width:100%">
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Estatus del Cuestionario: " />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu value="${cuestionario.estatus}">
+									<p:ajax event="itemSelect" partialSubmit="true"/>
+										<f:selectItems value="${estatusCuestionario}" var="fila"
+											itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<ui:repeat var="pregunta"
+								value="${cuestionario.campania.encuesta.preguntas}">
+								<p:row>
+									<p:column width="50%">
+										<p:outputLabel
+											value="${pregunta.consecutivoPregunta}.- ${pregunta.pregunta}" />
+									</p:column>
+									<p:column>
+										<p:inputText value="${pregunta.respuesta}"
+											rendered="${pregunta.tipoPregunta=='ABIERTA' and pregunta.inputArea==1}"
+											required="${cuestionario.estatus=='ENCUESTADO'?true:false}"
+											requiredMessage="Requerido: ${pregunta.consecutivoPregunta}.- ${pregunta.pregunta}" />
+										<p:inputTextarea value="${pregunta.respuesta}"
+											rendered="${pregunta.tipoPregunta=='ABIERTA' and pregunta.inputArea==2}"
+											required="${cuestionario.estatus=='ENCUESTADO'?true:false}"
+											requiredMessage="Requerido: ${pregunta.consecutivoPregunta}.- ${pregunta.pregunta}" />
+										<p:selectOneMenu value="${pregunta.respuesta}"
+											rendered="${pregunta.tipoPregunta=='CERRADA'}"
+											required="true"
+											requiredMessage="Requerido: ${pregunta.consecutivoPregunta}.- ${pregunta.pregunta}"
+											style="width:200px">
+											<f:selectItems value="${pregunta.respuestasCerradas}"
+												var="respuestasCombo"
+												itemValue="${respuestasCombo.respuesta}"
+												itemLabel="${respuestasCombo.respuesta}" />
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+							</ui:repeat>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:messages autoUpdate="true" />
+							<p:commandButton action="insertar" icon="fa fa-save"
+								value="Guardar" >
+								 <p:confirm header="Confirmation" message="¿Realmente esta seguro de sus respuestas capturadas?" icon="ui-icon-alert" />
+								</p:commandButton>
+							<p:commandButton action="cancelar" icon="fa fa-level-up"
+								value="Cancelar" immediate="true" />
+						</f:facet>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="Si" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+					</p:panel>
+
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+							
+						}
+					</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="datos">
+	<on-entry>
+	<set name="viewScope.nombre" value="''"/>
+	<set name="viewScope.primer_apellido" value="''"/>
+	<set name="viewScope.segundo_apellido" value="''"/>
+	<set name="viewScope.email" value="''"/>
+	<set name="viewScope.movil" value="''"/>
+	<set name="viewScope.municipio" value="''"/>
+	<set name="viewScope.codigo" value="''"/>
+	<evaluate expression="CatalogosMunicipiosC.modelo('15')" result="viewScope.modeloMunicipios"/>
+	</on-entry>
+	<transition on="registrar" to="vistaRegistro">
+	<evaluate expression="Edomex2017RegistroUsuarioC.validarDatos(viewScope.codigo)" />
+	<set value="viewScope.nombre" name="requestScope.nombre"/>
+	<set value="viewScope.primer_apellido" name="requestScope.primer_apellido"/>
+	<set value="viewScope.segundo_apellido" name="requestScope.segundo_apellido"/>
+	<set value="viewScope.email" name="requestScope.email"/>
+	<set value="viewScope.movil" name="requestScope.movil"/>
+	<set value="viewScope.municipio" name="requestScope.municipio"/>
+	<set value="viewScope.codigo" name="requestScope.codigo"/>
+	</transition>
+	<transition on="fin" to="fin"/>
+	</view-state>
+	
+	
+	
+	<view-state id="vistaRegistro">
+	<on-entry>
+	<set name="viewScope.nombre" value="requestScope.nombre"/>
+	<set name="viewScope.primer_apellido" value="requestScope.primer_apellido"/>
+	<set name="viewScope.segundo_apellido" value="requestScope.segundo_apellido"/>
+	<set name="viewScope.email" value="requestScope.email"/>
+	<set name="viewScope.movil" value="requestScope.movil"/>
+	<set name="viewScope.municipio" value="requestScope.municipio"/>
+	<set name="viewScope.codigo" value="requestScope.codigo"/>
+	<evaluate expression="Edomex2017RegistroUsuarioC.registrar(viewScope.nombre,viewScope.primer_apellido,viewScope.segundo_apellido,viewScope.email,viewScope.movil,viewScope.municipio,viewScope.codigo)"/>
+	</on-entry>
+	</view-state>
+	<end-state id="fin"/>
+
+</flow>

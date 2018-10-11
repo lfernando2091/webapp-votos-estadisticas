@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Importación" action="cancelar"  />
+						<p:menuitem value="Logs" />
+					</p:breadCrumb>
+					<p:panel header="Logs">
+						<p:panelGrid columns="2">
+							<p:column>
+								Nombre Archivo:
+							</p:column>
+							<p:column>
+								${importacion.mapeoImportacion.archivo.getName()}
+							</p:column>
+							<p:column>
+								Nombre Tabla
+							</p:column>
+							<p:column>
+								${importacion.mapeoImportacion.nombreTablaImportacion}
+							</p:column>
+						</p:panelGrid>
+						<p:dataTable id="tabView" value="${tabla.listado}" var="fila"
+								scrollable="true" scrollWidth="100%">
+<!-- 								<p:column headerText="ID" style="width:10%" > -->
+<!-- 									<p:outputLabel value="${fila.id}" /> -->
+<!-- 								</p:column> -->
+								<p:column headerText="Descripcion"	>
+									<p:outputLabel value="${fila.descripcion}" />
+								</p:column>
+								<p:column headerText="Fecha"  style="width:20%" >
+									<p:outputLabel value="${fila.fecha}" />
+								</p:column>
+							</p:dataTable>
+							<f:facet name="footer">
+								<p:commandLink action="cancelar" immediate="true">
+										<p:graphicImage value="/resources/botones/REGRESAR.png" />
+								</p:commandLink>
+<!-- 								<p:commandButton action="cancelar" value="Regresar" immediate="true"/>  -->
+							</f:facet>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

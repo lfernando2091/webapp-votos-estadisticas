@@ -1,0 +1,90 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Cronograma" />
+						<p:menuitem value="Timeline" url="/app/cronograma/timeline" />
+						<p:menuitem value="#{padre.nombre}" rendered="#{padre != null}" action="cancelar" />
+						<p:menuitem value="Agregar Evento" />
+					</p:breadCrumb>
+					<p:panel
+						header="${nuevoEvento.id == null ? 'Agregar' : 'Editar'} Evento">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Grupo" />
+							<p:row>
+								<p:column>
+									<p:selectOneMenu id="grupos" value="${tablaGrupos.key}"
+										style="vertical-align: bottom; width: 200px;">
+										<f:selectItems value="${tablaGrupos.listado}" var="fila"
+											itemLabel="${fila.nombre}" itemValue="${fila.id}" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column>
+									<p:commandButton value="Agregar" action="limpiarNombre"
+										oncomplete="PF('dialogoAgregarGrupo').show();"
+										update="#{p:component('dialogo')}" style="margin-left: 5px;" />
+								</p:column>
+							</p:row>
+							<p:outputLabel value="Evento" />
+							<p:inputText value="${nuevoEvento.nombre}" />
+							<p:outputLabel value="Descripción" />
+							<p:editor value="${nuevoEvento.descripcionHTML}" />
+							<p:outputLabel value="Fecha Inicial" />
+							<p:calendar value="${nuevoEvento.inicio}"
+								converter="TimestampConverter" pattern="yyyy/MM/dd HH:mm"
+								locale="es" />
+							<p:outputLabel value="Fecha Final" />
+							<p:calendar value="${nuevoEvento.fin}"
+								converter="TimestampConverter" pattern="yyyy/MM/dd HH:mm"
+								locale="es" />
+							<p:outputLabel value="Icono" />
+							<p:selectOneMenu id="iconos" value="${tablaIconos.seleccionado}"
+								style="vertical-align: bottom; width: 200px;" var="icono" converter="IconoConverter">
+								<f:selectItems value="${tablaIconos.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+								<p:column>
+									<p:graphicImage value="/app/resources/${icono.ruta}" width="32" />
+								</p:column>
+								<p:column>
+									${icono.nombre}
+								</p:column>
+							</p:selectOneMenu>
+
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" action="guardarEvento" />
+								<p:commandButton value="Cancelar" action="cancelar"
+									immediate="true" />
+							</f:facet>
+						</p:panelGrid>
+					</p:panel>
+
+					<p:dialog id="dialogo" widgetVar="dialogoAgregarGrupo"
+						header="Agregar Grupo" visible="false" modal="true">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Grupo" />
+							<p:inputText value="${grupoNombre}" style="width: 200px;" />
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" action="guardarGrupo"
+									oncomplete="PF('dialogoAgregarGrupo').hide();"
+									update="#{p:component('grupos')}" />
+								<p:commandButton value="Cancelar" immediate="true"
+									onclick="PF('dialogoAgregarGrupo').hide();" />
+							</f:facet>
+						</p:panelGrid>
+					</p:dialog>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

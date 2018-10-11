@@ -1,0 +1,21 @@
+package com.saganet.politik.dominios_dm;
+
+public enum CatComunicacionDO {
+	CORREO_ELECTRONICO("Correo Electrónico"),
+	WHATSAPP("Whatsap"),
+	FACEBOOK ("Facebook"),
+	TWITTER("Twitter"),
+	MENSAJE_CELULAR("Mensaje Celular"),
+	NO_CONTESTA("No contesta");
+	
+	private final String nombre;
+
+	private CatComunicacionDO(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+	
+}

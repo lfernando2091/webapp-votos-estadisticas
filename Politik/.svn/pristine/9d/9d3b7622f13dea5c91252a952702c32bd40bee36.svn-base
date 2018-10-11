@@ -1,0 +1,65 @@
+package com.saganet.politik.controllers;
+
+import java.util.HashMap;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.components.log.BitacorasC;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.dominios.TiposAccionesDO;
+
+@Controller
+public class SeguridadController {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	@Autowired
+	BitacorasC bitacoraC;
+
+	@RequestMapping(value = "/sinAcceso", method = { RequestMethod.POST, RequestMethod.GET })
+	public String sinAcceso() {
+		return "sinAcceso";
+	}
+	
+	@RequestMapping(value = "/registroLogin", method = {RequestMethod.GET})
+	public String registroLogin(HttpServletRequest request){
+		HashMap<String, Object> parametros;
+		
+		parametros = new HashMap<>();
+		
+		sqlSession.update("administracion.usuarios.actualizarUltimoAcceso", getUsuario());
+		
+		parametros.put("usuario", getUsuario());
+		parametros.put("host", request.getRemoteHost());
+		parametros.put("cliente", request.getHeader("user-agent"));
+		sqlSession.insert("administracion.accesos.insertar", parametros);
+		
+		
+		bitacoraC.insert(TiposAccionesDO.ACCESO, "Login", getUsuario().getNick()+" accede desde " + request.getRemoteHost() + "  con " + request.getHeader("user-agent"), getUsuario().getNick());
+		
+		return "redirect:/app/";
+	}
+	
+	@RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
+	public String login(HttpServletRequest request){
+		return "login";
+	}
+	
+	@RequestMapping(value = "/sesionExpirada", method = {RequestMethod.GET})
+	public String sesionExpidara(){
+		return "sesionExpirada";
+	}
+	
+	private UsuarioEO getUsuario(){
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+}

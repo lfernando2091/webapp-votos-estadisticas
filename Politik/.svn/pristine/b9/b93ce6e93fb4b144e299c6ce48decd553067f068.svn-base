@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="diaD.capturaMovilizador">
+	<resultMap type="MovilizadorEO" id="movilizador">
+		<id 			column="MovilizadorEO_pkey" 						property="id" 				javaType="Integer" />
+		<result  		column="MovilizadorEO_nombre"						property="nombre" 			javaType="String"/>
+		<result  		column="MovilizadorEO_primerApellido"				property="primerApellido" 	javaType="String"/>
+		<result  		column="MovilizadorEO_segundoApellido"				property="segundoApellido" 	javaType="String"/>
+		<result  		column="MovilizadorEO_telefono"						property="telefono" 		javaType="String"/>
+		<result  		column="MovilizadorEO_celular"						property="celular" 			javaType="String"/>
+		<result  		column="MovilizadorEO_email"						property="email" 			javaType="String"/>
+		<result  		column="MovilizadorEO_nick"							property="nick" 			javaType="String"/>
+		<result  		column="MovilizadorEO_pw"							property="pw" 				javaType="String"/>
+		<result  		column="MovilizadorEO_tipo"							property="tipo" 			javaType="String"/>
+		<result 		column="MovilizadorEO_fecha_nacimiento" 			property="fechaNacimiento"	javaType="String" />
+		<result  		column="MovilizadorEO_calle"						property="calle" 			javaType="String"/>
+		<result  		column="MovilizadorEO_numeroInterior"				property="numeroInterior" 	javaType="String"/>
+		<result  		column="MovilizadorEO_numeroExterior"				property="numeroExterior" 	javaType="String"/>
+		<result  		column="MovilizadorEO_colonia"						property="colonia" 			javaType="String"/>
+		<result  		column="MovilizadorEO_cp"							property="cp" 				javaType="String"/>
+		<result			column="MovilizadorEO_nickRegistro"					property="nickRegistro"		javaType="String"/>
+		<result 	    column="MovilizadorEO_genero" 						property="genero"			javaType="com.saganet.politik.dominios.GenerosDO" />
+		<result 		column="MovilizadorEO_programa" 					property="programa"			javaType="com.saganet.politik.dominios.ProgramasEdoMexDO"/>
+		<association    column="MovilizadorEO_region"                     	property="region" 			select ="catalogos.geozonas.seleccionaPorIdRegion"/>
+		<association    column="MovilizadorEO_llave_municipio"              property="municipio" 		select="catalogos.municipios.buscarPorLlave"/>
+		<association    column="MovilizadorEO_llave_seccion"               	property="seccion" 			select="catalogos.secciones.porLlave"/>
+	</resultMap>
+
+	
+
+	<sql id="query">
+		SELECT 
+		MovilizadorEO.pkey 			 						MovilizadorEO_pkey,
+		MovilizadorEO.id_region 							MovilizadorEO_region, 
+		MovilizadorEO.id_municipio 							MovilizadorEO_idMunicipio, 
+		('15-'||MovilizadorEO.id_municipio::text)			MovilizadorEO_llave_municipio, 
+		MovilizadorEO.nombre								MovilizadorEO_nombre, 
+		MovilizadorEO.primer_apellido						MovilizadorEO_primerApellido, 
+		MovilizadorEO.segundo_apellido						MovilizadorEO_segundoApellido, 
+        MovilizadorEO.fecha_nacimiento						MovilizadorEO_fecha_nacimiento, 
+        MovilizadorEO.genero								MovilizadorEO_genero, 
+        MovilizadorEO.telefono								MovilizadorEO_telefono, 
+        MovilizadorEO.celular								MovilizadorEO_celular, 
+        MovilizadorEO.email									MovilizadorEO_email, 
+        MovilizadorEO.programa								MovilizadorEO_programa, 
+        MovilizadorEO.nick									MovilizadorEO_nick, 
+        MovilizadorEO.pw									MovilizadorEO_pw, 
+        MovilizadorEO.tipo									MovilizadorEO_tipo,
+        MovilizadorEO.calle				 					MovilizadorEO_calle, 
+       	MovilizadorEO.numero_interior						MovilizadorEO_numeroInterior, 
+       	MovilizadorEO.numero_exterior						MovilizadorEO_numeroExterior, 
+       	MovilizadorEO.colonia								MovilizadorEO_colonia, 
+       	MovilizadorEO.cp									MovilizadorEO_cp, 
+       	MovilizadorEO.seccion		 						MovilizadorEO_seccion,
+       ('15-'||MovilizadorEO.seccion::text)					MovilizadorEO_llave_seccion,	
+        MovilizadorEO.nick_registro							MovilizadorEO_nickRegistro
+ 		FROM dia_d.movilizadores 							MovilizadorEO
+	</sql>
+	
+	
+	<select id="buscarPorId" parameterType="Integer"  resultMap="movilizador">
+	<include refid="query" />
+		WHERE pkey = #{value}
+	</select>
+	
+	<select id="buscarPorNick" parameterType="String"  resultMap="movilizador">
+	<include refid="query" />
+		WHERE nick = #{value}
+	</select>
+	
+	<insert id="insertarMovilizador" parameterType="MovilizadorEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+				SELECT NEXTVAL('dia_d.movilizadores_pkey_seq')
+		</selectKey>
+		INSERT INTO dia_d.movilizadores(          
+            id_region, 
+            id_municipio, 
+            nombre, 
+            primer_apellido, 
+            segundo_apellido, 
+            fecha_nacimiento, 
+            genero, 
+            telefono, 
+            email, 
+            programa, 
+            nick, 
+            pw, 
+            tipo, 
+            seccion, 
+            calle, 
+            colonia, 
+            cp, 
+            numero_interior, 
+            celular, 
+            numero_exterior)
+   		VALUES (
+   			
+   			#{region.idParticion},
+   			#{municipio.idMunicipio},
+   			#{nombre},
+   			#{primerApellido},
+   			#{segundoApellido},
+   			#{fechaNacimiento},
+   			#{genero},
+   			#{telefono},
+   			#{email},
+   			#{programa},
+   			#{nick},
+   			#{pw},
+   			'CODIGO',
+   			#{seccion.idSeccion},
+   			#{calle},
+   			#{colonia},
+   			#{cp},
+   			#{numeroInterior},
+   			#{celular},
+   			#{numeroExterior})
+	</insert>
+	
+	<select id="contadorMovilizadores" resultType="Integer">
+			SELECT nextval('dia_d.movilizadores_pkey_seq')
+	</select>
+	
+	<select id="listado" resultMap="movilizador" parameterType="List">
+		<include refid="query"/>
+		<where>
+			programa in
+			<foreach collection="value" item="item" open="(" close=")" separator=",">
+				${item}
+			</foreach>
+		</where>
+		ORDER BY pkey desc
+	</select>
+	
+	
+	
+	<insert id="insertar" parameterType="MovilizadorEO">
+		
+		INSERT INTO dia_d.movilizadores(
+            id_region, id_municipio, nombre, primer_apellido, segundo_apellido, 
+            fecha_nacimiento, genero, telefono, celular, email, programa, 
+             tipo, seccion, calle, colonia, cp, numero_interior, 
+            numero_exterior, nick_registro )
+    	VALUES ( #{region.idParticion}, #{municipio.idMunicipio}, #{nombre}, #{primerApellido}, #{segundoApellido},
+				 #{fechaNacimiento}, #{genero}, #{telefono}, #{celular}, #{email}, #{programa},
+				 'SISTEMA', #{seccion.idSeccion}, #{calle}, #{colonia}, #{cp}, #{numeroInterior},
+				 #{numeroExterior}, #{nickRegistro} )
+	</insert>
+	
+	<update id="actualizar" parameterType="MovilizadorEO">
+		UPDATE dia_d.movilizadores
+   		   SET 	 id_region=#{region.idParticion}, id_municipio=#{municipio.idMunicipio}, nombre= #{nombre}, primer_apellido=#{primerApellido}, segundo_apellido=#{segundoApellido},
+       			 fecha_nacimiento=#{fechaNacimiento}, genero= #{genero}, telefono= #{telefono}, celular=#{celular}, email=#{email}, programa= #{programa} ,
+       			 tipo ='SISTEMA',seccion = #{seccion.idSeccion}, calle=#{calle}, colonia=#{colonia}, cp=#{cp}, numero_interior=#{numeroInterior},
+       			 numero_exterior= #{numeroExterior}
+ 		WHERE pkey = #{id}	
+	</update>
+	
+	<select id="cuentaMovilizados" parameterType="Integer" resultType="Integer">
+		SELECT count(*) as numeroMovilizados
+		  FROM dia_d.movilizados 
+         WHERE id_movilizador = #{value}
+	</select>
+	
+	
+	<delete id="eliminar" parameterType="integer">
+		DELETE FROM dia_d.movilizadores
+ 		 WHERE pkey = #{value}			
+	</delete>
+	
+	<select id="listadoRegionMunicipio" parameterType="hashmap" resultMap="movilizador">
+		<include refid="query"/>
+		WHERE seccion = #{seccion.idSeccion} AND 
+		MovilizadorEO.programa	 in
+			<foreach collection="programas" item="item" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+	</select>
+	
+	
+</mapper>

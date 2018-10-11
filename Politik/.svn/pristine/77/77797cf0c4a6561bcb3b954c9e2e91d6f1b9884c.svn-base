@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructurasEdoMex.coordinadorRegional">
+	<cache />
+
+	<resultMap type="EstructurasEdoMexCoordinadorRegionalEO" id="coordinadorRegional">
+		<id 			column="CoordinadorRegionalEO_pkey" 				property="id" 			javaType="Integer" />
+		<result 		column="CoordinadorMunicipalEO_programa" 			property="programa"		javaType="com.saganet.politik.dominios.EstructurasEdoMexDO"/>
+		<association 	column="CoordinadorMunicipalEO_nick"				property="usuario" 		select="administracion.usuarios.porNick"/>
+		<association 	column="CoordinadorRegionalEO_id_persona"			property="persona" 		select="mdm.personas.buscarPorIdPersona"/>
+		<association 	column="CoordinadorRegionalEO_id_region"			property="region" 		select="catalogos.geozonas.regionPorLlave"/>
+	</resultMap>
+
+	<sql id="query">
+		SELECT 
+			CoordinadorRegionalEO.pkey 							CoordinadorRegionalEO_pkey, 
+			CoordinadorRegionalEO.id_persona 					CoordinadorRegionalEO_id_persona, 
+			CoordinadorRegionalEO.id_region						CoordinadorRegionalEO_id_region, 
+			CoordinadorRegionalEO.programa						CoordinadorRegionalEO_programa, 
+			CoordinadorRegionalEO.nick							CoordinadorRegionalEO_nick
+		FROM estructuras_edomex.coordinadores_regionales 		CoordinadorRegionalEO
+	</sql>
+	
+	<sql id="orderBy">
+		ORDER BY CoordinadorRegionalEO.id_persona, CoordinadorRegionalEO.id_region
+	</sql>
+
+	<select id="listado" resultMap="coordinadorRegional" parameterType="hashmap">
+		<include refid="query" />
+		<where>
+			<if test="programas!=null">
+				CoordinadorRegionalEO.programa in 
+					<foreach collection="programas" open="(" separator="," close=")" item="item" index="index">
+						#{item}
+					</foreach> AND
+					<if test="region!=null">
+						CoordinadorRegionalEO.id_region=#{region.idParticion}
+					</if>
+			</if>
+			<if test="programas==null">
+					<if test="region!=null">
+						CoordinadorRegionalEO.id_region=#{region.idParticion}
+					</if>
+			</if>
+		</where>
+		<include refid="orderBy" />
+	</select>
+	
+	<insert id="insertar" parameterType="EstructurasEdoMexCoordinadorRegionalEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT nextval('estructuras_edomex.coordinadores_regionales_pkey_seq'::regclass)
+		</selectKey>
+		INSERT INTO estructuras_edomex.coordinadores_regionales(pkey, id_persona, id_region, programa, nick)
+    	VALUES (#{id}, #{persona.id}, #{region.idParticion}, #{programa}, #{usuario.nick})
+	</insert>
+	
+	<delete id="eliminar" parameterType="EstructurasEdoMexCoordinadorRegionalEO">
+		DELETE FROM estructuras_edomex.coordinadores_regionales
+ 		WHERE pkey= #{id}
+	</delete>
+</mapper>

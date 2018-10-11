@@ -1,0 +1,352 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+
+					<p:tabView>
+						
+						
+						
+						<p:tab title="Concentrado Usuarios">
+							<p:panel header="Estadísticas Concentrado Usuarios">
+								
+								<p:dataTable
+									id="dtc1" 
+									var="li"
+									value="${concentrado1}" sortBy="${li.get('reporte')}">
+									<p:column headerText="Región" sortBy="${li.get('region')}">
+										<h:outputText value="${li.get('region')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Usuarios Registrados" sortBy="${li.get('usuarios_registrados')}" style="text-align:right">
+										<h:outputText value="${li.get('usuarios_registrados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Con 10 ó más Encuestas" sortBy="${li.get('mas_de_10')}" style="text-align:right">
+										<h:outputText value="${li.get('mas_de_10')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Con 10 ó más Encuestas" sortBy="${li.get('por_mas_de_10')}" style="text-align:right">
+										<h:outputText value="${li.get('por_mas_de_10')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Con menos de 10 Encuestas" sortBy="${li.get('menos_de_10')}" style="text-align:right">
+										<h:outputText value="${li.get('menos_de_10')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Con menos de 10 Encuestas" sortBy="${li.get('por_menos_de_10')}" style="text-align:right">
+										<h:outputText value="${li.get('por_menos_de_10')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Total" sortBy="${li.get('total_uconectados')}" style="text-align:right">
+										<h:outputText value="${li.get('total_uconectados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Encuestas Con Respuesta" sortBy="${li.get('con_resp')}" style="text-align:right">
+										<h:outputText value="${li.get('con_resp')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Encuestas Con Respuesta" sortBy="${li.get('por_con_resp')}" style="text-align:right">
+										<h:outputText value="${li.get('por_con_resp')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Encuestas Sin Respuesta" sortBy="${li.get('sin_resp')}" style="text-align:right">
+										<h:outputText value="${li.get('sin_resp')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Encuestas Sin Respuesta" sortBy="${li.get('por_sin_resp')}" style="text-align:right">
+										<h:outputText value="${li.get('por_sin_resp')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Total de Encuestas" sortBy="${li.get('total_enc_sincronizadas')}" style="text-align:right">
+										<h:outputText value="${li.get('total_enc_sincronizadas')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Encuestas Esperadas" sortBy="${li.get('de_usuarios_conectados')}" style="text-align:right">
+										<h:outputText value="${li.get('de_usuarios_conectados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:summaryRow>
+										<p:column colspan="1" >
+											<h:outputText  value="Totales: " />
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_usuarios_registrados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_mas_de_10')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_menos_de_10')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_total_uconectados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_con_resp')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_sin_resp')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_total_enc_sincronizadas')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_de_usuarios_conectados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+									</p:summaryRow>
+									
+<!-- 									<f:facet name="footer"> -->
+<!-- 										<h:panelGrid columns="8"> -->
+<!-- 											<h:outputText value="Totales: " style="width:150px;"/> -->
+<!-- 											<h:outputText value="${concentrado1Totales.get('total_usuarios_registrados')}"> -->
+<!-- 												<f:convertNumber maxFractionDigits="3" /> -->
+<!-- 											</h:outputText> -->
+<!-- 											<h:outputText value="${concentrado1Totales.get('total_mas_de_10')}" style="width:11%;"> -->
+<!-- 												<f:convertNumber maxFractionDigits="3" /> -->
+<!-- 											</h:outputText> -->
+<!-- 											<h:outputText value="${concentrado1Totales.get('total_menos_de_10')}" style="width:11%;"> -->
+<!-- 												<f:convertNumber maxFractionDigits="3" /> -->
+<!-- 											</h:outputText> -->
+<!-- 											<h:outputText value="${concentrado1Totales.get('total_total_uconectados')}" style="width:11%;"> -->
+<!-- 												<f:convertNumber maxFractionDigits="3" /> -->
+<!-- 											</h:outputText> -->
+<!-- 											<h:outputText value="${concentrado1Totales.get('total_con_resp')}" style="width:11%;"> -->
+<!-- 												<f:convertNumber maxFractionDigits="3" /> -->
+<!-- 											</h:outputText> -->
+<!-- 											<h:outputText value="${concentrado1Totales.get('total_sin_resp')}" style="width:11%;"> -->
+<!-- 												<f:convertNumber maxFractionDigits="3" /> -->
+<!-- 											</h:outputText> -->
+<!-- 											<h:outputText value="${concentrado1Totales.get('total_total_enc_sincronizadas')}" style="width:11%;"> -->
+<!-- 												<f:convertNumber maxFractionDigits="3" /> -->
+<!-- 											</h:outputText> -->
+<!-- 											<h:outputText value="${concentrado1Totales.get('total_de_usuarios_conectados')}" style="width:11%;"> -->
+<!-- 												<f:convertNumber maxFractionDigits="3" /> -->
+<!-- 											</h:outputText> -->
+<!-- 										</h:panelGrid> -->
+<!-- 									</f:facet> -->
+									
+								</p:dataTable>
+								
+							</p:panel>
+						</p:tab>
+						
+						
+
+						<p:tab title="Usuarios">
+							<p:panel header="Estadísticas por usuarios">
+								<h:panelGrid columns="9">
+									<p:outputLabel value="Región: " />
+									<p:selectOneMenu id="sorg" value="${region}">
+										<f:selectItems var="r" value="${regiones}"
+											itemLabel="${r.nombre}" itemValue="${r.id}" />
+<!-- 										<p:ajax event="valueChange" onstart="buscarUsuariosPorRegion()" update="dtUR"/> -->
+<!-- 									<p:ajax event="valueChange" /> -->
+									</p:selectOneMenu>
+									<p:outputLabel value="Usuario: " />
+									<p:inputText value="${usuario}"/>
+									<p:outputLabel value="Nombre: " />
+									<p:inputText value="${nombre}"/>
+									<p:outputLabel value="IMEI: " />
+									<p:inputText value="${imei}"/>
+									<p:commandButton value="Actualizar" action="buscarUsuariosPorRegion" update="dtUR" />
+								</h:panelGrid>
+								<p:dataTable id="dtUR" var="li" value="${listadoPorUsuarioRegion}"
+											 rows="20" paginator="true">
+									
+									<p:column headerText="Región" width="50">
+										<h:outputText value="${li.get('region')}" />
+									</p:column>
+									<p:column headerText="Usuario" width="150" >
+										<h:outputText value="${li.get('usuario')}" />
+									</p:column>
+									<p:column headerText="Nombre">
+										<h:outputText
+											value="${li.get('nombre')} ${li.get('primerapellido')} ${li.get('segundoapellido')}" />
+									</p:column>
+									<p:column headerText="IMEI" width="150" filterable="true"
+										filterBy="${li.get('imei')}"
+										filterMatchMode="contains" >
+										<h:outputText
+											value="${li.get('imei')}" />
+									</p:column>
+									<p:column headerText="Encuestas" width="80" sortable="true"
+										sortBy="${li.get('num')}">
+										<h:outputText value="${li.get('num')}" />
+									</p:column>
+								</p:dataTable>
+								
+<!-- 								<p:remoteCommand name="buscarUsuariosPorRegion" -->
+<!-- 									action="buscarUsuariosPorRegion" update="dtUR" /> -->
+
+								<f:facet name="footer">
+									<h:commandLink>
+										<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+										<p:dataExporter type="xls" target="dtUR" fileName="usuarios" />
+									</h:commandLink>
+								</f:facet>
+								
+							</p:panel>
+							
+						</p:tab>
+						
+						<p:tab title="Fechas">
+						
+							<p:panel header="Estadísticas por fechas">
+								
+								<h:panelGrid columns="2">
+									<p:outputLabel value="Fecha Inicio: " />
+									<p:calendar value="${fInicio}" pattern="dd/MM/yyyy" mask="true" />
+									<p:outputLabel value="Fecha Fin: " />
+									<p:calendar value="${fFin}" pattern="dd/MM/yyyy" mask="true" />
+									<p:commandButton value="Buscar" action="buscarPorFecha" update="@form"/>
+								</h:panelGrid>
+								
+								<p:dataTable
+									id="dtFS" 
+									var="li"
+									value="${listadoPorFechas}" rows="20" paginator="true">
+									<p:column headerText="Fecha">
+										<h:outputText value="${li.get('fecha')}" />
+									</p:column>
+									<p:column headerText="Encuestas" >
+										<h:outputText value="${li.get('num')}" />
+									</p:column>
+									<f:facet name="footer">
+										<p:outputLabel value="Total Encuestas: "/>
+										<p:outputLabel value="${totalEncuestasPorFechas}"/>
+									</f:facet>
+								</p:dataTable>
+								<f:facet name="footer">
+									<h:commandLink>
+										<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+										<p:dataExporter type="xls" target="dtFS" fileName="fechas" />
+									</h:commandLink>
+								</f:facet>
+							</p:panel>
+						
+						</p:tab>
+						
+						<p:tab title="Regiones">
+						
+							<p:panel header="Estadísticas por Regiones">
+								<h:panelGrid columns="3">
+									<p:commandButton value="Actualizar" action="actualizarRegiones" update="@form"/>
+								</h:panelGrid>
+								<p:dataTable
+									id="dtRG" 
+									var="li"
+									value="${listadoPorRegiones}" >
+									<p:column headerText="Región">
+										<h:outputText value="${li.get('region')}" />
+									</p:column>
+									<p:column headerText="Encuestas" sortable="true" sortBy="${li.get('num')}">
+										<h:outputText value="${li.get('num')}" />
+									</p:column>
+									<f:facet name="footer">
+										<p:outputLabel value="Total Encuestas: "/>
+										<p:outputLabel value="${totalEncuestas}"/>
+									</f:facet>
+								</p:dataTable>
+								
+								<f:facet name="footer">
+									<h:commandLink>
+										<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+										<p:dataExporter type="xls" target="dtRG" fileName="fechas" />
+									</h:commandLink>
+								</f:facet>
+							</p:panel>
+						
+						</p:tab>
+						
+						
+						
+						
+<!-- 						<p:tab title="Preguntas"> -->
+<!-- 							<p:panel header="Estadísticas por Preguntas"> -->
+							
+<!-- 								<p:panelGrid columns="2"> -->
+									
+<!-- 									<p:chart type="pie" model="${pg1}" style="width:400px;height:300px" /> -->
+									
+<!-- 									<p:chart type="pie" model="${pg3}" style="width:400px;height:300px" /> -->
+									
+<!-- 								</p:panelGrid> -->
+							
+<!-- 							</p:panel> -->
+<!-- 						</p:tab> -->
+					</p:tabView>
+					
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,80 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Reporte Eventos" id="pnlFiltro">
+					<p:panelGrid columns="2" columnClasses="topAlign topAlign">
+					<p:outputLabel value="Desde:  -${desde}"/>
+					<p:calendar value="${desde}">
+					<p:ajax event="dateSelect" update="pnlFiltro" />
+					</p:calendar>
+					<p:outputLabel value="Hasta:  "/>
+					<p:calendar value="${hasta}">
+					<p:ajax event="dateSelect" update="pnlFiltro" />
+					</p:calendar>
+					<p:outputLabel value="Dependencia: "/>
+					<p:selectOneMenu label="Dependencia" value="${modeloDependencias.seleccionado}" converter="ObjectConverter" filter="true" filterMatchMode="contains">
+					<p:ajax event="change" onstart="llenarTerritorios();" />
+					<f:selectItems id="territorios" value="${modeloDependencias.listado}" var="fila" itemLabel="${fila.siglas} - ${fila.dependencia}" itemValue="${fila}"/>
+					</p:selectOneMenu>
+					<p:outputLabel value="Territorios: "/>
+					<p:selectCheckboxMenu label="Territorios" value="${modeloTerritorios.seleccionMultiple}" converter="ObjectConverter" disabled="${modeloTerritorios.listado.isEmpty()?'true':'false'}">
+					<f:selectItems value="${modeloTerritorios.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}"/>					
+					</p:selectCheckboxMenu>
+					</p:panelGrid>
+					<f:facet name="footer">
+					<p:remoteCommand name="llenarTerritorios" action="llenarTerritorios" onstart="PF('cargandoResultados').show()" oncomplete="PF('cargandoResultados').hide()" update="pnlFiltro"/>
+				    <p:commandLink ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" title="Generar Reporte en PDF">
+				    <p:graphicImage url="/resources/botones/GENERAR_PDF.png"/>
+				    <p:fileDownload value="#{descargarArchivosBean.file}" />
+				    </p:commandLink>
+					</f:facet>
+					</p:panel>
+					
+					<p:dialog widgetVar="cargandoResultados"
+						header="Cargando Resultados" closeOnEscape="false"
+						closable="false" modal="true" appendTo="@(body)">
+						<p:panelGrid columns="1">
+							<p:outputLabel value="Se están cargando los resultados." />
+							<p:outputLabel
+								value="Esta operación puede tardar, por favor espere." />
+							<p:outputLabel
+								value="No refresque la página ni oprima el botón atrás del explorador." />
+							<!-- <p:graphicImage name="cargando.gif" /> -->
+						</p:panelGrid>
+					</p:dialog>
+					
+					<h:outputStylesheet>
+					.topAlign{
+						width:200px;
+					}
+					.topAlign2{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+				
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				
+				<script type="text/javascript">
+function start() {
+    PF('cargandoResultados').show();
+}
+
+function stop() {
+    PF('cargandoResultados').hide();
+}
+</script>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

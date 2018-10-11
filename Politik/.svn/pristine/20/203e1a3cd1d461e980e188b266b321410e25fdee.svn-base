@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="cuestionario">
+	<on-entry>
+	<evaluate expression="CuestionarioC.cuestionarioByNick()" result="viewScope.cuestionario"/>
+	<evaluate expression="CuestionarioC.estatusCuestionario()" result="viewScope.estatusCuestionario"/>
+	</on-entry>
+	<transition on="insertar" to="cuestionario">
+	<evaluate expression="CuestionarioC.guardarCuestionario(viewScope.cuestionario)"/>
+	</transition>
+	
+	<transition on="cancelar" to="cuestionario">
+	<evaluate expression="CuestionarioC.cancelarCuestionario(viewScope.cuestionario.contacto)"/>
+	</transition>
+	</view-state>
+
+</flow>

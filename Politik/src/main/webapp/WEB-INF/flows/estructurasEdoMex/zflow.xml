@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="UtilidadesDominiosC.modeloEstructurasEdoMex(requestScope.estructura)" result="viewScope.modeloEstructuras" />
+			<evaluate expression="CatalogosGeozonasC.modeloRegionesEdoMex(requestScope.region)" result="viewScope.modeloRegiones" />
+			<evaluate expression="CatalogosMunicipiosC.modeloRegion(requestScope.municipio, viewScope.modeloRegiones.seleccionado)" result="viewScope.modeloMunicipios" />
+			<evaluate expression="EstructurasEdoMexEstructurasEdoMexC.modelo(viewScope.modeloEstructuras.seleccionado, viewScope.modeloRegiones.seleccionado,viewScope.modeloMunicipios.seleccionado)" result="viewScope.resultado" />
+			<set name="viewScope.modelo" value="viewScope.resultado.get('modelo')"/>		
+		</on-entry>
+		<transition on="actualizar">
+			<evaluate expression="CatalogosMunicipiosC.modeloRegion(viewScope.modeloRegiones.seleccionado)" result="viewScope.modeloMunicipios" />
+			<evaluate expression="EstructurasEdoMexEstructurasEdoMexC.modelo(viewScope.modeloEstructuras.seleccionado, viewScope.modeloRegiones.seleccionado, viewScope.modeloMunicipios.seleccionado)" result="viewScope.resultado" />
+			<set name="viewScope.modelo" value="viewScope.resultado.get('modelo')"/>		
+		</transition>
+		<transition on="actualizarMunicipios">
+			<evaluate expression="EstructurasEdoMexEstructurasEdoMexC.modelo(viewScope.modeloEstructuras.seleccionado, viewScope.modeloRegiones.seleccionado, viewScope.modeloMunicipios.seleccionado)" result="viewScope.resultado" />
+			<set name="viewScope.modelo" value="viewScope.resultado.get('modelo')"/>		
+		</transition>
+		<transition on="eliminar" to="listado">
+			<evaluate expression="EstructurasEdoMexEstructurasEdoMexC.eliminar(viewScope.modeloEstructuras.seleccionado, viewScope.modelo.seleccionado)"/>
+			<set name="requestScope.estructura" value="viewScope.modeloEstructuras.seleccionado"/>
+			<set name="requestScope.region" value="viewScope.modeloRegiones.seleccionado"/>
+			<set name="requestScope.municipio" value="viewScope.modeloMunicipios.seleccionado"/>
+		</transition>
+		<transition on="agregar" to="buscarPersona">
+			<set name="flowScope.estructura" value="viewScope.modeloEstructuras.seleccionado"/>
+			<set name="flowScope.region" value="viewScope.modeloRegiones.seleccionado"/>
+			<set name="flowScope.municipio" value="viewScope.modeloMunicipios.seleccionado"/>
+		</transition>
+	</view-state>
+	
+	<subflow-state id="buscarPersona" subflow="mdm/buscadores/personas">
+		<input name="flag" value="true"/>
+		<transition on="personaLocalizada" to="listado">
+			<evaluate expression="EstructurasEdoMexEstructurasEdoMexC.guardar(flowScope.estructura, flowScope.region, flowScope.municipio, conversationScope.persona)"/>
+			<set name="requestScope.estructura" 	value="flowScope.estructura"/>
+			<set name="requestScope.region" 		value="flowScope.region"/>
+			<set name="requestScope.municipio" 		value="flowScope.municipio"/>
+		</transition>
+		<transition on="personaNoLocalizada" to="listado" >
+			<set name="requestScope.estructura" 	value="flowScope.estructura"/>
+			<set name="requestScope.region" 		value="flowScope.region"/>
+			<set name="requestScope.municipio" 		value="flowScope.municipio"/>
+		</transition>
+	</subflow-state>
+	
+	<end-state id="fin"/>
+</flow>

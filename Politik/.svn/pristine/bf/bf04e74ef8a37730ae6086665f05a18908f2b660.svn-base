@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="EstructurasLegislaturasC.modelo()" result="viewScope.modeloLegislaturas" />
+		</on-entry>
+		
+		<transition on="agregar" to="agregarEditar">
+			<evaluate expression="EstructurasLegislaturasC.nueva()" result="flowScope.legislaturaCRUD" />
+		</transition>
+	</view-state>
+	
+	<view-state id="agregarEditar">
+		<on-entry>
+			<evaluate expression="UtilidadesDominiosC.modeloNiveles()" result="viewScope.modeloNiveles" />
+			<evaluate expression="CatalogosEntidadesC.modelo()" result="viewScope.modeloEntidades" />
+		</on-entry>
+		
+		<transition on="guardar" to="listado">
+			<evaluate expression="EstructurasLegislaturasC.insertar(flowScope.legislaturaCRUD)" />
+			<set name="flowScope.legislaturaCRUD" value="null" />
+		</transition>
+		
+		<transition on="cancelar" to="listado">
+			<set name="flowScope.legislaturaCRUD" value="null" />
+		</transition>
+	</view-state>
+	
+</flow>

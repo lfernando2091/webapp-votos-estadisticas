@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructurasEdoMex.supervisor">
+	<cache />
+
+	<resultMap type="EstructurasEdoMexSupervisorEO" id="supervisor">
+		<id 			column="SupervisorEO_pkey" 					property="id" 			javaType="Integer" />
+		<result 		column="CoordinadorMunicipalEO_programa" 	property="programa"		javaType="com.saganet.politik.dominios.EstructurasEdoMexDO"/>
+		<association 	column="CoordinadorMunicipalEO_nick"		property="usuario" 		select="administracion.usuarios.porNick"/>
+		<association 	column="SupervisorEO_id_persona"			property="persona" 		select="mdm.personas.buscarPorIdPersona"/>
+		<association 	column="SupervisorEO_id_region"				property="region" 		select="catalogos.geozonas.regionPorLlave"/>
+		<association 	column="SupervisorEO_llave_municipio"		property="municipio" 	select="catalogos.municipios.buscarPorLlave"/>
+	</resultMap>
+
+	<sql id="query">
+		SELECT 
+			SupervisorEO.pkey 								SupervisorEO_pkey, 
+			SupervisorEO.id_persona 						SupervisorEO_id_persona, 
+			SupervisorEO.id_region							SupervisorEO_id_region, 
+			'15-'||SupervisorEO.id_municipio::text			SupervisorEO_llave_municipio, 
+			SupervisorEO.programa							SupervisorEO_programa, 
+			SupervisorEO.nick								SupervisorEO_nick
+		FROM estructuras_edomex.supervisores 				SupervisorEO
+	</sql>
+	
+	<sql id="orderBy">
+		ORDER BY SupervisorEO.id_persona, SupervisorEO.id_region, SupervisorEO.id_municipio
+	</sql>
+
+	<select id="listado" resultMap="supervisor" parameterType="hashmap">
+		<include refid="query" />
+		<where>
+			<if test="programas!=null">
+				SupervisorEO.programa in 
+				<foreach collection="programas" open="(" separator="," close=")" item="item" index="index">
+					#{item}
+				</foreach> AND
+				<if test="region!=null">
+					SupervisorEO.id_region=#{region.idParticion}
+				</if>
+				<if test="municipio!=null">
+					AND SupervisorEO.id_municipio=#{municipio.idMunicipio}
+				</if>
+			</if>
+			<if test="programas==null">
+				<if test="region!=null">
+					SupervisorEO.id_region=#{region.idParticion}
+				</if>
+				<if test="municipio!=null">
+					AND SupervisorEO.id_municipio=#{municipio.idMunicipio}
+				</if>
+			</if>
+		</where>
+		<include refid="orderBy" />
+	</select>
+	
+	<select id="buscarPorID" resultMap="supervisor" parameterType="Integer">
+		<include refid="query" />
+		WHERE SupervisorEO.pkey=#{value}
+	</select>
+	
+	
+	<insert id="insertar" parameterType="EstructurasEdoMexSupervisorEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT nextval('estructuras_edomex.supervisores_pkey_seq'::regclass)
+		</selectKey>
+		INSERT INTO estructuras_edomex.supervisores(pkey, id_persona, id_region, id_municipio, programa, nick)
+    	VALUES (#{id}, #{persona.id}, #{region.idParticion}, #{municipio.idMunicipio}, #{programa}, #{usuario.nick})
+	</insert>
+	
+	<delete id="eliminar" parameterType="EstructurasEdoMexSupervisorEO">
+		DELETE FROM estructuras_edomex.supervisores
+ 		WHERE pkey= #{id}
+	</delete>
+</mapper>

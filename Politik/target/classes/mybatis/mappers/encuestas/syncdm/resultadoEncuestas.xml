@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper	namespace="encuestas.syncdm.resultadoEncuestas">
+	
+<sql id="query">
+SELECT a.pkey, id_usuario, id_contacto, id_encuesta, id_encuesta_estado, 
+       inicio_encuesta, fin_encuesta, latitud_encuesta, longitud_encuesta, 
+       imei, p_1, p_2, p_3, p_4, p_5, p_6, p_7, p_8, p_9, p_10, p_11, 
+       p_12, p_13, p_14, p_15, p_16, p_17, p_18, p_19, p_20, p_21, p_22, 
+       p_23, p_24, p_25, p_26, p_27, p_28, p_29, p_30, p_31, p_32, p_33, 
+       p_34, p_35, p_36, p_37, p_38, p_39, p_40, p_41, p_42, p_43, p_44, 
+       p_45, p_46, p_47, p_48, p_49, p_50, p_51, p_52, p_53, p_54, p_55, 
+       p_56, p_57, p_58, p_59, p_60, p_61, p_62, p_63, p_64, p_65, p_66, 
+       p_67, p_68, p_69, p_70, p_71, p_72, p_73, p_74, p_75, p_76, p_77, 
+       p_78, p_79, p_80, p_81, p_82, p_83, p_84, p_85, p_86, p_87, p_88, 
+       p_89, p_90, p_91, p_92, p_93, p_94, p_95, p_96, p_97, p_98, p_99, 
+       p_100, p_101, p_102, p_103, p_104, p_105, p_106, p_107, p_108, 
+       p_109, p_110, p_111, p_112, p_113, p_114, p_115, p_116, p_117, 
+       p_118, p_119, p_120, p_121, p_122, p_123, p_124, p_125, p_126, 
+       p_127, p_128, p_129, p_130, p_131, p_132, p_133, p_134, p_135, 
+       p_136, p_137, p_138, p_139, p_140, p_141, p_142, p_143, p_144, 
+       p_145, p_146, p_147, p_148, p_149, p_150, p_151, p_152, p_153, 
+       p_154, p_155, p_156, p_157, p_158, p_159, p_160, p_161, p_162, 
+       p_163, p_164, p_165, p_166, p_167, p_168, p_169, p_170, p_171, 
+       p_172, p_173, p_174, p_175, p_176, p_177, p_178, p_179, p_180, 
+       p_181, p_182, p_183, p_184, fecha_sincronizacion,
+       b.pkey, b.clave_elector, b.nombre nombre_c, b.paterno paterno_c, b.materno materno_c, b.calle, b.num_exterior, 
+       b.num_interior, b.colonia, b.cp, b.municipio, b.localidad, b.seccion, b.manzana, 
+       b.llave_territorio, b.cadena_qr_abierta, b.cadena_qr_crypto, b.zona
+  FROM encuestas_dm.r_3 a
+  join bomberazos.imjuve_encuesta01 b on (a.id_contacto = b.pkey)
+</sql>
+<select id="resultado" parameterType="Integer" resultType="hashmap">
+<include refid="query"/>
+where id_contacto = #{value}
+
+</select>
+
+<select id="resultadoUsuario" parameterType="Integer" resultType="hashmap">
+<include refid="query"/>
+where id_usuario = #{value}
+
+</select>
+
+<update id="insertarPersona" parameterType="hashmap">
+update encuestas_dm.r_3
+set 
+${c1} = 'SI',
+${c2} = '${persona.nombre}',
+${c3} = '${persona.paterno}',
+${c4} = '${persona.materno}',
+${c5} = '${persona.sexo}',
+${c6} = '${persona.edad}',
+${c7} = '${persona.nivelEstudios}',
+${c8} = '${persona.estudia}',
+${c9} = '${persona.ocupacion}',
+${c10} = '${persona.afiliado}',
+${c11} = '${persona.estado}',
+${c12} = '${persona.fechaNacimiento}',
+${c13} = '${persona.jefe}',
+${c14} = '${persona.noCelular}',
+${c15} = '${persona.donado}',
+${c16} = '${persona.celular}',
+${c17} = '${persona.saldo}'
+where pkey = ${id_encuesta}
+</update>
+<update id="eliminar" parameterType="hashmap">
+update encuestas_dm.r_3
+set 
+${c1} = 'NO',
+${c2} = '-',
+${c3} = '-',
+${c4} = '-',
+${c5} = '-',
+${c6} = '-',
+${c7} = '-',
+${c8} = '-',
+${c9} = '-',
+${c10} = '-',
+${c11} = '-',
+${c12} = '-',
+${c13} = '-',
+${c14} = '-',
+${c15} = '-',
+${c16} = '-',
+${c17} = '-'
+where pkey = ${idEncuesta}
+
+</update>
+</mapper>

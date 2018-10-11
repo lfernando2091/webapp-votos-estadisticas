@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.tablas">
+	<cache />
+	
+	<resultMap type="TablaEO" id="tabla">
+		<id column="TablaEO_id" property="id" javaType="Integer"/>
+		<result column="TablaEO_tabla" property="tabla" javaType="String"/>
+		<result column="TablaEO_descripcion" property="descripcion" javaType="String"/>
+		<result column="TablaEO_campoParticion" property="campoParticion" javaType="String"/>
+		<result column="TablaEO_particionada" property="particionada" javaType="Boolean"/>
+		<collection property="particiones" ofType="TablaParticionEO" resultMap="catalogos.tablasParticiones.tablaParticion" />
+	</resultMap>
+	
+	<select id="listado" resultMap="tabla">
+		select 
+			TablaEO.id_tabla					TablaEO_id,
+			TablaEO.tabla						TablaEO_tabla,
+			TablaEO.descripcion					TablaEO_descripcion,
+			TablaEO.campo_particion				TablaEO_campoParticion,
+			TablaEO.particionada				TablaEO_particionada,
+			TablaParticionEO.id_tabla_particion	TablaParticionEO_id,
+			TablaParticionEO.id_tabla			TablaParticionEO_idTabla,
+			TablaParticionEO.id_particion		TablaParticionEO_idParticion,
+			TablaParticionEO.particion			TablaEO_particion
+		from catalogos.tablas TablaEO
+		left join catalogos.tablas_particiones TablaParticionEO on (TablaEO.id_tabla = TablaParticionEO.id_tabla)
+		order by TablaEO.tabla, TablaParticionEO.id_particion
+	</select>
+	
+	<select id="buscarTabla" resultMap="tabla" parameterType="Integer">
+		SELECT 
+		id_tabla					TablaEO_id, 
+		tabla 						TablaEO_tabla,
+		descripcion 				TablaEO_descripcion,
+		campo_particion 			TablaEO_campoParticion,
+		particionada				TablaEO_particionada
+  		FROM catalogos.tablas
+  		where id_tabla = #{value}
+	</select>
+	
+	<insert id="insertar" parameterType="TablaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT nextval('catalogos.tablas_id_tabla_seq'::regclass)
+		</selectKey>
+		INSERT INTO catalogos.tablas(id_tabla, tabla, descripcion, campo_particion, particionada)
+    	VALUES (#{id}, #{tabla}, #{descripcion}, #{campoParticion}, #{particionada})
+	</insert>
+	
+	<update id="crearTabla" parameterType="hashmap">
+		CREATE TABLE warehouse.${tabla.tabla}
+		(
+			id_politik serial NOT NULL,
+			<foreach collection="campos" item="item" separator="," close=",">
+				${item.nombre} ${item.tipo.tipo}
+			</foreach>
+			CONSTRAINT ${tabla.tabla}_pk PRIMARY KEY (id_politik)
+		)
+		WITH (
+  			OIDS=TRUE
+		);
+	</update>
+	
+	<update id="indiceTexto" parameterType="hashmap">
+		CREATE INDEX ${nombre}
+  		ON warehouse.${tabla}
+  		USING btree
+  		(#{campo} COLLATE pg_catalog."default")
+	</update>
+	
+	<update id="indiceEntero" parameterType="hashmap">
+		CREATE INDEX ${nombre}
+  		ON warehouse.${tabla}
+  		USING btree
+  		(${campo})
+	</update>
+	
+	<update id="fk" parameterType="hashmap">
+		ALTER TABLE warehouse.${tabla}
+  		ADD CONSTRAINT ${nombre} FOREIGN KEY (${campo}) REFERENCES warehouse.${tablaRef} (${campoRef}) ON UPDATE NO ACTION ON DELETE NO ACTION
+	</update>
+</mapper>

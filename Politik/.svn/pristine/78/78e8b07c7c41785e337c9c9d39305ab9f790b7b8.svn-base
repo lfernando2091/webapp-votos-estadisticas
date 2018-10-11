@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.admin.reglasResultados">
+	<cache />
+	
+	<resultMap type="ReglaResultadoEO" id="reglaResultado">
+		<id column="ReglaResultadoEO_id" property="id" javaType="Integer"/>
+		
+		<result column="ReglaResultadoEO_idRegla" property="idRegla" javaType="Integer"/>
+		<result column="ReglaResultadoEO_resultado" property="resultado" javaType="String"/>
+		<result column="ReglaResultadoEO_nick" property="nick" javaType="String"/>
+		<result column="ReglaResultadoEO_fecha" property="fecha" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			pkey										ReglaResultadoEO_id, 
+			id_regla									ReglaResultadoEO_idRegla, 
+			resultado									ReglaResultadoEO_resultado, 
+			nick										ReglaResultadoEO_nick, 
+			to_char(fecha, 'YYYY-MM-DD HH12:MI:SS')		ReglaResultadoEO_fecha
+  		FROM encuestas.reglas_resultados
+	</sql>
+	
+	<select id="listado" resultMap="reglaResultado" parameterType="ReglaEncuestaEO">
+		<include refid="query"/>
+		where id_regla = #{id}
+		ORDER BY pkey 
+	</select>
+	
+	<insert id="insertar" parameterType="ReglaResultadoEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('encuestas.reglas_resultados_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas.reglas_resultados(
+            pkey, id_regla, resultado, nick)
+    	VALUES (#{id}, #{idRegla}, #{resultado}, #{nick});
+	</insert>
+	
+	<select id="validarReglaResultado" parameterType="ReglaResultadoEO" resultType="Integer">
+		SELECT count(*)
+  		FROM encuestas.reglas_resultados
+  		WHERE id_regla = #{idRegla}
+	</select>
+	
+	<update id="actualizar" parameterType="ReglaResultadoEO">
+		UPDATE encuestas.reglas_resultados
+   		SET resultado = #{resultado}, nick = #{nick}, fecha = now()
+ 		WHERE id_regla = #{idRegla}
+	</update>
+	
+</mapper>

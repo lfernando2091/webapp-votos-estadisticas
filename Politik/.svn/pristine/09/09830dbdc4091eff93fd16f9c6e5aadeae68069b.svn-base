@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.sujetosSociales.entrevistado">
+<resultMap type="SujetosSocialesEntrevistadoEO" id="entrevistado">
+<id column="SujetosSocialesEntrevistadoEO_id" 							property="id" javaType="Integer"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_entidad" 				property="entidad" javaType="Integer"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_region_edomex_2017" 	property="regionEdomex2017" javaType="Integer"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_nombre_region" 		property="nombreRegion" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_municipio" 			property="municipio" javaType="Integer"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_nombre_municipio" 	property="nombreMunicipio" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_localidad" 			property="localidad" javaType="Integer"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_nombre_localidad" 	property="nombreLocalidad" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_seccion" 				property="seccion" javaType="Integer"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_manzana" 				property="manzana" javaType="Integer"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_id_interno" 			property="idInterno" javaType="Integer"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_clave_elector" 		property="claveElector" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_apellido_paterno" 	property="apellidoPaterno" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_apellido_materno" 	property="apellidoMaterno" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_nombre" 				property="nombre" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_fecha_nacimiento" 	property="fechaNacimiento" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_lugar_nacimiento" 	property="lugarNacimiento" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_sexo" 				property="sexo" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_ocupacion" 			property="ocupacion" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_calle" 				property="calle" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_num_exterior" 		property="numExterior" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_num_interior" 		property="numInterior" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_colonia"				 property="colonia" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_codigo_postal" 		property="codigoPostal" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_programa_todo" 		property="programaTodo" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_programa_general" 	property="programaGeneral" javaType="String"/>
+ 	<result column="SujetosSocialesEntrevistadoEO_estatus" 				property="estatus" javaType="com.saganet.politik.dominios.ResultadoEncuestaEdomexDO"/>
+ 	
+</resultMap>
+
+<sql id="query">
+select
+SujetosSocialesEntrevistadoEO.entidad SujetosSocialesEntrevistadoEO_entidad,
+SujetosSocialesEntrevistadoEO.region_edomex_2017 SujetosSocialesEntrevistadoEO_region_edomex_2017,
+SujetosSocialesEntrevistadoEO.nombre_region SujetosSocialesEntrevistadoEO_nombre_region,
+SujetosSocialesEntrevistadoEO.municipio SujetosSocialesEntrevistadoEO_municipio,
+SujetosSocialesEntrevistadoEO.nombre_municipio SujetosSocialesEntrevistadoEO_nombre_municipio,
+SujetosSocialesEntrevistadoEO.localidad SujetosSocialesEntrevistadoEO_localidad,
+SujetosSocialesEntrevistadoEO.nombre_localidad SujetosSocialesEntrevistadoEO_nombre_localidad,
+SujetosSocialesEntrevistadoEO.seccion SujetosSocialesEntrevistadoEO_seccion,
+SujetosSocialesEntrevistadoEO.manzana SujetosSocialesEntrevistadoEO_manzana,
+SujetosSocialesEntrevistadoEO.id_interno SujetosSocialesEntrevistadoEO_id_interno,
+SujetosSocialesEntrevistadoEO.clave_elector SujetosSocialesEntrevistadoEO_clave_elector,
+SujetosSocialesEntrevistadoEO.apellido_paterno SujetosSocialesEntrevistadoEO_apellido_paterno,
+SujetosSocialesEntrevistadoEO.apellido_materno SujetosSocialesEntrevistadoEO_apellido_materno,
+SujetosSocialesEntrevistadoEO.nombre SujetosSocialesEntrevistadoEO_nombre,
+SujetosSocialesEntrevistadoEO.fecha_nacimiento SujetosSocialesEntrevistadoEO_fecha_nacimiento,
+SujetosSocialesEntrevistadoEO.lugar_nacimiento SujetosSocialesEntrevistadoEO_lugar_nacimiento,
+SujetosSocialesEntrevistadoEO.sexo SujetosSocialesEntrevistadoEO_sexo,
+SujetosSocialesEntrevistadoEO.ocupacion SujetosSocialesEntrevistadoEO_ocupacion,
+SujetosSocialesEntrevistadoEO.calle SujetosSocialesEntrevistadoEO_calle,
+SujetosSocialesEntrevistadoEO.num_exterior SujetosSocialesEntrevistadoEO_num_exterior,
+SujetosSocialesEntrevistadoEO.num_interior SujetosSocialesEntrevistadoEO_num_interior,
+SujetosSocialesEntrevistadoEO.colonia SujetosSocialesEntrevistadoEO_colonia,
+SujetosSocialesEntrevistadoEO.codigo_postal SujetosSocialesEntrevistadoEO_codigo_postal,
+SujetosSocialesEntrevistadoEO.programa_todo SujetosSocialesEntrevistadoEO_programa_todo,
+SujetosSocialesEntrevistadoEO.programa_general SujetosSocialesEntrevistadoEO_programa_general,
+SujetosSocialesEntrevistadoEO.estatus SujetosSocialesEntrevistadoEO_estatus,
+SujetosSocialesEntrevistadoEO.grupo SujetosSocialesEntrevistadoEO_grupo
+from sujetos_sociales.encuesta_edomex SujetosSocialesEntrevistadoEO
+</sql>
+
+<select id="buscarId" parameterType="Integer" resultMap="entrevistado">
+<include refid="query"/>
+where SujetosSocialesEntrevistadoEO.id_interno=#{value}
+</select>
+
+</mapper>

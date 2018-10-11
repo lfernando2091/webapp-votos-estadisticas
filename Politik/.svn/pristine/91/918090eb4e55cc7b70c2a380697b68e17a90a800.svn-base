@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="importaciones.importacion">
+	<cache />
+	<resultMap type="ImportacionesEO" id="importaciones">
+		<id column="ImportacionesEO_id" property="id" javaType="Integer" />
+		<result column="ImportacionesEO_fecha" property="fecha" javaType="Date" />
+		<result column="ImportacionesEO_objeto" property="mapeoImportacion" javaType="com.saganet.politik.database.importaciones.TablaEO" />
+		<result column="ImportacionesEO_estatus" property="estatus" javaType="com.saganet.politik.dominios.EstatusImportacionDO"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			ImportacionesEO.pkey ImportacionesEO_id,
+			ImportacionesEO.fecha ImportacionesEO_fecha,
+			ImportacionesEO.objeto ImportacionesEO_objeto,
+			ImportacionesEO.estatus ImportacionesEO_estatus
+		FROM importaciones.historicos ImportacionesEO
+	</sql>
+	
+	<select id="listado" resultMap="importaciones">
+		<include refid="query" />
+		ORDER BY ImportacionesEO.estatus, ImportacionesEO.pkey
+	</select>
+	
+	<select id="buscarPorId" resultMap="importaciones" parameterType="Integer">
+		<include refid="query" />
+		WHERE ImportacionesEO.pkey=#{idImportacion}
+		ORDER BY ImportacionesEO.pkey
+	</select>
+	
+	<insert id="insertar" parameterType="ImportacionesEO">
+		INSERT INTO importaciones.historicos(pkey, fecha, objeto, estatus)
+		VALUES (#{id}, #{fecha}, #{mapeoImportacion},#{estatus});
+	</insert>
+	
+	<update id="actualizarEstatus" parameterType="ImportacionesEO">
+		UPDATE importaciones.historicos SET estatus=#{estatus}
+		WHERE pkey=#{id}
+	</update>
+	
+	<update id="createTable" parameterType="hashmap">
+		CREATE TABLE importaciones.${nombreTabla}
+		(
+		   pkey serial NOT NULL,
+		   ${camposTabla}
+		   CONSTRAINT archivo_pkey_pk PRIMARY KEY (pkey)
+		) 
+		WITH (
+		  OIDS = FALSE
+		)
+	</update>
+	
+	<update id="copy" parameterType="hashmap">
+		COPY ${tabla} (${campos}) FROM '${url}'
+	</update>
+	
+	<select id="selectPkey" resultType="Integer">
+		SELECT nextval('importaciones.historicos_pkey_seq'::regclass)
+	</select>
+</mapper>

@@ -1,0 +1,170 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Reportes" url="/app/estructuras/reportes" />
+						<p:menuitem value="Concentrado Estatal" />
+					</p:breadCrumb>
+            		
+            			<p:panel header="Filtros">
+            				<p:selectOneMenu value="${modeloEntidades.seleccionado}" converter="ObjectConverter" style="width: 250px;">
+            					<f:selectItems value="${modeloEntidades.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+            					<p:ajax event="itemSelect" onstart="cambiarEntidad();" />
+            				</p:selectOneMenu>
+            				<p:separator />
+            				<p:panelGrid columns="4">
+            					<p:commandLink value="Gobernador" action="datoGobernador" update="#{p:component('panelInformacion')}" />
+	            				<p:commandLink value="ExGobernadores" action="datoExGobernadores" update="#{p:component('panelInformacion')}" />
+	            				<p:commandLink value="Senadores de MR" action="datoSenadoresMR" update="#{p:component('panelInformacion')}" />
+	            				<p:commandLink value="Senadores de RP" action="datoSenadoresRP" update="#{p:component('panelInformacion')}" rendered="false" />
+	            				<p:commandLink value="Diputados de MR" action="datoDiputadosMR" update="#{p:component('panelInformacion')}" />
+	            				<p:commandLink value="Presidentes Municipales" action="datoPresidentesMunicipales" update="#{p:component('panelInformacion')}" />
+            				</p:panelGrid>
+            			</p:panel>
+            			
+            			<p:panel id="panelInformacion" header="${vista}">
+            				<h:panelGroup rendered="${vista == 'Gobernador'}">
+            					<p:panelGrid columns="2">
+            						<p:graphicImage url="/app/mdm/foto?idPersona=${gobernador.persona.id}&amp;idEntidadNacimiento=${gobernador.persona.entidadNacimiento.id}&amp;tipoFoto=2" width="100" />
+            						<p:column>
+            							<p:commandLink value="${gobernador.persona.nombre} ${gobernador.persona.primerApellido} ${gobernador.persona.segundoApellido}" action="perfilGobernador" /><br/>
+            							<p:outputLabel value="${gobernador.partido.nombre}" /><br/>
+            							<p:outputLabel value="${gobernador.fechaInicio} - ${gobernador.fechaTermino}" />
+            						</p:column>
+            					</p:panelGrid>
+            				</h:panelGroup>
+
+							<h:panelGroup rendered="${vista == 'ExGobernadores'}">
+								<ui:repeat var="reg" value="${modeloExGobernadores.listado}">
+									<p:panelGrid columns="2">
+										<p:graphicImage
+											url="/app/mdm/foto?idPersona=${reg.persona.id}&amp;idEntidadNacimiento=${reg.persona.entidadNacimiento.id}&amp;tipoFoto=2"
+											width="100" />
+										<p:column>
+											<p:commandLink
+												value="${reg.persona.nombre} ${reg.persona.primerApellido} ${reg.persona.segundoApellido}"
+												action="perfilPersona">
+												<f:param name="idPersona" value="${reg.persona.id}" />
+												<f:param name="idEntidadNacimiento" value="${reg.persona.entidadNacimiento.id}" />
+											</p:commandLink>
+											<br />
+											<p:outputLabel value="${reg.partido.nombre}" />
+											<br />
+											<p:outputLabel
+												value="${reg.fechaInicio} - ${reg.fechaTermino}" />
+										</p:column>
+									</p:panelGrid>
+								</ui:repeat>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="${vista == 'Senadores de MR'}">
+								<ui:repeat var="reg" value="${modeloSenadoresMR.listado}">
+									<p:panelGrid columns="2">
+										<p:graphicImage
+											url="/app/mdm/foto?idPersona=${reg.persona.id}&amp;idEntidadNacimiento=${reg.persona.entidadNacimiento.id}&amp;tipoFoto=2"
+											width="100" />
+										<p:column>
+											<p:commandLink
+												value="${reg.persona.nombre} ${reg.persona.primerApellido} ${reg.persona.segundoApellido}"
+												action="perfilPersona">
+												<f:param name="idPersona" value="${reg.persona.id}" />
+												<f:param name="idEntidadNacimiento" value="${reg.persona.entidadNacimiento.id}" />
+											</p:commandLink>
+											<br />
+											<p:outputLabel value="${reg.partido.nombre}" />
+										</p:column>
+									</p:panelGrid>
+								</ui:repeat>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="${vista == 'Senadores de RP'}">
+								<ui:repeat var="reg" value="${modeloSenadoresRP.listado}">
+									<p:panelGrid columns="2">
+										<p:graphicImage
+											url="/app/mdm/foto?idPersona=${reg.persona.id}&amp;idEntidadNacimiento=${reg.persona.entidadNacimiento.id}&amp;tipoFoto=2"
+											width="100" />
+										<p:column>
+											<p:commandLink
+												value="${reg.persona.nombre} ${reg.persona.primerApellido} ${reg.persona.segundoApellido}"
+												action="perfilPersona">
+												<f:param name="idPersona" value="${reg.persona.id}" />
+												<f:param name="idEntidadNacimiento" value="${reg.persona.entidadNacimiento.id}" />
+											</p:commandLink>
+											<br />
+											<p:outputLabel value="${reg.partido.nombre}" />
+										</p:column>
+									</p:panelGrid>
+								</ui:repeat>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="${vista == 'Diputados de MR'}">
+								<ui:repeat var="reg" value="${modeloDiputadosMR.listado}">
+									<p:panelGrid columns="2">
+										<p:graphicImage
+											url="/app/mdm/foto?idPersona=${reg.persona.id}&amp;idEntidadNacimiento=${reg.persona.entidadNacimiento.id}&amp;tipoFoto=2"
+											width="100" />
+										<p:column>
+											<p:commandLink
+												value="${reg.persona.nombre} ${reg.persona.primerApellido} ${reg.persona.segundoApellido}"
+												action="perfilPersona">
+												<f:param name="idPersona" value="${reg.persona.id}" />
+												<f:param name="idEntidadNacimiento" value="${reg.persona.entidadNacimiento.id}" />
+											</p:commandLink>
+											<br />
+											<p:outputLabel value="${reg.partido.nombre}" />
+										</p:column>
+									</p:panelGrid>
+								</ui:repeat>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="${vista == 'Presidentes Municipales'}">
+								<ui:repeat var="reg" value="${modeloPresidentesMunicipales.listado}">
+									<p:panelGrid columns="2">
+										<p:graphicImage
+											url="/app/mdm/foto?idPersona=${reg.persona.id}&amp;idEntidadNacimiento=${reg.persona.entidadNacimiento.id}&amp;tipoFoto=2"
+											width="100" />
+										<p:column>
+											<p:commandLink
+												value="${reg.persona.nombre} ${reg.persona.primerApellido} ${reg.persona.segundoApellido}"
+												action="perfilPersona">
+												<f:param name="idPersona" value="${reg.persona.id}" />
+												<f:param name="idEntidadNacimiento" value="${reg.persona.entidadNacimiento.id}" />
+											</p:commandLink>
+											<br />
+											<p:outputLabel value="${reg.partido.nombre}" />
+											<br />
+											<p:outputLabel
+												value="${reg.fechaInicio} - ${reg.fechaTermino}" />
+										</p:column>
+									</p:panelGrid>
+								</ui:repeat>
+							</h:panelGroup>
+
+						</p:panel>
+            		
+            		<p:remoteCommand name="cambiarEntidad" action="cambiarEntidad" update="#{p:component('panelInformacion')}" />
+            		
+            		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>
+            	
+            	<h:outputStylesheet>
+            		.topAlign{
+            			vertical-align: top; 
+            		}
+            	</h:outputStylesheet>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

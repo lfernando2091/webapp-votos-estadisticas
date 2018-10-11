@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Administración" />
+						<p:menuitem value="Usuarios" action="cancelar" immediate="true" />
+						<p:menuitem
+							value="${usuarioCRUD.id == null ? 'Agregar' : 'Editar'} Usuario" />
+					</p:breadCrumb>
+
+					<p:focus />
+					<p:panel
+						header="${usuarioCRUD.id == null ? 'Agregar' : 'Editar'} Usuario">
+						<p:messages autoUpdate="true" />
+						<p:panelGrid columns="6">
+							<p:outputLabel value="Nick" />
+							<p:inputText value="${usuarioCRUD.nick}" size="15" disabled="${usuarioCRUD.id != null}" />
+							<p:outputLabel value="Nombre" />
+							<p:inputText value="${usuarioCRUD.nombre}" size="20" />
+							<p:outputLabel value="Habilitado" />
+							<p:inputSwitch value="${usuarioCRUD.habilitado}" onLabel="Si"
+								offLabel="No" />
+							<p:outputLabel value="Password" />
+							<p:password id="passwordUsuario1" value="${usuarioCRUD.pw}"
+								match="#{p:component('passwordUsuario2')}" weakLabel="Debil"
+								goodLabel="Aceptable" strongLabel="Fuerte" size="20"
+								feedback="true" validatorMessage="Los Password no coinciden" />
+							<p:outputLabel value="Confirmar Password" />
+							<p:password id="passwordUsuario2" value="${usuarioCRUD.pw}"
+								size="20" />
+						</p:panelGrid>
+						<p:tabView>
+							<p:tab title="Roles">
+								<p:dataTable id="tablaRoles" value="${modeloRolesUsuario.listado}"
+									var="fila" rowKey="${fila.id}" selection="${modeloRolesUsuario.seleccionado}" selectionMode="single">
+									<p:column headerText="Rol" width="300">${fila.rol}</p:column>
+									<p:column headerText="Descripción">${fila.descripcion}</p:column>
+									<f:facet name="footer">
+										<p:commandButton value="Agregar"
+											onstart="PF('dialogoAgregarRolWV').show();" />
+										<p:commandButton value="Quitar" action="quitarRol" update="#{p:component('tablaRoles')} #{p:component('comboModeloRoles')}" />
+									</f:facet>
+								</p:dataTable>
+							</p:tab>
+						</p:tabView>
+
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="guardar" />
+							<p:commandButton value="Cancelar" action="cancelar"
+								immediate="true" />
+						</f:facet>
+					</p:panel>
+
+					<p:dialog id="dialogoAgregarRol" widgetVar="dialogoAgregarRolWV"
+						modal="true" visible="false" closable="false" header="Agregar Rol">
+						<p:selectOneMenu id="comboModeloRoles" value="${modeloRoles.seleccionado}"
+							converter="ObjectConverter" style="width: 350px;">
+							<f:selectItems value="${modeloRoles.listado}" var="fila"
+								itemLabel="${fila.descripcion}" itemValue="${fila}" />
+						</p:selectOneMenu>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregarRol"
+								update="#{p:component('tablaRoles')} #{p:component('comboModeloRoles')}"
+								onsuccess="PF('dialogoAgregarRolWV').hide();" />
+							<p:commandButton value="Cancelar"
+								onsuccess="PF('dialogoAgregarRolWV').hide();" />
+						</f:facet>
+					</p:dialog>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.ui-datatable-footer{
+						text-align: left !important;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

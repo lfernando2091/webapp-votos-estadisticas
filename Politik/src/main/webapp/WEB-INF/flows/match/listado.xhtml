@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Listado de Match">
+						<p:dataTable value="${modeloMatch.listado}" var="fila"
+							rowKey="${fila.id}" selection="${modeloMatch.seleccionado}"
+							selectionMode="single" paginator="true" rows="10"
+							paginatorAlwaysVisible="false" paginatorPosition="bottom" emptyMessage="No se han creado procesos de match">
+							<p:column headerText="Id" sortable="true" sortBy="${fila.id}">
+		${fila.id}
+		</p:column>
+							<p:column headerText="Nombre" sortable="true"
+								sortBy="${fila.nombre}">
+		${fila.nombre}
+		</p:column>
+							<p:column headerText="Objeto" sortable="true"
+								sortBy="${fila.objeto.nombre}">
+		${fila.objeto.nombre}
+		</p:column>
+							<p:column headerText="Tipo" sortable="true"
+								sortBy="${fila.tipo.nombre}">
+		${fila.tipo.nombre}
+		</p:column>
+
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandLink title="Agregar Proceso de Match"
+								action="seleccionarTabla">
+								<p:graphicImage value="/resources/botones/AGREGAR.png" />
+							</p:commandLink>
+						</f:facet>
+					</p:panel>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.columna1{
+						vertical-align: top;
+						width: 415px;
+					}
+					
+					.columna2{
+						vertical-align: top;
+					}
+					
+					.ui-datatable-header{
+						text-align: right !important;
+					}
+					
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

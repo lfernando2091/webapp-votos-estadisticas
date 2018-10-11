@@ -1,0 +1,17 @@
+package com.saganet.politik.dominios;
+
+public enum ProgramasEdoMexDO {
+	GEM("GEM"),
+	LICONSA("LICONSA"),
+	PROSPERA("PROSPERA");
+	
+	private final String nombre;
+	
+	private ProgramasEdoMexDO(String nombre){
+		this.nombre = nombre;
+	}
+	
+	public String getNombre(){
+		return nombre;
+	}
+}

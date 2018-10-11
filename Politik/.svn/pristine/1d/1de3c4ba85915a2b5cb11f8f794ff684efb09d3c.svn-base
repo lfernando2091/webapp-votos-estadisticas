@@ -1,0 +1,21 @@
+package mx.com.saganet.peon.database.dominios;
+
+public enum TiposPoligonoDO {
+	ENTIDAD("Entidad Federativa"),
+	REGION("Región"),
+	MUNICIPIO("Municipio"),
+	DISTRITO_FEDERAL("Distrito Federal"),
+	SECCION("Sección"),
+	MANZANA("Manzana");
+	
+	private final String nombre;
+
+	private TiposPoligonoDO(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+}

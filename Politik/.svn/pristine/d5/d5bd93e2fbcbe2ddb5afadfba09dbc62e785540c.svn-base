@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.hermanos.foliosFaltantes">
+	
+	<resultMap type="Edomex2017FoliosFaltantesEO" id="faltantes">
+		<id 		column="id" 				property="id" 					javaType="Integer"/>
+		<result 	column="region" 			property="region" 				javaType="Integer"/>
+		<result 	column="nombreRegion" 		property="nombreRegion" 		javaType="String"/>
+		<result 	column="numMunicipio" 		property="municipio" 			javaType="Integer"/>
+		<result 	column="nombreMunicipio" 	property="nombreMunicipio" 		javaType="String"/>
+		<result 	column="seccion" 			property="seccion" 				javaType="Integer"/>
+		<result 	column="folio" 				property="folio" 				javaType="Integer"/>
+		<result 	column="estatus" 			property="estatus" 				javaType="String"/>
+
+	</resultMap>
+	
+	
+	<select id="faltantes" resultMap="faltantes" parameterType="hashmap">
+		SELECT 
+			(row_number() OVER (ORDER BY id_interno )) :: integer id,
+			region_edomex_2017 region, 
+			nombre_region nombreRegion, 
+			municipio numMunicipio, 
+			nombre_municipio nombreMunicipio, 
+			seccion seccion,
+	      	folio folio, 
+	      	estatus estatus
+  		FROM fuerza_ciudadana.encuesta_edomex
+ 		order by municipio, seccion, folio
+	</select>
+	
+</mapper>

@@ -1,0 +1,127 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:focus context="cPoblacion" />
+					<p:panel header="Datos del Programa">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Programa: " />
+							<p:outputLabel value="${programa.programa}" />
+							<p:outputLabel value="Dependencia: " />
+							<p:outputLabel value="${programa.dependencia.dependencia}" />
+						</p:panelGrid>
+					</p:panel>
+
+					<p:spacer height="20px;" />
+					<p:panelGrid columns="2" columnClasses="topAlign, topAlign"
+						style="width:100%">
+						<p:panel header="Nueva Población">
+							<p:panelGrid columns="2" columnClasses="topAlign, topAlign">
+								<p:outputLabel value="Población Objetivo: " />
+								<p:selectOneMenu value="${poblacionObjetivo.poblacion}"
+									style="width:200px" id="cPoblacion">
+									<f:selectItem itemLabel="N/A" itemValue="N/A" />
+									<f:selectItem itemLabel="NIÑOS" itemValue="NIÑOS" />
+									<f:selectItem itemLabel="ADULTOS MAYORES"
+										itemValue="ADULTOS MAYORES" />
+									<f:selectItem itemLabel="HOMBRES" itemValue="PERSONAS" />
+									<f:selectItem itemLabel="MUJERES" itemValue="MUJERES" />
+									<f:selectItem itemLabel="HOMBRE Y MUJERES"
+										itemValue="HOMBRES Y MUJERES" />
+									<f:selectItem itemLabel="MADRES SOLTERAS"
+										itemValue="MADRES SOLTERAS" />
+
+								</p:selectOneMenu>
+								<p:outputLabel value="Beneficiarios Proyectados: " />
+								<p:inputText
+									value="${poblacionObjetivo.beneficiariosProyectados}"
+									required="true"
+									requiredMessage="Beneficiarios Proyectados: requerido">
+								</p:inputText>
+
+							</p:panelGrid>
+							<f:facet name="footer">
+
+								<p:commandLink title="Guardar" action="guardarPoblacion"
+									update="@form">
+									<p:graphicImage value="/resources/botones/GUARDAR.png"></p:graphicImage>
+								</p:commandLink>
+							</f:facet>
+						</p:panel>
+
+						<p:panel header="Poblaciones ">
+							<p:dataTable value="${modeloPoblacionObjetivo.listado}"
+								var="fila"
+								rowKey="${fila.poblacion}${fila.beneficiariosProyectados}"
+								paginator="true" rows="10" paginatorAlwaysVisible="false"
+								paginatorPosition="bottom"
+								selection="${modeloPoblacionObjetivo.seleccionado}"
+								selectionMode="single" id="dtPoblaciones">
+								<p:ajax event="rowSelect" update="#{p:component('dtPoblaciones')}"/>
+								<p:column headerText="Población">
+					   ${fila.poblacion}
+					   </p:column>
+								<p:column headerText="Beneficiarios Proyectados">
+					   ${fila.beneficiariosProyectados}
+					   </p:column>
+
+							</p:dataTable>
+							<f:facet name="footer">
+								<p:commandLink title="Eliminar Población Seleccionada"
+									immediate="true" action="eliminar"
+									update="@form" rendered="true">
+									<p:graphicImage value="/resources/botones/ELIMINAR.png" />
+									<p:confirm header="Confirmación"
+										message="¿Está seguro de eliminar la fila seleccionada?"
+										icon="ui-icon-alert" />
+								</p:commandLink>
+
+
+								<p:confirmDialog global="true" showEffect="fade"
+									hideEffect="fade">
+									<p:commandButton value="SI" type="button"
+										styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+									<p:commandButton value="No" type="button"
+										styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+								</p:confirmDialog>
+							</f:facet>
+						</p:panel>
+
+					</p:panelGrid>
+					<p:spacer height="20px" />
+
+					<p:commandLink title="Siguiente" immediate="true"
+						action="agregarEjercicio"
+						rendered="${modeloPoblacionObjetivo.listado.isEmpty()?false:true}">
+						<p:graphicImage value="/resources/botones/SIGUIENTE.png" />
+					</p:commandLink>
+
+					<p:commandLink title="Terminar Captura" immediate="true"
+						action="terminar"
+						rendered="${modeloPoblacionObjetivo.listado.isEmpty()?false:true}">
+						<p:graphicImage value="/resources/botones/TERMINAR CAPTURA.png" />
+					</p:commandLink>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+					<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+						width:50%;
+					}
+				</h:outputStylesheet>
+
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

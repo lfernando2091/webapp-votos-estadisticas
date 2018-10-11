@@ -1,0 +1,147 @@
+package com.saganet.politik.components.encuestas.edomex2017;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import org.apache.ibatis.session.SqlSession;
+import org.primefaces.model.chart.Axis;
+import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.BarChartModel;
+import org.primefaces.model.chart.ChartSeries;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.GeozonaEO;
+import com.saganet.politik.database.catalogos.GeozonaParticionEO;
+import com.saganet.politik.dominios.NivelesReporteDO;
+import com.saganet.politik.dominios.ProgramasEdoMexDO;
+import com.saganet.politik.modelos.JavaBeanT;
+import com.saganet.politik.modelos.Modelo;
+import com.saganet.politik.database.encuestas.edomex2017.ResultadoEncuestaEO;
+
+@Component("Edomex2017ResultadoEncuestas")
+public class ResultadoEncuestasC {
+	@Autowired
+	SqlSession sqlSession;
+	private static final Logger logger = LoggerFactory.getLogger(ResultadoEncuestasC.class);
+
+	public Modelo<ResultadoEncuestaEO> modelo(NivelesReporteDO nivel, ProgramasEdoMexDO programa) {
+		Modelo<ResultadoEncuestaEO> tabla;
+		List<ResultadoEncuestaEO> listado=new ArrayList<>();
+		HashMap<String, Object> mapa=new HashMap<>();
+		mapa.put("programa", programa);
+		UsuarioEO usuario=getUsuario();
+		if (usuario.getTerritorios()!=null) {
+			switch (usuario.getNivel()) {
+				case GEOZONA:
+					List<GeozonaParticionEO> geozonasParticiones=new ArrayList<>();
+					for (JavaBeanT geozona : usuario.getTerritorios()) {
+						if (geozona.getId()==4) {
+							geozonasParticiones.addAll(((GeozonaEO)geozona).getParticiones());
+						}
+					} 
+					mapa.put("regiones",geozonasParticiones);
+				break;
+				case MUNICIPIO:
+					mapa.put("municipios",usuario.getTerritorios());
+				break;
+				default:
+				break;
+			}
+		}
+		if (nivel!=null) {
+			switch (nivel) {
+				case REGION:
+					listado=sqlSession.selectList("encuestas.edomex2017.resultadoEncuestas.resultadoRegionPrograma",mapa);			
+				break;
+				case MUNICIPIO:
+					listado=sqlSession.selectList("encuestas.edomex2017.resultadoEncuestas.resultadoMunicipioPrograma",mapa);
+				break;
+				case SECCION:
+					listado=sqlSession.selectList("encuestas.edomex2017.resultadoEncuestas.resultadoSeccionPrograma",mapa);
+				break;
+			}
+		}
+		logger.debug("Listado {}",listado);
+		tabla=new Modelo<>(listado);
+		return tabla;
+	}
+	
+	public BarChartModel generaGrafica(ResultadoEncuestaEO seleccionado, NivelesReporteDO nivel){
+		BarChartModel model = new BarChartModel();
+		ChartSeries completadas = new ChartSeries();
+        completadas.setLabel("Completadas");
+        completadas.set("Estatus", (seleccionado!=null?seleccionado.getExitoso():0));
+        ChartSeries noHuboQuienContestara = new ChartSeries();
+        noHuboQuienContestara.setLabel("No Hubo Quien Contestara");
+        noHuboQuienContestara.set("Estatus", (seleccionado!=null?seleccionado.getNoHuboQuienContestara():0));
+        ChartSeries menorDeEdad = new ChartSeries();
+        menorDeEdad.setLabel("Menor De Edad");
+        menorDeEdad.set("Estatus", (seleccionado!=null?seleccionado.getMenorDeEdad():0));
+        ChartSeries domicilioNoEncontrado = new ChartSeries();
+        domicilioNoEncontrado.setLabel("Domicilio No Encontrado");
+        domicilioNoEncontrado.set("Estatus", (seleccionado!=null?seleccionado.getDomicilioNoEncontrado():0));
+        ChartSeries noQuisieronContestar = new ChartSeries();
+        noQuisieronContestar.setLabel("No Quisieron Contestar");
+        noQuisieronContestar.set("Estatus", (seleccionado!=null?seleccionado.getNoQuisieronContestar():0));
+        ChartSeries otro = new ChartSeries();
+        otro.setLabel("Otro");
+        otro.set("Estatus", (seleccionado!=null?seleccionado.getOtro():0));
+        model.addSeries(completadas); 
+        model.addSeries(noHuboQuienContestara);  
+        model.addSeries(menorDeEdad);  
+        model.addSeries(domicilioNoEncontrado);  
+        model.addSeries(noQuisieronContestar);  
+        model.addSeries(otro);        
+        model.setLegendPosition("ne");
+        switch (nivel) {
+			case REGION:
+		        model.setTitle("Región : "+(seleccionado!=null?seleccionado.getNombreRegion():"")); 			
+			break;
+			case MUNICIPIO:
+		        model.setTitle("Municipio : "+(seleccionado!=null?seleccionado.getNombreMunicipio():"")); 			
+			break;
+			case SECCION:
+		        model.setTitle("Sección :"+(seleccionado!=null?seleccionado.getSeccion():"")); 			
+			break;
+		} 
+        /*  Axis xAxis = model.getAxis(AxisType.X);
+        xAxis.setLabel("Gender");*/
+        model.setSeriesColors("3DC946,D5AC15,549F8E,103769,AA0B08,B6B9BA");
+        Axis yAxis = model.getAxis(AxisType.Y);
+        yAxis.setLabel("N° Encuestas");
+        yAxis.setMin(0);
+        Integer maximo=0;
+        if (seleccionado!=null) {
+            if (maximo<seleccionado.getExitoso()) {
+    			maximo=seleccionado.getExitoso();
+    		}
+            if (maximo<seleccionado.getNoHuboQuienContestara()) {
+    			maximo=seleccionado.getNoHuboQuienContestara();
+    		}
+            if (maximo<seleccionado.getMenorDeEdad()) {
+    			maximo=seleccionado.getMenorDeEdad();
+    		}
+            if (maximo<seleccionado.getDomicilioNoEncontrado()) {
+    			maximo=seleccionado.getDomicilioNoEncontrado();
+    		}
+            if (maximo<seleccionado.getNoQuisieronContestar()) {
+    			maximo=seleccionado.getNoQuisieronContestar();
+    		}
+            if (maximo<seleccionado.getOtro()) {
+    			maximo=seleccionado.getOtro();
+    		}   
+		}  
+        yAxis.setMax(maximo);
+		return model;
+	}
+	
+	public UsuarioEO getUsuario() {
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+
+}

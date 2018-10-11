@@ -1,0 +1,19 @@
+package com.saganet.politik.dominios_dm;
+
+public enum CatMPINNDO {
+	MEJOR("Mejor"),
+	PEOR("Peor"),
+	IGUAL("Igual"),
+	NO_SABE("No sabe"),
+	NO_CONTESTA("No contesta");
+
+	private final String nombre;
+
+	private CatMPINNDO(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+}

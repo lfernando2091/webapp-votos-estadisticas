@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+			 <h:form enctype="multipart/form-data">
+                    <p:growl id="msg"></p:growl>
+                    <p:panel header="Agregar Archivos a la bliblioteca">
+                 
+                    <p:fileUpload fileUploadListener="#{FileUploadManagedBean.upload}"
+                                 sizeLimit="10000000000" update="msg"
+                                 label="Seleccione" uploadLabel="Cargar" cancelLabel="Cancelar"
+                                 
+                                 ></p:fileUpload>
+                                 
+                                 <p:commandButton action="cancelar" value="Salir"/>
+                                 
+                                 </p:panel>
+                </h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

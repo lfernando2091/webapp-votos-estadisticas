@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Eventos" />
+					</p:breadCrumb>
+					<p:panel header="Eventos">
+						<p:dataTable id="tablaEventos" value="${tabla.listado}" var="fila" rowKey="${fila.id}" selection="${tabla.seleccionado}"
+							selectionMode="single" paginator="true" rows="15" paginatorPosition="bottom">
+							<p:ajax event="rowSelect" update="@form"/>
+							<p:column headerText="Nombre" >
+								${fila.nombre}
+							</p:column>
+							<p:column headerText="Fecha" style="width:9%">
+								${fila.fechaFormateada}-${fila.fechaFinFormateada}
+							</p:column>
+							<p:column headerText="Estatus"  style="width:10%">
+								${fila.estatus}
+							</p:column>
+							<p:column headerText="Tipo" style="width:10%">
+								${fila.tipo}
+							</p:column>
+							<p:column headerText="Nivel" style="width:10%">
+								${fila.nivel}
+							</p:column>
+							<p:column headerText="Asistentes"  style="width:7%">
+								${fila.numeroAsistentes}
+							</p:column>
+							<p:column headerText="Descripción Lugar" >
+								${fila.descripcionLugar}
+							</p:column>
+							
+							<p:column headerText="Lugar" rendered="${fila.territorios[0]!=null}">
+								<ui:repeat value="${fila.territorios}" var="value">
+									     #{value.llave} - #{value.nombre} <br />
+								</ui:repeat>
+							</p:column>
+							<p:column headerText="Lugar" rendered="${fila.territorios[0]==null}">
+							</p:column>
+						</p:dataTable>
+
+						<f:facet name="footer">
+							<p:commandLink action="agregar">
+								<p:graphicImage value="/resources/botones/AGREGAR.png">
+							</p:graphicImage></p:commandLink>
+<!-- 							<p:commandButton value="Agregar" action="agregar" /> -->
+							<p:commandLink action="eliminar">
+								<p:graphicImage value="/resources/botones/ELIMINAR.png"/>
+								<p:confirm header="Confirmación"
+									message="¿Esta seguro de eleminar el Evento?"
+									icon="ui-icon-alert" />
+							</p:commandLink>
+<!-- 							<p:commandButton action="eliminar" value="Eliminar"> -->
+<!-- 								<p:confirm header="Confirmación" -->
+<!-- 									message="¿Esta seguro de eleminar el Evento?" -->
+<!-- 									icon="ui-icon-alert" /> -->
+<!-- 							</p:commandButton> -->
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton value="Yes" type="button"
+									styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+									update="messages" />
+								<p:commandButton value="No" type="button"
+									styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							</p:confirmDialog>
+							<p:commandLink action="listadoProgramas" id="botonProgramas" rendered="${tabla.seleccionado.tipo.nombre=='Programas'?true:false}">
+								<p:graphicImage value="/resources/botones/PROGRAMAS.png">
+							</p:graphicImage>
+							</p:commandLink>
+<!-- 							<p:commandButton value="Programas" action="listadoProgramas" id="botonProgramas" rendered="${tabla.seleccionado.tipo.nombre=='Programas'?true:false}"/> -->
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

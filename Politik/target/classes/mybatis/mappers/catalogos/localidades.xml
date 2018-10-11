@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.localidades">
+
+	<resultMap type="LocalidadEO" id="localidad">	
+		<id column="LocalidadEO_id" 						property="id" 				javaType="Integer"/>
+		<result column="LocalidadEO_id_localidad"			property="idLocalidad"		javaType="Integer"/>
+		<result column="LocalidadEO_tipo_localidad"			property="tipo"	javaType="com.saganet.politik.dominios.TiposLocalidadDO"/>
+		<result column="LocalidadEO_nombre"					property="nombre"			javaType="String"/>
+		<result column="LocalidadEO_llave_localidad"		property="llave"			javaType="String" />
+<!-- 		<association column="LocalidadEO_llave_entidad"		property="entidad"			select="catalogos.entidades.buscarPorLlave"/>		 -->
+		<association column="LocalidadEO_llave_municipio" 	property="municipio" 		select="catalogos.municipios.buscarPorLlave"/>
+	</resultMap>
+
+
+	<sql id="query">
+		SELECT 
+			LocalidadEO.id					LocalidadEO_id, 
+			LocalidadEO.id_localidad		LocalidadEO_id_localidad, 
+			LocalidadEO.tipo_localidad		LocalidadEO_tipo_localidad, 
+			LocalidadEO.localidad			LocalidadEO_localidad, 	
+			LocalidadEO.llave_entidad		LocalidadEO_llave_entidad, 
+			LocalidadEO.llave_municipio		LocalidadEO_llave_municipio, 
+			LocalidadEO.llave_localidad 	LocalidadEO_llave_localidad
+		FROM catalogos.localidades LocalidadEO
+	</sql>
+	
+	<select id="buscarPorLlave" parameterType="String" resultMap="localidad">
+		<include refid="query"/>
+		WHERE llave_localidad = #{value}
+		ORDER BY LocalidadEO.id_localidad
+	</select>
+
+	<select id="listado" resultMap="localidad">
+		<include refid="query"/>
+		ORDER BY LocalidadEO.id_localidad
+	</select>
+
+
+	<select id="listadoFiltro" parameterType="String" resultMap="localidad">
+		<include refid="query"/>
+		WHERE llave_entidad = #{value}
+		ORDER BY LocalidadEO.id_localidad
+	</select>
+
+
+</mapper>

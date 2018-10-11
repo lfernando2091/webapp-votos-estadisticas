@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+    
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        <title>Politik</title>
+        <h:outputStylesheet library="css" name="botones.css" />
+        <h:outputScript name="js/layout.js" library="spark-layout" />
+        <h:outputScript>
+        	PrimeFaces.locales['es'] = { closeText: 'Cerrar', prevText: 'Anterior', nextText: 'Siguiente', monthNames: ['Enero','Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'], monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun','Jul','Ago','Sep','Oct','Nov','Dic'], dayNames: ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], dayNamesShort: ['Dom','Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'], dayNamesMin: ['D','L','M','X','J','V','S'], weekHeader: 'Semana', firstDay: 1, isRTL: false, showMonthAfterYear: false, yearSuffix: '', timeOnlyTitle: 'Sólo hora', timeText: 'Tiempo', hourText: 'Hora', minuteText: 'Minuto', secondText: 'Segundo', currentText: 'Fecha actual', ampm: false, month: 'Mes', week: 'Semana', day: 'Día', allDayText : 'Todo el día' };
+        	PrimeFacesExt.locales.TimePicker['es'] = {
+				hourText: 'Hora',
+				minuteText: 'Minuto',
+				amPmText: ['AM', 'PM'],
+				closeButtonText: 'Hecho',
+				nowButtonText: 'Ahora',
+				deselectButtonText: 'Deseleccionar'
+			};
+			PrimeFacesExt.locales.Timeline['es'] = {
+			    'MONTHS': ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+			    'MONTHS_SHORT': ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+			    'DAYS': ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+			    'DAYS_SHORT': ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+			    'ZOOM_IN': "Aumentar zoom",
+			    'ZOOM_OUT': "Disminuir zoom",
+			    'MOVE_LEFT': "Mover izquierda",
+			    'MOVE_RIGHT': "Mover derecha",
+			    'NEW': "Nuevo",
+			    'CREATE_NEW_EVENT': "Crear nuevo evento"
+			};
+        </h:outputScript>
+        
+        <ui:insert name="head" />
+    </h:head>
+
+    <h:body>
+    	<p:growl id="mensajeGlobal" autoUpdate="true" globalOnly="true" />    
+        <div id="menu-mask"></div>
+
+        <ui:include src="topbar.xhtml" />
+
+        <ui:include src="layoutmenu.xhtml" />
+
+        <div id="layout-portlets-cover">
+            <ui:insert name="content">
+                Template
+            </ui:insert>
+            
+            <!-- <ui:include src="footer.xhtml" /> -->
+        </div>
+
+        <p:ajaxStatus style="width:32px;height:32px;position:fixed;right:7px;bottom:7px">
+            <f:facet name="start">
+                <p:graphicImage name="images/preloader.gif" library="spark-layout"/>
+            </f:facet>
+
+            <f:facet name="complete">
+                <h:outputText value="" />
+            </f:facet>
+        </p:ajaxStatus>
+
+        <h:outputStylesheet name="css/core-layout.css" library="spark-layout" />
+        <h:outputStylesheet name="css/font-awesome.css" library="spark-layout" />
+        <h:outputStylesheet name="css/animate.css" library="spark-layout" />
+        <h:outputStylesheet name="css/spark-layout-red.css" library="spark-layout" />
+    </h:body>
+
+</html>

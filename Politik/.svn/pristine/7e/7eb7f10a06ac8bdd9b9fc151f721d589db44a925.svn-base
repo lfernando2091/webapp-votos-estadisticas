@@ -1,0 +1,52 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Buscar Persona" action="buscar" />
+						<p:menuitem value="Perfil Personal" action="general" />
+						<p:menuitem value="Detalle de Tabla" />
+					</p:breadCrumb>
+            		<p:panel header="Detalle de Tabla">
+            			<p:panelGrid columns="2">
+							<f:facet name="header">Datos Generales</f:facet>
+							<p:outputLabel value="Identificador" />
+							<p:outputLabel value="${persona.id}" />
+							<p:outputLabel value="Nombre" />
+							<p:outputLabel
+								value="${persona.primerApellido} ${persona.segundoApellido} ${persona.nombre}" />
+							<p:outputLabel value="Fecha de Nacimiento" />
+							<p:outputLabel
+								value="${persona.dia}/${persona.mes.nombre}/${persona.anho}" />
+							<p:outputLabel value="Entidad de Nacimiento" />
+							<p:outputLabel value="${persona.entidadNacimiento.nombre}" />
+						</p:panelGrid>
+						<p:separator />
+						<p:fieldset id="ine2015" legend="INE 2015" rendered="${persona.modeloTablas.seleccionado.tabla.tabla == 'ine2015'}">
+							<ui:include src="/WEB-INF/views/templates/tablas/ine2015.xhtml" />
+						</p:fieldset>
+						<p:fieldset id="ife2012" legend="IFE 2012" rendered="${persona.modeloTablas.seleccionado.tabla.tabla == 'ife2012'}">
+							<ui:include src="/WEB-INF/views/templates/tablas/ife2012.xhtml" />
+						</p:fieldset>
+						<f:facet name="footer">
+							<p:commandButton value="Regresar" action="general" />
+							<p:commandButton value="Buscar Persona" action="buscar" />
+						</f:facet>
+            		</p:panel>
+            		
+            		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

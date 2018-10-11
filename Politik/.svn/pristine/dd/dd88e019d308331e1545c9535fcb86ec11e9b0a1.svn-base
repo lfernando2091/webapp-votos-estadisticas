@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventos.eventos">
+	<cache />
+
+	<resultMap type="EventoSocialEO" id="eventoSocial">
+		<id column="EventoSocialEO_id" property="id" javaType="Integer" />
+		<result column="EventoSocialEO_nivel" property="nivel" javaType="com.saganet.politik.dominios.NivelesDO" />
+		<result column="EventoSocialEO_estatus" property="estatus" javaType="com.saganet.politik.dominios.EstatusEventoDO" />
+		<result column="EventoSocialEO_tipo_envento" property="tipo" javaType="com.saganet.politik.dominios.TipoEventoDO" />
+		
+		<result column="EventoSocialEO_n_asistentes" property="numeroAsistentes" javaType="Integer" />
+		<result column="EventoSocialEO_fecha" property="fecha"  javaType="java.sql.Timestamp"/>
+		<result column="EventoSocialEO_nombre" property="nombre" javaType="String" />
+		<result column="EventoSocialEO_descripcion_lugar" property="descripcionLugar" javaType="String" />
+		
+	</resultMap>
+
+	<sql id="query">
+		SELECT
+		EventoSocialEO.pkey EventoSocialEO_id,
+		EventoSocialEO.nombre EventoSocialEO_nombre,
+		EventoSocialEO.descripcion_lugar EventoSocialEO_descripcion_lugar,
+		EventoSocialEO.nivel EventoSocialEO_nivel,
+		EventoSocialEO.estatus EventoSocialEO_estatus,
+		EventoSocialEO.tipo_envento EventoSocialEO_tipo_envento,
+		EventoSocialEO.n_asistentes EventoSocialEO_n_asistentes,
+		EventoSocialEO.fecha EventoSocialEO_fecha
+		FROM eventos_sociales.eventos_sociales EventoSocialEO
+	</sql>
+	
+	<select id="listado" resultMap="eventoSocial">
+		<include refid="query"/>
+		ORDER BY EventoSocialEO.fecha,EventoSocialEO.tipo_envento, EventoSocialEO.nivel
+	</select>
+	
+	<select id="buscarID" resultMap="eventoSocial" parameterType="Integer">
+		<include refid="query"/>
+		WHERE EventoSocialEO.pkey=#{value}
+		ORDER BY EventoSocialEO.fecha,EventoSocialEO.tipo_envento, EventoSocialEO.nivel
+	</select>
+	
+	<select id="nuevoID" resultType="Integer">
+		SELECT nextval('eventos_sociales.eventos_sociales_pkey_seq')
+	</select>
+	
+	<insert id="agregar" parameterType="EventoSocialEO">
+		INSERT INTO eventos_sociales.eventos_sociales(pkey ,nombre, descripcion_lugar, estatus, tipo_envento, nivel, n_asistentes, fecha)
+    	VALUES (#{id}, #{nombre},#{descripcionLugar},#{estatus},#{tipo},#{nivel},#{numeroAsistentes},#{fecha})
+	</insert>
+
+	<insert id="agregarllaves" parameterType="hashmap">
+		INSERT INTO eventos_sociales.territorios_evento(id_evento_social, llave) VALUES (#{idEvento}, #{llave});
+	</insert>
+	
+	<delete id="eliminar" parameterType="EventoSocialEO">
+			DELETE FROM eventos_sociales.eventos_sociales WHERE pkey=#{id}
+	</delete>
+	
+	<delete id="eliminarllaves" parameterType="EventoSocialEO">
+			DELETE FROM eventos_sociales.territorios_evento WHERE id_evento_social=#{id}
+	</delete>
+	
+</mapper>

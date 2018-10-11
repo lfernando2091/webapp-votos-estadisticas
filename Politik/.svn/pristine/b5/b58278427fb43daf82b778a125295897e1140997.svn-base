@@ -1,0 +1,245 @@
+package com.saganet.politik.components.importaciones;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import com.saganet.politik.database.importaciones.ImportacionesEO;
+import com.saganet.politik.database.importaciones.LogEO;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+import com.saganet.politik.database.importaciones.MapeoImportacionEO;
+import com.saganet.politik.database.importaciones.TablaEO;
+import com.saganet.politik.dominios.EstatusImportacionDO;
+import com.saganet.politik.dominios.TiposCampoDO;
+import com.saganet.politik.modelos.importaciones.ImportacionesT;
+import com.saganet.politik.modelos.importaciones.LogsT;
+
+
+@Component("ImportacionC")
+public class ImportacionC {
+	private static final Logger logger = LoggerFactory.getLogger(ImportacionC.class);
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	public ImportacionesT tablaHistorico(){
+		ImportacionesT tabla=new ImportacionesT();
+		List<ImportacionesEO> listado=new ArrayList<>();
+		listado=sqlSession.selectList("importaciones.importacion.listado");
+		
+		ByteArrayInputStream bais;
+		ObjectInputStream ois;
+		byte[] diagramaBytes;
+
+		// Deserializar modelos
+		for (ImportacionesEO estructura : listado) {
+			diagramaBytes = sqlSession.selectOne("importaciones.importacion.buscarMapeo", estructura);
+			try {
+				bais = new ByteArrayInputStream(diagramaBytes);
+				ois = new ObjectInputStream(bais);
+				estructura.setMapeoImportacion((MapeoImportacionEO) ois.readObject());
+				ois.close();
+				bais.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		tabla.setListado(listado);
+		if (!listado.isEmpty()) {
+			tabla.setSeleccionado(listado.get(0));
+		}
+		return tabla;
+	}
+	
+	
+	public boolean validarCSV(File archivo){
+		StringTokenizer tokens=new StringTokenizer(archivo.getName(), ".");
+		String nombreArchivo=new String("");
+		while(tokens.hasMoreTokens()){
+			nombreArchivo=tokens.nextToken();
+		}
+		if(nombreArchivo.equals("csv")){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	public MapeoImportacionEO obtenerMapeo(File archivo){
+		MapeoImportacionEO mapeoNuevo=new MapeoImportacionEO();
+		
+		File dest = new File("C:\\importaciones_politik\\"+archivo.getName());
+		
+		try {
+			FileUtils.copyDirectory(archivo, dest);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		mapeoNuevo.setArchivo(dest);
+
+		StringTokenizer tokens2=new StringTokenizer(dest.getName(), ".");
+		String nombreArchivo2=new String("");
+		while(tokens2.hasMoreTokens()){
+			nombreArchivo2=tokens2.nextToken();
+		}
+    	String nombreArchivo=new String(dest.getName().substring(0, (dest.getName().length()-(nombreArchivo2.length()+1))));
+		
+		nombreArchivo = (nombreArchivo.replaceAll("[%,&,°,á,é,í,ó,ú,/,ä,ë,ï,ö,ü,{,},0-9]", "")).replaceAll(" ","_").replaceAll("ñ","ni");
+		mapeoNuevo.setNombreTabla(nombreArchivo);
+		List<TablaEO> listadoTablas = new ArrayList<>();
+		
+		String header=new String("");
+		try {
+			mapeoNuevo.setArchivo(dest);
+			BufferedReader br = new BufferedReader(new FileReader(dest.getAbsolutePath()+"\\"+dest.getName()));
+			logger.debug("BufferedReader {}",br);
+			header=br.readLine();
+			if(header!=null){
+					logger.debug("Encabezado {}",header);
+					StringTokenizer tokens=new StringTokenizer(header, "|");
+					while(tokens.hasMoreTokens()){
+						TablaEO tabla=new TablaEO();
+						String columna=(tokens.nextToken());
+						tabla.setNombreOriginal(columna);
+						columna = (columna.replaceAll("[%,&,°,á,é,í,ó,ú,/,ä,ë,ï,ö,ü,{,},0-9]", "")).replaceAll(" ","_").replaceAll("ñ","ni");
+						tabla.setNombreTabla(columna);
+						tabla.setTipoDatoTabla(TiposCampoDO.TEXT);
+						listadoTablas.add(tabla);
+			        }
+			}
+			else{
+				logger.debug("No contiene encabezado");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		mapeoNuevo.setTabla(listadoTablas);
+		return mapeoNuevo;
+	}
+
+	@Async
+	public void importacion (MapeoImportacionEO mapeoVista){
+		ImportacionesEO importacion = new ImportacionesEO();
+		importacion.setMapeoImportacion(mapeoVista);
+		Integer id=sqlSession.selectOne("importaciones.importacion.selectPkey");
+		importacion.setId(id);
+		
+		LogEO log=new LogEO();
+		log.setIdImportacion(id);
+		log.setDescripcion("Se inicia Proceso Asincrono de Creación de Historico");
+		sqlSession.insert("importaciones.logs.insertar", log);
+		logger.debug("Se inicia Proceso Asincrono de Creación de Historico");
+		
+		importacion.setEstatus(EstatusImportacionDO.PENDIENTE);
+
+		ByteArrayOutputStream baos;
+		ObjectOutputStream oos;
+		byte[] diagramaBytes;
+		
+		diagramaBytes = null;
+		try {
+			baos = new ByteArrayOutputStream();
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(mapeoVista);
+			oos.close();
+			diagramaBytes = baos.toByteArray();
+			baos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		HashMap<String, Object> parametros;
+		parametros = new HashMap<>();
+		parametros.put("importacion", importacion);
+		parametros.put("objeto", diagramaBytes);
+		
+		sqlSession.insert("importaciones.importacion.insertar",parametros);
+		
+		HashMap<String, Object> mapa=new HashMap<String, Object>();
+	    List<TablaEO> valoresVista  = new ArrayList<>();
+		valoresVista=mapeoVista.getTabla();
+		String query=new String("");
+		for(int i=0; valoresVista.size()>i; i++ ){
+			query= new String(query+ mapeoVista.getTabla().get(i).getNombreTabla()+" "+mapeoVista.getTabla().get(i).getTipoDatoTabla().getTipo()+",");	
+		}
+		mapa.put("camposTabla", query);
+		mapa.put("nombreTabla", mapeoVista.getNombreTabla());
+		
+		importacion.setEstatus(EstatusImportacionDO.PREPARANDO);
+		sqlSession.update("importaciones.importacion.actualizarEstatus",importacion);
+		log.setDescripcion("Se Crea la Tabla de la Importacion");
+		sqlSession.insert("importaciones.logs.insertar", log);
+		logger.debug("Se Crea la Tabla de la Importacion");
+		
+		sqlSession.update("importaciones.importacion.createTable",mapa);
+		
+		String campos=new String("");
+		
+		for (int i = 0; i < mapeoVista.getTabla().size(); i++) {
+			if(i!=0){
+				campos=campos+",";
+			}
+			campos=campos+mapeoVista.getTabla().get(i).getNombreTabla();
+		}
+		
+		HashMap<String, Object> mapaCopy=new HashMap<String, Object>();
+		mapaCopy.put("tabla", mapeoVista.getNombreTabla());
+		mapaCopy.put("url", mapeoVista.getArchivo().getAbsolutePath()+"\\"+mapeoVista.getArchivo().getName());
+		mapaCopy.put("campos", campos);
+		
+		importacion.setEstatus(EstatusImportacionDO.EJECUTANDO);
+		sqlSession.update("importaciones.importacion.actualizarEstatus",importacion);
+		
+		log.setDescripcion("Se Ejecuta la Importacion Con Copy");
+		sqlSession.insert("importaciones.logs.insertar", log);
+		logger.debug("Se Ejecuta la Importacion Con Copy");
+		
+		sqlSession.update("importaciones.importacion.copy",mapaCopy);
+
+		importacion.setEstatus(EstatusImportacionDO.TERMINADO);
+		sqlSession.update("importaciones.importacion.actualizarEstatus",importacion);
+		
+		log.setDescripcion("Finalizado El Proceso De Importación");
+		sqlSession.insert("importaciones.logs.insertar", log);
+		logger.debug("Finalizado El Proceso De Importación");
+			
+	}
+	
+	public LogsT tablaLog(MapeoImportacionEO mapeoVista){
+		LogsT tabla;
+		List<LogEO> listado;
+		tabla = new LogsT();
+		listado = sqlSession.selectList("importaciones.logs.listadoPorIdImportacion", mapeoVista);
+		tabla.setListado(listado);
+		if(!listado.isEmpty()){
+			tabla.setSeleccionado(listado.get(0));
+		}
+		return tabla;
+	}
+	
+	public TiposCampoDO[] listadoTiposCampo(){
+		logger.debug("Se genera listado de Tipos de Campo");
+		return TiposCampoDO.values();
+	}
+	
+	
+}

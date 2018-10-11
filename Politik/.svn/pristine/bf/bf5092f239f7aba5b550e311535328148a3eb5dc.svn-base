@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Resultados Entrevistas">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nivel :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloNiveles.seleccionado}" style="width:300px">
+										<p:ajax event="itemSelect" onsuccess="actualizar()" />
+					            		<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+									</p:selectOneMenu>
+							</p:column>
+						</p:panelGrid>
+						<p:panel id="gridEncuestas">
+							<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}"
+									selectionMode="single" paginator="true" rows="15" id="tablaResultados" paginatorPosition="bottom">
+<!-- 									<p:ajax event="rowSelect" oncomplete="actualizarGrafica()"/> -->
+									<p:column headerText="Region"  width="200" filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.nombreRegion}">
+										<p:outputLabel value="${fila.nombreRegion}"/>
+									</p:column>
+									<p:column headerText="Municipio"  width="200" filterable="true" filterMatchMode="contains" filterStyle="width:90%;"
+										 filterBy="${fila.municipio} ${fila.nombreMunicipio}" rendered="${modeloNiveles.seleccionado!='REGION'}">
+										<p:outputLabel value="${fila.municipio} ${fila.nombreMunicipio}"/>
+									</p:column>
+									<p:column headerText="Entrevistadores Prospera" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.encuestadoresProspera}"/>
+									</p:column>
+									<p:column headerText="% Entrevistadores Prospera" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeEncuestadoresProspera}"/>
+									</p:column>
+									<p:column headerText="Meta Entrevistadores Prospera" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.encuestadoresProsperaMeta}"/>
+									</p:column>
+									<p:column headerText="Entrevistadores Liconsa" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.encuestadoresLiconsa}"/>
+									</p:column>
+									<p:column headerText="% Entrevistadores Liconsa" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeEncuestadoresLiconsa}"/>
+									</p:column>
+									<p:column headerText="Meta Entrevistadores Liconsa" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.encuestadoresLiconsaMeta}"/>
+									</p:column>
+									<p:column headerText="Entrevistadores Gem" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.encuestadoresGem}"/>
+									</p:column>
+									<p:column headerText="% Entrevistadores Gem" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeEncuestadoresGem}"/>
+									</p:column>
+									<p:column headerText="Meta Entrevistadores Gem" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.encuestadoresGemMeta}"/>
+									</p:column>
+									
+									<p:columnGroup type="footer">
+										 <p:row>
+								            <p:column colspan="${modeloNiveles.seleccionado=='REGION'?1:2}" style="text-align:right" footerText="Total:" />
+								            <p:column footerText="${filaTotal.encuestadoresProspera}" style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeEncuestadoresProspera}" style="text-align:center"/>
+											<p:column footerText="${filaTotal.encuestadoresProsperaMeta}" style="text-align:right"/>
+											<p:column footerText="${filaTotal.encuestadoresLiconsa}" style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeEncuestadoresLiconsa}" style="text-align:center"/>
+											<p:column footerText="${filaTotal.encuestadoresLiconsaMeta}" style="text-align:right"/>
+											<p:column footerText="${filaTotal.encuestadoresGem}" style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeEncuestadoresGem}" style="text-align:center"/>
+											<p:column footerText="${filaTotal.encuestadoresGemMeta}" style="text-align:right"/>
+								         </p:row>
+								    </p:columnGroup>
+									
+									<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tablaResultados" fileName="ResultadosEntrevistas"/>
+										</h:commandLink>
+									</f:facet>
+							</p:dataTable>
+<!-- 							<p:chart type="bar" model="${chart}"  id="graficaBarras"  shadow="true" barPadding="60"/>		 -->
+						</p:panel>
+					</p:panel>	
+					
+<!-- 					<p:remoteCommand name="actualizarGrafica" action="actualizarGrafica" update="gridEncuestas"/> -->
+					<p:remoteCommand name="actualizar" action="actualizar" update="gridEncuestas"/>
+					
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

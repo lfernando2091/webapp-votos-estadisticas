@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="encuestas.hermanos.tablaFuenteHermanos">
+	<resultMap type="HermanosMovilizacionFCEO" id="fuenteHermano">
+	<id column="HermanosEntrevistadorEO_id" property="id" javaType="Integer"/>
+	<result column="HermanosEntrevistadorEO_municipio" property="municipio" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_coordinador" property="coordinador" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_casa" property="casa" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_calle" property="calle" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_numero_exterior" property="numeroExterior" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_municipio_casa_ciudadana" property="municipioCasaCiudadana" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_telefono_casa_ciudadana" property="telefonoCasaCiudadana" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_seccion" property="seccion" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_movilizador" property="movilizador" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_movilizado" property="movilizado" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_domicilio" property="domicilio" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_telefono" property="telefono" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_celular" property="celular" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_cve_elector" property="claveElector" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_seccion_l" property="seccion1" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_nombre_l" property="nombre1" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_primer_apellido_l" property="primerApellido1" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_segundo_apellido_l" property="segundoApellido1" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_obs" property="obs" javaType="String"/>
+	<result column="HermanosEntrevistadorEO_cruzado" property="cruzado" javaType="Boolean"/>
+	<result column="HermanosEntrevistadorEO_primero" property="primero" javaType="Boolean"/>
+	<result column="HermanosEntrevistadorEO_segundo" property="segundo" javaType="Boolean"/>
+	<result column="HermanosEntrevistadorEO_tercero" property="tercero" javaType="Boolean"/>
+	<result column="HermanosEntrevistadorEO_seccion_igual" property="seccionIgual" javaType="Boolean"/>
+	<result column="HermanosEntrevistadorEO_nombre_igual" property="nombreIgual" javaType="Boolean"/>
+	<result column="HermanosEntrevistadorEO_calificacion" property="calificacion" javaType="String"/>
+
+	</resultMap>
+	
+	<sql id="query">
+	select
+	HermanosEntrevistadorEO.folio HermanosEntrevistadorEO_id,
+	HermanosEntrevistadorEO.municipio HermanosEntrevistadorEO_municipio,
+	HermanosEntrevistadorEO.coordinador HermanosEntrevistadorEO_coordinador,
+	HermanosEntrevistadorEO.casa HermanosEntrevistadorEO_casa,
+	HermanosEntrevistadorEO.calle HermanosEntrevistadorEO_calle,
+	HermanosEntrevistadorEO.numero_exterior HermanosEntrevistadorEO_numeroExterior,
+	HermanosEntrevistadorEO.municipio_casa_ciudadana HermanosEntrevistadorEO_municipioCasaCiudadana,
+	HermanosEntrevistadorEO.telefono_casa_ciudadana HermanosEntrevistadorEO_telefonoCasaCiudadana,
+	HermanosEntrevistadorEO.seccion HermanosEntrevistadorEO_seccion,
+	HermanosEntrevistadorEO.movilizador HermanosEntrevistadorEO_movilizador,
+	HermanosEntrevistadorEO.movilizado HermanosEntrevistadorEO_movilizado,
+	HermanosEntrevistadorEO.domicilio HermanosEntrevistadorEO_domicilio,
+	HermanosEntrevistadorEO.telefono HermanosEntrevistadorEO_telefono,
+	HermanosEntrevistadorEO.celular HermanosEntrevistadorEO_celular,
+	HermanosEntrevistadorEO.cve_elector HermanosEntrevistadorEO_claveElector,
+	HermanosEntrevistadorEO.seccion_l HermanosEntrevistadorEO_seccion1,
+	HermanosEntrevistadorEO.nombre_l HermanosEntrevistadorEO_nombre1,
+	HermanosEntrevistadorEO.primer_apellido_l HermanosEntrevistadorEO_primerApellido1,
+	HermanosEntrevistadorEO.segundo_apellido_l HermanosEntrevistadorEO_segundoApellido1,
+	HermanosEntrevistadorEO.obs HermanosEntrevistadorEO_obs,
+	HermanosEntrevistadorEO.cruzado HermanosEntrevistadorEO_cruzado,
+	HermanosEntrevistadorEO.primero HermanosEntrevistadorEO_primero,
+	HermanosEntrevistadorEO.segundo HermanosEntrevistadorEO_segundo,
+	HermanosEntrevistadorEO.tercero HermanosEntrevistadorEO_tercero,
+	HermanosEntrevistadorEO.seccion_igual HermanosEntrevistadorEO_seccionIgual,
+	HermanosEntrevistadorEO.nombre_igual HermanosEntrevistadorEO_nombreIgual,
+	HermanosEntrevistadorEO.calificacion HermanosEntrevistadorEO_calificacion
+
+	from  bomberazos.movilizacion_fc_21_05_2017 HermanosEntrevistadorEO
+	</sql>
+	<select id="fuente" parameterType="Integer" resultMap="fuenteHermano">
+	<include refid="query"/>
+	<where>
+	HermanosEntrevistadorEO.folio=#{value} limit 1
+	</where>
+	</select>
+</mapper>

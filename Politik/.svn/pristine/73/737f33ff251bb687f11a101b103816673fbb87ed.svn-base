@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.municipios">
+	<cache />
+	
+	<resultMap type="MunicipioEO" id="municipio">
+		<id column="MunicipioEO_id" property="id" javaType="Integer"/>
+		<result column="MunicipioEO_idMunicipio" property="idMunicipio" javaType="Integer"/>
+		<result column="MunicipioEO_nombre" property="nombre" javaType="String"/>
+		<result column="MunicipioEO_llave" property="llave" javaType="String"/>
+		<association property="entidad" resultMap="catalogos.entidades.entidad" />
+	</resultMap>
+	
+	<select id="listado" resultMap="municipio" parameterType="EntidadEO">
+		SELECT 
+			MunicipioEO.pkey 			MunicipioEO_id,
+			MunicipioEO.id_municipio	MunicipioEO_idMunicipio,
+			MunicipioEO.municipio		MunicipioEO_nombre,
+			MunicipioEO.llave 			MunicipioEO_llave,
+			EntidadEO.id_entidad 		EntidadEO_id,
+			EntidadEO.entidad 			EntidadEO_nombre
+		FROM catalogos.municipios MunicipioEO
+		JOIN catalogos.entidades EntidadEO on (MunicipioEO.id_entidad = EntidadEO.id_entidad)
+		<where>
+			<if test="id != null">
+				MunicipioEO.id_entidad = #{id}
+			</if>
+		</where>
+		ORDER BY MunicipioEO.id_municipio
+	</select>
+	
+	<select id="listadoPorEntidades" resultMap="municipio" parameterType="list">
+		SELECT 
+			MunicipioEO.pkey 			MunicipioEO_id,
+			MunicipioEO.id_municipio	MunicipioEO_idMunicipio,
+			MunicipioEO.municipio		MunicipioEO_nombre,
+			MunicipioEO.llave 			MunicipioEO_llave,
+			EntidadEO.id_entidad 		EntidadEO_id,
+			EntidadEO.entidad 			EntidadEO_nombre
+		FROM catalogos.municipios MunicipioEO
+		JOIN catalogos.entidades EntidadEO on (MunicipioEO.id_entidad = EntidadEO.id_entidad)
+		<where>
+			<if test="list != null">
+				MunicipioEO.id_entidad in 
+				<foreach collection="list" open="(" separator="," close=")" item="item" index="index">
+					${item.id}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY MunicipioEO.id_entidad, MunicipioEO.id_municipio
+	</select>
+	
+	<select id="listadoPorEleccionLlave" resultMap="municipio" parameterType="EleccionEO">
+		SELECT 
+			MunicipioEO.pkey 			MunicipioEO_id,
+			MunicipioEO.id_municipio	MunicipioEO_idMunicipio,
+			MunicipioEO.municipio		MunicipioEO_nombre,
+			MunicipioEO.llave 			MunicipioEO_llave,
+			EntidadEO.id_entidad 		EntidadEO_id,
+			EntidadEO.entidad 			EntidadEO_nombre
+		FROM catalogos.municipios MunicipioEO
+		JOIN catalogos.entidades EntidadEO on (MunicipioEO.id_entidad = EntidadEO.id_entidad)
+		<where>
+			MunicipioEO.llave in (
+				SELECT EleccionesLlaves.llave 
+				FROM catalogos.elecciones_llaves EleccionesLlaves 
+				WHERE EleccionesLlaves.id_eleccion = #{id}
+			)
+		</where> 
+		ORDER BY MunicipioEO.id_entidad, MunicipioEO.id_municipio
+	</select>
+</mapper>

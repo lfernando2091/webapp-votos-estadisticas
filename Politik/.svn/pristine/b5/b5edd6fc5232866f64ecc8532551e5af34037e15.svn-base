@@ -1,0 +1,75 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Beneficiarios">
+						<p:panelGrid columns="2">
+							<p:column>
+										Nombre del Evento
+							</p:column>
+							<p:column>
+								<p:outputLabel value="${evento.nombre}" />
+							</p:column>
+						</p:panelGrid>
+						<p:separator />
+						<p:dataTable value="${tablaBeneficiarios.listado}" var="fila"
+							selectionMode="single" rowKey="${fila.id}"
+							selection="${tablaBeneficiarios.seleccionado}" scrollable="true"
+							scrollWidth="100%">
+							<p:column headerText="Id" style="width:10%;">
+									${fila.id}
+							</p:column>
+							<p:column headerText="Nombre Beneficiario" style="width:70%;">
+									${fila.nombre} ${fila.primerApellido} ${fila.segundoApellido}
+								</p:column>
+							<p:column headerText="Fecha Nacimiento " style="width:20%;">
+									${fila.fechaDia}/${fila.fechaMes}/${fila.fechaAnio}
+							</p:column>
+							<p:column headerText="Programa " style="width:20%;">
+									${fila.programa.programa}
+							</p:column>
+							<p:column headerText="Ejercicio " style="width:20%;">
+									${fila.ejercicio.ejercicio}
+							</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandLink action="regresarEvento">
+								<p:graphicImage value="/resources/botones/REGRESAR.png"/>
+							</p:commandLink>				
+							<p:commandLink action="burcarPersona">
+								<p:graphicImage value="/resources/botones/AGREGAR BENEFICIARIOS.png"/>
+							</p:commandLink>	
+							<p:commandLink action="eliminar">
+								<p:graphicImage value="/resources/botones/ELIMINAR.png"/>
+								<p:confirm header="Confirmación"
+									message="¿Esta seguro de eleminar el registro?"
+									icon="ui-icon-alert" />
+							</p:commandLink>
+							<p:commandLink action="perfil" immediate="true" >
+								<p:graphicImage value="/resources/botones/PERFIL.png"/>
+							</p:commandLink>
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton value="Yes" type="button"
+									styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+									update="messages" />
+								<p:commandButton value="No" type="button"
+									styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							</p:confirmDialog>
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

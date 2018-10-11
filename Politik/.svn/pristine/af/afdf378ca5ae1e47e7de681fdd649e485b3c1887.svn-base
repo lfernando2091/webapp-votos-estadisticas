@@ -1,0 +1,21 @@
+package com.saganet.politik.dominios;
+
+public enum ResultadoEntrevistaEntrevistadorDO {
+	EXITOSO(" "),
+	NO_PERMITIO_MINUTOS("Domicilio no encontrado"),
+	NUMERO_NO_EXISTE("Número no existe"),
+	NUMERO_OCUPADO("Número ocupado"),
+	NUMERO_HA_CAMBIADO("Número ha cambiado"),
+	NUMERO_FUERA_SERVICIO("Número fuera de servicio"),
+	NUMERO_EQUIVOCADO("Número equivocado");
+	
+	private final String nombre;
+
+	private ResultadoEntrevistaEntrevistadorDO(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+}

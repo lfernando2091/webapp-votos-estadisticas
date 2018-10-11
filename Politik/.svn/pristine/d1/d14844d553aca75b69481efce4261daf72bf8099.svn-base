@@ -1,0 +1,288 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Administración" />
+						<p:menuitem value="Usuarios" action="cancelar" immediate="true" />
+						<p:menuitem
+							value="${usuarioCRUD.id == null ? 'Agregar' : 'Editar'} Usuario" />
+					</p:breadCrumb>
+
+					<p:focus />
+					<p:panel
+						header="${usuarioCRUD.id == null ? 'Agregar' : 'Editar'} Usuario">
+						<p:messages autoUpdate="true" />
+						<p:panelGrid columns="8">
+							<p:outputLabel value="Nick" />
+							<p:inputText value="${usuarioCRUD.nick}" size="15"
+								disabled="${usuarioCRUD.id != null}" />
+							<p:outputLabel value="Nombre" />
+							<p:inputText value="${usuarioCRUD.nombre}" size="20" />
+							<p:outputLabel value="Nivel" />
+							<p:selectOneMenu value="${usuarioCRUD.nivel}"
+								converter="ObjectConverter" style="width: 125px;">
+								<f:selectItems value="${modeloNiveles.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+								<p:ajax event="itemSelect" onstart="cambiarNivel();" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Habilitado" />
+							<p:inputSwitch value="${usuarioCRUD.habilitado}" onLabel="Si"
+								offLabel="No" />
+							<p:outputLabel value="Mail"/>
+							<p:inputText value="${usuarioCRUD.mail}" size="20" />	
+							<p:outputLabel value="Password" />
+							<p:password id="passwordUsuario1" value="${usuarioCRUD.pw}"
+								match="#{p:component('passwordUsuario2')}" weakLabel="Debil"
+								goodLabel="Aceptable" strongLabel="Fuerte" size="20"
+								feedback="true" validatorMessage="Los Password no coinciden" />
+							<p:outputLabel value="Confirmar Password" />
+							<p:password id="passwordUsuario2" value="${usuarioCRUD.pw}"
+								size="20" />
+								<p:outputLabel value="Celular: "/>
+								<p:inputText value="${usuarioCRUD.celular}"/>
+						</p:panelGrid>
+						<p:tabView id="tabsUsuario">
+							<p:tab title="Roles">
+								<p:dataTable id="tablaRoles"
+									value="${modeloRolesUsuario.listado}" var="fila"
+									rowKey="${fila.id}"
+									selection="${modeloRolesUsuario.seleccionado}"
+									selectionMode="single" paginator="true" rows="10" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+									<p:column headerText="Rol" width="300">${fila.rol}</p:column>
+									<p:column headerText="Descripción">${fila.descripcion}</p:column>
+									<f:facet name="footer">
+										<p:commandLink onstart="PF('dialogoAgregarRolWV').show();">
+												<p:graphicImage value="/resources/botones/AGREGAR.png" />
+										</p:commandLink>
+										<p:commandLink action="quitarRol" update="#{p:component('tablaRoles')} #{p:component('comboModeloRoles')}" >
+												<p:graphicImage value="/resources/botones/QUITAR.png" />
+										</p:commandLink>
+<!-- 										<p:commandButton value="Agregar" -->
+<!-- 											onstart="PF('dialogoAgregarRolWV').show();" /> -->
+<!-- 										<p:commandButton value="Quitar" action="quitarRol" -->
+<!-- 											update="#{p:component('tablaRoles')} #{p:component('comboModeloRoles')}" /> -->
+									</f:facet>
+								</p:dataTable>
+							</p:tab>
+							<p:tab title="Territorios">
+								<p:dataTable value="${usuarioCRUD.territorios}"
+									var="fila" paginator="true" rows="10" paginatorAlwaysVisible="false" paginatorPosition="bottom" >
+									<p:column headerText="Llave" width="100">${fila.llave}</p:column>
+									<p:column headerText="Nombre">${fila.nombre}</p:column>
+									<f:facet name="footer">
+										<p:commandLink onstart="PF('dialogoAgregarTerritoriosWV').show();" disabled="${usuarioCRUD.nivel == 'NACIONAL'}">
+												<p:graphicImage value="/resources/botones/EDITAR.png" />
+										</p:commandLink>
+<!-- 										<p:commandButton value="Editar" -->
+<!-- 											onstart="" disabled="${usuarioCRUD.nivel == 'NACIONAL'}" /> -->
+									</f:facet>
+								</p:dataTable>
+							</p:tab>
+							<p:tab title="Dependencias">
+								<p:dataTable id="tablaDependencias" value="${modeloDependenciasUsuario.listado}"
+									var="fila" paginator="true" paginatorAlwaysVisible="false"
+									paginatorPosition="bottom" rowKey="${fila.id}" selection="${modeloDependenciasUsuario.seleccionado}" selectionMode="single">
+									<p:column headerText="Siglas" width="150">${fila.siglas}</p:column>
+									<p:column headerText="Nombre">${fila.dependencia}</p:column>
+									<f:facet name="footer">
+										<p:commandLink onstart="PF('dialogoAgregarDependenciaWV').show();">
+												<p:graphicImage value="/resources/botones/AGREGAR.png" />
+										</p:commandLink>
+										<p:commandLink action="quitarDependencia" update="#{p:component('tablaDependencias')} #{p:component('comboModeloDependencias')}" >
+												<p:graphicImage value="/resources/botones/QUITAR.png" />
+										</p:commandLink>
+<!-- 										<p:commandButton value="Agregar" onstart="PF('dialogoAgregarDependenciaWV').show();"/> -->
+<!-- 										<p:commandButton value="Quitar" action="quitarDependencia" update="#{p:component('tablaDependencias')} #{p:component('comboModeloDependencias')}" /> -->
+									</f:facet>
+								</p:dataTable>
+							</p:tab>
+						</p:tabView>
+
+						<f:facet name="footer">
+							<p:commandLink action="guardar">
+									<p:graphicImage value="/resources/botones/GUARDAR.png" />
+							</p:commandLink>
+							<p:commandLink action="cancelar" immediate="true">
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Guardar" action="guardar" /> -->
+<!-- 							<p:commandButton value="Cancelar" action="cancelar" -->
+<!-- 								immediate="true" /> -->
+						</f:facet>
+					</p:panel>
+
+					<p:dialog id="dialogoAgregarRol" widgetVar="dialogoAgregarRolWV"
+						modal="true" visible="false" closable="false" header="Agregar Rol">
+						<p:selectOneMenu id="comboModeloRoles"
+							value="${modeloRoles.seleccionado}" converter="ObjectConverter"
+							style="width: 350px;">
+							<f:selectItems value="${modeloRoles.listado}" var="fila"
+								itemLabel="${fila.descripcion}" itemValue="${fila}" />
+						</p:selectOneMenu>
+						<f:facet name="footer">
+							<p:commandLink action="agregarRol"
+								update="#{p:component('tablaRoles')} #{p:component('comboModeloRoles')}"
+								onsuccess="PF('dialogoAgregarRolWV').hide();" >
+									<p:graphicImage value="/resources/botones/AGREGAR.png" />
+							</p:commandLink>
+							<p:commandLink  onsuccess="PF('dialogoAgregarRolWV').hide();">
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Agregar" action="agregarRol" -->
+<!-- 								update="#{p:component('tablaRoles')} #{p:component('comboModeloRoles')}" -->
+<!-- 								onsuccess="PF('dialogoAgregarRolWV').hide();" /> -->
+<!-- 							<p:commandButton value="Cancelar" -->
+<!-- 								onsuccess="PF('dialogoAgregarRolWV').hide();" /> -->
+						</f:facet>
+					</p:dialog>
+					
+					<p:dialog id="dialogoAgregarDependencia" widgetVar="dialogoAgregarDependenciaWV"
+						modal="true" visible="false" closable="false" header="Agregar Rol">
+						<p:selectOneMenu id="comboModeloDependencias"
+							value="${modeloDependencias.seleccionado}" converter="ObjectConverter"
+							style="width: 350px;">
+							<f:selectItems value="${modeloDependencias.listado}" var="fila"
+								itemLabel="${fila.dependencia}" itemValue="${fila}" />
+						</p:selectOneMenu>
+						<f:facet name="footer">
+							<p:commandLink action="agregarDependencia"
+								update="#{p:component('tablaDependencias')} #{p:component('comboModeloDependencias')}"
+								onsuccess="PF('dialogoAgregarDependenciaWV').hide();" >
+									<p:graphicImage value="/resources/botones/AGREGAR.png" />
+							</p:commandLink>
+							<p:commandLink onsuccess="PF('dialogoAgregarDependenciaWV').hide();"  >
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Agregar" action="agregarDependencia" -->
+<!-- 								update="#{p:component('tablaDependencias')} #{p:component('comboModeloDependencias')}" -->
+<!-- 								onsuccess="PF('dialogoAgregarDependenciaWV').hide();" /> -->
+<!-- 							<p:commandButton value="Cancelar" -->
+<!-- 								onsuccess="PF('dialogoAgregarDependenciaWV').hide();" /> -->
+						</f:facet>
+					</p:dialog>
+
+					<p:dialog id="dialogoAgregarTerritorios"
+						widgetVar="dialogoAgregarTerritoriosWV" modal="true"
+						visible="false" closable="false" header="Agregar Territorios">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Entidad" />
+							<p:selectCheckboxMenu
+								value="${modeloEntidades.seleccionMultiple}"
+								converter="ObjectConverter" label="Entidades"
+								style="width: 215px;" filter="true" filterMatchMode="contains"
+								disabled="${usuarioCRUD.nivel == 'GEOZONA' or usuarioCRUD.nivel == 'NACIONAL'}">
+								<p:ajax event="change" onstart="actualizarCombosTerritorios();" />
+								<p:ajax event="toggleSelect"
+									onstart="actualizarCombosTerritorios();" />
+								<f:selectItems value="${modeloEntidades.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+							<p:outputLabel value="Distrito Federal" />
+							<p:selectCheckboxMenu id="comboDFederales"
+								label="Dttos. Federales"
+								value="${modeloDFederales.seleccionMultiple}"
+								converter="ObjectConverter" filter="true"
+								filterMatchMode="contains"
+								disabled="${usuarioCRUD.nivel != 'DFEDERAL'}">
+								<f:selectItems value="${modeloDFederales.listado}" var="fila"
+									itemLabel="${fila.entidad.nombre}: ${fila.idDFederal} - ${fila.nombre}"
+									itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+							<p:outputLabel value="Distrito Local" />
+							<p:selectCheckboxMenu id="comboDLocales" label="Dttos. Locales"
+								value="${modeloDLocales.seleccionMultiple}"
+								converter="ObjectConverter" filter="true"
+								filterMatchMode="contains"
+								disabled="${usuarioCRUD.nivel != 'DLOCAL'}">
+								<f:selectItems value="${modeloDLocales.listado}" var="fila"
+									itemLabel="${fila.entidad.nombre}: ${fila.idDLocal} - ${fila.nombre}"
+									itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+							<p:outputLabel value="Municipio" />
+							<p:selectCheckboxMenu id="comboMunicipios" label="Municipios"
+								value="${modeloMunicipios.seleccionMultiple}"
+								converter="ObjectConverter" filter="true"
+								filterMatchMode="contains"
+								disabled="${usuarioCRUD.nivel != 'MUNICIPIO'}">
+								<f:selectItems value="${modeloMunicipios.listado}" var="fila"
+									itemLabel="${fila.entidad.nombre}: ${fila.idMunicipio} - ${fila.nombre}"
+									itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+							<p:outputLabel value="Geozona" rendered="${usuarioCRUD.nivel == 'GEOZONA'}" />
+							<p:selectOneMenu value="${modeloGeozonas.seleccionado}"
+								converter="ObjectConverter" style="width: 300px;"
+								rendered="${usuarioCRUD.nivel == 'GEOZONA'}">
+								<p:ajax event="itemSelect" onstart="llenarParticiones();"/>
+								<f:selectItems value="${modeloGeozonas.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Particiones ${modeloGeozonas.seleccionado.particiones}" rendered="${usuarioCRUD.nivel == 'GEOZONA'}" />
+							<p:selectCheckboxMenu id="scmParticiones" label="Particiones" value="${modeloParticiones.seleccionMultiple}"
+								converter="ObjectConverter" style="width: 300px;"
+								rendered="${usuarioCRUD.nivel == 'GEOZONA'}" requiredMessage="Partición: requerido">
+								<f:selectItems value="${modeloParticiones.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+							
+						</p:panelGrid>
+						<f:facet name="footer">
+						<p:messages autoUpdate="true"/>
+						<p:remoteCommand name="llenarParticiones" immediate="true" action="llenarParticiones" update="scmParticiones"/>
+							<p:commandLink action="agregarTerritorios" update="#{p:component('tabsUsuario')}" oncomplete="PF('dialogoAgregarTerritoriosWV').hide();">
+									<p:graphicImage value="/resources/botones/AGREGAR.png" />
+							</p:commandLink>
+							<p:commandLink oncomplete="PF('dialogoAgregarTerritoriosWV').hide();" >
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Aceptar" action="agregarTerritorios" update="#{p:component('tabsUsuario')}" oncomplete="PF('dialogoAgregarTerritoriosWV').hide();" /> -->
+<!-- 							<p:commandButton value="Cancelar" -->
+<!-- 								oncomplete="PF('dialogoAgregarTerritoriosWV').hide();" /> -->
+						</f:facet>
+					</p:dialog>
+
+					<p:dialog widgetVar="dialogoActualizarCombosWV"
+						header="Actualizando Resultados" closeOnEscape="false"
+						closable="false" modal="true" appendTo="@(body)">
+						<p:panelGrid columns="1">
+							<p:outputLabel value="Se están actualizando los resultados." />
+							<p:outputLabel
+								value="Esta operación puede tardar, por favor espere." />
+							<p:outputLabel
+								value="No refresque la página ni oprima el botón atrás del explorador." />
+						</p:panelGrid>
+					</p:dialog>
+
+					<p:remoteCommand name="cambiarNivel" action="cambiarNivel" onstart="PF('dialogoActualizarCombosWV').show();"
+						update="#{p:component('tabsUsuario')} #{p:component('dialogoAgregarTerritorios')}" oncomplete="PF('dialogoActualizarCombosWV').hide();" />
+
+					<p:remoteCommand id="remoteActualizarCombosTerritorios"
+						name="actualizarCombosTerritorios"
+						action="actualizarCombosTerritorios"
+						update="comboDFederales, comboDLocales, comboMunicipios"
+						onstart="PF('dialogoActualizarCombosWV').show()"
+						oncomplete="PF('dialogoActualizarCombosWV').hide()" />
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.ui-datatable-footer{
+						text-align: left !important;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,116 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Filtro">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nivel :" />
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${modeloNiveles.seleccionado}"
+									style="width:300px">
+									<p:ajax event="itemSelect" onsuccess="actualizar()" />
+									<f:selectItems value="${modeloNiveles.listado}" var="fila"
+										itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Grupos :" />
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${modeloProgramas.seleccionado}"
+									style="width:300px">
+									<p:ajax event="itemSelect" onsuccess="actualizar()" />
+									<f:selectItems value="${modeloProgramas.listado}" var="fila"
+										itemLabel="${fila.nombre2}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+						</p:panelGrid>
+					</p:panel>
+					<p:dataTable  value="${modelo.listado}" var="f" id="tablaDatos" paginator="true" paginatorAlwaysVisible="false" rows="20" paginatorPosition="bottom" reflow="true">
+					<p:column headerText="Región" >
+					<p:outputLabel value="${f.region}"/>
+					</p:column>
+					<p:column headerText="Municipio" rendered="${modeloNiveles.seleccionado ne 'REGION'?'true':'false'}" filterable="true" filterBy="${f.idMunicipio} ${f.municipio}" filterMatchMode="contains">
+					<p:outputLabel value="${f.idMunicipio} ${f.municipio}"/>
+					</p:column>
+					<p:column headerText="Seción" rendered="${modeloNiveles.seleccionado eq 'SECCION'?'true':'false'}">
+					<p:outputLabel value="${f.seccion}"/>
+					</p:column>
+					<p:column headerText="A Favor">
+					<p:outputLabel value="${f.aFavor}"/>
+					</p:column>
+					<p:column headerText="Indeciso">
+					<p:outputLabel value="${f.indeciso}"/>
+					</p:column>
+					<p:column headerText="En Contra">
+					<p:outputLabel value="${f.enContra}"/>
+					</p:column>
+					<p:column headerText="TotalExitosas">
+					<p:outputLabel value="${f.totalExitosas}"/>
+					</p:column>
+					<p:column headerText="Domicilio no Encontrado">
+					<p:outputLabel value="${f.dne}"/>
+					</p:column>
+					<p:column headerText="No Hubo quien Conestara">
+					<p:outputLabel value="${f.nhqc}"/>
+					</p:column>
+					<p:column headerText="Menor de Edad">
+					<p:outputLabel value="${f.me}"/>
+					</p:column>
+					<p:column headerText="No Quisieron Contestar">
+					<p:outputLabel value="${f.nqc}"/>
+					</p:column>
+					<p:column headerText="Finado">
+					<p:outputLabel value="${f.f}"/>
+					</p:column>
+					<p:column headerText="Otro">
+					<p:outputLabel value="${f.o}"/>
+					</p:column>
+					<p:column headerText="Total No Exitosas">
+					<p:outputLabel value="${f.totalNoExitosas}"/>
+					</p:column>
+					
+					
+					<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tablaDatos" fileName="ExitososNoExitosos" />
+										</h:commandLink>
+									</f:facet>
+					</p:dataTable>
+					
+					
+					<p:remoteCommand name="actualizar" partialSubmit="true" action="actualizar" update="tablaDatos"/>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			}
+			.negritas{
+			font-weight: bold;
+			}
+		</h:outputStylesheet>
+
+		<h:outputScript>
+			window.onload = function() {
+				gmap = PF('mapaWV').getMap();
+			}
+		</h:outputScript>
+
+	</ui:define>
+
+</ui:composition>

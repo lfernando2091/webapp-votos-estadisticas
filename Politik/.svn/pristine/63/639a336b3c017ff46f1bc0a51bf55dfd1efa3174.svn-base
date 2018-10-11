@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="importaciones.importacion">
+	<cache />
+	<resultMap type="ImportacionesEO" id="importaciones">
+		<id column="ImportacionesEO_id" property="id" javaType="Integer" />
+		<result column="ImportacionesEO_fecha" property="fecha"  javaType="java.sql.Timestamp" jdbcType="TIMESTAMP"/>
+<!--  		<result column="ImportacionesEO_objeto" property="mapeoImportacion" javaType="String" /> -->
+		<result column="ImportacionesEO_estatus" property="estatus" javaType="com.saganet.politik.dominios.EstatusImportacionDO"/>
+		<result column="ImportacionesEO_tipo" property="tipo" javaType="com.saganet.politik.dominios.TiposImportacionesDO"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			ImportacionesEO.pkey ImportacionesEO_id,
+			ImportacionesEO.fecha ImportacionesEO_fecha,
+			ImportacionesEO.tipo_importacion ImportacionesEO_tipo,
+			ImportacionesEO.estatus ImportacionesEO_estatus
+		FROM importaciones.historicos ImportacionesEO
+	</sql>
+	
+	<select id="listado" resultMap="importaciones">
+		<include refid="query" />
+		ORDER BY ImportacionesEO.tipo_importacion, ImportacionesEO.estatus, ImportacionesEO.pkey
+	</select>
+	
+	<select id="buscarMapeo" parameterType="ImportacionesEO" resultType="_byte[]">
+		SELECT ImportacionesEO.objeto
+		FROM importaciones.historicos ImportacionesEO
+		WHERE ImportacionesEO.pkey = #{id}
+	</select>
+	
+	<select id="buscarPorId" resultMap="importaciones" parameterType="Integer">
+		<include refid="query" />
+		WHERE ImportacionesEO.pkey=#{idImportacion}
+		ORDER BY ImportacionesEO.pkey
+	</select>
+	
+	<insert id="insertar" parameterType="hashmap">
+		INSERT INTO importaciones.historicos(pkey, objeto, estatus, tipo_importacion)
+		VALUES (#{importacion.id}, #{objeto},#{importacion.estatus},#{importacion.tipo});
+	</insert>
+	
+	<update id="actualizarEstatus" parameterType="ImportacionesEO">
+		UPDATE importaciones.historicos SET estatus=#{estatus}
+		WHERE pkey=#{id}
+	</update>
+	
+	<update id="createTable" parameterType="hashmap">
+		CREATE TABLE importaciones.${nombreTabla}
+		(
+		   pkey serial NOT NULL,
+		   ${camposTabla}
+		   CONSTRAINT ${nombreTabla}_pkey_pk PRIMARY KEY (pkey)
+		) 
+		WITH (
+		  OIDS = FALSE
+		)
+	</update>
+	
+	<update id="copy" parameterType="hashmap">
+		COPY ${esquema}.${tabla} (${campos}) FROM '${url}' WITH CSV HEADER DELIMITER '${delimitador}' QUOTE '${quote}' ENCODING 'WIN1252'
+	</update>
+	
+	<update id="truncarTabla" parameterType="String">
+		TRUNCATE  ${value}
+	</update>
+	
+	<select id="selectPkey" resultType="Integer">
+		SELECT nextval('importaciones.historicos_pkey_seq'::regclass)
+	</select>
+	
+	<select id="validarTabla" resultType="Integer" parameterType="String">
+		SELECT count(*) FROM INFORMATION_SCHEMA.COLUMNS 
+		WHERE table_name=#{value} and table_schema ='importaciones'
+	</select>
+
+	<select id="conteoRegistros" resultType="Integer" parameterType="String">
+		SELECT COUNT(*)  FROM ${value}
+	</select>
+</mapper>

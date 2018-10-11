@@ -1,0 +1,80 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            	<p:panel header="Filtro">
+            	<p:messages autoUpdate="true"/>
+            	<p:panelGrid columns="2">
+            	<p:outputLabel value="Desde: "/>
+            	<p:calendar id="desde" value="${fechaInicio}" pattern="dd/MM/yyyy" locale="es" showOn="button" mask="true"  required="true">
+            		<p:ajax event="dateSelect" immediate="true"/>
+            	</p:calendar>
+            	<p:outputLabel value="Hasta: "/>
+            	<p:calendar id="hasta" value="${fechaFin}" pattern="dd/MM/yyyy" locale="es" showOn="button" mask="true" required="true">
+            		<p:ajax event="dateSelect" immediate="true"/>
+            	</p:calendar>
+            	<p:outputLabel value=""/>
+            	<p:commandButton value="Cosultar" partialSubmit="true" action="actualizarConcentrado" update="@form"/>
+            	</p:panelGrid>
+            	</p:panel>
+            	<p:panelGrid columns="2" columnClasses="topAlign,topAlign">
+            	<p:panel header="Usarios">
+            	<p:dataTable widgetVar="tablaUsuariosWV" value="${modeloUsuarios.listado}" var="f" rowKey="${f.id}" selection="${modeloUsuarios.seleccionado}" selectionMode="single"
+            	paginator="true" rows="10" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+            	<f:facet name="header">
+									<p:outputLabel value="Usuario: " />
+									<h:inputText id="globalFilter"
+										onkeyup="PF('tablaUsuariosWV').filter();" style="width:150px;" />
+								</f:facet>
+								<p:ajax event="rowSelect" onstart="consultaConcentrado();"/>
+            	<p:column headerText="Nick" filterBy="${f.nick}" filterStyle="display: none;">
+            	${f.nick}
+            	</p:column>
+            	<p:column headerText="Último Acceso">
+            	${f.ultimoAcceso == null ? '' : f.ultimoAccesoFormato}
+            	</p:column>
+            	</p:dataTable>
+            	<f:facet name="footer">
+            	<p:remoteCommand  name="consultaConcentrado" action="consultaConcentrado" update="@form"/>
+            	<p:commandButton value="Ver Listado Completo" action="listadoCompleto" icon="fa fa-align-justify"/>
+            	</f:facet>
+            	
+            	</p:panel>
+            	
+            	<p:panel header="Accesos">
+            	<p:dataTable widgetVar="tablaAccesos" value="${listadoConcentrado}" var="f"
+            	paginator="10" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+            	<p:column headerText="Acción">
+            	${f.accion}
+            	</p:column>
+            	<p:column headerText="Conteo">
+            	${f.conteo}
+            	</p:column>
+            	</p:dataTable>
+            	
+            	</p:panel>
+            	
+            	</p:panelGrid>
+            	
+            	            		
+            		<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+            	</h:form>      
+            	<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>      
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

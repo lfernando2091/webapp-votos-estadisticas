@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructuras.tablaEstructura">
+	<cache />
+	
+	<select id="listadoPorNodo" parameterType="hashmap" resultType="hashmap">
+		SELECT *
+		FROM warehouse.estructura_${estructura.id} tablaEstructura
+		<where>
+			tablaEstructura.id_nodo = #{nodo.id}
+			<choose>
+				<when test="personaPadre == null">
+					AND tablaEstructura.id_persona_padre is null
+				</when>
+				<otherwise>
+					AND tablaEstructura.id_persona_padre = #{personaPadre.id} AND tablaEstructura.id_entidad_nacimiento_padre = #{personaPadre.entidadNacimiento.id}
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+	
+	<insert id="insertar" parameterType="hashmap">
+		<selectKey keyProperty="idPolitik" resultType="Integer" order="BEFORE">
+			SELECT nextval('${esquema}.${tabla}_id_politik_seq'::regclass)
+		</selectKey>
+	
+		INSERT INTO ${esquema}.${tabla}(id_politik, 
+		<foreach collection="campos" item="item" separator=",">
+			${item}
+		</foreach>
+		)
+		VALUES (#{idPolitik}, 
+			<foreach collection="campos" item="item" index="index" separator=",">
+				<choose>
+					<when test="tiposCampos[index].name() == 'INTEGER'">
+						<choose>
+							<when test="datos[item] == null">
+								null
+							</when>
+							<otherwise>
+								${datos[item]}
+							</otherwise>
+						</choose>
+					</when>
+					<when test="tiposCampos[index].name() == 'TEXT' or tiposCampos[index].name() == 'DATE'">
+						<choose>
+							<when test="datos[item] == null">
+								null
+							</when>
+							<otherwise>
+								'${datos[item]}'
+							</otherwise>
+						</choose>
+					</when>
+				</choose>
+			</foreach>
+		)
+	</insert>
+</mapper>

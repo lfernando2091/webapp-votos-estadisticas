@@ -1,0 +1,64 @@
+package com.saganet.politik.database.catalogos;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("GeozonaEO")
+public class GeozonaEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 8837193361387309993L;
+
+	private Integer id;
+	private String nombre;
+	private NivelesDO nivel;
+	private String observaciones;
+	private List<GeozonaParticionEO> particiones;
+	
+	public GeozonaEO(){
+		nivel = NivelesDO.ENTIDAD;
+		particiones = new ArrayList<>();
+	}
+	
+	@Override
+	public String toString() {
+		return "GeozonaEO [id=" + id + ", nombre=" + nombre + ", nivel=" + nivel + ", observaciones=" + observaciones
+				+ ", particiones=" + particiones + "]";
+	}
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getNombre() {
+		return nombre;
+	}
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	public NivelesDO getNivel() {
+		return nivel;
+	}
+	public void setNivel(NivelesDO nivel) {
+		this.nivel = nivel;
+	}
+	public String getObservaciones() {
+		return observaciones;
+	}
+	public void setObservaciones(String observaciones) {
+		this.observaciones = observaciones;
+	}
+
+	public List<GeozonaParticionEO> getParticiones() {
+		return particiones;
+	}
+
+	public void setParticiones(List<GeozonaParticionEO> particiones) {
+		this.particiones = particiones;
+	}
+}

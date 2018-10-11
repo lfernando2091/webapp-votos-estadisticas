@@ -1,0 +1,75 @@
+package com.saganet.politik.database.encuestas.admin;
+
+import java.io.Serializable;
+import java.util.List;
+
+import com.saganet.politik.modelos.JavaBeanT;
+
+public class PreguntaEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 6405470386030745523L;
+	
+	private Integer id;
+	private Integer idEncuesta;
+	private String tipoPregunta;
+	private Integer inputArea;
+	private Integer consecutivoPregunta;
+	private String Pregunta;
+	private String Respuesta;
+	
+	private List<RespuestaCerradaEO> respuestasCerradas;
+	
+	@Override
+	public String toString() {
+		return "PreguntaEO [id=" + id + ", idEncuesta=" + idEncuesta + ", tipoPregunta=" + tipoPregunta + ", inputArea="
+				+ inputArea + ", consecutivoPregunta=" + consecutivoPregunta + ", Pregunta=" + Pregunta + ", Respuesta="
+				+ Respuesta + "]";
+	}
+
+	public Integer getId() {
+		return id;
+	}
+	
+	public Integer getIdEncuesta() {
+		return idEncuesta;
+	}
+	public void setIdEncuesta(Integer idEncuesta) {
+		this.idEncuesta = idEncuesta;
+	}
+	public String getTipoPregunta() {
+		return tipoPregunta;
+	}
+	public void setTipoPregunta(String tipoPregunta) {
+		this.tipoPregunta = tipoPregunta;
+	}
+	public Integer getInputArea() {
+		return inputArea;
+	}
+	public void setInputArea(Integer inputArea) {
+		this.inputArea = inputArea;
+	}
+	public Integer getConsecutivoPregunta() {
+		return consecutivoPregunta;
+	}
+	public void setConsecutivoPregunta(Integer consecutivoPregunta) {
+		this.consecutivoPregunta = consecutivoPregunta;
+	}
+	public String getPregunta() {
+		return Pregunta;
+	}
+	public void setPregunta(String pregunta) {
+		Pregunta = pregunta;
+	}
+	public String getRespuesta() {
+		return Respuesta;
+	}
+	public void setRespuesta(String respuesta) {
+		Respuesta = respuesta;
+	}
+	public List<RespuestaCerradaEO> getRespuestasCerradas() {
+		return respuestasCerradas;
+	}
+	public void setRespuestasCerradas(List<RespuestaCerradaEO> respuestasCerradas) {
+		this.respuestasCerradas = respuestasCerradas;
+	}
+		
+}

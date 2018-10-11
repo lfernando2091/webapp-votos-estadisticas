@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				
+				<p:panel header="Datos Acceso" id="pDA" >
+				<p:messages autoUpdate="true"/>
+				<p:panelGrid columns="1" styleClass="panelNoBorder">
+				<p:outputLabel value="Nombre: " styleClass="negritas"/>
+				<p:outputLabel value="${usuario.nombre}"/>
+				<p:outputLabel value="Usuario: "  styleClass="negritas"/>
+				<p:outputLabel value="${usuario.nick}"/>
+				<p:outputLabel value="Clave de Acceso: "  styleClass="negritas"/>
+				<p:outputLabel value="${usuario.pw}"/>
+				</p:panelGrid>
+				
+				
+				</p:panel>
+					<p:separator/>
+					<p:commandButton value="Salir" immediate="true" action="salir"/>
+					<p:commandButton value="Imprimir">
+				<p:printer target="pDA" />
+				</p:commandButton>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				<h:outputStylesheet>
+				.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+border: hidden;
+border-color: white;
+}
+.negritas{
+			font-weight: bold !important;
+			}
+				</h:outputStylesheet>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

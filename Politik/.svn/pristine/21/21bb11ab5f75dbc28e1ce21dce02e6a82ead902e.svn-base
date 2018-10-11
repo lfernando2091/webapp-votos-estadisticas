@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.levantamientoRowan.porPregunta">
+	
+	<select id="p1" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			coalesce(SUM(CASE 
+				WHEN pregunta='SI'  THEN conteo
+			ELSE 0 END),0) si,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO'  THEN conteo
+			ELSE 0 END),0) r_no,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) ns_nc
+		FROM (
+			SELECT a._1 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY a._1
+		) t
+	</select>
+	
+	
+	<select id="p2" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			coalesce(SUM(CASE 
+				WHEN pregunta='SI'  THEN conteo
+			ELSE 0 END),0) si,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO'  THEN conteo
+			ELSE 0 END),0) r_no,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) ns_nc
+		FROM (
+			SELECT a._2 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion} 
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY a._2
+		) t
+	</select>
+	
+	
+	<select id="p3" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			coalesce(SUM(CASE 
+				WHEN pregunta='PRIMERCORTE'  THEN conteo
+			ELSE 0 END),0) _3_primer_corte,
+			coalesce(SUM(CASE 
+				WHEN pregunta='SEGUNDOCORTE'  THEN conteo
+			ELSE 0 END),0) _3_segundo_corte,
+			coalesce(SUM(CASE 
+				WHEN pregunta='TERCERCORTE'  THEN conteo
+			ELSE 0 END),0) _3_tercer_corte
+		FROM (
+			SELECT a._3 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY a._3
+		) t
+	</select>
+	
+	<select id="p4" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			coalesce(SUM(CASE 
+				WHEN pregunta='SI'  THEN conteo
+			ELSE 0 END),0) si,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO'  THEN conteo
+			ELSE 0 END),0) r_no,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) ns_nc
+		FROM (
+			SELECT a._4 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY a._4
+		) t
+	</select>
+	
+	<select id="p5" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			coalesce(SUM(CASE 
+				WHEN pregunta='SI'  THEN conteo
+			ELSE 0 END),0) si,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO'  THEN conteo
+			ELSE 0 END),0) r_no,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) ns_nc
+		FROM (
+			SELECT a._5 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY a._5
+		) t
+	</select>
+	
+	<select id="p6" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			coalesce(SUM(CASE 
+				WHEN pregunta='SI'  THEN conteo
+			ELSE 0 END),0) si,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO'  THEN conteo
+			ELSE 0 END),0) r_no,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) ns_nc
+		FROM (
+			SELECT a._6 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY a._6
+		) t
+	</select>
+	
+	<select id="p7" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			coalesce(SUM(CASE 
+				WHEN pregunta='ALFREDO_DEL_MAZO_MAZA'  THEN conteo
+			ELSE 0 END),0) _7_alfredo,
+			coalesce(SUM(CASE 
+				WHEN pregunta='JOSEFINA_VAZQUEZ_MOTA'  THEN conteo
+			ELSE 0 END),0) _7_josefina,
+			coalesce(SUM(CASE 
+				WHEN pregunta='DELFINA_GOMEZ_ALVAREZ'  THEN conteo
+			ELSE 0 END),0) _7_delfina,
+			coalesce(SUM(CASE 
+				WHEN pregunta='OSCAR_GONZALEZ_YANEZ'  THEN conteo
+			ELSE 0 END),0) _7_oscar,
+			coalesce(SUM(CASE 
+				WHEN pregunta='JUAN_ZEPEDA_HERNANDEZ'  THEN conteo
+			ELSE 0 END),0) _7_juan,
+			coalesce(SUM(CASE 
+				WHEN pregunta='ISIDRO_PASTOR_MEDRANO'  THEN conteo
+			ELSE 0 END),0) _7_isidro,
+			coalesce(SUM(CASE 
+				WHEN pregunta='OTRO'  THEN conteo
+			ELSE 0 END),0) _7_otro,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) _7_ns_nc
+		FROM (
+			SELECT a._7 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY a._7
+		) t
+	</select>
+	
+	<select id="p8" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			coalesce(SUM(CASE 
+				WHEN pregunta='SI'  THEN conteo
+			ELSE 0 END),0) si,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO'  THEN conteo
+			ELSE 0 END),0) r_no,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) ns_nc
+		FROM (
+			SELECT a._8 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY a._8
+		) t
+	</select>
+	
+	
+	
+	<select id="p9" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			coalesce(SUM(CASE 
+				WHEN pregunta='FINADO'  THEN conteo
+			ELSE 0 END),0) _9_finado,
+			coalesce(SUM(CASE 
+				WHEN pregunta='MENOR_DE_EDAD'  THEN conteo
+			ELSE 0 END),0) _9_menor,
+			coalesce(SUM(CASE 
+				WHEN pregunta='OTRO'  THEN conteo
+			ELSE 0 END),0) _9_otro,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO_VIVE_AHI'  THEN conteo
+			ELSE 0 END),0) _9_no_vive,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO_QUISIERON_CONTESTAR'  THEN conteo
+			ELSE 0 END),0) _9_no_quisieron,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO_HUBO_QUIEN_CONTESTARA'  THEN conteo
+			ELSE 0 END),0) _9_no_hubo,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO_LOCALIZADO'  THEN conteo
+			ELSE 0 END),0) _9_no_localizado,
+			coalesce(SUM(CASE 
+				WHEN pregunta='DOMICILIO_NO_ENCONTRADO'  THEN conteo
+			ELSE 0 END),0) _9_domicilio
+		FROM (
+			SELECT a.estatus pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus!='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY a.estatus
+		) t
+	</select>
+	
+	
+	
+	
+	
+	<select id="p1_2" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			${columna} , 
+			coalesce(SUM(CASE 
+				WHEN pregunta='SI'  THEN conteo
+			ELSE 0 END),0) si,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO'  THEN conteo
+			ELSE 0 END),0) r_no,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) ns_nc
+		FROM (
+			SELECT 
+				${columna} , a._1 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY ${columna} , a._1
+		) b
+		GROUP BY ${columna}
+		ORDER BY ${columna}
+	</select>
+	
+	
+	<select id="p2_2" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			${columna} , 
+			coalesce(SUM(CASE 
+				WHEN pregunta='SI'  THEN conteo
+			ELSE 0 END),0) si,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO'  THEN conteo
+			ELSE 0 END),0) r_no,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) ns_nc
+		FROM (
+			SELECT ${columna}, a._2 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion} 
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY ${columna}, a._2
+		) b
+		GROUP BY ${columna}
+		ORDER BY ${columna}
+	</select>
+	
+	
+	<select id="p3_2" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			${columna} , 
+			coalesce(SUM(CASE 
+				WHEN pregunta='PRIMERCORTE'  THEN conteo
+			ELSE 0 END),0) _3_primer_corte,
+			coalesce(SUM(CASE 
+				WHEN pregunta='SEGUNDOCORTE'  THEN conteo
+			ELSE 0 END),0) _3_segundo_corte,
+			coalesce(SUM(CASE 
+				WHEN pregunta='TERCERCORTE'  THEN conteo
+			ELSE 0 END),0) _3_tercer_corte
+		FROM (
+			SELECT ${columna}, a._3 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY ${columna}, a._3
+		) b
+		GROUP BY ${columna}
+		ORDER BY ${columna}
+	</select>
+	
+	<select id="p4_2" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			${columna} , 
+			coalesce(SUM(CASE 
+				WHEN pregunta='SI'  THEN conteo
+			ELSE 0 END),0) si,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO'  THEN conteo
+			ELSE 0 END),0) r_no,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) ns_nc
+		FROM (
+			SELECT ${columna}, a._4 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY  ${columna}, a._4
+		) b
+		GROUP BY ${columna}
+		ORDER BY ${columna}
+	</select>
+	
+	<select id="p5_2" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			${columna} , 
+			coalesce(SUM(CASE 
+				WHEN pregunta='SI'  THEN conteo
+			ELSE 0 END),0) si,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO'  THEN conteo
+			ELSE 0 END),0) r_no,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) ns_nc
+		FROM (
+			SELECT ${columna},  a._5 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY  ${columna}, a._5
+		) b
+		GROUP BY ${columna}
+		ORDER BY ${columna}
+	</select>
+	
+	<select id="p6_2" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			${columna} , 
+			coalesce(SUM(CASE 
+				WHEN pregunta='SI'  THEN conteo
+			ELSE 0 END),0) si,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO'  THEN conteo
+			ELSE 0 END),0) r_no,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) ns_nc
+		FROM (
+			SELECT ${columna}, a._6 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY  ${columna}, a._6
+		) b
+		GROUP BY ${columna}
+		ORDER BY ${columna}
+	</select>
+	
+	<select id="p7_2" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			${columna} , 
+			coalesce(SUM(CASE 
+				WHEN pregunta='ALFREDO_DEL_MAZO_MAZA'  THEN conteo
+			ELSE 0 END),0) _7_alfredo,
+			coalesce(SUM(CASE 
+				WHEN pregunta='JOSEFINA_VAZQUEZ_MOTA'  THEN conteo
+			ELSE 0 END),0) _7_josefina,
+			coalesce(SUM(CASE 
+				WHEN pregunta='DELFINA_GOMEZ_ALVAREZ'  THEN conteo
+			ELSE 0 END),0) _7_delfina,
+			coalesce(SUM(CASE 
+				WHEN pregunta='OSCAR_GONZALEZ_YANEZ'  THEN conteo
+			ELSE 0 END),0) _7_oscar,
+			coalesce(SUM(CASE 
+				WHEN pregunta='JUAN_ZEPEDA_HERNANDEZ'  THEN conteo
+			ELSE 0 END),0) _7_juan,
+			coalesce(SUM(CASE 
+				WHEN pregunta='ISIDRO_PASTOR_MEDRANO'  THEN conteo
+			ELSE 0 END),0) _7_isidro,
+			coalesce(SUM(CASE 
+				WHEN pregunta='OTRO'  THEN conteo
+			ELSE 0 END),0) _7_otro,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) _7_ns_nc
+		FROM (
+			SELECT ${columna}, a._7 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY ${columna}, a._7
+		) b
+		GROUP BY ${columna}
+		ORDER BY ${columna}
+	</select>
+	
+	<select id="p8_2" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			${columna} , 
+			coalesce(SUM(CASE 
+				WHEN pregunta='SI'  THEN conteo
+			ELSE 0 END),0) si,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO'  THEN conteo
+			ELSE 0 END),0) r_no,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NS_NC'  THEN conteo
+			ELSE 0 END),0) ns_nc
+		FROM (
+			SELECT ${columna}, a._8 pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY ${columna}, a._8
+		) b
+		GROUP BY ${columna}
+		ORDER BY ${columna}
+	</select>
+	
+	
+	
+	<select id="p9_2" parameterType="hashmap" resultType="hashmap">
+		SELECT
+			${columna} , 
+			coalesce(SUM(CASE 
+				WHEN pregunta='FINADO'  THEN conteo
+			ELSE 0 END),0) _9_finado,
+			coalesce(SUM(CASE 
+				WHEN pregunta='MENOR_DE_EDAD'  THEN conteo
+			ELSE 0 END),0) _9_menor,
+			coalesce(SUM(CASE 
+				WHEN pregunta='OTRO'  THEN conteo
+			ELSE 0 END),0) _9_otro,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO_VIVE_AHI'  THEN conteo
+			ELSE 0 END),0) _9_no_vive,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO_QUISIERON_CONTESTAR'  THEN conteo
+			ELSE 0 END),0) _9_no_quisieron,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO_HUBO_QUIEN_CONTESTARA'  THEN conteo
+			ELSE 0 END),0) _9_no_hubo,
+			coalesce(SUM(CASE 
+				WHEN pregunta='NO_LOCALIZADO'  THEN conteo
+			ELSE 0 END),0) _9_no_localizado,
+			coalesce(SUM(CASE 
+				WHEN pregunta='DOMICILIO_NO_ENCONTRADO'  THEN conteo
+			ELSE 0 END),0) _9_domicilio
+		FROM ( 
+			SELECT ${columna}, a.estatus pregunta, COUNT(a.*) conteo
+			FROM levantamiento_rowan.e_edomex a
+			JOIN levantamiento_rowan.encuesta_edomex b ON (b.id_interno=a.id_contacto::INTEGER)
+			WHERE a.estatus!='EXITOSO'
+			<if test="region!=null">
+				AND b.region_edomex_2017=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND b.municipio=#{municipio.idMunicipio}
+			</if>
+			GROUP BY ${columna}, a.estatus
+		) b
+		GROUP BY ${columna}
+		ORDER BY ${columna}
+	</select>
+	
+</mapper>

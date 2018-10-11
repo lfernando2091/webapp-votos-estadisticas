@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.sujetosSociales.rangoEdades">
+	
+	<resultMap type="EncuestaSujetosSocialesV2ReporteRangoEdadEO" id="rangoEdades">
+		<id 		column="ReportePorEdades_id" 				property="id" 							javaType="Integer"/>
+		<result 	column="ReportePorEdades_region" 			property="idRegion" 					javaType="Integer"/>
+		<result 	column="ReportePorEdades_nombre_region" 	property="nombreRegion" 				javaType="String"/>
+		<result 	column="ReportePorEdades_municipio" 		property="idMunicipio" 					javaType="Integer"/>
+		<result 	column="ReportePorEdades_nombre_municipio" 	property="nombreMunicipio" 				javaType="String"/>
+		<result 	column="ReportePorEdades_seccion" 			property="seccion" 						javaType="Integer"/>
+							
+		<result 	column="exitosas_18_30_a_favor" 			property="edad1830aFavor" 				javaType="Integer"/>
+		<result 	column="exitosas_18_30_indeciso_a_favor" 	property="edad1830IndecisosAFavor" 		javaType="Integer"/>
+		<result 	column="exitosas_18_30_indeciso" 			property="edad1830Indecisos" 			javaType="Integer"/>
+		<result 	column="exitosas_18_30_indeciso_en_contra" 	property="edad1830IndecisosEnContra" 	javaType="Integer"/>
+		<result 	column="exitosas_18_30_en_contra" 			property="edad1830EnContra" 			javaType="Integer"/>
+		<result 	column="exitosas_18_30" 					property="edad1830Exitosas" 			javaType="Integer"/>
+		
+		<result 	column="exitosas_31_64_a_favor" 			property="edad3164aFavor" 				javaType="Integer"/>
+		<result 	column="exitosas_31_64_indeciso_a_favor" 	property="edad3164IndecisosAFavor" 		javaType="Integer"/>
+		<result 	column="exitosas_31_64_indeciso" 			property="edad3164Indecisos" 			javaType="Integer"/>
+		<result 	column="exitosas_31_64_indeciso_en_contra" 	property="edad3164IndecisosEnContra" 	javaType="Integer"/>
+		<result 	column="exitosas_31_64_en_contra" 			property="edad3164EnContra" 			javaType="Integer"/>
+		<result 	column="exitosas_31_64" 					property="edad3164Exitosas" 			javaType="Integer"/>
+		
+		<result 	column="exitosas_65_mas_a_favor" 			property="edad65masaFavor" 				javaType="Integer"/>
+		<result 	column="exitosas_65_mas_indeciso_a_favor" 	property="edad65masIndecisosAFavor" 	javaType="Integer"/>
+		<result 	column="exitosas_65_mas_indeciso" 			property="edad65masIndecisos" 			javaType="Integer"/>
+		<result 	column="exitosas_65_mas_indeciso_en_contra" property="edad65masIndecisosEnContra" 	javaType="Integer"/>
+		<result 	column="exitosas_65_mas_en_contra" 			property="edad65masEnContra" 			javaType="Integer"/>
+		<result 	column="exitosas_65_mas" 					property="edad65masExitosas" 			javaType="Integer"/>
+	</resultMap>
+	
+	<select id="listado" resultMap="rangoEdades" parameterType="hashmap">
+		SELECT
+			row_number() OVER (ORDER BY t.entidad)::INTEGER AS 			ReportePorEdades_id,  
+			t.entidad											ReportePorEdades_entidad, 
+			t.region										ReportePorEdades_region,
+			t.nombre_region									ReportePorEdades_nombre_region, 
+			<if test="nivel=='MUNICIPIO' or nivel=='SECCION'">
+				t.municipio										ReportePorEdades_municipio,
+				t.nombre_municipio								ReportePorEdades_nombre_municipio, 
+			</if>
+			<if test="nivel=='REGION'">
+				0::INTEGER										ReportePorEdades_municipio,
+				''::TEXT										ReportePorEdades_nombre_municipio, 
+			</if>
+			<if test="nivel=='SECCION'">
+				t.seccion										ReportePorEdades_seccion,
+			</if>
+			<if test=" nivel=='REGION' or nivel=='MUNICIPIO'">
+				0::INTEGER										ReportePorEdades_seccion,
+			</if>	
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1999 and
+				     (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&gt;=1987 THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_18_30,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1999 and
+				     (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&gt;=1987 and
+				     c.calificacion='En contra'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_18_30_en_contra,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1999 and 
+				     (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&gt;=1987 and
+				     c.calificacion='Indeciso en contra'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_18_30_indeciso_en_contra,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1999 and 
+				     (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&gt;=1987 and
+				     c.calificacion='Indeciso'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_18_30_indeciso,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1999 and 
+				     (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&gt;=1987 and
+				     c.calificacion='Indeciso a favor'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_18_30_indeciso_a_favor,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1999 and 
+				     (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&gt;=1987 and
+				     c.calificacion='A favor'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_18_30_a_favor,		
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1986 and 
+				     (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&gt;=1953 THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_31_64,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1986 and 
+				     (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&gt;=1953 and
+				     c.calificacion='En contra'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_31_64_en_contra,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1986 and 
+				     (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&gt;=1953 and
+				     c.calificacion='Indeciso en contra'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_31_64_indeciso_en_contra,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1986 and 
+				     (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&gt;=1953 and
+				     c.calificacion='Indeciso'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_31_64_indeciso,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1986 and 
+				     (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&gt;=1953 and
+				     c.calificacion='Indeciso a favor'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_31_64_indeciso_a_favor,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1986 and 
+				     (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&gt;=1953 and
+				     c.calificacion='A favor'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_31_64_a_favor,
+			
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1952 THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_65_mas,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1952 and
+				     c.calificacion='En contra'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_65_mas_en_contra,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1952 and
+				     c.calificacion='Indeciso en contra'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_65_mas_indeciso_en_contra,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1952 and
+				     c.calificacion='Indeciso'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_65_mas_indeciso,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1952 and
+				     c.calificacion='Indeciso a favor'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_65_mas_indeciso_a_favor,
+			SUM(CASE 
+				WHEN (SUBSTRING(t.fecha_nacimiento,1,4)::INTEGER)&lt;=1952 and
+				     c.calificacion='A favor'
+				THEN 1
+				ELSE 0
+			END)::INTEGER exitosas_65_mas_a_favor
+			FROM
+		(
+			SELECT 
+				b.entidad, 
+				b.region_edomex_2017 region, b.nombre_region, 
+				b.municipio, b.nombre_municipio, 
+				b.seccion, 
+				b.fecha_nacimiento, b.sexo,
+				a.id_contacto, 
+				case when _2 = 'SI' then '1' when _2 = 'NO' then '2' else '3' end || case when _3 in ('PRI', 'PVEM', 'PES', 'PANAL') then '1' when _3 in ('PAN', 'PRD', 'PT', 'MORENA', 'INDEPENDIENTE') then '2' else '3' end || case when _4 = 'ALFREDO_DEL_MAZO_MAZA' then '1' when _4 in ('JOSEFINA_VAZQUEZ_MOTA', 'JUAN_ZEPEDA_HERNANDEZ', 'DELFINA_GOMEZ_ALVAREZ', 'OSCAR_GONZALEZ_YANEZ', 'ISIDRO_PASTOR_MEDRANO') then '2' else '3' end codigo 
+			FROM sujetos_sociales.e_edomex a 
+			JOIN sujetos_sociales.encuesta_edomex b ON (a.id_contacto::INTEGER = b.id_interno) 
+			WHERE a.estatus = 'EXITOSO'  AND b.programa_general = #{programa}
+		 ) t
+		 JOIN sujetos_sociales.codigos_calificacion c ON (t.codigo = c.codigo)
+		 GROUP BY t.entidad,
+				t.region, 
+				t.nombre_region
+				<if test="nivel=='MUNICIPIO' or nivel=='SECCION'">
+					,
+					t.municipio	, 
+					t.nombre_municipio
+					<if test="nivel=='SECCION'">
+						,
+						t.seccion
+					</if>
+				</if>
+		 ORDER BY t.entidad ,
+				t.region, 
+				t.nombre_region
+				<if test="nivel=='MUNICIPIO' or nivel=='SECCION'">
+					,
+					t.municipio	, 
+					t.nombre_municipio
+					<if test="nivel=='SECCION'">
+						,
+						t.seccion
+					</if>
+				</if>
+	</select>
+	
+</mapper>

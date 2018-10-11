@@ -1,0 +1,195 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Reporte Eventos" id="pnlFiltro">
+					<p:panelGrid columns="2" columnClasses="topAlign topAlign">
+					<p:outputLabel value="Mes:"/>
+					<p:selectOneMenu id="menuMes" value="${mes}">
+					<p:ajax event="change"/>
+					<f:selectItem itemLabel="Agosto 2016" itemValue="8-2016"/>
+					<f:selectItem itemLabel="Septiembre 2016" itemValue="9-2016"/>
+					<f:selectItem itemLabel="Octubre 2016" itemValue="10-2016"/>
+					<f:selectItem itemLabel="Noviembre 2016" itemValue="11-2016"/>
+					<f:selectItem itemLabel="Diciembre 2016" itemValue="12-2016"/>
+					<f:selectItem itemLabel="Enero 2017" itemValue="1-2017"/>
+					<f:selectItem itemLabel="Febrero 2017" itemValue="2-2017"/>
+					</p:selectOneMenu>
+					
+<!-- 					<p:outputLabel value="Desde:  -${desde}"/> -->
+<!-- 					<p:calendar value="${desde}"> -->
+<!-- 					<p:ajax event="dateSelect" update="pnlFiltro" /> -->
+<!-- 					</p:calendar> -->
+<!-- 					<p:outputLabel value="Hasta:  "/> -->
+<!-- 					<p:calendar value="${hasta}"> -->
+<!-- 					<p:ajax event="dateSelect" update="pnlFiltro" /> -->
+<!-- 					</p:calendar> -->
+<!-- 					<p:outputLabel value="Dependencia: "/> -->
+<!-- 					<p:selectOneMenu label="Dependencia" value="${modeloDependencias.seleccionado}" converter="ObjectConverter" filter="true" filterMatchMode="contains"> -->
+<!-- 					<p:ajax event="change" onstart="llenarTerritorios();" /> -->
+<!-- 					<f:selectItems id="territorios" value="${modeloDependencias.listado}" var="fila" itemLabel="${fila.siglas} - ${fila.dependencia}" itemValue="${fila}"/> -->
+<!-- 					</p:selectOneMenu> -->
+<!-- 					<p:outputLabel value="Territorios: "/> -->
+<!-- 					<p:selectCheckboxMenu label="Territorios" value="${modeloTerritorios.seleccionMultiple}" converter="ObjectConverter" disabled="${modeloTerritorios.listado.isEmpty()?'true':'false'}"> -->
+<!-- 					<f:selectItems value="${modeloTerritorios.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}"/>					 -->
+<!-- 					</p:selectCheckboxMenu> -->
+					</p:panelGrid>
+					<f:facet name="footer">
+					<p:remoteCommand name="llenarTerritorios" action="llenarDatosMes" onstart="PF('cargandoResultados').show()" oncomplete="PF('cargandoResultados').hide()" update="pnlResultados"/>
+				    <p:commandLink onclick="PrimeFaces.monitorDownload(start, stop);" title="Generar Reporte en PDF">
+				    <p:graphicImage url="/resources/botones/BUSCAR.png"/>
+				    		    </p:commandLink>
+					</f:facet>
+					</p:panel>
+					
+					<p:panel id="pnlResultados">
+					<p:dataTable value="${modeloResultadosMes}" var="lista" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="buttom" emptyMessage="Sin resultados que mostrar">
+					<p:column headerText="Territorio">
+					${fila.particion}
+					</p:column>
+					<p:column headerText="01">
+					${fila.dia_01}
+					</p:column>
+					<p:column headerText="02">
+					${fila.dia_02}
+					</p:column>
+					<p:column headerText="03">
+					${fila.dia_03}
+					</p:column>
+					<p:column headerText="04">
+					${fila.dia_04}
+					</p:column>
+					<p:column headerText="05">
+					${fila.dia_05}
+					</p:column>
+					<p:column headerText="06">
+					${fila.dia_06}
+					</p:column>
+					<p:column headerText="07">
+					${fila.dia_07}
+					</p:column>
+					<p:column headerText="08">
+					${fila.dia_08}
+					</p:column>
+					<p:column headerText="09">
+					${fila.dia_09}
+					</p:column>
+					
+					<p:column headerText="10">
+					${fila.dia_10}
+					</p:column>
+					<p:column headerText="11">
+					${fila.dia_11}
+					</p:column>
+					<p:column headerText="12">
+					${fila.dia_12}
+					</p:column>
+					<p:column headerText="13">
+					${fila.dia_13}
+					</p:column>
+					<p:column headerText="14">
+					${fila.dia_14}
+					</p:column>
+					<p:column headerText="15">
+					${fila.dia_15}
+					</p:column>
+					<p:column headerText="16">
+					${fila.dia_16}
+					</p:column>
+					<p:column headerText="17">
+					${fila.dia_17}
+					</p:column>
+					<p:column headerText="18">
+					${fila.dia_18}
+					</p:column>
+					<p:column headerText="19">
+					${fila.dia_19}
+					</p:column>
+					<p:column headerText="20">
+					${fila.dia_20}
+					</p:column>
+					
+					<p:column headerText="21">
+					${fila.dia_21}
+					</p:column>
+					<p:column headerText="22">
+					${fila.dia_22}
+					</p:column>
+					<p:column headerText="23">
+					${fila.dia_23}
+					</p:column>
+					<p:column headerText="24">
+					${fila.dia_24}
+					</p:column>
+					<p:column headerText="25">
+					${fila.dia_25}
+					</p:column>
+					<p:column headerText="26">
+					${fila.dia_26}
+					</p:column>
+					<p:column headerText="27">
+					${fila.dia_27}
+					</p:column>
+					<p:column headerText="28">
+					${fila.dia_28}
+					</p:column>
+					<p:column headerText="29">
+					${fila.dia_29}
+					</p:column>
+					<p:column headerText="30">
+					${fila.dia_30}
+					</p:column>
+					
+					<p:column headerText="31">
+					${fila.dia_31}
+					</p:column>
+					</p:dataTable>
+					
+					</p:panel>
+					<p:dialog widgetVar="cargandoResultados"
+						header="Cargando Resultados" closeOnEscape="false"
+						closable="false" modal="true" appendTo="@(body)">
+						<p:panelGrid columns="1">
+							<p:outputLabel value="Se están cargando los resultados." />
+							<p:outputLabel
+								value="Esta operación puede tardar, por favor espere." />
+							<p:outputLabel
+								value="No refresque la página ni oprima el botón atrás del explorador." />
+							<!-- <p:graphicImage name="cargando.gif" /> -->
+						</p:panelGrid>
+					</p:dialog>
+					
+					<h:outputStylesheet>
+					.topAlign{
+						width:200px;
+					}
+					.topAlign2{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+				
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				
+				<script type="text/javascript">
+function start() {
+    PF('cargandoResultados').show();
+}
+
+function stop() {
+    PF('cargandoResultados').hide();
+}
+</script>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

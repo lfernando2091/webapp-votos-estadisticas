@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructurasEdoMex.reportes.avanceEstructuras">
+	<cache />
+
+	<resultMap type="AvanceEstrucutrasEO" id="avanceEstructuras">
+		<id 			column="AvanceEstrucutrasEO_pkey" 					property="id" 				javaType="Integer" />
+		<result 		column="AvanceEstrucutrasEO_avance_cr" 				property="avance_cr" 		javaType="Integer" />
+		<result 		column="AvanceEstrucutrasEO_meta_cr" 				property="meta_cr" 			javaType="Integer" />
+		<result 		column="AvanceEstrucutrasEO_porcentaje_cr" 			property="porcentaje_cr" 	javaType="Integer" />
+		<result 		column="AvanceEstrucutrasEO_avance_cm" 				property="avance_cm" 		javaType="Integer" />
+		<result 		column="AvanceEstrucutrasEO_meta_cm" 				property="meta_cm" 			javaType="Integer" />
+		<result 		column="AvanceEstrucutrasEO_porcentaje_cm" 			property="porcentaje_cm" 	javaType="Integer" />
+		<result 		column="AvanceEstrucutrasEO_avance_s" 				property="avance_s" 		javaType="Integer" />
+		<result 		column="AvanceEstrucutrasEO_meta_s" 				property="meta_s" 			javaType="Integer" />
+		<result 		column="AvanceEstrucutrasEO_porcentaje_s" 			property="porcentaje_s" 	javaType="Integer" />
+		<result 		column="AvanceEstrucutrasEO_avance_v" 				property="avance_v" 		javaType="Integer" />
+		<result 		column="AvanceEstrucutrasEO_meta_v" 				property="meta_v" 			javaType="Integer" />
+		<result 		column="AvanceEstrucutrasEO_porcentaje_v" 			property="porcentaje_v" 	javaType="Integer" />
+		<association 	column="AvanceEstrucutrasEO_entidad"				property="entidad" 			select="catalogos.entidades.buscarPorLlave"/>
+		<association 	column="AvanceEstrucutrasEO_region"					property="region" 			select="catalogos.geozonas.regionPorLlave"/>
+		<association 	column="AvanceEstrucutrasEO_municipio"		      	property="municipio" 		select="catalogos.municipios.buscarPorLlave"/>
+		<association 	column="AvanceEstrucutrasEO_seccion"				property="seccion" 			select="catalogos.secciones.buscarPorLlave"/>
+		
+	</resultMap>
+
+	<select id="listadoEntidad" resultMap="avanceEstructuras" >
+		SELECT 
+		(row_number() OVER (ORDER BY cr.id_entidad)::integer) AvanceEstrucutrasEO_pkey,
+		15										 AvanceEstrucutrasEO_entidad,
+		coalesce(cr.avance_cr,0) 							 AvanceEstrucutrasEO_avance_cr, 
+		coalesce(cr.meta_cr,0) 								 AvanceEstrucutrasEO_meta_cr, 
+		coalesce((cr.avance_cr/cr.meta_cr)*100,0) 			 AvanceEstrucutrasEO_porcentaje_cr, 
+		coalesce(cm.avance_cm,0) 							 AvanceEstrucutrasEO_avance_cm, 
+		coalesce(cm.meta_cm,0) 								 AvanceEstrucutrasEO_meta_cm, 
+		coalesce((cm.avance_cm/cm.meta_cm)*100,0) 			 AvanceEstrucutrasEO_porcentaje_cm, 
+		coalesce(s.avance_s,0) 								 AvanceEstrucutrasEO_avance_s, 
+		coalesce(s.meta_s,0) 								 AvanceEstrucutrasEO_meta_s, 
+		coalesce((s.avance_s/s.meta_s)*100,0) 				 AvanceEstrucutrasEO_porcentaje_s, 
+		coalesce(v.avance_v,0) 								 AvanceEstrucutrasEO_avance_v, 
+		coalesce(v.meta_v,0) 								 AvanceEstrucutrasEO_meta_v, 
+		coalesce((v.avance_v/v.meta_v)*100,0) 	 AvanceEstrucutrasEO_porcentaje_v
+		FROM
+		  (SELECT  regiones.id_entidad,count(cr.id_persona) avance_cr, regiones.coordinadores_regionales meta_cr, cr.programa programa 
+		  FROM estructuras_edomex.regiones regiones 
+		  LEFT JOIN estructuras_edomex.coordinadores_regionales cr on (cr.id_region=regiones.id_region)
+		  WHERE cr.programa =#{programa}
+		  GROUP BY regiones.id_entidad,regiones.coordinadores_regionales, cr.programa
+		  ORDER BY regiones.id_entidad) cr
+		  FULL JOIN
+		  (SELECT  regiones.id_entidad,count(cm.id_persona) avance_cm, regiones.coordinadores_municipales meta_cm, cm.programa programa 
+		  FROM estructuras_edomex.regiones regiones 
+		   LEFT JOIN estructuras_edomex.coordinadores_municipales cm on(cm.id_region=regiones.id_region)
+		   WHERE cm.programa =#{programa}
+		  GROUP BY regiones.id_entidad, regiones.coordinadores_municipales, cm.programa
+		  ORDER BY regiones.id_entidad)cm   ON (cr.id_entidad=cm.id_entidad)
+		  FULL JOIN
+		  (SELECT  regiones.id_entidad,count(s.id_persona) avance_s, regiones.supervisores meta_s, s.programa
+		  FROM estructuras_edomex.regiones regiones 
+		   LEFT JOIN estructuras_edomex.supervisores s on(s.id_region=regiones.id_region)
+		   WHERE s.programa =#{programa}
+		  GROUP BY regiones.id_entidad,  regiones.supervisores, s.programa
+		  ORDER BY regiones.id_entidad) s ON (cr.id_entidad=s.id_entidad)
+		  FULL JOIN
+		  (SELECT  regiones.id_entidad,count(v.pkey) avance_v, regiones.visitadores meta_v, v.programa
+		  FROM estructuras_edomex.regiones regiones 
+		   LEFT JOIN estructuras_edomex.visitadores v on(v.id_region=regiones.id_region)
+		   WHERE v.programa =#{programa}
+		  GROUP BY regiones.id_entidad, regiones.visitadores, v.programa 
+		  ORDER BY regiones.id_entidad) v  ON (cr.id_entidad=v.id_entidad)
+	</select>
+	
+	<select id="listadoRegiones" resultMap="avanceEstructuras" >
+			SELECT 
+		(row_number() OVER (ORDER BY cr.id_entidad)::integer) AvanceEstrucutrasEO_pkey, 
+		15 										  AvanceEstrucutrasEO_entidad,
+		v.id_region										  AvanceEstrucutrasEO_region,
+		coalesce(cr.avance_cr,0) 						 	  AvanceEstrucutrasEO_avance_cr, 
+		coalesce(cr.meta_cr,0) 								 AvanceEstrucutrasEO_meta_cr, 
+		coalesce((cr.avance_cr/cr.meta_cr)*100,0) 			 AvanceEstrucutrasEO_porcentaje_cr, 
+		coalesce(cm.avance_cm,0) 							 AvanceEstrucutrasEO_avance_cm, 
+		coalesce(cm.meta_cm,0) 								 AvanceEstrucutrasEO_meta_cm, 
+		coalesce((cm.avance_cm/cm.meta_cm)*100,0) 			 AvanceEstrucutrasEO_porcentaje_cm, 
+		coalesce(s.avance_s,0) 								 AvanceEstrucutrasEO_avance_s, 
+		coalesce(s.meta_s,0) 								 AvanceEstrucutrasEO_meta_s, 
+		coalesce((s.avance_s/s.meta_s)*100,0) 				 AvanceEstrucutrasEO_porcentaje_s, 
+		coalesce(v.avance_v,0) 								 AvanceEstrucutrasEO_avance_v, 
+		coalesce(v.meta_v,0) 								 AvanceEstrucutrasEO_meta_v, 
+		coalesce((v.avance_v/v.meta_v)*100,0) 	 			 AvanceEstrucutrasEO_porcentaje_v
+		FROM
+		  (SELECT  regiones.id_entidad, regiones.id_region,count(cr.id_persona) avance_cr, regiones.coordinadores_regionales meta_cr, cr.programa programa  
+		  FROM estructuras_edomex.regiones regiones 
+		  LEFT JOIN estructuras_edomex.coordinadores_regionales cr on (cr.id_region=regiones.id_region)
+		  WHERE cr.programa =#{programa}
+		  GROUP BY regiones.id_entidad,regiones.id_region,regiones.coordinadores_regionales, cr.programa 
+		  ORDER BY regiones.id_entidad,regiones.id_region) cr
+		  FULL JOIN
+		  (SELECT  regiones.id_region,count(cm.id_persona) avance_cm, regiones.coordinadores_municipales meta_cm, cm.programa programa 
+		  FROM estructuras_edomex.regiones regiones 
+		  LEFT JOIN estructuras_edomex.coordinadores_municipales cm on(cm.id_region=regiones.id_region)
+		  WHERE cm.programa =#{programa}
+		  GROUP BY regiones.id_region, regiones.coordinadores_municipales, cm.programa 
+		  ORDER BY regiones.id_region)cm   ON (cr.id_region=cm.id_region)
+		  FULL JOIN
+		  (SELECT  regiones.id_region,count(s.id_persona) avance_s, regiones.supervisores meta_s, s.programa programa 
+		  FROM estructuras_edomex.regiones regiones 
+		  LEFT JOIN estructuras_edomex.supervisores s on(s.id_region=regiones.id_region)
+		  WHERE s.programa =#{programa}
+		  GROUP BY regiones.id_region,  regiones.supervisores, regiones.visitadores, s.programa  
+		  ORDER BY regiones.id_region) s ON (cr.id_region=s.id_region)
+		  FULL JOIN
+		  (SELECT  regiones.id_region,count(v.pkey) avance_v, regiones.visitadores meta_v, v.programa programa 
+		  FROM estructuras_edomex.regiones regiones 
+		  LEFT JOIN estructuras_edomex.visitadores v on(v.id_region=regiones.id_region)
+		  WHERE v.programa =#{programa}
+		  GROUP BY regiones.id_region, regiones.visitadores , v.programa
+		  ORDER BY regiones.id_region) v  ON(cr.id_region=v.id_region)
+		 ORDER BY cr.id_region
+	</select>
+	
+	<select id="listadoMunicipio" resultMap="avanceEstructuras" >
+		SELECT 
+		(row_number() OVER (ORDER BY cr.id_entidad)::integer) AvanceEstrucutrasEO_pkey,  
+		15										 AvanceEstrucutrasEO_entidad,
+		v.id_region 									     AvanceEstrucutrasEO_region,
+		15||'-'||v.id_municipio							 AvanceEstrucutrasEO_municipio,
+		coalesce(cr.avance_cr,0)  					    	 AvanceEstrucutrasEO_avance_cr, 
+		coalesce(cr.meta_cr,0) 								 AvanceEstrucutrasEO_meta_cr, 
+		coalesce((cr.avance_cr/cr.meta_cr)*100,0) 			 AvanceEstrucutrasEO_porcentaje_cr, 
+		coalesce(cm.avance_cm,0) 							 AvanceEstrucutrasEO_avance_cm, 
+		coalesce(cm.meta_cm,0) 								 AvanceEstrucutrasEO_meta_cm, 
+		coalesce((cm.avance_cm/cm.meta_cm)*100,0) 			 AvanceEstrucutrasEO_porcentaje_cm, 
+		coalesce(s.avance_s,0) 								 AvanceEstrucutrasEO_avance_s, 
+		coalesce(s.meta_s,0) 								 AvanceEstrucutrasEO_meta_s, 
+		coalesce((s.avance_s/s.meta_s)*100,0) 				 AvanceEstrucutrasEO_porcentaje_s, 
+		coalesce(v.avance_v,0) 								 AvanceEstrucutrasEO_avance_v, 
+		coalesce(v.meta_v,0) 								 AvanceEstrucutrasEO_meta_v, 
+		coalesce((v.avance_v/v.meta_v)*100,0) 	 			 AvanceEstrucutrasEO_porcentaje_v
+		FROM
+		(SELECT municipios.id_entidad, municipios.id_region, municipios.id_municipio,count(cr.id_persona) avance_cr, municipios.coordinadores_regionales meta_cr, cr.programa programa   
+		  FROM estructuras_edomex.municipios municipios 
+		  LEFT JOIN estructuras_edomex.coordinadores_regionales cr on (cr.id_region=municipios.id_region)
+		  WHERE cr.programa =#{programa}
+		  GROUP BY  municipios.id_entidad, municipios.id_region, municipios.id_municipio, meta_cr, cr.programa 
+		  ORDER BY municipios.id_region, municipios.id_municipio)cr
+		FULL JOIN
+		(SELECT   municipios.id_entidad, municipios.id_region, municipios.id_municipio, count(cm.id_persona) avance_cm, municipios.coordinadores_municipales meta_cm, cm.programa programa  
+		  FROM estructuras_edomex.municipios municipios 
+		  LEFT JOIN estructuras_edomex.coordinadores_municipales cm on(cm.id_municipio=municipios.id_municipio)
+		  WHERE cm.programa =#{programa}
+		  GROUP BY  municipios.id_entidad, municipios.id_region, municipios.id_municipio,cm.id_region, meta_cm, cm.programa
+		  ORDER BY municipios.id_region)cm   ON (cr.id_region=cm.id_region and cr.id_municipio=cm.id_municipio)
+		FULL JOIN
+		(SELECT   municipios.id_entidad, municipios.id_region,municipios.id_municipio, count(s.id_persona) avance_s, municipios.supervisores meta_s, s.programa programa  
+		  FROM estructuras_edomex.municipios municipios  
+		  LEFT JOIN estructuras_edomex.supervisores s on(s.id_municipio=municipios.id_municipio)
+		  WHERE s.programa =#{programa}
+		  GROUP BY  municipios.id_entidad, municipios.id_region, municipios.id_municipio, meta_s, s.programa
+		  ORDER BY municipios.id_region, municipios.id_municipio) s ON (cr.id_region=s.id_region and cr.id_municipio=s.id_municipio)
+		FULL JOIN
+		(SELECT   municipios.id_entidad, municipios.id_region,municipios.id_municipio, count(v.pkey) avance_v, municipios.visitadores meta_v, v.programa programa  
+		  FROM estructuras_edomex.municipios municipios 
+		   LEFT JOIN estructuras_edomex.visitadores v on(v.id_municipio=municipios.id_municipio)
+		   WHERE v.programa =#{programa}
+		  GROUP BY  municipios.id_entidad, municipios.id_region,municipios.id_municipio, municipios.visitadores, meta_v, v.programa 
+		  ORDER BY municipios.id_region, municipios.id_municipio)v ON (cr.id_region=v.id_region and cr.id_municipio=v.id_municipio)
+		  ORDER BY cr.id_region,cr.id_municipio
+	</select>
+	
+	<select id="listadoSecciones" resultMap="avanceEstructuras" >
+	SELECT 
+	(row_number() OVER (ORDER BY cr.id_entidad)::integer) AvanceEstrucutrasEO_pkey,  
+	cr.id_entidad										 AvanceEstrucutrasEO_entidad, 
+	cr.id_region										 AvanceEstrucutrasEO_region,
+	15||'-'||cr.id_municipio							AvanceEstrucutrasEO_municipio,
+	15||'-'||cr.id_seccion 								 AvanceEstrucutrasEO_seccion, 
+	coalesce(cr.avance_cr,0)  							 AvanceEstrucutrasEO_avance_cr, 
+	coalesce(cr.meta_cr,0) 								 AvanceEstrucutrasEO_meta_cr, 
+	coalesce((cr.avance_cr/cr.meta_cr)*100,0) 			 AvanceEstrucutrasEO_porcentaje_cr, 
+	coalesce(cm.avance_cm,0) 							 AvanceEstrucutrasEO_avance_cm, 
+	coalesce(cm.meta_cm,0) 								 AvanceEstrucutrasEO_meta_cm, 
+	coalesce((cm.avance_cm/cm.meta_cm)*100,0) 			 AvanceEstrucutrasEO_porcentaje_cm, 
+	coalesce(s.avance_s,0) 								 AvanceEstrucutrasEO_avance_s, 
+	coalesce(s.meta_s,0) 								 AvanceEstrucutrasEO_meta_s, 
+	coalesce((s.avance_s/s.meta_s)*100,0) 				 AvanceEstrucutrasEO_porcentaje_s, 
+	coalesce(v.avance_v,0) 								 AvanceEstrucutrasEO_avance_v, 
+	coalesce(v.meta_v,0) 								 AvanceEstrucutrasEO_meta_v, 
+	coalesce((v.avance_v/v.meta_v)*100,0) 	 			 AvanceEstrucutrasEO_porcentaje_v
+	FROM
+	(SELECT  secciones.id_entidad, secciones.id_region, secciones.id_municipio, secciones.id_seccion, count(cr.id_persona) avance_cr, secciones.coordinadores_regionales meta_cr 
+	  FROM estructuras_edomex.secciones secciones 
+	  LEFT JOIN estructuras_edomex.coordinadores_regionales cr on (cr.id_region=secciones.id_region)
+	  GROUP BY secciones.id_entidad,  secciones.id_region, secciones.id_municipio, secciones.id_seccion, meta_cr 
+	  ORDER BY secciones.id_region, secciones.id_municipio, secciones.id_seccion)cr
+	FULL JOIN
+	(SELECT  secciones.id_entidad,  secciones.id_region, secciones.id_municipio, secciones.id_seccion, count(cm.id_persona) avance_cm, secciones.coordinadores_municipales meta_cm
+	  FROM estructuras_edomex.secciones secciones 
+	  LEFT JOIN estructuras_edomex.coordinadores_municipales cm on(cm.id_municipio=secciones.id_municipio)
+	  GROUP BY secciones.id_entidad, secciones.id_region, secciones.id_municipio,cm.id_region, secciones.id_seccion, meta_cm
+	  ORDER BY secciones.id_region, secciones.id_seccion)cm   ON (cr.id_region=cm.id_region and cr.id_municipio=cm.id_municipio)
+	FULL JOIN
+	(SELECT  secciones.id_entidad,  secciones.id_region,secciones.id_municipio, secciones.id_seccion,  count(s.id_persona) avance_s, secciones.supervisores meta_s
+	  FROM estructuras_edomex.secciones secciones   
+	  LEFT JOIN estructuras_edomex.supervisores s on(s.id_municipio=secciones.id_municipio)
+	  GROUP BY secciones.id_entidad, secciones.id_region, secciones.id_municipio, secciones.id_seccion, meta_s
+	  ORDER BY secciones.id_region, secciones.id_municipio, secciones.id_seccion) s ON (cr.id_region=s.id_region and cr.id_municipio=s.id_municipio)
+	FULL JOIN
+	(SELECT  secciones.id_entidad,  secciones.id_region,secciones.id_municipio, secciones.id_seccion, count(v.pkey) avance_v, secciones.visitadores meta_v
+	  FROM estructuras_edomex.secciones secciones 
+	   LEFT JOIN estructuras_edomex.visitadores v on(v.id_municipio=secciones.id_municipio)
+	  GROUP BY secciones.id_entidad,  secciones.id_region,secciones.id_municipio, secciones.id_seccion, secciones.visitadores, meta_v 
+	  ORDER BY secciones.id_region, secciones.id_municipio, secciones.id_seccion)v ON (cr.id_region=v.id_region and cr.id_municipio=v.id_municipio)
+	  where 
+		cr.id_entidad=#{entidad}
+		AND cr.id_region=#{region}
+		AND cr.id_municipio=#{municipio}
+		AND cr.id_seccion=#{seccion}
+	  ORDER BY cr.id_region,cr.id_municipio
+	</select>
+	
+</mapper>

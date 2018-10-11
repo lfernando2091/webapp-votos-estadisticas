@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogo Comunicación" url="/app/sincronizacion_dm/catalogos/comunicacion"/>
+					</p:breadCrumb>
+			<p:panel header="Listado de Comunicación">
+			<p:dataTable value="${modelo.listado}" var="li" rowKey="${li.id}" selection="${modelo.seleccionado}" selectionMode="single"
+			rows="10" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom" >
+			<p:column headerText="Id">
+			<p:outputLabel value="${li.id}"/>
+			</p:column>
+			<p:column headerText="Texto">
+			<p:outputLabel value="${li.texto}"/>
+			</p:column>
+			</p:dataTable>
+			
+			</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				<h:outputStylesheet>
+<!-- 					.Realizado{ -->
+<!-- 						color : white !important; -->
+<!-- 						background-color : #04B431 !important; -->
+<!-- 					} -->
+<!-- 					.Aprobado{ -->
+<!-- 						color : white !important; -->
+<!-- 						background-color: #2E9AFE !important; -->
+<!-- 					} -->
+					
+<!-- 					.Programado{ -->
+<!-- 						color : white !important; -->
+<!-- 						background-color: #F78181 !important;  -->
+<!-- 					} -->
+					.estatus{
+					width:6%;
+						text-align: center;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

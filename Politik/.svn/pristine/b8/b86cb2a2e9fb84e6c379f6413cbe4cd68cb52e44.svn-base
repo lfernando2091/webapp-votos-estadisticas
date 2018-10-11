@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="mencuestas.edomex2017.respuestas.prospera.respuestas">
+	
+	<select id="listadoRegion" resultType="hashmap">
+	<if test="tipo!='PERSONA'">
+	select 
+*
+from 
+(
+	${listado}
+) x
+left join 
+(
+	select
+	<if test="tipo=='REGION'">region_edomex_2017,</if>
+	<if test="tipo=='MUNICIPIO'">region_edomex_2017,municipio,</if>
+	<if test="tipo=='SECCION'">region_edomex_2017,municipio,seccion,</if>
+	<if test="pregunta==1">
+	sum(case when _1 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,sum(case when _1 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, sum(case when _1 = 'NC' then 1 else 0 end) nc_total,
+	sum(case when _1 = 'GOBIERNO_FEDERAL' and b.sexo ='H' then 1 else 0 end) gobierno_federal_hombres,sum(case when _1 = 'GOBIERNO_FEDERAL' and b.sexo ='M' then 1 else 0 end) gobierno_federal_mujeres, sum(case when _1 = 'GOBIERNO_FEDERAL' then 1 else 0 end) gobierno_federal_total,
+	sum(case when _1 = 'GOBIERNO_ESTATAL' and b.sexo ='H' then 1 else 0 end) gobierno_estatal_hombres,sum(case when _1 = 'GOBIERNO_ESTATAL' and b.sexo ='M' then 1 else 0 end) gobierno_estatal_mujeres, sum(case when _1 = 'GOBIERNO_ESTATAL' then 1 else 0 end) gobierno_estatal_total,
+	sum(case when _1 = 'GOBIERNO_MUNICIPAL' and b.sexo ='H' then 1 else 0 end) gobierno_municipal_hombres,sum(case when _1 = 'GOBIERNO_MUNICIPAL' and b.sexo ='M' then 1 else 0 end) gobierno_municipal_mujeres, sum(case when _1 = 'GOBIERNO_MUNICIPAL' then 1 else 0 end) gobierno_municipal_total,
+	sum(case when _1 = 'NO_SABE' and b.sexo ='H' then 1 else 0 end) no_sabe_hombres,sum(case when _1 = 'NO_SABE' and b.sexo ='M' then 1 else 0 end) no_sabe_mujeres, sum(case when _1 = 'NO_SABE' then 1 else 0 end) no_sabe_total, sum(case when _1 = 'NO_SABE' then 1 else 0 end) no_sabe_total,
+	</if>
+	<if test="pregunta==2">
+	sum(case when _2 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,sum(case when _2 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, sum(case when _2 = 'NC' then 1 else 0 end) nc_total,
+	sum(case when _2 = 'SI' and b.sexo ='H' then 1 else 0 end) si_hombres,sum(case when _2 = 'SI' and b.sexo ='M' then 1 else 0 end) si_mujeres, sum(case when _2 = 'SI' then 1 else 0 end) si_total,
+	sum(case when _2 = 'NO' and b.sexo ='H' then 1 else 0 end) no_hombres,sum(case when _2 = 'NO' and b.sexo ='M' then 1 else 0 end) no_mujeres, sum(case when _2 = 'NO' then 1 else 0 end) no_total,
+	</if>
+	<if test="pregunta==3">
+	sum(case when _3 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,sum(case when _3 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, sum(case when _3 = 'NC' then 1 else 0 end) nc_total,
+	sum(case when _3 = 'BUENO' and b.sexo ='H' then 1 else 0 end) bueno_hombres,sum(case when _3 = 'BUENO' and b.sexo ='M' then 1 else 0 end) bueno_mujeres, sum(case when _3 = 'BUENO' then 1 else 0 end) bueno_total,
+	sum(case when _3 = 'REGULAR' and b.sexo ='H' then 1 else 0 end) regular_hombres,sum(case when _3 = 'REGULAR' and b.sexo ='M' then 1 else 0 end) regular_mujeres, sum(case when _3 = 'REGULAR' then 1 else 0 end) regular_total,
+	sum(case when _3 = 'MALO' and b.sexo ='H' then 1 else 0 end) malo_hombres,sum(case when _3 = 'MALO' and b.sexo ='M' then 1 else 0 end) malo_mujeres, sum(case when _3 = 'MALO' then 1 else 0 end) malo_total,
+	</if>
+	<if test="pregunta==4">
+	sum(case when _4 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,sum(case when _4 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, sum(case when _4 = 'NC' then 1 else 0 end) nc_total,
+	sum(case when _4 = 'BUENO' and b.sexo ='H' then 1 else 0 end) bueno_hombres,sum(case when _4 = 'BUENO' and b.sexo ='M' then 1 else 0 end) bueno_mujeres, sum(case when _4 = 'BUENO' then 1 else 0 end) bueno_total,
+	sum(case when _4 = 'REGULAR' and b.sexo ='H' then 1 else 0 end) regular_hombres,sum(case when _4 = 'REGULAR' and b.sexo ='M' then 1 else 0 end) regular_mujeres, sum(case when _4 = 'REGULAR' then 1 else 0 end) regular_total,
+	sum(case when _4 = 'MALO' and b.sexo ='H' then 1 else 0 end) malo_hombres,sum(case when _4 = 'MALO' and b.sexo ='M' then 1 else 0 end) malo_mujeres, sum(case when _4 = 'MALO' then 1 else 0 end) malo_total,
+	sum(case when _4 = 'NO_RECIBO' and b.sexo ='H' then 1 else 0 end) no_recibe_hombres,sum(case when _4 = 'NO_RECIBO' and b.sexo ='M' then 1 else 0 end) no_recibe_mujeres, sum(case when _4 = 'NO_RECIBO' then 1 else 0 end) no_recibe_total,
+	</if>
+	<if test="pregunta==5">
+	sum(case when _5 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,sum(case when _5 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, sum(case when _5 = 'NC' then 1 else 0 end) nc_total,
+	sum(case when _5 = 'SI' and b.sexo ='H' then 1 else 0 end) si_hombres,sum(case when _5 = 'SI' and b.sexo ='M' then 1 else 0 end) si_mujeres, sum(case when _5 = 'SI' then 1 else 0 end) si_total,
+	sum(case when _5 = 'NO' and b.sexo ='H' then 1 else 0 end) no_hombres,sum(case when _5 = 'NO' and b.sexo ='M' then 1 else 0 end) no_mujeres, sum(case when _5 = 'NO' then 1 else 0 end) no_total,
+	</if>
+	sum(case when b.sexo = 'H' then 1 else 0 end) hombres, sum(case when b.sexo = 'M' then 1 else 0 end) mujeres,count(*) total
+	from encuestas_resultados.e_edomex_prospera a
+	join encuestas.encuesta_edomex b on (a.id_contacto::integer = b.id_interno) 
+	<if test="tipo=='REGION'">group by  region_edomex_2017</if>
+	<if test="tipo=='MUNICIPIO'">group by  region_edomex_2017,municipio</if>
+	<if test="tipo=='SECCION'">group by  region_edomex_2017,municipio,seccion</if>
+) y on
+ (x.id = <if test="tipo=='REGION'">y.region_edomex_2017</if> <if test="tipo=='MUNICIPIO'">y.municipio</if> <if test="tipo=='SECCION'">y.seccion</if>)
+  <if test="tipo!='SECCION'">order by x.id</if>
+   <if test="tipo=='SECCION'">order by total</if>
+ </if>
+ <if test="tipo=='PERSONA'">
+ select
+	region_edomex_2017,municipio,seccion,id_interno id,nombre||' '||apellido_paterno||' '||apellido_materno nombre,
+	<if test="pregunta==1">
+	(case when _1 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,(case when _1 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, (case when _1 = 'NC' then 1 else 0 end) nc_total,
+	(case when _1 = 'GOBIERNO_FEDERAL' and b.sexo ='H' then 1 else 0 end) gobierno_federal_hombres,(case when _1 = 'GOBIERNO_FEDERAL' and b.sexo ='M' then 1 else 0 end) gobierno_federal_mujeres, (case when _1 = 'GOBIERNO_FEDERAL' then 1 else 0 end) gobierno_federal_total,
+	(case when _1 = 'GOBIERNO_ESTATAL' and b.sexo ='H' then 1 else 0 end) gobierno_estatal_hombres,(case when _1 = 'GOBIERNO_ESTATAL' and b.sexo ='M' then 1 else 0 end) gobierno_estatal_mujeres, (case when _1 = 'GOBIERNO_ESTATAL' then 1 else 0 end) gobierno_estatal_total,
+	(case when _1 = 'GOBIERNO_MUNICIPAL' and b.sexo ='H' then 1 else 0 end) gobierno_municipal_hombres,(case when _1 = 'GOBIERNO_MUNICIPAL' and b.sexo ='M' then 1 else 0 end) gobierno_municipal_mujeres, (case when _1 = 'GOBIERNO_MUNICIPAL' then 1 else 0 end) gobierno_municipal_total,
+	(case when _1 = 'NO_SABE' and b.sexo ='H' then 1 else 0 end) no_sabe_hombres,(case when _1 = 'NO_SABE' and b.sexo ='M' then 1 else 0 end) no_sabe_mujeres, (case when _1 = 'NO_SABE' then 1 else 0 end) no_sabe_total, (case when _1 = 'NO_SABE' then 1 else 0 end) no_sabe_total,
+	</if>
+	<if test="pregunta==2">
+	(case when _2 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,(case when _2 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, (case when _2 = 'NC' then 1 else 0 end) nc_total,
+	(case when _2 = 'SI' and b.sexo ='H' then 1 else 0 end) si_hombres,(case when _2 = 'SI' and b.sexo ='M' then 1 else 0 end) si_mujeres, (case when _2 = 'SI' then 1 else 0 end) si_total,
+	(case when _2 = 'NO' and b.sexo ='H' then 1 else 0 end) no_hombres,(case when _2 = 'NO' and b.sexo ='M' then 1 else 0 end) no_mujeres, (case when _2 = 'NO' then 1 else 0 end) no_total,
+	</if>
+	<if test="pregunta==3">
+	(case when _3 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,(case when _3 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, (case when _3 = 'NC' then 1 else 0 end) nc_total,
+	(case when _3 = 'BUENO' and b.sexo ='H' then 1 else 0 end) bueno_hombres,(case when _3 = 'BUENO' and b.sexo ='M' then 1 else 0 end) bueno_mujeres, (case when _3 = 'BUENO' then 1 else 0 end) bueno_total,
+	(case when _3 = 'REGULAR' and b.sexo ='H' then 1 else 0 end) regular_hombres,(case when _3 = 'REGULAR' and b.sexo ='M' then 1 else 0 end) regular_mujeres, (case when _3 = 'REGULAR' then 1 else 0 end) regular_total,
+	(case when _3 = 'MALO' and b.sexo ='H' then 1 else 0 end) malo_hombres,(case when _3 = 'MALO' and b.sexo ='M' then 1 else 0 end) malo_mujeres, (case when _3 = 'MALO' then 1 else 0 end) malo_total,
+	</if>
+	<if test="pregunta==4">
+	(case when _4 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,(case when _4 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, (case when _4 = 'NC' then 1 else 0 end) nc_total,
+	(case when _4 = 'BUENO' and b.sexo ='H' then 1 else 0 end) bueno_hombres,(case when _4 = 'BUENO' and b.sexo ='M' then 1 else 0 end) bueno_mujeres, (case when _4 = 'BUENO' then 1 else 0 end) bueno_total,
+	(case when _4 = 'REGULAR' and b.sexo ='H' then 1 else 0 end) regular_hombres,(case when _4 = 'REGULAR' and b.sexo ='M' then 1 else 0 end) regular_mujeres, (case when _4 = 'REGULAR' then 1 else 0 end) regular_total,
+	(case when _4 = 'MALO' and b.sexo ='H' then 1 else 0 end) malo_hombres,(case when _4 = 'MALO' and b.sexo ='M' then 1 else 0 end) malo_mujeres, (case when _4 = 'MALO' then 1 else 0 end) malo_total,
+	(case when _4 = 'NO_RECIBO' and b.sexo ='H' then 1 else 0 end) no_recibe_hombres,(case when _4 = 'NO_RECIBO' and b.sexo ='M' then 1 else 0 end) no_recibe_mujeres, (case when _4 = 'NO_RECIBO' then 1 else 0 end) no_recibe_total,
+	</if>
+	<if test="pregunta=='5'">
+	(case when _5 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,(case when _5 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, (case when _5 = 'NC' then 1 else 0 end) nc_total,
+	(case when _5 = 'SI' and b.sexo ='H' then 1 else 0 end) si_hombres,(case when _5 = 'SI' and b.sexo ='M' then 1 else 0 end) si_mujeres, (case when _5 = 'SI' then 1 else 0 end) si_total,
+	(case when _5 = 'NO' and b.sexo ='H' then 1 else 0 end) no_hombres,(case when _5 = 'NO' and b.sexo ='M' then 1 else 0 end) no_mujeres, (case when _5 = 'NO' then 1 else 0 end) no_total,
+	
+	</if>
+	(case when b.sexo = 'H' then 1 else 0 end) hombres, (case when b.sexo = 'M' then 1 else 0 end) mujeres,1 total
+	from encuestas_resultados.e_edomex_prospera a
+	join encuestas.encuesta_edomex b on (a.id_contacto::integer = b.id_interno) 
+	where b.seccion =${seccion}
+ </if>
+	</select>
+</mapper>

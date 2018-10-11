@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+		
+		<view-state id="listado">
+			<on-entry>
+				<set name="viewScope.pregunta" value="1"/>
+				<evaluate expression="DominiosModelosC.nivelesReporte5()" result="viewScope.modeloNiveles"/>
+				<evaluate expression="CatalogosGeozonasC.regionesPorUsuario()"  result="viewScope.listadoRegiones"/>
+				<evaluate expression="CatalogosMunicipiosC.modeloConRegion(viewScope.listadoRegiones.seleccionado)" result="viewScope.listadoMunicipios"/>
+				<evaluate expression="LevantamientoRowanPorPreguntaC.resultado(viewScope.modeloNiveles.seleccionado,viewScope.listadoRegiones.seleccionado, viewScope.listadoMunicipios.seleccionado, viewScope.pregunta)" result="viewScope.resultado"/>
+			</on-entry>
+			<transition on="actualizaComboMpios" >
+				<evaluate expression="CatalogosMunicipiosC.modeloConRegion(viewScope.listadoRegiones.seleccionado)" result="viewScope.listadoMunicipios"/>
+				<evaluate expression="LevantamientoRowanPorPreguntaC.resultado(viewScope.modeloNiveles.seleccionado,viewScope.listadoRegiones.seleccionado, viewScope.listadoMunicipios.seleccionado, viewScope.pregunta)" result="viewScope.resultado"/>
+			</transition>
+			<transition on="actualizar" >
+				<evaluate expression="LevantamientoRowanPorPreguntaC.resultado(viewScope.modeloNiveles.seleccionado,viewScope.listadoRegiones.seleccionado, viewScope.listadoMunicipios.seleccionado, viewScope.pregunta)" result="viewScope.resultado"/>
+			</transition>
+		</view-state>
+</flow>

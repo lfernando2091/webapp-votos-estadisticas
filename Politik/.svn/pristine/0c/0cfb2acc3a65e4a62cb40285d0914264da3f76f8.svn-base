@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="content">
+
+		<div>
+			<div class="Container100">
+				<h:form>
+
+					<p:panel styleClass="companyHeaderGrid"
+						style="min-height: 500px;background:#71CC8D;border-radius: 20px;background-image: url('resources/imagenes/acceso_directo/Fondo_3.svg'); -webkit-background-size: cover;-moz-background-size: cover; -o-background-size: cover;background-size: cover;">
+						<table class="box">
+							<tr>
+								<sec:authorize ifAllGranted="ROLE_ENCUESTA_EDOMEX">
+									<td><p:link href="/app/entrevistas/edomex2017/v2">
+											<IMG alt=""
+												src="resources/imagenes/acceso_directo/ICN_EntrevEdomex2017.svg"
+												width="140" height="140" />
+										</p:link></td>
+								</sec:authorize>
+								<sec:authorize
+									ifAllGranted="ROLE_ENCUESTA_EDOMEX_ENTREVISTADORES">
+									<td><p:link
+											href="/app/entrevistas/telefonicas">
+											<IMG alt=""
+												src="resources/imagenes/acceso_directo/ICN_Entrevista_Entrevistador.svg"
+												width="140" height="140" />
+										</p:link></td>
+								</sec:authorize>
+								<sec:authorize ifAllGranted="ROLE_ENCUESTA_SUJETOS_SOCIALES">
+									<td><p:link href="/app/entrevistas/sujetosSociales">
+											<IMG alt=""
+												src="resources/imagenes/acceso_directo/ICN_Entrevista2daVuelta.svg"
+												width="140" height="140" />
+										</p:link></td>
+										
+										<td><p:link href="/app/entrevistas/edomex2017/foliosFaltantes/segunda">
+											<IMG alt=""
+												src="resources/imagenes/acceso_directo/ICN_FoliosFaltantes2davuelta.svg"
+												width="140" height="140" />
+										</p:link></td>
+								</sec:authorize>
+								<sec:authorize ifAllGranted="ROLE_ENCUESTA_FUERZA_CIUDADANA">
+									<td><p:link href="/app/entrevistas/fuerzaCiudadana">
+											<IMG alt=""
+												src="resources/imagenes/acceso_directo/ICN_EntrevistaFuerzaCiudadana.svg"
+												width="140" height="140" />
+										</p:link></td>
+										
+										<td><p:link href="/app/entrevistas/fuerzaCiudadana/foliosFaltantes">
+											<IMG alt=""
+												src="resources/imagenes/acceso_directo/ICN_FoliosFaltantesFuerzaCiudadana.svg"
+												width="140" height="140" />
+										</p:link></td>
+								</sec:authorize>
+							</tr>
+							
+							<tr>
+								<sec:authorize ifAllGranted="ROLE_MOVILIZACION_CAPTURISTA">
+									<td><p:link href="/app/diaD/seccional">
+											<IMG alt="Seccionales"
+												src="resources/imagenes/acceso_directo/ICN_Seccionales.svg"
+												width="140" height="140" />
+										</p:link></td>
+									<td><p:link href="/app/diaD/movilizadorCGF">
+											<IMG alt="Movilizadores"
+												src="resources/imagenes/acceso_directo/ICN_Movilizadores.svg"
+												width="140" height="140" />
+										</p:link></td>
+								</sec:authorize>
+							</tr>
+							<tr>
+								<sec:authorize ifAllGranted="ROLE_MOVILIZACION_ASIGNACION">
+									<td><p:link href="/app/diaD/movilizados">
+											<IMG alt="Movilizadores"
+												src="resources/imagenes/acceso_directo/ICN_AsignacionesMovilizador.svg"
+												width="140" height="140" />
+										</p:link></td>
+<!-- 									<p:separator/> -->
+<!-- 									<td><p:link href="/app/diaD/movilizados"> -->
+<!-- 											<IMG alt="Asignacion" -->
+<!-- 												src="resources/imagenes/acceso_directo/ICN_Entrevista2daVuelta.svg" -->
+<!-- 												width="140" height="140" /> -->
+<!-- 										</p:link></td> -->
+								</sec:authorize>
+								
+								<sec:authorize ifAllGranted="ROLE_MOVILIZACION_REPORTES">
+									<td><p:link href="/app/diaD/jornada/captura">
+											<IMG alt="Reportes"
+												src="resources/imagenes/acceso_directo/ICN_DiaD.svg"
+												width="140" height="140" />
+										</p:link></td>
+								</sec:authorize>
+								
+								<sec:authorize ifAllGranted="ROLE_ENTREVISTA_HERMANOS">
+									<td><p:link href="/app/entrevistas/hermanos">
+											<IMG alt="Reportes"
+												src="resources/imagenes/acceso_directo/ICN_DiaD.svg"
+												width="140" height="140" />
+										</p:link></td>
+								</sec:authorize>
+								
+								
+				
+								
+								
+								
+							</tr>
+						</table>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+					<h:outputStylesheet>
+.box {
+  	margin-top: 50;
+    margin-left: auto;
+  	margin-right: auto;
+    padding-top: 70px;
+  vertical-align: middle !important;
+}
+.box td {
+    padding: 20px;
+}
+.companyHeaderGrid {
+     border-style: hidden !important;
+    padding-top: 2%;
+}     		</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,83 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+			
+				<p:toolbar>
+				 <f:facet name="left">
+				<p:commandButton icon="fa fa-plus-circle" value="Encuesta" action="agregarEncuesta"/><p:separator />
+				</f:facet>
+				</p:toolbar>
+					<p:panelGrid>
+					<p:row styleClass="topAlign">
+					<p:column>
+						<p:panel header="Encuestas" >
+							<p:dataTable value="${modeloEncuestas.listado}" var="fila"
+								rowKey="${fila.id}" selection="${modeloEncuestas.seleccionado}"
+								selectionMode="single" paginator="true" rows="15"
+								paginatorAlwaysVisible="false" paginatorPosition="bottom"
+								reflow="true" >
+								<p:ajax event="rowSelect" onstart="comandollenarCampanias()" />
+								<p:column headerText="ID" width="10%">
+									${fila.id}
+								</p:column>
+								<p:column headerText="Descripcion" width="60%">
+									${fila.descripcion}
+								</p:column>
+								
+							</p:dataTable>
+							<f:facet name="footer">
+							<p:commandButton id="cmdPE" value="Preguntas" action="preguntasEncuesta" icon="fa fa-question-circle" title="Preguntas de la campaña" />
+					
+									<p:commandButton id="cmdCrearCampania" value="Crear Campaña" action="crearCampania" icon="fa fa-weixin" title="Crear nueva campaña"/>
+									
+									<p:commandButton id="cmdReglas" value="Reglas" action="listadoReglas" icon="fa fa-tasks" title="Reglas"/>
+									
+							</f:facet>
+						</p:panel>
+						</p:column>
+						<p:column>
+						<p:panel header="Campañas">
+							<p:dataTable value="${modeloCampanias.listado}" var="fila"
+								rowKey="${fila.id}" selectionMode="single"
+								selection="${modeloCampanias.seleccionado}" paginator="true"
+								rows="15" paginatorAlwaysVisible="false" reflow="true"
+								paginatorPosition="bottom">
+								<p:column headerText="ID" width="10%">
+								${fila.id}
+								</p:column>
+								<p:column headerText="Nombre de la Campaña">
+								${fila.nombre}
+								</p:column>
+							</p:dataTable>
+							<f:facet name="footer">
+							<p:commandButton value="(${modeloCampanias.seleccionado.id}) Actualizar Resultados" icon="fa fa-undo" action="actualizarResultados"/>
+							<p:commandButton value="Estadisticas" icon="fa fa-bar-chart" action="actualizarResultados"/>
+							<p:commandButton value="Listado" icon="fa fa-list" action="actualizarResultados"/>
+							</f:facet>
+						</p:panel>
+						</p:column>
+</p:row>
+					</p:panelGrid>
+<p:remoteCommand name="comandollenarCampanias"	action="campaniasEncuesta" partialSubmit="true" update="@form" />
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+							
+						}
+					</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructuras.estructuras">
+	<cache />
+
+	<resultMap type="EstructuraEO" id="estructura">
+		<id column="EstructuraEO_id" property="id" javaType="Integer" />
+		<result column="EstructuraEO_nivel" property="nivel" javaType="com.saganet.politik.dominios.NivelesDO" />
+		<result column="EstructuraEO_ambito" property="ambito" javaType="com.saganet.politik.dominios.AmbitosDO" />
+		<result column="EstructuraEO_nombre" property="nombre" javaType="String" />
+		<result column="EstructuraEO_observaciones" property="observaciones" javaType="String" />
+		<association property="tabla" resultMap="catalogos.tablas.tabla" />
+		<collection property="nodos" resultMap="estructuras.nodos.nodo" />
+	</resultMap>
+
+	<sql id="query">
+		SELECT
+		EstructuraEO.id_estructura 			EstructuraEO_id,
+		EstructuraEO.nivel 					EstructuraEO_nivel,
+		EstructuraEO.ambito					EstructuraEO_ambito,
+		EstructuraEO.estructura 			EstructuraEO_nombre,
+		EstructuraEO.observaciones 			EstructuraEO_observaciones,
+		NodoEO.id_nodo 						NodoEO_id,
+		NodoEO.nodo 						NodoEO_nodo,
+		nlevel(NodoEO.nodo) 				NodoEO_nivel,
+		FiguraEO.id_figura 					FiguraEO_id,
+		FiguraEO.nivel 						FiguraEO_nivel,
+		FiguraEO.figura 					FiguraEO_nombre,
+		FiguraEO.id_geozona					FiguraEO_idGeozona,
+		FiguraEO.jerarquico					FiguraEO_jerarquico,
+		TablaEO.id_tabla					TablaEO_id,
+		TablaEO.tabla						TablaEO_tabla,
+		TablaEO.descripcion					TablaEO_descripcion,
+		TablaEO.campo_particion				TablaEO_campoParticion,
+		TablaEO.particionada				TablaEO_particionada,
+		TablaParticionEO.id_tabla_particion	TablaParticionEO_id,
+		TablaParticionEO.id_tabla			TablaParticionEO_idTabla,
+		TablaParticionEO.id_particion		TablaParticionEO_idParticion,
+		TablaParticionEO.particion			TablaEO_particion
+		FROM estructuras.estructuras EstructuraEO
+		JOIN estructuras.nodos NodoEO on (EstructuraEO.id_estructura = NodoEO.id_estructura)
+		JOIN estructuras.figuras FiguraEO on (NodoEO.id_figura = FiguraEO.id_figura)
+		JOIN catalogos.tablas TablaEO on (EstructuraEO.id_tabla = TablaEO.id_tabla)
+		LEFT JOIN catalogos.tablas_particiones TablaParticionEO on (TablaEO.id_tabla = TablaParticionEO.id_tabla)
+	</sql>
+	
+	<sql id="orderBy">
+		ORDER BY EstructuraEO.nivel, EstructuraEO.ambito, EstructuraEO.estructura, NodoEO.nodo, TablaEO.tabla, TablaParticionEO.id_particion
+	</sql>
+
+	<select id="listado" resultMap="estructura">
+		<include refid="query" />
+		<include refid="orderBy" />
+	</select>
+	
+	<select id="porId" parameterType="Integer" resultMap="estructura">
+		<include refid="query" />
+		WHERE EstructuraEO.id_estructura = #{value}
+		<include refid="orderBy" />
+	</select>
+
+	<select id="listadoPorIds" resultMap="estructura" parameterType="list">
+		<include refid="query" />
+		<where>
+			<choose>
+				<when test="list != null">
+					<foreach collection="list" item="item"
+						open="EstructuraEO.id_estructura in (" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<otherwise>
+					EstructuraEO.id_estructura = 0
+				</otherwise>
+			</choose>
+		</where>
+		<include refid="orderBy" />
+	</select>
+	
+	<select id="listadoPorAmbito" parameterType="com.saganet.politik.dominios.AmbitosDO" resultMap="estructura">
+		<include refid="query" />
+		WHERE EstructuraEO.ambito = #{value}
+		<include refid="orderBy" />
+	</select>
+	
+	<select id="listadoPorAmbitoEstructurasQuitar" parameterType="hashmap" resultMap="estructura">
+		<include refid="query" />
+		WHERE EstructuraEO.ambito = #{ambito}
+		<foreach collection="estructuras" item="item" open="AND EstructuraEO.id_estructura NOT IN (" separator="," close=")">
+			#{item.id}
+		</foreach>
+		<include refid="orderBy" />
+	</select>
+	
+	<select id="porEleccion" parameterType="EleccionEO" resultMap="estructura">
+		<include refid="query" />
+		WHERE EstructuraEO.ambito = 'ELECCION' AND EstructuraEO.id_estructura IN (
+			SELECT id_estructura
+			FROM catalogos.elecciones_estructuras eleccionesEstructuras
+			WHERE eleccionesEstructuras.id_eleccion = #{id}
+		)
+		<include refid="orderBy" />
+	</select>
+
+	<select id="buscarModelo" parameterType="EstructuraEO" resultType="_byte[]">
+		SELECT EstructuraEO.modelo
+		FROM estructuras.estructuras
+		EstructuraEO
+		WHERE EstructuraEO.id_estructura = #{id}
+	</select>
+	
+	<select id="porTabla" parameterType="TablaEO" resultMap="estructura">
+		<include refid="query" />
+		WHERE EstructuraEO.id_tabla = #{id}
+		<include refid="orderBy" />
+	</select>
+
+	<insert id="insertar" parameterType="hashmap">
+		<selectKey keyProperty="estructura.id" resultType="Integer" order="BEFORE">
+			SELECT nextval('estructuras.estructuras_id_estructura_seq'::regclass)
+		</selectKey>
+		INSERT INTO estructuras.estructuras(id_estructura, nivel, ambito, estructura, observaciones, modelo)
+		VALUES (#{estructura.id}, #{estructura.nivel}, #{estructura.ambito}, #{estructura.nombre}, #{estructura.observaciones}, #{modelo});
+	</insert>
+
+	<update id="actualizar" parameterType="EstructuraEO">
+		UPDATE estructuras.estructuras
+		SET nivel = #{nivel}, ambito = #{ambito}, estructura = #{nombre}, observaciones = #{observaciones}
+		WHERE id_estructura = #{id}
+	</update>
+	
+	<update id="actualizarTabla" parameterType="EstructuraEO">
+		UPDATE estructuras.estructuras
+		SET id_tabla = #{tabla.id}
+		WHERE id_estructura = #{id}
+	</update>
+</mapper>

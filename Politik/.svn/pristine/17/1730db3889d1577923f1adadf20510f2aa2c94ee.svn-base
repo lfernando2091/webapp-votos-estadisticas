@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:messages autoUpdate="true"/>
+				<p:panel header="Registro Usuarios">
+				<p:panelGrid columns="1" style="width: 300px" styleClass="panelNoBorder">
+				<p:outputLabel value="Nombre" style="width: 300px"/>
+				<p:inputText value="${nombre}" required="true" requiredMessage="Nombre: requerido" />
+				<p:outputLabel value="Primer Apellido"/>
+					<p:inputText value="${primer_apellido}" required="true" requiredMessage="Primer Apellido: requerido"/>
+				<p:outputLabel value="Segundo Apellido"/>
+					<p:inputText value="${segundo_apellido}" />
+				<p:outputLabel value="Email"/>
+					<p:inputText value="${email}" required="true" requiredMessage="Email: requerido"/>
+				<p:outputLabel value="Teléfono Celular"/>
+					<p:inputText value="${movil}" required="true" requiredMessage="Teléfono: requerido"/>
+				<p:outputLabel value="Municipio"/>
+				<p:selectOneMenu value="${municipio}" filter="true" filterMatchMode="contains" converter="ObjectConverter" required="true" requiredMessage="Municipio: es requerido">
+				<f:selectItems value="${modeloMunicipios.listado}" var="m" itemLabel="${m.idMunicipio} - ${m.nombre}" itemValue="${m}"/>
+				</p:selectOneMenu>
+				<p:outputLabel value="Código"/>
+					<p:inputText value="${codigo}" required="true" requiredMessage="Código: Requerido"/>
+				</p:panelGrid>
+				<f:facet name="footer">
+				<p:commandButton value="Registrar" action="registrar"/>
+				<p:commandButton value="Limpiar" action="fin" immediate="true"/>
+				</f:facet>
+				</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				<h:outputStylesheet>
+				.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+border: hidden;
+border-color: white;
+}
+				</h:outputStylesheet>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

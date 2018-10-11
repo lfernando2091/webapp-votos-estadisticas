@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Municipios" />
+					</p:breadCrumb>
+					<p:panel header="Listado de Municipios">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Entidad" />
+							<p:selectOneMenu value="${modeloEntidades.seleccionado}"
+								converter="ObjectConverter" style="width: 200px;" filter="true" filterMatchMode="contains">
+								<f:selectItems value="${modeloEntidades.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+								<p:ajax event="itemSelect" onstart="actualizarRC();" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<p:separator />
+						<p:dataTable id="tablaMunicipios"
+							value="${modeloMunicipios.listado}" var="fila" paginator="true"
+							rows="10" paginatorPosition="bottom"
+							paginatorAlwaysVisible="false">
+							<f:facet name="header">Municipios de ${modeloEntidades.seleccionado.nombre}</f:facet>
+							<p:column headerText="Id" width="40">${fila.idMunicipio}</p:column>
+							<p:column headerText="Nombre">${fila.nombre}</p:column>
+							<p:column headerText="Llave" width="50">${fila.llave}</p:column>
+						</p:dataTable>
+					</p:panel>
+
+					<p:remoteCommand name="actualizarRC"
+						action="actualizarModeloMunicipios" update="tablaMunicipios" />
+						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,22 @@
+package com.saganet.politik.dominios;
+
+public enum CandidatosEdomex2017DO {
+	ALFREDO_DEL_MAZO_MAZA("ALFREDO DEL MAZO MAZA"),
+	JOSEFINA_VAZQUEZ_MOTA("JOSEFINA VAZQUEZ MOTA"),
+	JUAN_ZEPEDA_HERNANDEZ("JUAN ZEPEDA HERNANDEZ"),
+	DELFINA_GOMEZ_ALVAREZ("DELFINA GOMEZ ALVAREZ"),
+	OSCAR_GONZALEZ_YANEZ("OSCAR GONZÁLEZ YÁÑEZ"),
+	ISIDRO_PASTOR_MEDRANO("ISIDRO PASTOR MEDRANO"),
+	OTRO("OTRO"),
+	NS_NC("NS/NC");
+	private final String nombre;
+
+	private CandidatosEdomex2017DO(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+}

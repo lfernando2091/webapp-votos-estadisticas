@@ -1,0 +1,166 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Metas Movilizadores - Filtro">
+					<p:panelGrid columns="2" styleClass="panelNoBorder panelNoBorder">
+							<p:column>
+								<p:outputLabel value="Nivel :" />
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${modeloNiveles.seleccionado}"
+									style="width:300px" converter="ObjectConverter">
+									<p:ajax event="itemSelect" update="@form"/>
+									<f:selectItems value="${modeloNiveles.listado}" var="fila"
+										itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Grupos :" />
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${modeloProgramas.seleccionado}"
+									style="width:300px" converter="ObjectConverter">
+									<p:ajax event="itemSelect" update="@form"/>
+									<f:selectItems value="${modeloProgramas.listado}" var="fila"
+										itemLabel="${fila.nombre2}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Región :"  rendered="${modeloNiveles.seleccionado.nombre ne 'General' and modeloNiveles.seleccionado.nombre ne 'Estatal'?'true':'false'}" />
+								</p:column>
+							<p:column>
+								<p:selectOneMenu id="comboRegiones" value="${listadoRegiones.seleccionado}"
+									style="width:300px" converter="ObjectConverter" rendered="${modeloNiveles.seleccionado.nombre ne 'General' and modeloNiveles.seleccionado.nombre ne 'Estatal'?'true':'false'}" >
+									<p:ajax event="itemSelect" onstart="actualizarMunicipios();"/>
+									<f:selectItems value="${listadoRegiones.listado}" var="fila"
+										itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+								</p:column>
+							<p:column>
+								<p:outputLabel value="Municipio :" rendered="${modeloNiveles.seleccionado.nombre eq 'Municipio' or modeloNiveles.seleccionado.nombre eq 'Sección'?'true':'false'}" />
+								</p:column>
+							<p:column>
+								<p:selectOneMenu id="comboMunicipios"  value="${listadoMunicipios.seleccionado}"
+									style="width:300px" converter="ObjectConverter" rendered="${modeloNiveles.seleccionado.nombre eq 'Municipio' or modeloNiveles.seleccionado.nombre eq 'Sección'?'true':'false'}" >
+									<p:ajax event="itemSelect" onstart="actualizarSecciones()" />
+									<f:selectItems value="${listadoMunicipios.listado}" var="fila"
+										itemLabel="${fila.idMunicipio} ${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+								</p:column>
+							<p:column>
+								<p:outputLabel value="Sección :" rendered="${modeloNiveles.seleccionado.nombre eq 'Sección'?'true':'false'}" />
+							</p:column>
+							<p:column>
+							<p:selectOneMenu id="comboSecciones" value="${listadoSecciones.seleccionado}" style="width:250px;" converter="ObjectConverter"  rendered="${modeloNiveles.seleccionado.nombre eq 'Sección'?'true':'false'}"  >
+								<p:ajax event="itemSelect" update="@form"/>
+								<f:selectItems value="${listadoSecciones.listado}" var="fila" itemLabel="${fila.idSeccion}" itemValue="${fila}"/>							
+							</p:selectOneMenu>
+							</p:column>
+							<p:column colspan="2">
+						<p:commandButton action="actualizar" value="Buscar" immediate="true" icon="fa fa-search" update="tablaDatos"/>
+						</p:column>
+						</p:panelGrid>
+						<p:remoteCommand name="actualizarMunicipios" action="actualizarMunicipios" immediate="true" update="@form"/>
+					<p:remoteCommand name="actualizarSecciones" action="actualizarSecciones" update="@form"/>
+					</p:panel>
+					
+					<p:separator/>
+					<p:dataTable value="${modelo.listado}" id="tablaDatos" var="f" paginator="true" rows="20" paginatorAlwaysVisible="false" paginatorPosition="bottom" reflow="true">
+					<p:column headerText="Región" sortable="true" sortBy="${f.region}" filterMatchMode="contains" rendered="${modeloNiveles.seleccionado.nombre eq 'Estatal'?'true':'false'}">
+					<p:outputLabel value="${f.region}" />
+					</p:column>
+					<p:column headerText="Municipio" sortable="true" sortBy="${f.idMunicipio}" filterMatchMode="contains" rendered="${modeloNiveles.seleccionado.nombre eq 'Region'?'true':'false'}">
+					<p:outputLabel value="${f.idMunicipio} - ${f.municipio}"/>
+					</p:column>
+					<p:column headerText="Sección" sortable="true" sortBy="${f.seccion}" filterMatchMode="contains" rendered="${modeloNiveles.seleccionado.nombre eq 'Municipio' or modeloNiveles.seleccionado.nombre eq 'Sección'?'true':'false'}">
+					<p:outputLabel value="${f.seccion}"/>
+					</p:column>
+					<p:column headerText="Meta">
+					<p:outputLabel value="${f.meta}">
+					<f:convertNumber pattern="###,###,###"/>
+					</p:outputLabel>
+					</p:column>
+					<p:column headerText="Avance">
+					<p:outputLabel value="${f.capturados}">
+					<f:convertNumber pattern="###,###,###"/>
+					</p:outputLabel>
+					</p:column>
+					<p:column headerText="Avance vs Meta" sortable="true" sortBy="${f.porcentaje}">
+					<p:outputLabel value="${f.porcentaje}"/>
+					</p:column>
+					  <p:columnGroup id="totalGroup"  rendered="${modeloNiveles.seleccionado.nombre ne 'General'?'true':'false'}" type="footer">
+					    <p:row>
+					   <p:column  style="text-align:center">
+					   <f:facet name="footer">
+               			 <h:outputText value="Total:" />
+               			 </f:facet>
+           				</p:column>
+           				 <p:column  style="text-align:center">
+					   <f:facet name="footer">
+               			 <h:outputText value="${total.tmeta}">
+               			 <f:convertNumber pattern="###,###,###"/>
+               			 </h:outputText>
+               			 </f:facet>
+           				</p:column>
+           				 <p:column  style="text-align:center">
+					   <f:facet name="footer">
+               			 <h:outputText value="${total.tavance}" >
+               			 <f:convertNumber pattern="###,###,###"/>
+               			 </h:outputText>
+               			 </f:facet>
+           				</p:column>
+           				 <p:column  style="text-align:center">
+					   <f:facet name="footer">
+               			 <h:outputText value="${total.tporcentaje}%" >
+               			 <f:convertNumber pattern="###,###,###"/>
+               			 </h:outputText>
+               			 </f:facet>
+           				</p:column>
+           				</p:row>
+					 </p:columnGroup>
+					<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tablaDatos" fileName="Metas Seccionales" />
+										</h:commandLink>
+									</f:facet>
+					
+					</p:dataTable>
+					
+					<p:remoteCommand name="actualizar"  update="@form" action="actualizar"/>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			}
+			.negritas{
+			font-weight: bold;
+			}
+			.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+			border: hidden;
+			border-color: white;
+			}
+		</h:outputStylesheet>
+
+		<h:outputScript>
+			window.onload = function() {
+				gmap = PF('mapaWV').getMap();
+			}
+		</h:outputScript>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructurasEdoMex.coordinadorMunicipal">
+	<cache />
+
+	<resultMap type="EstructurasEdoMexCoordinadorMunicipalEO" id="coordinadorMunicipal">
+		<id 			column="CoordinadorMunicipalEO_pkey" 				property="id" 			javaType="Integer" />
+		<association 	column="CoordinadorMunicipalEO_id_persona"			property="persona" 		select="mdm.personas.buscarPorIdPersona"/>
+		<association 	column="CoordinadorMunicipalEO_id_region"			property="region" 		select="catalogos.geozonas.regionPorLlave"/>
+		<association 	column="CoordinadorMunicipalEO_llave_municipio"		property="municipio" 	select="catalogos.municipios.buscarPorLlave"/>
+	</resultMap>
+
+	<sql id="query">
+		SELECT 
+			CoordinadorMunicipalEO.pkey 							CoordinadorMunicipalEO_pkey, 
+			CoordinadorMunicipalEO.id_persona 						CoordinadorMunicipalEO_id_persona, 
+			CoordinadorMunicipalEO.id_region						CoordinadorMunicipalEO_id_region, 
+			'15-'||CoordinadorMunicipalEO.id_municipio::text		CoordinadorMunicipalEO_llave_municipio
+		FROM estructuras_edomex.coordinadores_municipales 			CoordinadorMunicipalEO
+	</sql>
+	
+	<sql id="orderBy">
+		ORDER BY CoordinadorMunicipalEO.id_persona, CoordinadorMunicipalEO.id_region, CoordinadorMunicipalEO.id_municipio
+	</sql>
+
+	<select id="listado" resultMap="coordinadorMunicipal" parameterType="hashmap">
+		<include refid="query" />
+		<where>
+			<if test="region!=null">
+				CoordinadorMunicipalEO.id_region=#{region.idParticion}
+			</if>
+			<if test="municipio!=null">
+				AND CoordinadorMunicipalEO.id_municipio=#{municipio.idMunicipio}
+			</if>
+		</where>
+		<include refid="orderBy" />
+	</select>
+	
+	<insert id="insertar" parameterType="EstructurasEdoMexCoordinadorMunicipalEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT nextval('estructuras_edomex.coordinadores_municipales_pkey_seq'::regclass)
+		</selectKey>
+		INSERT INTO estructuras_edomex.coordinadores_municipales(pkey, id_persona, id_region, id_municipio)
+    	VALUES (#{id}, #{persona.id}, #{region.idParticion}, #{municipio.idMunicipio})
+	</insert>
+	
+	<delete id="eliminar" parameterType="EstructurasEdoMexCoordinadorMunicipalEO">
+		DELETE FROM estructuras_edomex.coordinadores_municipales
+ 		WHERE pkey= #{id}
+	</delete>
+</mapper>

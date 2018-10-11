@@ -1,0 +1,117 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Datos del Programa">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Dependencia: " />
+							<p:outputLabel
+								value="${programa.dependencia.dependencia} ${programa.dependencia.siglas}" />
+							<p:outputLabel value="Programa:" />
+							<p:outputLabel value="${programa.programa}" />
+						</p:panelGrid>
+					</p:panel>
+					<p:spacer height="10px" />
+					<p:panel header="Datos del Ejercicio">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Ejercicio:" />
+							
+							<p:selectOneMenu value="${ejercicio.ejercicio}">
+							<f:selectItems value="${ejerciciosFiscales}" var="fila" itemValue="${fila.nombre}" itemLabel="${fila.nombre}"/>
+							</p:selectOneMenu>
+							<p:outputLabel value="Fecha Inicio:" />
+							<p:calendar value="${ejercicio.ini}" pattern="yyyy-MM-dd"
+								locale="es" mask="true" required="true"
+								requiredMessage="La fecha de inicio es requerida" />
+
+							<p:outputLabel value="Fecha Terminación:    " />
+							<p:calendar value="${ejercicio.fin}" pattern="yyyy-MM-dd"
+								locale="es" mask="true" required="true"
+								requiredMessage="La fecha de termino es requerida" />
+						</p:panelGrid>
+					</p:panel>
+										<p:spacer height="10px" />
+					<p:panel header="Observaciones">
+
+						<p:panelGrid columns="2" style="width: 60%"
+							columnClasses="topAlign, topAlign">
+
+							<p:outputLabel value="Observaciones:    " />
+							<p:inputTextarea value="${ejercicio.observaciones}"
+								onkeyup="this.value=this.value.toUpperCase();" rows="5"
+								style="width:80%" />
+
+
+						</p:panelGrid>
+
+						<f:facet name="footer">
+							<p:spacer height="20px" />
+							<p:messages autoUpdate="true" />
+
+<!-- 							<p:commandButton value="Guardar" action="guardar" -->
+<!-- 								icon="fa fa-save"> -->
+<!-- 								<p:confirm header="Confirmación" -->
+<!-- 									message="Esta seguro de los datos capturados?" -->
+<!-- 									icon="ui-icon-alert" /> -->
+<!-- 							</p:commandButton> -->
+							
+							
+							<p:commandLink title="Guardar" action="guardar">
+							<p:confirm header="Confirmación"
+									message="Esta seguro de los datos capturados?"
+									icon="ui-icon-alert" />
+									<p:graphicImage value="/resources/botones/GUARDAR.png"/>
+							</p:commandLink>
+
+
+<!-- 							<p:commandButton immediate="true" action="cancelar" -->
+<!-- 								value="Cancelar" icon="fa fa-close" /> -->
+								
+								<p:commandLink title="Cancelar" immediate="true" action="cancelar">
+								<p:graphicImage value="/resources/botones/CANCELAR.png"/>
+								</p:commandLink>
+
+
+							<p:spacer height="20px" />
+
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+										<p:commandLink  styleClass="ui-confirmdialog-yes">
+												<p:graphicImage value="/resources/botones/SI.png" />
+										</p:commandLink>
+									 	<p:commandLink  styleClass="ui-confirmdialog-no">
+												<p:graphicImage value="/resources/botones/NO.png" />
+										</p:commandLink>
+<!-- 								<p:commandButton value="Si" type="button" -->
+<!-- 									styleClass="ui-confirmdialog-yes" icon="ui-icon-check" /> -->
+<!-- 								<p:commandButton value="No" type="button" -->
+<!-- 									styleClass="ui-confirmdialog-no" icon="ui-icon-close" /> -->
+							</p:confirmDialog>
+
+						</f:facet>
+
+					</p:panel>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

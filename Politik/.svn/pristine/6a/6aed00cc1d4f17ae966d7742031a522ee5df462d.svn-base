@@ -1,0 +1,51 @@
+<ui:composition 
+
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:sec="http://www.springframework.org/security/tags">
+    
+    
+    <div id="layout-topbar" class="ShadowGray">
+    	<div id="layout-topbar-indent">
+        	<a href="${request.contextPath}/app/"><IMG alt="" src="/politik/app/resources/imagenes/logo1.png" height="65px" /></a>
+            <a href="#" id="mobile-menu-button" class="BordRad3 white ShowOnMobile"><i class="fa fa-bars"></i> Menu</a>
+            <a href="#" id="mobile-menu-button-gray" class="BordRad3 white ShowOnMobile"><i class="fa fa-caret-down"></i> Top Menu</a>
+            
+            <ul id="layout-topbar-menu">
+            	<li>
+            		<h:form id="formLogout">
+            			<a href="#" class="Animated05" onclick="document.getElementById('formLogout').action='${request.contextPath}/logout'; document.getElementById('formLogout').submit();"><i class="fa fa-sign-out"></i> Logout</a>
+            			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            		</h:form>
+                </li>
+                <li class="fa fa-ellipsis-v menu-separator"></li>
+                <sec:authorize ifAllGranted="ROLE_ADMIN">
+	                <li>
+	                	<a class="Animated05 CursPointer"><i class="fa fa-gear fa-spin"></i> Administración</a>
+	                    <ul style="width:150px; margin-left:-30px;" class="Animated03 submenu">
+	                        <li><a href="${request.contextPath}/app/administracion/usuarios" class="Animated05"><i class="fa fa-user"></i> Usuarios</a></li>
+	                        <li><a href="${request.contextPath}/app/administracion/roles" class="Animated05"><i class="fa fa-user-secret"></i> Roles</a></li>
+	                    </ul>
+	                </li>
+	                <li class="fa fa-ellipsis-v menu-separator"></li>
+	            </sec:authorize>
+                <li>
+                	<a class="Animated05 CursPointer"><i class="fa fa-user"></i> Bienvenido, #{request.userPrincipal.principal.usuario.nombre} <i class="fa fa-chevron-down Fs14 Fright ShowOnMobile"></i></a>
+<!--  
+                    <ul style="width:175px; margin-left:-10px;" class="Animated03 submenu">
+                    	<li><a class="Animated05"><i class="fa fa-user Fs30 Fleft"></i> <span class="Fright Fs20 TexAlRight">John DOE<span class="Fs10 DispBlock">Last login 18:50</span></span></a></li>
+                    	<li><a href="#" class="Animated05"><i class="fa fa-dashboard"></i> My Profile</a></li>
+                        <li><a href="#" class="Animated05"><i class="fa fa-magic"></i> My Settings</a></li>
+                        <li><a href="#" class="Animated05"><i class="fa fa-suitcase"></i> Tasks <span class="notification-bubble BordRad3 Fright">24</span></a></li>
+                        <li><a href="#" class="Animated05"><i class="fa fa-quote-right"></i> Notifications <span class="notification-bubble BordRad3 Fright">18</span></a></li>
+                    </ul>
+-->                
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+</ui:composition>

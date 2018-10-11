@@ -1,0 +1,83 @@
+package com.saganet.politik.components.catalogos;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.catalogos.EntidadEO;
+import com.saganet.politik.database.catalogos.SeccionEO;
+import com.saganet.politik.modelos.catalogos.SeccionesT;
+
+@Component("CatalogosSeccionesC")
+public class SeccionesC {
+	private static final Logger logger = LoggerFactory.getLogger(SeccionesC.class);
+
+	@Autowired
+	SqlSession sqlSession;
+
+	public SeccionesT tabla(EntidadEO entidad) {
+		SeccionesT tabla;
+		List<SeccionEO> listado;
+
+		tabla = new SeccionesT();
+
+		listado = sqlSession.selectList("catalogos.secciones.listado", entidad);
+		tabla.setListado(listado);
+		if (!listado.isEmpty()) {
+			tabla.setSeleccionado(listado.get(0));
+		}
+
+		return tabla;
+	}
+
+	public SeccionesT tabla(List<EntidadEO> entidades) {
+		SeccionesT tabla;
+		List<SeccionEO> listado;
+
+		logger.debug("Entidades recibidadas: {}", entidades);
+
+		tabla = new SeccionesT();
+
+		if (entidades == null || entidades.isEmpty())
+			listado = new ArrayList<SeccionEO>();
+		else
+			listado = sqlSession.selectList("catalogos.municipios.listadoPorEntidades", entidades);
+
+		tabla.setListado(listado);
+		if (!listado.isEmpty()) {
+			tabla.setSeleccionado(listado.get(0));
+		}
+
+		logger.debug("Se obtiene listado de Secciones: {}", listado);
+
+		return tabla;
+	}
+
+	public SeccionesT tablaPrimerElemento(List<EntidadEO> entidades) {
+		SeccionesT tabla;
+
+		tabla = new SeccionesT();
+		
+		if(entidades != null && !entidades.isEmpty()){
+			tabla = tabla(entidades.get(0));
+		} else {
+			tabla.setListado(new ArrayList<SeccionEO>());
+		}
+
+		return tabla;
+	}
+
+	public SeccionesT nuevaTabla() {
+		SeccionesT tabla;
+
+		tabla = new SeccionesT();
+		tabla.setListado(new ArrayList<SeccionEO>());
+
+		return tabla;
+	}
+}

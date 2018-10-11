@@ -1,0 +1,151 @@
+package com.saganet.politik.components.catalogos;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.primefaces.model.DualListModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.DependenciaEO;
+import com.saganet.politik.database.catalogos.ProgramaEO;
+import com.saganet.politik.database.catalogos.ProgramaEjercicioEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("ProgramasC")
+public class ProgramasC {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	@Autowired
+	ProgramasEjerciciosC programasEjerciciosC;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ProgramasC.class);
+	
+	public Modelo<ProgramaEO> modelo(){
+		Modelo<ProgramaEO> modelo;
+		List<ProgramaEO> listado;
+		
+		listado = sqlSession.selectList("catalogos.programas.listado");
+		logger.debug("Listado Programas: {}", listado);
+		
+		modelo = new Modelo<>();
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Modelo Programas: {}", modelo);
+		
+		return modelo;
+	}
+	
+	public ProgramaEO nuevo(){
+		ProgramaEO nuevo;
+		nuevo = new ProgramaEO();
+		nuevo.setEstrategia(0);
+		return nuevo;
+	}
+	
+	public ProgramaEO nuevoSubnivel(ProgramaEO programaPadre){
+		ProgramaEO nuevo;
+		nuevo = new ProgramaEO();
+		nuevo.setEstrategia(0);
+		nuevo.setProgramaPadre(programaPadre);
+		return nuevo;
+	}
+	
+	public ProgramaEO guardar(ProgramaEO nuevo, Integer idDependencia){
+		logger.debug("Programa recibido: {}", nuevo);
+		logger.debug("Dependencia recibida: {}", idDependencia);
+		
+		DependenciaEO dependencia;
+		dependencia = sqlSession.selectOne("catalogos.dependencias.dependenciaById",idDependencia);
+		nuevo.setDependencia(dependencia);
+		
+		Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		nuevo.setNick(usuario.getUsuario().getNick());
+		
+<<<<<<< .mine
+		//sqlSession.insert("catalogos.programas.insertar", nuevo);
+=======
+		//Obtenemos_el_id_programa
+		nuevo.setId((Integer)sqlSession.selectOne("catalogos.programas.getNexIdPrograma"));
+		
+		sqlSession.insert("catalogos.programas.insertar", nuevo);
+>>>>>>> .r746
+		
+		logger.debug("El programa se guardo correctamente");
+		
+		return nuevo;
+	}
+	
+	public void eliminarPrograma(ProgramaEO programa){
+		logger.debug("Programa recibido: {}", programa);
+		
+		//Eliminamos_los_ejercicios_pertenecientes_al_programa
+		Modelo<ProgramaEjercicioEO> modeloEjercicios;
+		modeloEjercicios = programasEjerciciosC.modelo(programa);
+		
+		if(!modeloEjercicios.getListado().isEmpty()){
+			for(ProgramaEjercicioEO obj : modeloEjercicios.getListado()){
+				programasEjerciciosC.eliminarEjercicio(obj);
+			}
+		}
+		
+		logger.debug("Se eliminaron todos los ejercicios de este programa");
+		
+		sqlSession.delete("catalogos.programas.eliminarPrograma", programa.getId());
+		
+		logger.debug("Sel elimino el programa correctamente");
+	}
+	
+	public Modelo<ProgramaEO> modeloDual(){
+		Modelo<ProgramaEO> modelo;
+		List<ProgramaEO> listado;
+		DualListModel<ProgramaEO> modeloDual;
+		
+		modelo = new Modelo<>();
+		
+		listado = sqlSession.selectList("catalogos.programas.listado");
+		
+		if(listado == null){
+			modelo.setListado(new ArrayList<ProgramaEO>());
+		}
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		modeloDual = new DualListModel<>(listado, new ArrayList<ProgramaEO>());
+		modelo.setModeloDual(modeloDual);
+		
+		return modelo;
+	}
+	
+	public ProgramaEO guardarModeloDual(ProgramaEO programa, List<ProgramaEO> programas){
+		HashMap<String, Object> params;
+		for(ProgramaEO prog : programas){
+			params = new HashMap<>();
+			params.put("idProgramaPrincipal", programa.getId());
+			params.put("idProgramaIntegra", prog.getId());
+			params.put("nick", getUsuario().getNick());
+			sqlSession.insert("catalogos.programas.programasEstrategias", params);
+		}
+		return programa;
+	}
+	
+	public UsuarioEO getUsuario(){
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+
+}

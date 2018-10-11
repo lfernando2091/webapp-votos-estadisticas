@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:focus for="txtDescripcion"/>
+				<p:messages autoUpdate="true"/>
+				<p:panel header="Nueva Entrevista">
+				<p:panelGrid columns="2">
+				<p:outputLabel value="Nombre de la Entrevista: "/>
+			<p:inputText id="txtDescripcion" value="${nuevaEncuesta.descripcion}" required="true" requiredMessage="El nombre de la entrevista es requerido"/>
+			<p:commandLink action="insertar">
+					<p:graphicImage value="/resources/botones/GUARDAR.png" />
+			</p:commandLink>
+			<p:commandLink action="cancelar" immediate="true">
+					<p:graphicImage value="/resources/botones/CANCELAR.png" />
+			</p:commandLink>
+<!-- 			<p:commandButton action="insertar" value="Guardar" /> -->
+<!-- 			<p:commandButton action="cancelar" value="Cancelar" immediate="true" /> -->
+				</p:panelGrid>
+				
+				</p:panel>
+				
+				<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+							
+						}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

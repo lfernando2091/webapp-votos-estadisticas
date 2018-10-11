@@ -1,0 +1,132 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estadísticas" />
+						<p:menuitem value="Variables" url="/app/estadisticas/variables" />
+					</p:breadCrumb>
+					<p:panel header="Variables Estadísticas">
+						<p:row>
+							<p:panelGrid columns="2">
+								<p:outputLabel value="Mostrar Detalle con Click" />
+								<p:inputSwitch value="${detalleClick}" onchange="actulizarAjaxDialogo();" onLabel="Si" offLabel="No" />
+							</p:panelGrid>
+						</p:row>
+						<p:separator />
+						<p:dataTable id="tablaDetalle" value="${tablaVariables.listado}" var="fila"
+							rowKey="${fila.id}" selection="${tablaVariables.seleccionado}"
+							selectionMode="single" paginator="true" rows="15"
+							paginatorPosition="bottom">
+							<p:ajax event="rowSelect" update="#{p:component('botonGenerar')}, #{p:component('botonLog')}" />
+							<p:ajax event="rowSelect" disabled="${!detalleClick}"  oncomplete="PF('dialogoDetalle').show();" update="#{p:component('dialogo')}" />
+							<f:facet name="header">Variables</f:facet>
+							<p:column headerText="Id" width="50">${fila.id}</p:column>
+							<p:column headerText="Campo" >${fila.campo}</p:column>
+							<p:column headerText="Descripción">${fila.descripcion}</p:column>
+							<p:column headerText="Tipo" width="75">${fila.tipo}</p:column>
+							<p:column headerText="Estatus" width="85">${fila.estatus}</p:column>
+						</p:dataTable>
+
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregar" />
+							<p:commandButton id="botonGenerar" value="Generar" action="generar" disabled="${tablaVariables.seleccionado.estatus != 'PENDIENTE'}" update="tablaDetalle" />
+							<p:commandButton id="botonLog" value="Log" action="log" disabled="${tablaVariables.seleccionado.estatus == 'PENDIENTE'}"/>
+						</f:facet>
+					</p:panel>
+
+					<p:dialog id="dialogo" position="right" widgetVar="dialogoDetalle" header="Detalle de la Variable: ${tablaVariables.seleccionado.campo}" visible="false">
+						<p:panelGrid columns="3"
+							columnClasses="topAlign, topAlign, topAlign">
+							
+							<p:panelGrid columns="2" columnClasses="topAlign, topAlign">
+								<f:facet name="header">Niveles</f:facet>
+								<p:outputLabel value="Calculado" />
+								<p:outputLabel  value="${tablaVariables.seleccionado.nivelCalculo}" />
+								<p:outputLabel value="Entidad" style="font-weight: bold;" />
+								<p:outputLabel
+									value="${tablaVariables.seleccionado.entidad ? 'Si' : 'No'}" />
+								<p:outputLabel value="Dtto. Federal" />
+								<p:outputLabel
+									value="${tablaVariables.seleccionado.dfederal ? 'Si' : 'No'}" />
+								<p:outputLabel value="Dtto. Local" />
+								<p:outputLabel
+									value="${tablaVariables.seleccionado.dlocal ? 'Si' : 'No'}" />
+								<p:outputLabel value="Municipio" />
+								<p:outputLabel
+									value="${tablaVariables.seleccionado.municipio ? 'Si' : 'No'}" />
+								<p:outputLabel value="Sección" />
+								<p:outputLabel
+									value="${tablaVariables.seleccionado.seccion ? 'Si' : 'No'}" />
+								<p:outputLabel value="Localidad" />
+								<p:outputLabel
+									value="${tablaVariables.seleccionado.localidad ? 'Si' : 'No'}" />
+								<p:outputLabel value="Manzana" />
+								<p:outputLabel
+									value="${tablaVariables.seleccionado.manzana ? 'Si' : 'No'}" />
+							</p:panelGrid>
+							
+							<p:panelGrid columns="2" columnClasses="topAlign, topAlign">
+								<f:facet name="header">Campos</f:facet>
+								<p:outputLabel value="Entidad" />
+								<p:outputLabel
+									value="#{tablaVariables.seleccionado.consulta.campoEntidad}" />
+								<p:outputLabel value="Dtto. Federal" />
+								<p:outputLabel
+									value="#{tablaVariables.seleccionado.consulta.campoDFederal}" />
+								<p:outputLabel value="Dtto. Local" />
+								<p:outputLabel
+									value="#{tablaVariables.seleccionado.consulta.campoDLocal}" />
+								<p:outputLabel value="Municipio" />
+								<p:outputLabel
+									value="#{tablaVariables.seleccionado.consulta.campoMunicipio}" />
+								<p:outputLabel value="Sección" />
+								<p:outputLabel
+									value="#{tablaVariables.seleccionado.consulta.campoSeccion}" />
+								<p:outputLabel value="Localidad" />
+								<p:outputLabel
+									value="#{tablaVariables.seleccionado.consulta.campoLocalidad}" />
+								<p:outputLabel value="Manzana" />
+								<p:outputLabel
+									value="#{tablaVariables.seleccionado.consulta.campoManzana}" />
+							</p:panelGrid>
+							
+							<p:panelGrid columns="2" columnClasses="topAlign, topAlign">
+								<f:facet name="header">Consulta</f:facet>
+								<p:outputLabel value="Tabla" />
+								<p:outputLabel
+									value="#{tablaVariables.seleccionado.consulta.tabla.tabla}" />
+								<p:outputLabel value="Campo" />
+								<p:outputLabel
+									value="#{tablaVariables.seleccionado.consulta.campo}" />
+								<p:outputLabel value="Operador" />
+								<p:outputLabel
+									value="#{tablaVariables.seleccionado.consulta.operador}" />
+								<p:outputLabel value="Condición" />
+								<p:outputLabel
+									value="${tablaVariables.seleccionado.consulta.condicion}" />
+							</p:panelGrid>
+						</p:panelGrid>
+					</p:dialog>'
+					
+					<p:remoteCommand name="actulizarAjaxDialogo" update="tablaDetalle" />
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+						}
+					</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

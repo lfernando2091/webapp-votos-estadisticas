@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Redes Sociales">
+						<h:panelGrid columns="1" style="width:100%;">
+							<p:panel header="Perfil">
+								<p:panelGrid columns="2">
+									<h:outputText value="Nombre:" />
+									<h:outputText value="${persona.id} - ${persona.nombre} ${persona.primerApellido} ${persona.segundoApellido}" />
+									<h:outputText value="Fecha de Nacimiento: " />
+									<h:outputText value="${persona.dia} / ${persona.mes.nombre} / ${persona.anho}" />
+									<h:outputText value="Entidad: " />
+									<h:outputText value="${persona.entidad.nombre}" />
+								</p:panelGrid>
+								<f:facet name="footer">
+									<p:commandButton value="Agregar" onclick="PF('dlg1').show();" type="button"/>
+									<p:commandButton value="Salir" action="salirAgregar" immediate="true"/>
+								</f:facet>						
+							</p:panel>
+								<p:dataScroller value="${tablaRedesSociales.listado}" var="lst" chunkSize="10">
+									<f:facet name="header">
+             					 		Listado
+         							</f:facet>
+         							<h:panelGrid columns="2" style="width:100%" columnClasses="logo,detail">
+										<p:outputPanel>
+											<h:panelGrid columns="2" cellpadding="2">
+												<f:facet name="header">
+													<p:graphicImage value="${lst.tipoRedSocial.logo}" width="50px"/>
+												</f:facet>
+												<h:outputText value="Red Social: "/>
+												<h:outputText value="${lst.tipoRedSocial.tipoRedSocial}" style="font-weight: bold"/>
+												<h:outputText value="Usuario: "/>
+												<h:outputText value="${lst.usuario}" style="font-weight: bold"/>
+												<h:outputText value="Link: "/>
+												<h:outputLink value="${lst.tipoRedSocial.direccion}${lst.usuario}" target="_blank"><p:outputLabel value="${lst.tipoRedSocial.direccion}${lst.usuario}" style="pointer-events: none; font-weight: bold !Important; color:#27AAE4; text-decoration: underline; font-size:15px;"/></h:outputLink>
+											</h:panelGrid>
+										</p:outputPanel>
+									</h:panelGrid>
+								</p:dataScroller>
+						</h:panelGrid>
+					<f:facet name="footer">
+						<p:commandButton value="Salir" action="salirAgregar" immediate="true"/>
+					</f:facet>
+					</p:panel>
+					
+					<p:dialog header="Agregar Red Social" widgetVar="dlg1" showEffect="pop">
+						<p:graphicImage id="logo" value="${tiposRedesSociales.seleccionado.logo}" width="50px"></p:graphicImage>
+						<p:panelGrid columns="2">
+							<h:outputText value="Tipo de Red Social:" />
+							<p:selectOneMenu value="${tiposRedesSociales.key}" filter="true"
+								filterMatchMode="contains" style="min-width: 150px;">
+								<f:selectItems value="${tiposRedesSociales.listado}" var="tipos"
+									itemLabel="${tipos.id} - ${tipos.tipoRedSocial}"
+									itemValue="${tipos.id}" />
+								<p:ajax update="direccion2, logo" />
+							</p:selectOneMenu>
+							<h:outputText id="direccion2" value="Usuario: ${tiposRedesSociales.seleccionado.direccion}" />
+							<p:inputText id="usuario" value="${nuevo.usuario}" required="true"/>
+							<h:outputText value="Observaciones: " />
+							<p:inputTextarea value="${nuevo.observaciones}" />
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" action="guardar"/>
+								<p:commandButton value="Cancelar" onclick="PF('dlg1').hide();" type="button"/>
+							</f:facet>
+						</p:panelGrid>
+					</p:dialog>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />					
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

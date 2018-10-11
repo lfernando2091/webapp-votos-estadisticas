@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.syncdm.estatusEncuesta">
+<resultMap type="SyncDMEstatusEncuestaEO" id="estatusEncuesta">
+<id column="EstatusEncuestaEO_id" property="id" javaType="Integer"/>
+<result column="EstatusEncuestaEO_nombre" property="nombre" javaType="String"/>
+</resultMap>
+<sql id="query">
+SELECT EstatusEncuestaEO.pkey	EstatusEncuestaEO_id,
+ EstatusEncuestaEO.estatus_encuesta_c	EstatusEncuestaEO_nombre
+  FROM encuestas_dm.encuestas_estatus EstatusEncuestaEO
+</sql>
+
+<select id="buscarPorId" parameterType="Integer" resultMap="estatusEncuesta">
+<include refid="query"/>
+where pkey = #{value}
+</select>
+</mapper>

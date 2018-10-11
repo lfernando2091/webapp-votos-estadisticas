@@ -1,0 +1,121 @@
+package com.saganet.politik.components.catalogos;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.primefaces.model.DualListModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.binding.message.MessageBuilder;
+import org.springframework.binding.message.MessageContext;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContextHolder;
+
+import com.saganet.politik.database.catalogos.PartidoEO;
+import com.saganet.politik.modelos.catalogos.PartidosT;
+
+@Component("CatalogosPartidosC")
+public class PartidosC {
+	private static final Logger logger = LoggerFactory.getLogger(PartidosC.class);
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	public PartidosT tabla(){
+		PartidosT tabla;
+		List<PartidoEO> listado;
+		
+		tabla = new PartidosT();
+		
+		listado = sqlSession.selectList("catalogos.partidos.listado");
+		tabla.setListado(listado);
+		if(!listado.isEmpty()){
+			tabla.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se genera listado de Partidos: {}", listado);
+		return tabla;
+	}
+	
+	public PartidoEO nuevo(){
+		PartidoEO partido;
+		
+		partido = new PartidoEO();
+		
+		return partido;
+	}
+	
+	public void insertar(PartidoEO partido){
+		MessageContext messageContext;
+		
+		messageContext = RequestContextHolder.getRequestContext().getMessageContext();
+		
+		sqlSession.insert("catalogos.partidos.insertar", partido);
+		logger.debug("Se insertar Partido: {}", partido);
+		
+		messageContext.addMessage(new MessageBuilder().info().defaultText("Partido Agregado").build());
+	}
+	
+	public PartidosT tablaModeloDual(boolean coaliciones){
+		PartidosT tabla;
+		DualListModel<PartidoEO> modelo;
+		List<PartidoEO> source, target;
+		
+		tabla = new PartidosT();
+		
+		target = new ArrayList<PartidoEO>();
+		
+		source = sqlSession.selectList("catalogos.partidos.listado", coaliciones);
+		
+		modelo = new DualListModel<PartidoEO>(source, target);
+		
+		tabla.setModeloDual(modelo);
+		
+		return tabla;
+	}
+	
+	public PartidosT tablaModeloDual(){
+		PartidosT tabla;
+		DualListModel<PartidoEO> modelo;
+		List<PartidoEO> source, target;
+		
+		tabla = new PartidosT();
+		
+		target = new ArrayList<PartidoEO>();
+		
+		source = sqlSession.selectList("catalogos.partidos.listado");
+		
+		modelo = new DualListModel<PartidoEO>(source, target);
+		
+		tabla.setModeloDual(modelo);
+		
+		return tabla;
+	}
+	
+	public void insertarCoalicion(PartidoEO partido, List<PartidoEO> listado){
+		logger.debug("Ingresando a la funcion");
+		
+		MessageContext messageContext;
+		HashMap<String, Object> mapa;
+		boolean principal;
+		
+		messageContext = RequestContextHolder.getRequestContext().getMessageContext();
+		
+		insertar(partido);
+		mapa = new HashMap<String, Object>();
+		mapa.put("idCoalicion", partido.getId());
+		principal = true;
+		
+		for(PartidoEO p : listado){
+			mapa.put("idPartido", p.getId());
+			mapa.put("principal", principal);
+			principal = false;
+			sqlSession.insert("catalogos.partidos.insertarCoalicion", mapa);
+		}
+		
+		messageContext.addMessage(new MessageBuilder().info().defaultText("Coalición Generada").build());
+	}
+}

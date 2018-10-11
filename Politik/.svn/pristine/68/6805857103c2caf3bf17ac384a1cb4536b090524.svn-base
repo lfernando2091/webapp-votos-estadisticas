@@ -1,0 +1,119 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:growl autoUpdate="true" life="10000"/>
+					<p:panel header="Filtro">
+					    <p:panelGrid columns="2">
+					    	<p:outputLabel value="Region " style="width:150px;"/>
+							<p:selectOneMenu value="${listadoRegiones.seleccionado}" converter="ObjectConverter" style="width:250px;"  >
+								<p:ajax onstart="mpioActualizar();" event="itemSelect" />
+								<f:selectItems value="${listadoRegiones.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}"  />						
+							</p:selectOneMenu>
+							<p:outputLabel value="Municipio"  style="width:150px;"/>
+							<p:selectOneMenu id="comboMpio" value="${ListadoMunicipios.seleccionado}" style="width:250px;" converter="ObjectConverter" >
+								<p:ajax onstart="seccActualizar();" event="itemSelect" />
+								<f:selectItems value="${ListadoMunicipios.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}"/>							
+							</p:selectOneMenu>
+							<p:outputLabel value="Seccion"  style="width:150px;"/>
+							<p:selectOneMenu id="comboSecc" value="${modeloSeccion.seleccionado}" style="width:250px;" converter="ObjectConverter" >
+								<p:ajax onstart="listActualizar();" event="itemSelect" />
+								<f:selectItems value="${modeloSeccion.listado}" var="fila" itemLabel="${fila.idSeccion}" itemValue="${fila}"/>							
+							</p:selectOneMenu>
+						</p:panelGrid>
+							<p:messages autoUpdate="true" />
+					</p:panel>	
+
+
+						<p:separator />		
+						<p:panel header="Movilizadores">			
+						<p:dataTable id="listadoMovi" value="${listadoMovilizadores.listado}" var="fila" rowKey="${fila.id}" 
+						selection="${listadoMovilizadores.seleccionado}" selectionMode="single" paginator="true" rows="10" reflow="true" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+							<p:ajax event="rowSelect" update="#{p:component('boton_asignar')},#{p:component('dialogCon')}" />
+					
+							<p:column headerText="Nombre" 			style="width:180px;">	
+										<p:outputLabel  value="${fila.nombre} ${fila.primerApellido} ${fila.segundoApellido}"/>				
+							</p:column>
+							<p:column headerText="Género" 			style="width:40px;">
+										<p:outputLabel value="${fila.genero.nombre}"/>
+							</p:column>
+							<p:column headerText="Dirección" 			style="width:90px;">
+										<p:outputLabel value="${fila.calle} ${fila.numeroInterior} ${fila.numeroExterior} ${fila.colonia} ${fila.cp}"/>
+							</p:column>
+							<p:column headerText="Teléfono" 		style="width:90px;">
+										<p:outputLabel value="${fila.telefono}"/>
+							</p:column>
+							<p:column headerText="Email" 			style="width:90px;">
+										<p:outputLabel value="${fila.email}"/>
+							</p:column>
+							<p:column headerText="Grupo Movilización"			style="width:90px;">
+										<p:outputLabel value="${fila.programa.nombre2}"/>
+							</p:column>						
+						</p:dataTable>		
+						
+												
+						
+					<f:facet name="footer">
+							<p:commandLink action="insertarNuevoRegistro" immediate="true">
+									<p:graphicImage value="/resources/botones/AGREGAR.png" />
+							</p:commandLink>
+							<p:commandLink action="editar" immediate="true" >
+									<p:graphicImage value="/resources/botones/EDITAR.png" />
+							</p:commandLink>
+							
+							<p:commandLink action="eliminar">
+									<p:confirm header="Confirmation" icon="ui-icon-alert"  />
+									<p:graphicImage value="/resources/botones/ELIMINAR.png" />
+							</p:commandLink>
+							
+							
+						
+							<p:commandLink action="asignar" immediate="true" id="boton_asignar">
+									<p:graphicImage value="/resources/botones/ASIGNACIONES.png" />
+							</p:commandLink> 	  				 	 	 	   	 	  	   		  	   		  		
+							
+					</f:facet>		
+					
+					
+					<p:confirmDialog id="dialogCon" global="true" showEffect="fade" hideEffect="fade" message="¿Seguro de Eliminar al movilizador ${listadoMovilizadores.seleccionado.nombre} ${listadoMovilizadores.seleccionado.primerApellido} ${listadoMovilizadores.seleccionado.segundoApellido} ?">
+							<p:commandLink  styleClass="ui-confirmdialog-yes">
+									<p:graphicImage value="/resources/botones/SI.png" />
+							</p:commandLink>
+						 	<p:commandLink  styleClass="ui-confirmdialog-no">
+									<p:graphicImage value="/resources/botones/NO.png" />
+							</p:commandLink>
+					</p:confirmDialog>
+  							
+					</p:panel>	
+	
+
+					<p:remoteCommand name="mpioActualizar" 	action="actualizaComboMpios" 	update="@form" />  
+					<p:remoteCommand name="seccActualizar" 	action="actualizaComboSecc" 	update="@form" />  
+					<p:remoteCommand name="listActualizar" 	action="actualizaListado" 		update="@form" />  
+					
+					
+					
+					<h:outputStylesheet>
+						.ui-diagram-element {
+					        border:2px solid #999999;
+					        padding-left: 3px;    
+					        padding-right: 5px;
+					        line-height:3em;
+					        text-align: center;  }
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

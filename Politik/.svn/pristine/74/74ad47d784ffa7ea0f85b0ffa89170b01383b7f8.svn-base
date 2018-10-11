@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+        <input name="flag" type="java.lang.Boolean"/>
+	<view-state id="listado">
+		<on-entry>
+		<set name="viewScope.ruta" value="'C:\\reportes'"/>
+			<evaluate expression="BibliotecaC.tabla(viewScope.ruta)"
+				result="viewScope.contenidoCarpeta" />
+				
+		</on-entry>
+		<transition on="recargar">
+		<set name="flowScope.seleleccionadoAnterior" value="viewScope.ruta"/>
+		<evaluate expression="BibliotecaC.tabla(viewScope.contenidoCarpeta.seleccionado.getArchivo().getAbsolutePath())" 
+				result="viewScope.contenidoCarpeta" />
+				
+				
+		</transition>
+		<transition on="descargar">
+		<evaluate expression="BibliotecaC.descargaArchivo(viewScope.contenidoCarpeta.seleccionado.getArchivo())"></evaluate>
+		</transition>
+		<transition on="director">
+		<evaluate expression="BibliotecaC.director(viewScope.contenidoCarpeta.seleccionado.getArchivo())" result="viewScope.contenidoCarpeta"/>
+		</transition>
+		<transition on="agregar" to="agregar" />
+		<transition on="cancelar" to="listado" />
+		<transition on="volver">
+		
+		<evaluate expression="BibliotecaC.tabla(flowScope.seleleccionadoAnterior)" 
+				result="viewScope.contenidoCarpeta" />
+		</transition>
+	</view-state>
+
+
+	<view-state id="agregar">
+	<transition on="guardado" to="listado"></transition>
+		<transition on="cancelar" to="listado"></transition>
+	</view-state>
+	
+
+	<end-state id="archivoLocalizado">
+	<on-entry>
+	<set name="conversationScope.archivo" value="viewScope.contenidoCarpeta.seleccionado.getArchivo" />
+	</on-entry>
+	</end-state>
+</flow>

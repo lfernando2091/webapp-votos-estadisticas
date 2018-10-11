@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	
+	<action-state id="verificarIdPersona">
+		<set name="flowScope.personaEmail" value="conversationScope.idPersona" />
+		<evaluate expression="PersonasController.verificaridPersona(flowScope.personaEmail)" />
+		<transition on="si" to="agregar">
+		</transition>
+		<transition on="no" to="buscador" />
+	</action-state>
+	
+	<view-state id="agregar">
+		<on-entry>
+			<set name="viewScope.persona" value="conversationScope.idPersona"/>
+			<evaluate expression="EmailsController.nuevoEmail(viewScope.persona)" result="viewScope.email" />
+			<evaluate expression="EmailsController.tabla(viewScope.persona)" result="viewScope.emailPersonaTabla"/>
+		</on-entry>
+		<transition on="regresarValor" to="agregar">
+			<evaluate expression="EmailsController.insertar(viewScope.email)"/>
+		</transition>
+		<transition on="cancelar" to="cancelarEmail">
+			<set name="conversationScope.persona" value="viewScope.persona"/>
+		</transition>
+	</view-state>
+	
+	<subflow-state id="buscador" subflow="mdm/buscadores/personas">
+		<transition on="personaLocalizada" to="agregar">
+			<set name="idPersona" value="conversationScope.idPersona" />
+		</transition>
+		<transition on="personaNoLocalizada" to="cancelarEmail" />
+	</subflow-state>
+
+	<end-state id="cancelarEmail" />
+</flow>

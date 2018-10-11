@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+
+	<action-state id="verificarPersona">
+		<set name="flowScope.persona" value="conversationScope.persona" />
+		<set name="flowScope.seleccionado" value="conversationScope.seleccionado" />
+		<evaluate expression="PersonasController.verificaridPersona(flowScope.persona)" />
+		<transition on="si" to="agregarTelefono">
+		</transition>
+		<transition on="no" to="buscador" />
+	</action-state>
+
+	<subflow-state id="buscador" subflow="mdm/buscadores/personas">
+		<transition on="personaLocalizada" to="agregarTelefono">
+			<set name="idPersona" value="conversationScope.idPersona" />
+		</transition>
+		<transition on="personaNoLocalizada" to="telefonoSalir"></transition>
+	</subflow-state>	
+
+	<view-state id="agregarTelefono">
+		<on-entry>
+			<set name="viewScope.persona" value="conversationScope.idPersona"/>
+			<set name="viewScope.seleccionado" value="flowScope.seleccionado" />
+			<evaluate expression="TelefonosController.nuevo()" result="flowScope.nuevo"/>
+			<evaluate expression="TipoTelefonoController.tabla()" result="flowScope.tiposTelefonos"/>
+			<evaluate expression="TelefonosController.tabla(viewScope.persona)" result="flowScope.tablaTelefonos"/>
+		</on-entry>
+		<transition on="guardar" to="agregarTelefono">
+			<set name="flowScope.tipoTelefono" value="tiposTelefonos.seleccionado"/>
+			<set name="flowScope.persona" value="viewScope.persona"/>
+			<evaluate expression="TelefonosController.insertar(flowRequestContext)"/>
+		</transition>
+		<transition on="salirAgregar" to="telefonoSalir" >
+			<set name="conversationScope.persona" value="viewScope.persona"/>
+			<set name="conversationScope.seleccionado" value="viewScope.seleccionado"/>
+		</transition>
+	</view-state>
+
+	<end-state id="telefonoSalir"></end-state>
+</flow>

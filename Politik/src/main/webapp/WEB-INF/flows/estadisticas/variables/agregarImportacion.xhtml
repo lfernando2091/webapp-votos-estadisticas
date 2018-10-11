@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Importación desde Archivo">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Tabla" />
+							<p:outputLabel value="${tablaSeleccionada.mapeoImportacion.nombreTablaImportacion}"/>		
+							<p:outputLabel value="Campos "/>
+							<p:selectCheckboxMenu   value="${camposTabla.seleccionMultiple}" converter="ObjectConverter" label="Selección Campos" style="width:250px">
+								<f:selectItems value="${camposTabla.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+<!-- 								<p:ajax event="change" update=""/> -->
+							</p:selectCheckboxMenu>	
+							<p:outputLabel value="Nivel"/>
+							<p:selectOneMenu   value="${nuevo.nivelCalculo}" converter="ObjectConverter"  style="width:250px">
+								<p:ajax event="itemSelect" update="panelMapeo"/>
+								<f:selectItems value="${niveles}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Mapeo de Campos"/>	
+							<p:panelGrid columns="2" id="panelMapeo">
+								<p:outputLabel value="Entidad" />
+								<p:selectOneMenu value="${nuevo.importacion.campoEntidad}" style="width: 300px;">
+									<f:selectItems value="${camposTabla.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+								<p:outputLabel value="Distrito Federal" />
+            					<p:selectOneMenu value="${nuevo.importacion.campoDFederal}" style="width: 300px;" disabled="${nuevo.nivelCalculo != 'DFEDERAL'}">
+									<f:selectItems value="${camposTabla.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+            					<p:outputLabel value="Distrito Local" />
+            					<p:selectOneMenu value="${nuevo.importacion.campoDLocal}" style="width: 300px;" disabled="${nuevo.nivelCalculo != 'DLOCAL'}">
+									<f:selectItems value="${camposTabla.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+            					<p:outputLabel value="Municipio" />
+            					<p:selectOneMenu value="${nuevo.importacion.campoMunicipio}" style="width: 300px;" disabled="${nuevo.nivelCalculo != 'MUNICIPIO' and nuevo.nivelCalculo != 'LOCALIDAD' and nuevo.nivelCalculo != 'MANZANA'}">
+									<f:selectItems value="${camposTabla.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+            					<p:outputLabel value="Sección" />
+            					<p:selectOneMenu value="${nuevo.importacion.campoSeccion}" style="width: 300px;" disabled="${nuevo.nivelCalculo != 'SECCION' and nuevo.nivelCalculo != 'MANZANA'}">
+									<f:selectItems value="${camposTabla.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+            					<p:outputLabel value="Localidad" />
+            					<p:selectOneMenu value="${nuevo.importacion.campoLocalidad}" style="width: 300px;" disabled="${nuevo.nivelCalculo != 'LOCALIDAD' and nuevo.nivelCalculo != 'MANZANA'}">
+									<f:selectItems value="${camposTabla.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+								<p:outputLabel value="Manzana" />
+            					<p:selectOneMenu value="${nuevo.importacion.campoManzana}" style="width: 300px;" disabled="${nuevo.nivelCalculo != 'MANZANA'}" >
+									<f:selectItems value="${camposTabla.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+            				</p:panelGrid>	
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandLink action="crearVariables">
+									<p:graphicImage value="/resources/botones/CONTINUAR.png" />
+							</p:commandLink>
+							<p:commandLink action="cancelar" immediate="true">
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton action="crearVariables" value="Continuar"/> -->
+<!-- 	            			<p:commandButton value="Cancelar" immediate="true" action="cancelar"/> -->
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

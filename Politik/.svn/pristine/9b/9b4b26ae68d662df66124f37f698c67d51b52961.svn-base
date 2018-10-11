@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="AliadosEstrategicosController.tabla()" result="viewScope.tablaAliadosEstrategicos"/>
+		</on-entry>
+		<transition to="buscador" on="agregar"/>
+	</view-state>
+	
+	
+	<subflow-state id="buscador" subflow="mdm/buscadores/personas">
+		<transition on="personaLocalizada" to="agregar">
+ 			<set name="requestScope.idPersona" value="conversationScope.idPersona" />
+		</transition>	
+		<transition on="personaNoLocalizada" to="fin"/>
+	</subflow-state>
+	
+	<view-state id="agregar">
+		<on-entry>
+			<set name="flowScope.idPersona" value="requestScope.idPersona"/>
+		</on-entry>
+		
+		<transition on="guardar" to="fin">
+			<evaluate expression="AliadosEstrategicosController.insertarAliadoEstrategico(idPersona)"/>
+		</transition>
+		
+		<transition on="cancelar" to="fin"/>
+	</view-state>
+	
+	
+	<end-state id="fin"/>
+</flow>

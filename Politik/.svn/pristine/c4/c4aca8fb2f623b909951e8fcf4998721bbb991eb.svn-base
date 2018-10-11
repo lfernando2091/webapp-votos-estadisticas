@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+									<p:panelGrid columns="2" columnClasses="topAlign,topAlign">
+						<p:panel header="Listado de Programas">
+							<p:dataTable value="${modeloProgramas.listado}" var="fila"
+								rowKey="${fila.id}" selection="${modeloProgramas.seleccionado}"
+								selectionMode="single" paginator="true" rows="10"
+								paginatorAlwaysVisible="false">
+								<p:ajax event="rowSelect" onstart="llenarEjercicios()"  />
+								<p:column headerText="Programa Padre" sortable="true" sortBy="${fila.programaPadre.programa}">
+				${fila.programaPadre.programa}
+				</p:column>
+								<p:column headerText="Programa" sortBy="${fila.programa}">
+				${fila.programa}
+				</p:column>
+								<p:column headerText="Dependencia" sortBy="${fila.dependencia.dependencia}">
+				${fila.dependencia.dependencia} - ${fila.dependencia.siglas}
+				</p:column>
+							</p:dataTable>
+
+							<f:facet name="footer">
+							<p:remoteCommand name="llenarEjercicios" action="llenarEjercicios" immediate="true" update="@form"/>
+								<p:commandButton value="Programa" title="Agregar nuevo programa"
+									action="agregar" icon="fa fa-plus-circle" />
+								<p:commandButton value="Editar" rendered="false" title="Editar"
+									action="editar" icon="fa fa-refresh" />
+
+							</f:facet>
+						</p:panel>
+						<p:panel header="Ejercicios">
+							<p:dataTable value="${modeloEjercicios.listado}" var="fila"
+								rowKey="${fila.id}" selection="${modeloEjercicios.seleccionado}" selectionMode="single"
+								rows="10" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+								<p:column headerText="Ejercicio" sortable="true" sortBy="${fila.ejercicio}">
+${fila.ejercicio} (${fila.fechaInicio} - ${fila.fechaTermino})
+</p:column>
+							</p:dataTable>
+<f:facet name="footer">
+
+<p:commandButton value="Detalle" action="detalle" icon="fa fa-clipboard" rendered="${modeloEjercicios.seleccionado!=null and modeloEjercicios.seleccionado!=null?true:false}" />
+<p:commandButton value="Ejercicio" icon="fa fa-plus-circle" action="agregarEjercicio"/>
+</f:facet>
+
+						</p:panel>
+						<f:facet name="footer">
+						
+						</f:facet>
+					</p:panelGrid>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

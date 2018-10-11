@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+ <view-state id="listado">
+ 	<on-entry>
+	 	<evaluate expression="ReportesEstructurasEdoMexC.modeloNiveles()" result="viewScope.modeloNiveles"/>
+	 	<evaluate expression="DominiosModelosC.programasEdoMex()" result="flowScope.modeloProgramas"/>
+	 	<evaluate expression="CatalogosGeozonasC.modeloRegionesEdoMex()" result="viewScope.modeloRegiones" />
+	 	<evaluate expression="CatalogosMunicipiosC.modeloRegion(viewScope.modeloRegiones.seleccionado)" result="viewScope.modeloMunicipios" />			
+	 	<evaluate expression="ReportesEstructurasEdoMexC.modeloAvance(viewScope,modeloNiveles.seleccionado, viewScope.modeloProgramas.seleccionado)" result="viewScope.avanceEntidad"/>
+	</on-entry>	
+	<transition on="actualizar">
+			<evaluate expression="ReportesEstructurasEdoMexC.modeloAvance(viewScope.modeloNiveles.seleccionado, viewScope.modeloProgramas.seleccionado)" result="viewScope.avanceEntidad"/>
+	</transition>
+	
+	
+ </view-state>
+	
+</flow>

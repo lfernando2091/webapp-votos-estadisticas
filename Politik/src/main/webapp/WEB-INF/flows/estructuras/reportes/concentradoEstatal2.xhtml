@@ -1,0 +1,133 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="head">
+		<h:outputScript library="openlayers" name="ol.js" />
+		<h:outputStylesheet library="openlayers" name="ol.css" />
+		<h:outputScript library="openlayers" name="politikMapas.js" />
+	</ui:define>
+
+	<ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Reportes" url="/app/estructuras/reportes" />
+						<p:menuitem value="Concentrado Estatal" />
+					</p:breadCrumb>
+					
+					<p:panel header="Concentrado Estatal">
+						<h:panelGroup id="panelMapa" layout="block" style="width:750px; height: 500px;" />
+						<div id="popup" class="ol-popup">
+      						<a href="#" id="popup-closer" class="ol-popup-closer" />
+      						<div id="popup-content" />
+    					</div>
+					</p:panel>
+					
+					<p:remoteCommand name="territorio" action="territorioEnCoordenadas" update="scriptDinamico" oncomplete="actualizarContenido();" />
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>
+            	
+            	<h:outputScript>
+            		var container = document.getElementById('popup');
+      				var content = document.getElementById('popup-content');
+      				var closer = document.getElementById('popup-closer');
+      				
+					var overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
+						element: container,
+						autoPan: true,
+						autoPanAnimation: {
+							duration: 250
+						}
+					}));
+					
+					closer.onclick = function() {
+        				overlay.setPosition(undefined);
+        				closer.blur();
+        				return false;
+      				};
+      				
+      				iniciarMapaNacional('#{p:component('panelMapa')}');
+            		quitarCapa(0);
+            		agregarCapa('politik:entidades', '', 'id_entidad &gt; 0');
+            		mapa.addOverlay(overlay);
+            		
+            		mapa.on('singleclick', function(evt) {
+        				//console.dir(evt);
+        				var coordinate = evt.coordinate;
+        				territorio([{name: 'coordenadas', value: coordinate}]);
+        				var hdms = ol.coordinate.toStringHDMS(
+        					ol.proj.transform(
+            					coordinate, 'EPSG:3857', 'EPSG:4326'
+            				)
+            			);
+        				overlay.setPosition(coordinate);
+      				});
+      
+            	</h:outputScript>
+            	
+            	<h:panelGroup id="scriptDinamico">
+            	<h:outputScript>
+            		function actualizarContenido(){
+            			content.innerHTML = '${territorioSeleccionado.nombreCompleto}';
+            		}
+            	</h:outputScript>
+            	</h:panelGroup>
+            	
+            	<h:outputStylesheet>
+            		.ol-popup {
+				        position: absolute;
+				        background-color: white;
+				        -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+				        filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+				        padding: 15px;
+				        border-radius: 10px;
+				        border: 1px solid #cccccc;
+				        bottom: 12px;
+				        left: -50px;
+				        min-width: 100px;
+				      }
+				      .ol-popup:after, .ol-popup:before {
+				        top: 100%;
+				        border: solid transparent;
+				        content: " ";
+				        height: 0;
+				        width: 0;
+				        position: absolute;
+				        pointer-events: none;
+				      }
+				      .ol-popup:after {
+				        border-top-color: white;
+				        border-width: 10px;
+				        left: 48px;
+				        margin-left: -10px;
+				      }
+				      .ol-popup:before {
+				        border-top-color: #cccccc;
+				        border-width: 11px;
+				        left: 48px;
+				        margin-left: -11px;
+				      }
+				      .ol-popup-closer {
+				        text-decoration: none;
+				        position: absolute;
+				        top: 2px;
+				        right: 8px;
+				      }
+				      .ol-popup-closer:after {
+				        content: 'X';
+				      }
+            	</h:outputStylesheet>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

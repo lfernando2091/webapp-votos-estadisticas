@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="diaD.tiposIncidencias">
+
+	<resultMap type="DiaDTiposIncidenciasEO" id="tiposIncidencias">
+		<id          	 column="TiposIncidencias_id"         			property="id" 						javaType="Integer" />
+		<result          column="TiposIncidencias_descripcion"      	property="descripcion"				javaType="String"/>
+	</resultMap>
+	
+	
+
+	<sql id="query">
+		SELECT 
+			TiposIncidencias.pkey						TiposIncidencias_id, 
+			TiposIncidencias.descripcion				TiposIncidencias_descripcion
+		FROM dia_d.tipos_incidencias 					TiposIncidencias
+	</sql>
+	
+	
+	
+	<select id="buscarID" resultMap="tiposIncidencias" parameterType="Integer">
+		<include refid="query"/>
+		WHERE TiposIncidencias.pkey=#{value}
+	</select>
+	
+	
+	<select id="listado" resultMap="tiposIncidencias">
+		<include refid="query"/>
+	</select>
+	
+	
+</mapper>

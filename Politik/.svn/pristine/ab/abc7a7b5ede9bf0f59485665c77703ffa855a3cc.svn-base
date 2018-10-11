@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Seccionales  - Filtro" rendered="false">
+					<p:panelGrid columns="2">
+					<p:outputLabel value="Nombre:"/>
+					<p:inputText value="${NomPatMat}" required="true"/>
+					<p:outputLabel value="Primer Apellido"/>
+					<p:inputText value="${NomPatMat}" required="true"/>
+					<p:outputLabel value="Segundo Apellido"/>
+					<p:inputText value="${NomPatMat}" required="true"/>
+					</p:panelGrid>
+					</p:panel>
+					<p:panel header="Seccionales">
+					<p:dataTable  value="${modeloSeccionales.listado}" id="tablaDatos" var="f" selectionMode="single" selection="${modeloSeleccionales.seleccionado}" rowKey="${f.id}" paginator="true" rows="20" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+					<p:ajax event="rowDblselect" onstart="movilizadores();"/>
+					<p:column headerText="Nombre" filterable="true" filterBy="${f.region}" filterMatchMode="contains">
+					<p:outputLabel value="${f.nombre} ${f.primerApellido} ${f.segundoApellido} " />
+					</p:column>
+					<p:column headerText="Sección" filterable="true" filterBy="${f.seccion.idSeccion}" filterMatchMode="contains">
+					<p:outputLabel value="${f.seccion.idSeccion}" />
+					</p:column>
+					
+					<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tablaDatos" fileName="Metas Seccionales" />
+										</h:commandLink>
+									</f:facet>
+					
+					</p:dataTable>
+					
+					</p:panel>
+					
+					<p:remoteCommand name="movilizadores" immediate="true"  update="@form" action="movilizadores"/>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			}
+			.negritas{
+			font-weight: bold;
+			}
+		</h:outputStylesheet>
+
+		<h:outputScript>
+			window.onload = function() {
+				gmap = PF('mapaWV').getMap();
+			}
+		</h:outputScript>
+
+	</ui:define>
+
+</ui:composition>

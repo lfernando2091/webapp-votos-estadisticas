@@ -1,0 +1,87 @@
+package com.saganet.politik.components.encuestas.edomex2017.supervisor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.RolEO;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.encuestas.edomex2017.callCenter.EncargadoEO;
+import com.saganet.politik.database.encuestas.edomex2017.supervisor.EncuestadorEO;
+import com.saganet.politik.database.encuestas.edomex2017.supervisor.SupervisorEO;
+import com.saganet.politik.modelos.Modelo;
+
+
+@Component("Edomex2017SupervisorEncuestador")
+public class EncuestadorC {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	private static final Logger logger = LoggerFactory.getLogger(EncuestadorC.class);
+	
+	public Modelo<EncuestadorEO> modelo(){
+		List<EncuestadorEO> listado=new ArrayList<>();
+		boolean band=false,band2=false;
+		for (RolEO rol : getUsuario().getRoles()) {
+			if (rol.getRol().equals("ROLE_ENCUESTAS_SUPERVISOR_EDOMEX")) {
+				band=true;
+			}
+			if (rol.getRol().equals("ROLE_ENCUESTAS_EDOMEX_CALL_CENTER")) {
+				band2=true;
+			}
+		}
+		if (band) {
+			//SupervisorEO supervisor=sqlSession.selectOne("encuestas.supervisor.supervisor.buscarPorId",getUsuario().getNick());
+			listado=sqlSession.selectList("encuestas.supervisor.encuestador.buscarPorSupervisor",getUsuario().getNick());
+		}
+		else if (band2) {
+			listado=sqlSession.selectList("encuestas.supervisor.encuestador.buscarPorCallCenter",getUsuario().getNick());
+		}
+		logger.debug("listado {}",listado);
+		return new Modelo<EncuestadorEO>(listado);
+	}
+	
+	public  EncuestadorEO nuevo(){
+		EncuestadorEO nuevo=new EncuestadorEO();
+		boolean band=false,band2=false;
+		for (RolEO rol : getUsuario().getRoles()) {
+			if (rol.getRol().equals("ROLE_ENCUESTAS_SUPERVISOR_EDOMEX")) {
+				band=true;
+			}
+			if (rol.getRol().equals("ROLE_ENCUESTAS_EDOMEX_CALL_CENTER")) {
+				band2=true;
+			}
+		}
+		if (band) {
+			SupervisorEO supervisor=sqlSession.selectOne("encuestas.supervisor.supervisor.buscarPorId",getUsuario().getNick());
+			nuevo.setSupervisor(supervisor);
+		}
+		if (band2) {
+			EncargadoEO capturista=sqlSession.selectOne("encuestas.callcenter.encargado.buscarPorNick",getUsuario().getNick());
+			nuevo.setCallCenter(capturista);
+		}
+		return nuevo;
+	}
+	
+	
+	public void guardar(EncuestadorEO encuestador){
+		logger.debug("Encuestador a Insertar {}",encuestador);
+		sqlSession.insert("encuestas.supervisor.encuestador.insertarEncuestadores",encuestador);
+	}
+
+	public void eliminar(EncuestadorEO encuestador){
+		logger.debug("Encuestador a Eliminar {}",encuestador);
+		sqlSession.insert("encuestas.supervisor.encuestador.eliminarEncuestadores",encuestador);
+	}
+	
+	public UsuarioEO getUsuario(){
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+}

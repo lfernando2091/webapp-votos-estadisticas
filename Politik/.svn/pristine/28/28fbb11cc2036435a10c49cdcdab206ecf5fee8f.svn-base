@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="CatalogosPartidosC.tabla()" result="viewScope.tablaPartidos" />
+		</on-entry>
+		<transition on="agregar" to="agregar_editar">
+			<evaluate expression="CatalogosPartidosC.nuevo()" result="flowScope.partido" />
+		</transition>
+	</view-state>
+	
+	<view-state id="agregar_editar">
+		<transition on="guardar" to="esCoalicion" />
+		<transition on="cancelar" to="listado">
+			<set name="flowScope.partido" value="null" />
+		</transition>
+	</view-state>
+	
+	<action-state id="esCoalicion">
+		<evaluate expression="flowScope.partido.getCoalicion()" />
+		<transition on="yes" to="asignarPartidos" />
+		<transition on="no" to="listado">
+			<evaluate expression="CatalogosPartidosC.insertar(flowScope.partido)" />
+		</transition>
+	</action-state>
+	
+	<view-state id="asignarPartidos">
+		<on-entry>
+			<evaluate expression="CatalogosPartidosC.tablaModeloDual(false)" result="viewScope.tablaPartidos" />
+		</on-entry>
+		<transition on="guardar" to="listado">
+			<evaluate expression="CatalogosPartidosC.insertarCoalicion(flowScope.partido, viewScope.tablaPartidos.modeloDual.target)" />
+		</transition>
+		<transition on="regresar" to="agregar_editar" />
+		<transition on="cancelar" to="listado">
+			<set name="flowScope.partido" value="null" />
+		</transition>
+	</view-state>
+
+</flow>

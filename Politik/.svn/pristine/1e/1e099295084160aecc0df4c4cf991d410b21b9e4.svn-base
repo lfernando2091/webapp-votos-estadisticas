@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:messages autoUpdate="true"/>
+					<p:panel header="Resultados Entrevistas - Preguntas">
+						<p:panelGrid columns="1">
+						<p:outputLabel value="Programa"/>
+						<p:selectOneMenu value="${programa}" style="width: 200">
+						<f:selectItems value="${modeloProgramas.listado}" var="f" itemLabel="${f.nombre}" itemValue="${f.nombre}"/>
+						<f:selectItem itemLabel="Todos" itemValue="TODOS" itemDisabled="#{modeloProgramas.listado.size()>1?'false':'true'}" noSelectionOption="#{modeloProgramas.listado.size()>1?'false':'true'}"/>
+						</p:selectOneMenu>
+						<p:outputLabel value="Seleccione la pregunta"/>
+						<p:selectOneMenu value="${pregunta}" required="true" requiredMessage="Pregunta: es requerido" disabled="#{modeloProgramas.listado.size()>0?'false':'true'}">
+						<f:selectItem itemLabel="¿El apoyo que recibe le hace sentir que su Gobierno le está cumpliendo?" itemValue="1"/>
+						<f:selectItem itemLabel="¿Los apoyos que le otorga el Gobierno contribuyen a mejorar su ingreso familiar?" itemValue="2"/>
+						<f:selectItem itemLabel="¿Qué tan satisfecho está con los apoyos sociales que recibe?" itemValue="3"/>
+						<f:selectItem itemLabel="¿Qué calificación le daría al Gobierno Federal?" itemValue="4"/>
+						<f:selectItem itemLabel="¿Le gustaría que los Programas se mantengan coomo hasta ahora lo han hecho?" itemValue="5"/>
+						</p:selectOneMenu>
+						</p:panelGrid>
+						<f:facet name="footer">
+						<p:commandButton value="Mostrar" action="mostrarEncuesta" icon="fa fa-search" disabled="#{modeloProgramas.listado.size()>0?'false':'true'}"/>
+						</f:facet>
+						</p:panel>
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

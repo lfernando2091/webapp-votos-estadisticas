@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Captura" url="/app/estructuras/captura" />
+					</p:breadCrumb>
+					
+					<p:panel header="Captura de Estructura - ${mapaCaptura.estructura.nombre} (${mapaCaptura.estructura.ambito.nombre})">
+						<h:panelGroup rendered="${!mapaCaptura.superiores.isEmpty()}">
+							<p:panel header="Superiores">
+								<p:dataTable value="${mapaCaptura.superiores}" var="fila">
+									<p:column headerText="Figura" width="150">${fila.nodo.figura.nombre}</p:column>
+									<p:column headerText="Territorio" width="150">${fila.territorio.nombre}</p:column>
+									<p:column headerText="Nombre">${fila.persona.primerApellido} ${fila.persona.segundoApellido} ${fila.persona.nombre}</p:column>
+								</p:dataTable>
+							</p:panel>
+							<p:separator />
+						</h:panelGroup>
+						
+						<ui:repeat var="nodo" value="${mapaCaptura.nodos}" varStatus="repeat">
+							<p:panel header="${nodo.figura.nombre}">
+								<p:dataTable
+									value="${mapaCaptura.tablasEstructura[('nodo_').concat(nodo.id)]}"
+									var="fila" rowKey="${fila.id_politik}"
+									selection="${mapaCaptura.objetoSeleccionado}"
+									selectionMode="single" paginator="true" rows="15"
+									paginatorAlwaysVisible="false" paginatorPosition="bottom">
+									<p:ajax event="rowSelect" update="@form"
+										listener="${CapturaBean.setSeleccionado(mapaCaptura.objetoSeleccionado)}" />
+									<p:column headerText="Territorio" width="150">${fila.territorio.nombre}</p:column>
+									<p:column headerText="Nombre">${fila.persona.primerApellido} ${fila.persona.segundoApellido} ${fila.persona.nombre}</p:column>
+								</p:dataTable>
+								<f:facet name="footer">
+									<p:commandButton value="Agregar" action="agregarPersona">
+										<f:param name="idNodo" value="${nodo.id}" />
+									</p:commandButton>
+									<p:commandButton id="botonAvanzar" value="Avanzar" action="avanzarNivel" disabled="${CapturaBean.seleccionado.nodo.id != nodo.id}" />
+								</f:facet>
+							</p:panel>
+							<p:separator />
+						</ui:repeat>
+						<f:facet name="footer">
+							<p:commandButton value="Regresar" action="regresarNivel" disabled="${mapaCaptura.superiores.isEmpty()}" />
+							<p:commandButton value="Salir" action="cancelar" immediate="true" />
+						</f:facet>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

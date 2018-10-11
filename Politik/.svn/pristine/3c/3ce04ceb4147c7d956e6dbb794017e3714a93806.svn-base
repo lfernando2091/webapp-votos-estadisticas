@@ -1,0 +1,13 @@
+package com.saganet.politik.utilidades;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+
+@Component("ParametrosPDF")
+@Scope(value="session", proxyMode=ScopedProxyMode.TARGET_CLASS)
+public class ParametrosPDF {
+	
+	
+
+}

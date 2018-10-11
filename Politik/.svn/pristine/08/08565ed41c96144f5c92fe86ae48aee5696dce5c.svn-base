@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="encuestas.edomex2017.v2.avanceNick">
+	
+	<resultMap type="Edomex2017V2AvanceNickEO" id="avanceNick">
+	<id column="AvanceNickEO_id" property="id" javaType="Integer"/>
+	<result column="AvanceNickEO_exitoso" property="exitoso" javaType="Integer"/>
+	<result column="AvanceNickEO_no_hubo" property="no_hubo" javaType="Integer"/>
+	<result column="AvanceNickEO_no_quisieron" property="no_quisieron" javaType="Integer"/>
+	<result column="AvanceNickEO_domicilio_no_encontrado" property="domicilio_no_encontrado" javaType="Integer"/>
+	<result column="AvanceNickEO_menor_edad" property="menor_edad" javaType="Integer"/>
+	<result column="AvanceNickEO_otro" property="otro" javaType="Integer"/>
+	<result column="AvanceNickEO_total" property="total" javaType="Integer"/>
+	<association column="AvanceNickEO_nick" property="usuario" select="administracion.usuarios.porNick"/>
+	<association column="AvanceNickEO_nick" property="visitador" select="estructurasEdoMex.visitador.buscarPorNick"/>
+	</resultMap>
+	<sql id="query">
+	SELECT b.pkey 	AvanceNickEO_id,
+	b.nick 			AvanceNickEO_nick, 
+	sum(case when estatus='EXITOSO' then 1 else 0 end) AvanceNickEO_exitoso ,
+	sum(case when estatus='NO_HUBO_QUIEN_CONTESTARA' then 1 else 0 end) AvanceNickEO_no_hubo,
+	sum(case when estatus='NO_QUISIERON_CONTESTAR' then 1 else 0 end) AvanceNickEO_no_quisieron,
+	sum(case when estatus='DOMICILIO_NO_ENCONTRADO' then 1 else 0 end) AvanceNickEO_domicilio_no_encontrado,
+	sum(case when estatus='OTRO' then 1 else 0 end) AvanceNickEO_otro,
+	sum(case when estatus='MENOR_DE_EDAD' then 1 else 0 end) AvanceNickEO_menor_edad,
+	count(a.pkey) AvanceNickEO_total
+  	FROM encuestas_edomex.e_edomex a
+	right join estructuras_edomex.visitadores b on (a.nick = b.nick)
+	
+
+	
+	</sql>
+	
+	<select id="listadoPrograma" parameterType="com.saganet.politik.dominios.ProgramasEdoMexDO" resultMap="avanceNick">
+	<include refid="query"/>
+	where b.programa = #{value} and estructura is null
+ 	group by b.pkey,b.nick order by count(a.pkey) desc
+	</select>
+</mapper>

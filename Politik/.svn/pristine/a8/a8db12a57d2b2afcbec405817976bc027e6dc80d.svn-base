@@ -1,0 +1,77 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Datos del Programa">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Dependencia:" />
+							<p:outputLabel value="${programa.dependencia.dependencia}" />
+							<p:outputLabel value="Nivel Dependencia: " />
+							<p:outputLabel value="${programa.dependencia.nivelDependencia}" />
+							<p:outputLabel value="Programa: " />
+							<p:outputLabel value="${programa.programa}" />
+							<p:outputLabel value="Ejercicio: " />
+							<p:outputLabel value="${ejercicio.ejercicio} " />
+						</p:panelGrid>
+					</p:panel>
+					<p:spacer height="10px" />
+					<p:panel header="Territorios Disponibles">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Selecciones" />
+
+
+							<c:if test="#{programa.dependencia.nivelGeografico eq 'Sección'}">
+								<p:selectCheckboxMenu
+									value="${modeloTerritorios.seleccionMultiple}"
+									converter="ObjectConverter" label="Territorios">
+									<f:selectItems value="${modeloTerritorios.listado}" var="f"
+										itemLabel="${f.llave} ${f.entidad.nombre} ${f.id}"
+										itemValue="${f}" />
+								</p:selectCheckboxMenu>
+							</c:if>
+							<c:if test="#{programa.dependencia.nivelGeografico ne 'Sección'}">
+								<p:selectCheckboxMenu
+									value="${modeloTerritorios.seleccionMultiple}"
+									converter="ObjectConverter" label="Territorios">
+									<f:selectItems value="${modeloTerritorios.listado}" var="f"
+										itemLabel="${f.llave} ${f.nombre}" itemValue="${f}" />
+								</p:selectCheckboxMenu>
+							</c:if>
+
+
+						</p:panelGrid>
+						<f:facet name="footer">
+								<p:commandLink title="Guardar" action="guardar">
+								<p:graphicImage value="/resources/botones/GUARDAR.png"/>
+								</p:commandLink>
+								
+								<p:commandLink action="cancelar" title="Cancelar y volver a listado">
+								<p:graphicImage value="/resources/botones/CANCELAR.png"/>
+								</p:commandLink>
+						</f:facet>
+					</p:panel>
+
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

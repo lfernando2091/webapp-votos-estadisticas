@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="inicio">
+		<on-entry>
+			<evaluate expression="diaDJornadaC.nuevoMapa()" result="viewScope.mapa" />
+			<evaluate expression="CatalogosMunicipiosC.modeloPorUsuario('15')" result="viewScope.modeloMunicipios" />
+			<evaluate expression="CatalogosSeccionesC.seccionesMunicipio('15', viewScope.modeloMunicipios.seleccionado.idMunicipio)" result="viewScope.modeloSecciones" />
+			<evaluate expression="DiaDMovilizados.modeloPorSeccion(viewScope.modeloSecciones.seleccionado)" result="viewScope.modeloMovilizados" />
+		</on-entry>
+		
+		<transition on="actualizarSecciones">
+			<evaluate expression="CatalogosSeccionesC.seccionesMunicipio('15', viewScope.modeloMunicipios.seleccionado.idMunicipio)" result="viewScope.modeloSecciones" />
+		</transition>
+		
+		<transition on="actualizarMovilizados">
+			<evaluate expression="DiaDMovilizados.modeloPorSeccion(viewScope.modeloSecciones.seleccionado)" result="viewScope.modeloMovilizados" />
+		</transition>
+		
+	</view-state>
+
+</flow>

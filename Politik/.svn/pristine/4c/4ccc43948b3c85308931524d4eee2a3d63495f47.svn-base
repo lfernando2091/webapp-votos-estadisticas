@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+        
+	<secured attributes="ROLE_REPORTES_DM" />
+	
+	<view-state id="estadisticas">
+		<on-entry>
+			<set name="viewScope.region" value="1"/>
+			<set name="viewScope.usuario" value="''"/>
+			<set name="viewScope.nombre" value="''"/>
+			<set name="viewScope.imei" value="''"/>
+			<set name="viewScope.fInicio" value="EstadisticasSincronizacionC.getFecha()"/>
+			<set name="viewScope.fFin" value="EstadisticasSincronizacionC.getFecha()"/>
+			<set name="viewScope.totalEncuestas" value="0"/>
+			<set name="viewScope.totalEncuestasPorFechas" value="0"/>
+			<evaluate expression="EstadisticasSincronizacionC.regiones()" result="viewScope.regiones"/>
+			<evaluate expression="EstadisticasSincronizacionC.listadoPorUsuarioRegion(viewScope.region, viewScope.usuario, viewScope.nombre, viewScope.imei)" result="viewScope.listadoPorUsuarioRegion"/>
+			<evaluate expression="EstadisticasSincronizacionC.listadoPorFechas(EstadisticasSincronizacionC.combierteDateToString(viewScope.fInicio), EstadisticasSincronizacionC.combierteDateToString(viewScope.fFin))" result="viewScope.listadoPorFechas"/>
+			<evaluate expression="EstadisticasSincronizacionC.calculaTotalEncuestas(viewScope.listadoPorFechas)" result="viewScope.totalEncuestasPorFechas"/>
+			<evaluate expression="EstadisticasSincronizacionC.listadoPorRegiones()" result="viewScope.listadoPorRegiones"/>
+			<evaluate expression="EstadisticasSincronizacionC.calculaTotalEncuestas(viewScope.listadoPorRegiones)" result="viewScope.totalEncuestas"/>
+			
+			<evaluate expression="EstadisticasSincronizacionC.concentrado1()" result="viewScope.concentrado1"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrado1(viewScope.concentrado1)" result="viewScope.concentrado1Totales"/>
+			
+			<evaluate expression="EstadisticasSincronizacionC.pg1()" result="viewScope.pg1"/>
+			<evaluate expression="EstadisticasSincronizacionC.pg3()" result="viewScope.pg3"/>
+			
+		</on-entry>
+		<transition on="buscarUsuariosPorRegion">
+			<evaluate expression="EstadisticasSincronizacionC.listadoPorUsuarioRegion(viewScope.region, viewScope.usuario, viewScope.nombre, viewScope.imei)" result="viewScope.listadoPorUsuarioRegion"/>
+		</transition>
+		<transition on="buscarPorFecha">
+			<evaluate expression="EstadisticasSincronizacionC.listadoPorFechas(EstadisticasSincronizacionC.combierteDateToString(viewScope.fInicio), EstadisticasSincronizacionC.combierteDateToString(viewScope.fFin))" result="viewScope.listadoPorFechas"/>
+			<evaluate expression="EstadisticasSincronizacionC.calculaTotalEncuestas(viewScope.listadoPorFechas)" result="viewScope.totalEncuestasPorFechas"/>
+		</transition>
+		<transition on="actualizarRegiones">
+			<evaluate expression="EstadisticasSincronizacionC.listadoPorRegiones()" result="viewScope.listadoPorRegiones"/>
+			<evaluate expression="EstadisticasSincronizacionC.calculaTotalEncuestas(viewScope.listadoPorRegiones)" result="viewScope.totalEncuestas"/>
+		</transition>
+	</view-state>
+	
+</flow>

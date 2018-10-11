@@ -1,0 +1,71 @@
+package com.saganet.politik.components.estructuras;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.estructuras.LegislaturaEO;
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.modelos.JavaBeanT;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("EstructurasLegislaturasC")
+public class LegislaturasC {
+	@Autowired
+	SqlSession sqlSession;
+	
+	public Modelo<LegislaturaEO> modelo(){
+		Modelo<LegislaturaEO> modelo;
+		List<LegislaturaEO> listado;
+		
+		modelo = new Modelo<>();
+		
+		listado = sqlSession.selectList("estructuras.legislaturas.listado");
+		
+		llenarTerritorios(listado);
+		
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+	}
+	
+	public Modelo<LegislaturaEO> modeloSinTerritorio(){
+		Modelo<LegislaturaEO> modelo;
+		List<LegislaturaEO> listado;
+		
+		modelo = new Modelo<>();
+		
+		listado = sqlSession.selectList("estructuras.legislaturas.listado");
+		
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+	}
+	
+	public void llenarTerritorios(List<LegislaturaEO> listado){
+		JavaBeanT territorio;
+		
+		for(LegislaturaEO l : listado){
+			if(l.getNivel().equals(NivelesDO.ENTIDAD)){
+				territorio = sqlSession.selectOne("catalogos.entidades.entidadById", Integer.parseInt(l.getLlave()));
+				l.setTerritorio(territorio);
+			}
+		}
+	}
+	
+	public LegislaturaEO nueva(){
+		return new LegislaturaEO();
+	}
+	
+	public void insertar(LegislaturaEO legislatura){
+		sqlSession.insert("estructuras.legislaturas.insertar", legislatura);
+	}
+}

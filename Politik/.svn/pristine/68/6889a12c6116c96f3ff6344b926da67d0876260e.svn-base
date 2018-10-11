@@ -1,0 +1,15 @@
+package com.saganet.politik.dominios;
+
+public enum FiguraAtributosDO {
+	PROGRAMA_PROMOCION("Programa de Promoción");
+	
+	private final String nombre;
+	
+	private FiguraAtributosDO(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+}

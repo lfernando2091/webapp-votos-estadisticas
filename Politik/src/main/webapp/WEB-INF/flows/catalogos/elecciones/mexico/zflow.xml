@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	
+	<view-state id="detalle">
+		<on-entry>
+			<evaluate expression="CatalogosEleccionesC.eleccionMexico()" result="viewScope.detalle" />
+			<evaluate expression="EstructurasEstructurasC.crearModelo(viewScope.detalle.estructuras, true)" result="viewScope.modeloEstructuras" />
+			<evaluate expression="EstructurasProgramasPromocionC.modelo()" result="viewScope.modeloProgramasPromocion" />
+		</on-entry>
+		
+		<transition on="asignarEstructura" to="asignarEstructura">
+			<set name="requestScope.detalle" value="viewScope.detalle" />
+		</transition>
+		
+		<transition on="agregarCandidato" to="buscarCandidato">
+			<set name="requestScope.detalle" value="viewScope.detalle" />
+		</transition>
+		
+		<transition on="agregarProgramaPromocion">
+			<evaluate expression="CatalogosEleccionesC.agregarProgramaPromocion(viewScope.detalle, viewScope.modeloProgramasPromocion.seleccionado)" />
+		</transition>
+		
+	</view-state>
+	
+	<view-state id="asignarEstructura">
+		<on-entry>
+			<set name="viewScope.detalle" value="requestScope.detalle" />
+			<evaluate expression="EstructurasEstructurasC.crearModeloDual(EstructurasEstructurasC.ambitoElectoral(), viewScope.detalle.estructuras)" result="viewScope.modeloEstructuras" />
+		</on-entry>
+		<transition on="asignar" to="detalle">
+			<evaluate expression="CatalogosEleccionesC.insertarEstructuras(viewScope.detalle, viewScope.modeloEstructuras.modeloDual.target)" />
+			<set name="requestScope.detalle" value="viewScope.detalle" />
+		</transition>
+		<transition on="cancelar" to="detalle">
+			<set name="requestScope.detalle" value="viewScope.detalle" />
+		</transition>
+	</view-state>
+	
+	<subflow-state id="buscarCandidato" subflow="mdm/buscadores/personas">
+		<on-entry>
+			<set name="conversationScope.contextoEleccion" value="requestScope.detalle" />
+		</on-entry>
+		<input name="flag" value="true"/>
+		<transition on="personaLocalizada" to="agregarCandidato">
+			<set name="requestScope.persona" value="conversationScope.persona" />
+			<set name="requestScope.detalle" value="conversationScope.contextoEleccion" />
+		</transition>
+		<transition on="personaNoLocalizada" to="detalle">
+			<set name="requestScope.detalle" value="conversationScope.detalleEleccion" />
+		</transition>
+	</subflow-state>
+	
+	<view-state id="agregarCandidato">
+		<on-entry>
+			<set name="viewScope.detalle" value="requestScope.detalle" />
+			<evaluate expression="CatalogosEleccionesC.crearCandidato(requestScope.persona)" result="viewScope.candidato" />
+		</on-entry>
+		<transition on="agregar" to="detalle">
+			<evaluate expression="CatalogosEleccionesC.agregarCandidato(viewScope.detalle, viewScope.candidato)" />
+			<set name="requestScope.detalle" value="viewScope.detalle" />
+		</transition>
+	</view-state>
+</flow>

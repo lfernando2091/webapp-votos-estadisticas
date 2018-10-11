@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+<secured attributes="ROLE_EVENTOS_REPORTE"/>
+	<view-state id="filtro">
+	<on-entry>
+	<set name="viewScope.desde" value="null"/>
+	<set name="viewScope.hasta" value="null"/>
+	<evaluate expression="DependenciasC.modeloByUsuario()" result="viewScope.modeloDependencias"/>
+	<evaluate expression="DependenciasC.consultaTerritorios(viewScope.modeloDependencias.seleccionado)" result="viewScope.territorios"/>
+	<evaluate expression="DependenciasC.getModeloGenerico(viewScope.territorios)" result="viewScope.modeloTerritorios"/>
+	</on-entry>
+	<transition on="llenarTerritorios">
+	<evaluate expression="DependenciasC.consultaTerritorios(viewScope.modeloDependencias.seleccionado)" result="viewScope.territorios"/>
+	<evaluate expression="DependenciasC.getModeloGenerico(viewScope.territorios)" result="viewScope.modeloTerritorios"/>
+	</transition>
+	</view-state>
+
+</flow>

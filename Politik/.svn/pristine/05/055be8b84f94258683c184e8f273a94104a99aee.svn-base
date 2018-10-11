@@ -1,0 +1,80 @@
+package com.saganet.politik.components.encuestas.levantamientoRowan;
+
+import java.util.HashMap;
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.components.catalogos.MunicipiosC;
+import com.saganet.politik.components.sig.PoligonosC;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.catalogos.GeozonaParticionEO;
+import com.saganet.politik.dominios.NivelesReporteVerticalDO;
+
+@Component("LevantamientoRowanPorPreguntaC")
+public class PorPreguntaC {
+	@Autowired
+	SqlSession sqlSession;
+	
+	@Autowired PoligonosC poligonosC;
+	@Autowired MunicipiosC municipiosC;
+	
+	private static final Logger logger = LoggerFactory.getLogger(PorPreguntaC.class);
+
+	public HashMap<String, Object> resultado(NivelesReporteVerticalDO nivel, GeozonaParticionEO region, MunicipioEO municipio, Integer pregunta) {
+		HashMap<String, Object> resultado=new HashMap<>();
+		HashMap<String, Object> mapa=new HashMap<>();
+		switch (nivel) {
+			case REGION:
+				mapa.put("region", region);
+			break;
+			case MUNICIPIO:
+				mapa.put("region", region);
+				mapa.put("municipio", municipio);
+			break;
+			case ESTATAL:
+			break;
+		}
+		logger.debug("Mapa : {} ",mapa);
+		switch (pregunta) {
+			case 1:
+				resultado=sqlSession.selectOne("encuestas.levantamientoRowan.porPregunta.p1",mapa);
+			break;
+			case 2:
+				resultado=sqlSession.selectOne("encuestas.levantamientoRowan.porPregunta.p2",mapa);
+			break;
+			case 3:
+				resultado=sqlSession.selectOne("encuestas.levantamientoRowan.porPregunta.p3",mapa);
+			break;
+			case 4:
+				resultado=sqlSession.selectOne("encuestas.levantamientoRowan.porPregunta.p4",mapa);
+			break;
+			case 5:
+				resultado=sqlSession.selectOne("encuestas.levantamientoRowan.porPregunta.p5",mapa);
+			break;
+			case 6:
+				resultado=sqlSession.selectOne("encuestas.levantamientoRowan.porPregunta.p6",mapa);
+			break;
+			case 7:
+				resultado=sqlSession.selectOne("encuestas.levantamientoRowan.porPregunta.p7",mapa);
+			break;
+			case 8:
+				resultado=sqlSession.selectOne("encuestas.levantamientoRowan.porPregunta.p8",mapa);
+			break;
+			case 9:
+				resultado=sqlSession.selectOne("encuestas.levantamientoRowan.porPregunta.p9",mapa);
+			break;
+		}
+		logger.debug("resultado : {} ",resultado);
+		return resultado;
+	}
+	
+	public UsuarioEO getUsuario() {
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+
+}

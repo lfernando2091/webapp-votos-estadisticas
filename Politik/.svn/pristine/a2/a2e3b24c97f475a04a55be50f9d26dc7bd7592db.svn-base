@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="CatalogosTablasC.tabla()" result="viewScope.tablaTablas" />
+		</on-entry>
+		<transition on="agregar" to="crearNuevo" />
+	</view-state>
+	
+	<action-state id="crearNuevo">
+		<evaluate expression="CatalogosTablasC.nuevo()" result="flowScope.nuevo" />
+		<transition on="success" to="agregar" />
+	</action-state>
+	
+	<view-state id="agregar">
+		<transition on="cancelar" to="listado">
+			<evaluate expression="flowScope.nuevo = null" />
+		</transition>
+		<transition on="guardar" to="necesitaParticiones" />
+	</view-state>
+	
+	<action-state id="necesitaParticiones">
+		<evaluate expression="CatalogosTablasC.necesitaParticiones(flowScope.nuevo)" />
+		<transition on="Si" to="agregarParticiones" />
+		<transition on="No" to="listado">
+			<evaluate expression="CatalogosTablasC.insertar(flowScope.nuevo)" />
+		</transition>
+	</action-state>
+	
+	<view-state id="agregarParticiones">
+		<transition on="regresar" to="agregar" />
+		<transition on="cancelar" to="listado">
+			<evaluate expression="flowScope.nuevo = null" />
+		</transition>
+		<transition on="guardar" to="listado">
+			<evaluate expression="CatalogosTablasC.insertar(flowScope.nuevo)" />
+		</transition>
+	</view-state>
+
+</flow>

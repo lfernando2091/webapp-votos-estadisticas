@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.edomex2017.resultadoEncuestasCompletos">
+	
+	<resultMap type="Edomex2017ResultadoEncuestaCompletoEO" id="resultadoSeccionPrograma">
+		<id 		column="id" 						property="id" 						javaType="Integer"/>
+		<result 	column="entidad" 					property="entidad" 					javaType="Integer"/>
+		<result 	column="region" 					property="region" 					javaType="Integer"/>
+		<result 	column="nombre_region" 				property="nombreRegion" 			javaType="String"/>
+		<result 	column="municipio" 					property="municipio" 				javaType="Integer"/>
+		<result 	column="nombre_municipio" 			property="nombreMunicipio" 			javaType="String"/>
+		<result 	column="seccion" 					property="seccion" 					javaType="Integer"/>
+
+		<result 	column="exitoso" 					property="exitoso" 					javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara" 	property="noHuboQuienContestara" 	javaType="Integer"/>
+		<result 	column="menor_de_edad" 				property="menorDeEdad" 				javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado" 	property="domicilioNoEncontrado" 	javaType="Integer"/>
+		<result 	column="no_quisieron_contestar" 	property="noQuisieronContestar" 	javaType="Integer"/>
+		<result 	column="otro" 						property="otro" 					javaType="Integer"/>
+		<result 	column="total" 						property="total" 					javaType="Integer"/>
+		<result 	column="totalTotal" 				property="totalTotal" 				javaType="Integer"/>
+		<result 	column="meta" 						property="meta"		 				javaType="Integer"/>
+
+		<result 	column="exitoso_gem" 						property="exitosoGem" 						javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara_gem" 		property="noHuboQuienContestaraGem" 		javaType="Integer"/>
+		<result 	column="menor_de_edad_gem" 					property="menorDeEdadGem" 					javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado_gem" 		property="domicilioNoEncontradoGem" 		javaType="Integer"/>
+		<result 	column="no_quisieron_contestar_gem" 		property="noQuisieronContestarGem" 			javaType="Integer"/>
+		<result 	column="otro_gem" 							property="otroGem" 							javaType="Integer"/>
+		<result 	column="totalGem" 							property="totalGem" 						javaType="Integer"/>
+		<result 	column="totalTotalGem" 						property="totalTotalGem" 					javaType="Integer"/>
+		<result 	column="metaGem" 							property="metaGem"							javaType="Integer"/>
+
+		<result 	column="exitoso_liconsa" 					property="exitosoLiconsa" 					javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara_liconsa" 	property="noHuboQuienContestaraLiconsa" 	javaType="Integer"/>
+		<result 	column="menor_de_edad_liconsa" 				property="menorDeEdadLiconsa" 				javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado_liconsa" 	property="domicilioNoEncontradoLiconsa" 	javaType="Integer"/>
+		<result 	column="no_quisieron_contestar_liconsa" 	property="noQuisieronContestarLiconsa" 		javaType="Integer"/>
+		<result 	column="otro_liconsa" 						property="otroLiconsa" 						javaType="Integer"/>
+		<result 	column="totalLiconsa" 						property="totalLiconsa" 					javaType="Integer"/>
+		<result 	column="totalTotalLiconsa" 					property="totalTotalLiconsa" 				javaType="Integer"/>
+		<result 	column="metaLiconsa" 						property="metaLiconsa"		 				javaType="Integer"/>
+
+		<result 	column="exitoso_prospera" 					property="exitosoProspera" 					javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara_prospera" 	property="noHuboQuienContestaraProspera" 	javaType="Integer"/>
+		<result 	column="menor_de_edad_prospera" 			property="menorDeEdadProspera" 				javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado_prospera" 	property="domicilioNoEncontradoProspera" 	javaType="Integer"/>
+		<result 	column="no_quisieron_contestar_prospera" 	property="noQuisieronContestarProspera" 	javaType="Integer"/>
+		<result 	column="otro_prospera" 						property="otroProspera" 					javaType="Integer"/>
+		<result 	column="totalProspera" 						property="totalProspera" 					javaType="Integer"/>
+		<result 	column="totalTotalProspera" 				property="totalTotalProspera" 				javaType="Integer"/>
+		<result 	column="metaProspera" 						property="metaProspera"		 				javaType="Integer"/>
+	</resultMap>
+	
+	<resultMap type="Edomex2017ResultadoEncuestaCompletoEO" id="resultadoMunicipioPrograma">
+		<id 		column="id" 						property="id" 						javaType="Integer"/>
+		<result 	column="entidad" 					property="entidad" 					javaType="Integer"/>
+		<result 	column="region" 					property="region" 					javaType="Integer"/>
+		<result 	column="nombre_region" 				property="nombreRegion" 			javaType="String"/>
+		<result 	column="municipio" 					property="municipio" 				javaType="Integer"/>
+		<result 	column="nombre_municipio" 			property="nombreMunicipio" 			javaType="String"/>
+		<result 	column="num_seccion" 				property="numSeccion" 				javaType="Integer"/>
+
+		<result 	column="exitoso" 					property="exitoso" 					javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara" 	property="noHuboQuienContestara" 	javaType="Integer"/>
+		<result 	column="menor_de_edad" 				property="menorDeEdad" 				javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado" 	property="domicilioNoEncontrado" 	javaType="Integer"/>
+		<result 	column="no_quisieron_contestar" 	property="noQuisieronContestar" 	javaType="Integer"/>
+		<result 	column="otro" 						property="otro" 					javaType="Integer"/>
+		<result 	column="total" 						property="total" 					javaType="Integer"/>
+		<result 	column="totalTotal" 				property="totalTotal" 				javaType="Integer"/>
+		<result 	column="meta" 						property="meta"		 				javaType="Integer"/>
+
+		<result 	column="exitoso_gem" 						property="exitosoGem" 						javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara_gem" 		property="noHuboQuienContestaraGem" 		javaType="Integer"/>
+		<result 	column="menor_de_edad_gem" 					property="menorDeEdadGem" 					javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado_gem" 		property="domicilioNoEncontradoGem" 		javaType="Integer"/>
+		<result 	column="no_quisieron_contestar_gem" 		property="noQuisieronContestarGem" 			javaType="Integer"/>
+		<result 	column="otro_gem" 							property="otroGem" 							javaType="Integer"/>
+		<result 	column="totalGem" 							property="totalGem" 						javaType="Integer"/>
+		<result 	column="totalTotalGem" 						property="totalTotalGem" 					javaType="Integer"/>
+		<result 	column="metaGem" 							property="metaGem"							javaType="Integer"/>
+
+		<result 	column="exitoso_liconsa" 					property="exitosoLiconsa" 					javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara_liconsa" 	property="noHuboQuienContestaraLiconsa" 	javaType="Integer"/>
+		<result 	column="menor_de_edad_liconsa" 				property="menorDeEdadLiconsa" 				javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado_liconsa" 	property="domicilioNoEncontradoLiconsa" 	javaType="Integer"/>
+		<result 	column="no_quisieron_contestar_liconsa" 	property="noQuisieronContestarLiconsa" 		javaType="Integer"/>
+		<result 	column="otro_liconsa" 						property="otroLiconsa" 						javaType="Integer"/>
+		<result 	column="totalLiconsa" 						property="totalLiconsa" 					javaType="Integer"/>
+		<result 	column="totalTotalLiconsa" 					property="totalTotalLiconsa" 				javaType="Integer"/>
+		<result 	column="metaLiconsa" 						property="metaLiconsa"		 				javaType="Integer"/>
+
+		<result 	column="exitoso_prospera" 					property="exitosoProspera" 					javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara_prospera" 	property="noHuboQuienContestaraProspera" 	javaType="Integer"/>
+		<result 	column="menor_de_edad_prospera" 			property="menorDeEdadProspera" 				javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado_prospera" 	property="domicilioNoEncontradoProspera" 	javaType="Integer"/>
+		<result 	column="no_quisieron_contestar_prospera" 	property="noQuisieronContestarProspera" 	javaType="Integer"/>
+		<result 	column="otro_prospera" 						property="otroProspera" 					javaType="Integer"/>
+		<result 	column="totalProspera" 						property="totalProspera" 					javaType="Integer"/>
+		<result 	column="totalTotalProspera" 				property="totalTotalProspera" 				javaType="Integer"/>
+		<result 	column="metaProspera" 						property="metaProspera"		 				javaType="Integer"/>
+	</resultMap>
+
+	<resultMap type="Edomex2017ResultadoEncuestaCompletoEO" id="resultadoRegionPrograma">
+		<id 		column="id" 						property="id" 						javaType="Integer"/>
+		<result 	column="entidad" 					property="entidad" 					javaType="Integer"/>
+		<result 	column="region" 					property="region" 					javaType="Integer"/>
+		<result 	column="nombre_region" 				property="nombreRegion" 			javaType="String"/>
+		<result 	column="num_municipio" 				property="numMunicipio" 			javaType="Integer"/>
+		<result 	column="num_seccion" 				property="numSeccion" 				javaType="Integer"/>
+
+		<result 	column="exitoso" 					property="exitoso" 					javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara" 	property="noHuboQuienContestara" 	javaType="Integer"/>
+		<result 	column="menor_de_edad" 				property="menorDeEdad" 				javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado" 	property="domicilioNoEncontrado" 	javaType="Integer"/>
+		<result 	column="no_quisieron_contestar" 	property="noQuisieronContestar" 	javaType="Integer"/>
+		<result 	column="otro" 						property="otro" 					javaType="Integer"/>
+		<result 	column="total" 						property="total" 					javaType="Integer"/>
+		<result 	column="totalTotal" 				property="totalTotal" 				javaType="Integer"/>
+		<result 	column="meta" 						property="meta"		 				javaType="Integer"/>
+
+		<result 	column="exitoso_gem" 						property="exitosoGem" 						javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara_gem" 		property="noHuboQuienContestaraGem" 		javaType="Integer"/>
+		<result 	column="menor_de_edad_gem" 					property="menorDeEdadGem" 					javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado_gem" 		property="domicilioNoEncontradoGem" 		javaType="Integer"/>
+		<result 	column="no_quisieron_contestar_gem" 		property="noQuisieronContestarGem" 			javaType="Integer"/>
+		<result 	column="otro_gem" 							property="otroGem" 							javaType="Integer"/>
+		<result 	column="totalGem" 							property="totalGem" 						javaType="Integer"/>
+		<result 	column="totalTotalGem" 						property="totalTotalGem" 					javaType="Integer"/>
+		<result 	column="metaGem" 							property="metaGem"							javaType="Integer"/>
+
+		<result 	column="exitoso_liconsa" 					property="exitosoLiconsa" 					javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara_liconsa" 	property="noHuboQuienContestaraLiconsa" 	javaType="Integer"/>
+		<result 	column="menor_de_edad_liconsa" 				property="menorDeEdadLiconsa" 				javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado_liconsa" 	property="domicilioNoEncontradoLiconsa" 	javaType="Integer"/>
+		<result 	column="no_quisieron_contestar_liconsa" 	property="noQuisieronContestarLiconsa" 		javaType="Integer"/>
+		<result 	column="otro_liconsa" 						property="otroLiconsa" 						javaType="Integer"/>
+		<result 	column="totalLiconsa" 						property="totalLiconsa" 					javaType="Integer"/>
+		<result 	column="totalTotalLiconsa" 					property="totalTotalLiconsa" 				javaType="Integer"/>
+		<result 	column="metaLiconsa" 						property="metaLiconsa"		 				javaType="Integer"/>
+
+		<result 	column="exitoso_prospera" 					property="exitosoProspera" 					javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara_prospera" 	property="noHuboQuienContestaraProspera" 	javaType="Integer"/>
+		<result 	column="menor_de_edad_prospera" 			property="menorDeEdadProspera" 				javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado_prospera" 	property="domicilioNoEncontradoProspera" 	javaType="Integer"/>
+		<result 	column="no_quisieron_contestar_prospera" 	property="noQuisieronContestarProspera" 	javaType="Integer"/>
+		<result 	column="otro_prospera" 						property="otroProspera" 					javaType="Integer"/>
+		<result 	column="totalProspera" 						property="totalProspera" 					javaType="Integer"/>
+		<result 	column="totalTotalProspera" 				property="totalTotalProspera" 				javaType="Integer"/>
+		<result 	column="metaProspera" 						property="metaProspera"		 				javaType="Integer"/>
+	</resultMap>
+	
+	<select id="resultadoSeccionPrograma" resultMap="resultadoSeccionPrograma" parameterType="hashmap">
+		SELECT  
+			row_number() OVER (ORDER BY ee.entidad) AS id,  
+			ee.entidad, ee.region_edomex_2017 region, ee.nombre_region, ee.municipio, ee.nombre_municipio, ee.seccion,			
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='EXITOSO' THEN 1 ELSE 0 END) exitoso_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END) no_hubo_quien_contestara_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END) menor_de_edad_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END) domicilio_no_encontrado_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END) no_quisieron_contestar_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='OTRO' THEN 1 ELSE 0 END) otro_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' THEN 1 ELSE 0 END) totalGem,
+			ems.contactos_gem totalTotalGem,
+			ems.meta_gem metaGem,			
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='EXITOSO' THEN 1 ELSE 0 END) exitoso_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END) no_hubo_quien_contestara_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END) menor_de_edad_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END) domicilio_no_encontrado_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END) no_quisieron_contestar_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='OTRO' THEN 1 ELSE 0 END) otro_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' THEN 1 ELSE 0 END) totalLiconsa,
+			ems.contactos_liconsa totalTotalLiconsa,
+			ems.meta_liconsa metaLiconsa,			
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='EXITOSO' THEN 1 ELSE 0 END) exitoso_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END) no_hubo_quien_contestara_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END) menor_de_edad_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END) domicilio_no_encontrado_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END) no_quisieron_contestar_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='OTRO' THEN 1 ELSE 0 END) otro_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' THEN 1 ELSE 0 END) totalProspera,
+			ems.contactos_prospera totalTotalProspera,
+			ems.meta_prospera metaProspera,			
+			SUM(CASE WHEN r.estatus='EXITOSO' THEN 1 ELSE 0 END) exitoso,
+			SUM(CASE WHEN r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END) no_hubo_quien_contestara,
+			SUM(CASE WHEN r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END) menor_de_edad,
+			SUM(CASE WHEN r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END) domicilio_no_encontrado,
+			SUM(CASE WHEN r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END) no_quisieron_contestar,
+			SUM(CASE WHEN r.estatus='OTRO' THEN 1 ELSE 0 END) otro,
+			COUNT(ee.id_interno) total,
+			(ems.contactos_prospera+contactos_liconsa+contactos_gem) totalTotal,
+			(ems.meta_prospera+ems.meta_gem+ems.meta_liconsa) meta			
+		FROM (SELECT id_contacto,estatus FROM encuestas_resultados.e_edomex UNION SELECT id_contacto,estatus FROM encuestas_resultados.e_edomex_prospera) r			
+		JOIN encuestas.encuesta_edomex ee ON (ee.id_interno=r.id_contacto::INTEGER)
+		JOIN encuestas_resultados.edomex_millon_secciones ems ON (ems.llave_seccion=(ee.entidad||'-'||ee.seccion))
+		<where>
+			<if test="municipios!=null">
+				ee.municipio IN 
+				<foreach collection="municipios" open="(" separator="," close=")" item="item" index="index">
+						#{item.idMunicipio}
+				</foreach> <if test="programas!=null"> AND</if>
+			</if>
+			<if test="regiones!=null">
+				ee.region_edomex_2017 IN 
+				<foreach collection="regiones" open="(" separator="," close=")" item="item" index="index">
+						#{item.idParticion}
+				</foreach> <if test="programas!=null"> AND</if>
+			</if>
+			<if test="programas!=null">
+				ee.programa_general IN 
+				<foreach collection="programas" open="(" separator="," close=")" item="item" index="index">
+						#{item}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY ee.entidad, ee.region_edomex_2017, ee.nombre_region, ee.municipio, ee.nombre_municipio, ee.seccion, ems.contactos_gem, ems.meta_gem , ems.contactos_liconsa, ems.meta_liconsa , ems.contactos_prospera, ems.meta_prospera 
+		ORDER BY ee.entidad, ee.region_edomex_2017, ee.nombre_region, ee.municipio, ee.nombre_municipio, ee.seccion, ems.contactos_gem, ems.meta_gem , ems.contactos_liconsa, ems.meta_liconsa , ems.contactos_prospera, ems.meta_prospera 
+	</select>
+	
+	<select id="resultadoMunicipioPrograma" resultMap="resultadoMunicipioPrograma" parameterType="hashmap">
+		SELECT  
+			row_number() OVER (ORDER BY ee.entidad) AS id,  
+			ee.entidad, ee.region_edomex_2017 region, ee.nombre_region, ee.municipio, ee.nombre_municipio, COUNT(DISTINCT(ee.seccion)) num_seccion,			
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='EXITOSO' THEN 1 ELSE 0 END) exitoso_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END) no_hubo_quien_contestara_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END) menor_de_edad_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END) domicilio_no_encontrado_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END) no_quisieron_contestar_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='OTRO' THEN 1 ELSE 0 END) otro_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' THEN 1 ELSE 0 END) totalGem,
+			ems.contactos_gem totalTotalGem,
+			ems.meta_gem metaGem,			
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='EXITOSO' THEN 1 ELSE 0 END) exitoso_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END) no_hubo_quien_contestara_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END) menor_de_edad_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END) domicilio_no_encontrado_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END) no_quisieron_contestar_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='OTRO' THEN 1 ELSE 0 END) otro_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' THEN 1 ELSE 0 END) totalLiconsa,
+			ems.contactos_liconsa totalTotalLiconsa,
+			ems.meta_liconsa metaLiconsa,			
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='EXITOSO' THEN 1 ELSE 0 END) exitoso_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END) no_hubo_quien_contestara_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END) menor_de_edad_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END) domicilio_no_encontrado_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END) no_quisieron_contestar_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='OTRO' THEN 1 ELSE 0 END) otro_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' THEN 1 ELSE 0 END) totalProspera,
+			ems.contactos_prospera totalTotalProspera,
+			ems.meta_prospera metaProspera,			
+			SUM(CASE WHEN r.estatus='EXITOSO' THEN 1 ELSE 0 END) exitoso,
+			SUM(CASE WHEN r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END) no_hubo_quien_contestara,
+			SUM(CASE WHEN r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END) menor_de_edad,
+			SUM(CASE WHEN r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END) domicilio_no_encontrado,
+			SUM(CASE WHEN r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END) no_quisieron_contestar,
+			SUM(CASE WHEN r.estatus='OTRO' THEN 1 ELSE 0 END) otro,
+			COUNT(ee.id_interno) total,
+			(ems.contactos_prospera+contactos_liconsa+contactos_gem) totalTotal,
+			(ems.meta_prospera+ems.meta_gem+ems.meta_liconsa) meta			
+		FROM (SELECT id_contacto,estatus FROM encuestas_resultados.e_edomex UNION SELECT id_contacto,estatus FROM encuestas_resultados.e_edomex_prospera) r			
+		JOIN encuestas.encuesta_edomex ee ON (ee.id_interno=r.id_contacto::INTEGER)
+		JOIN encuestas_resultados.edomex_millon_municipios ems ON (ems.llave_municipio=(ee.entidad||'-'||ee.municipio))
+		<where>
+			<if test="municipios!=null">
+				ee.municipio IN 
+				<foreach collection="municipios" open="(" separator="," close=")" item="item" index="index">
+						#{item.idMunicipio}
+				</foreach> <if test="programas!=null"> AND</if>
+			</if>
+			<if test="regiones!=null">
+				ee.region_edomex_2017 IN 
+				<foreach collection="regiones" open="(" separator="," close=")" item="item" index="index">
+						#{item.idParticion}
+				</foreach> <if test="programas!=null"> AND</if>
+			</if>
+			<if test="programas!=null">
+				ee.programa_general IN 
+				<foreach collection="programas" open="(" separator="," close=")" item="item" index="index">
+						#{item}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY ee.entidad, ee.region_edomex_2017, ee.nombre_region, ee.municipio, ee.nombre_municipio, ems.contactos_gem, ems.meta_gem , ems.contactos_liconsa, ems.meta_liconsa , ems.contactos_prospera, ems.meta_prospera 
+		ORDER BY ee.entidad, ee.region_edomex_2017, ee.nombre_region, ee.municipio, ee.nombre_municipio, ems.contactos_gem, ems.meta_gem , ems.contactos_liconsa, ems.meta_liconsa , ems.contactos_prospera, ems.meta_prospera 
+	</select>
+	
+	<select id="resultadoRegionPrograma" resultMap="resultadoRegionPrograma" parameterType="hashmap">
+		SELECT  
+			row_number() OVER (ORDER BY ee.entidad) AS id,  
+			ee.entidad, ee.region_edomex_2017 region, ee.nombre_region, COUNT(DISTINCT(ee.municipio)) num_municipio,  COUNT(DISTINCT(ee.seccion)) num_seccion,			
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='EXITOSO' THEN 1 ELSE 0 END) exitoso_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END) no_hubo_quien_contestara_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END) menor_de_edad_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END) domicilio_no_encontrado_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END) no_quisieron_contestar_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' AND r.estatus='OTRO' THEN 1 ELSE 0 END) otro_gem,
+			SUM(CASE WHEN ee.programa_general='GEM' THEN 1 ELSE 0 END) totalGem,
+			ems.contactos_gem totalTotalGem,
+			ems.meta_gem metaGem,			
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='EXITOSO' THEN 1 ELSE 0 END) exitoso_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END) no_hubo_quien_contestara_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END) menor_de_edad_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END) domicilio_no_encontrado_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END) no_quisieron_contestar_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' AND r.estatus='OTRO' THEN 1 ELSE 0 END) otro_liconsa,
+			SUM(CASE WHEN ee.programa_general='LICONSA' THEN 1 ELSE 0 END) totalLiconsa,
+			ems.contactos_liconsa totalTotalLiconsa,
+			ems.meta_liconsa metaLiconsa,			
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='EXITOSO' THEN 1 ELSE 0 END) exitoso_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END) no_hubo_quien_contestara_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END) menor_de_edad_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END) domicilio_no_encontrado_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END) no_quisieron_contestar_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' AND r.estatus='OTRO' THEN 1 ELSE 0 END) otro_prospera,
+			SUM(CASE WHEN ee.programa_general='PROSPERA' THEN 1 ELSE 0 END) totalProspera,
+			ems.contactos_prospera totalTotalProspera,
+			ems.meta_prospera metaProspera,			
+			SUM(CASE WHEN r.estatus='EXITOSO' THEN 1 ELSE 0 END) exitoso,
+			SUM(CASE WHEN r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END) no_hubo_quien_contestara,
+			SUM(CASE WHEN r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END) menor_de_edad,
+			SUM(CASE WHEN r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END) domicilio_no_encontrado,
+			SUM(CASE WHEN r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END) no_quisieron_contestar,
+			SUM(CASE WHEN r.estatus='OTRO' THEN 1 ELSE 0 END) otro,
+			COUNT(ee.id_interno) total,
+			(ems.contactos_prospera+contactos_liconsa+contactos_gem) totalTotal,
+			(ems.meta_prospera+ems.meta_gem+ems.meta_liconsa) meta			
+		FROM (SELECT id_contacto,estatus FROM encuestas_resultados.e_edomex UNION SELECT id_contacto,estatus FROM encuestas_resultados.e_edomex_prospera) r			
+		JOIN encuestas.encuesta_edomex ee ON (ee.id_interno=r.id_contacto::INTEGER)
+		JOIN encuestas_resultados.edomex_millon_regiones ems ON (ems.region=ee.region_edomex_2017)
+		<where>
+			<if test="municipios!=null">
+				ee.municipio IN 
+				<foreach collection="municipios" open="(" separator="," close=")" item="item" index="index">
+						#{item.idMunicipio}
+				</foreach> <if test="programas!=null"> AND</if>
+			</if>
+			<if test="regiones!=null">
+				ee.region_edomex_2017 IN 
+				<foreach collection="regiones" open="(" separator="," close=")" item="item" index="index">
+						#{item.idParticion}
+				</foreach> <if test="programas!=null"> AND</if>
+			</if>
+			<if test="programas!=null">
+				ee.programa_general IN 
+				<foreach collection="programas" open="(" separator="," close=")" item="item" index="index">
+						#{item}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY ee.entidad, ee.region_edomex_2017, ee.nombre_region, ems.contactos_gem, ems.meta_gem , ems.contactos_liconsa, ems.meta_liconsa , ems.contactos_prospera, ems.meta_prospera 
+		ORDER BY ee.entidad, ee.region_edomex_2017, ee.nombre_region, ems.contactos_gem, ems.meta_gem , ems.contactos_liconsa, ems.meta_liconsa , ems.contactos_prospera, ems.meta_prospera 
+	</select>
+</mapper>

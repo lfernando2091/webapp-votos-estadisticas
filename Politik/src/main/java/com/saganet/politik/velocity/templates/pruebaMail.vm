@@ -1,0 +1,9 @@
+<html>
+    <body>
+        <h3>Hi ${nombre}, welcome to the Chipping Sodbury On-the-Hill message boards!</h3>
+		
+		#foreach($usuario in $usuarios)
+			<h1>$usuario</h1>
+		#end
+    </body>
+</html>

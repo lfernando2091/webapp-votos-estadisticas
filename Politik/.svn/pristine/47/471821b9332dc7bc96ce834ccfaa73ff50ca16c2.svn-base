@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Dispositivos Moviles" />
+					</p:breadCrumb>
+					
+					<p:panel header="Dispositivos Registrados">
+					<p:dataTable value="${modelo.listado}" var="f" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="buttom"
+					rows="10" rowKey="${f.id}" selection="${modelo.seleccionado}" selectionMode="single">
+					<p:column headerText="Id Registro">
+					<p:outputLabel value="${f.idRegistro}"/>
+					</p:column>
+					<p:column headerText="Número de Serie">
+					<p:outputLabel value="${f.serie}"/>
+					</p:column>
+					<p:column headerText="IMEI 1">
+					<p:outputLabel value="${f.imei1}"/>
+					</p:column>
+					<p:column headerText="IMEI 2">
+					<p:outputLabel value="${f.imei2}"/>
+					</p:column>
+					
+					<p:column headerText="Modelo">
+					<p:outputLabel value="${f.modelo.nombre}"/>
+					</p:column>
+					
+					<p:column headerText="Estatus">
+					<p:outputLabel value="${f.estatus.nombre}"/>
+					</p:column>
+					<p:column headerText="Captura">
+					<p:outputLabel value="${f.nick} ${f.fechaCaptura}"/>
+					</p:column>
+					</p:dataTable>
+					
+					<f:facet name="footer">
+					<p:commandLink action="agregar" title="Agregar nuevo dispositivo">
+					<p:graphicImage value="/resources/botones/AGREGAR.png" />
+					</p:commandLink>
+					
+					
+					<p:commandLink action="editar" title="Actualizar dispositivo">
+					<p:graphicImage value="/resources/botones/EDITAR.png" />
+					</p:commandLink>
+					</f:facet>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>
+				

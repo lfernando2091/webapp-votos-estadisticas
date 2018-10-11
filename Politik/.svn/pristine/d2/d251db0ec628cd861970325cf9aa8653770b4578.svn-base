@@ -1,0 +1,75 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Tablas Warehouse" />
+					</p:breadCrumb>
+
+					<p:panel header="Tablas Warehouse">
+						<p:panelGrid columns="2" columnClasses="topAlign, topAlign">
+							<p:dataTable value="${tablaTablas.listado}" var="fila"
+								rowKey="${fila.id}" selection="${tablaTablas.seleccionado}"
+								selectionMode="single" paginator="true" rows="15"
+								paginatorPosition="bottom">
+								<p:ajax event="rowSelect"
+									update="#{p:component('tablaParticiones')}" />
+								<f:facet name="header">Tablas</f:facet>
+								<p:column headerText="Tabla" width="100">${fila.tabla}</p:column>
+								<p:column headerText="Descripcion">${fila.descripcion}</p:column>
+								<f:facet name="footer">
+									<p:commandLink  id="botonMuestraTabla">
+											<p:graphicImage value="/resources/botones/MUESTRA.png" />
+									</p:commandLink>
+<!-- 									<p:commandButton id="botonMuestraTabla" value="Muestra"/> -->
+								</f:facet>
+							</p:dataTable>
+
+							<p:dataTable id="tablaParticiones"
+								value="${tablaTablas.seleccionado.particiones}" var="fila"
+								rowKey="${fila.id}" selection="${particionSeleccionada}"
+								selectionMode="single" paginator="true" rows="15"
+								paginatorPosition="bottom">
+<!-- 								<p:ajax event="rowSelect" onstart="PF('botonMuestraParticionWV').enable()" /> -->
+								<f:facet name="header">Particiones</f:facet>
+								<p:column headerText="Nombre">${fila.particion}</p:column>
+								<f:facet name="footer">
+									<p:commandLink  id="botonMuestraParticion"  disabled="${particionSeleccionada!=null}">
+											<p:graphicImage value="/resources/botones/MUESTRA.png" />
+									</p:commandLink>
+<!-- 									<p:commandButton id="botonMuestraParticion" widgetVar="botonMuestraParticionWV" value="Muestra" disabled="true" /> -->
+								</f:facet>
+							</p:dataTable>
+
+							<f:facet name="footer">
+								<p:commandButton value="Agregar Tabla" action="agregar" />
+							</f:facet>
+						</p:panelGrid>
+					</p:panel>
+					
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+						}
+						.ui-datatable-footer{
+							text-align: left !important;
+						}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

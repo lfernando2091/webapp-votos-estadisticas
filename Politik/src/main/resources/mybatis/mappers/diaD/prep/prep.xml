@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="diaD.prep.prep">
+
+	<resultMap type="DiaDPrepEO" id="prep">
+		<id          	 column="PrepEO_id"         				property="id" 						javaType="Integer" />
+		<result          column="PrepEO_ubicacion_Casilla"      	property="ubicacionCasilla"			javaType="String"/>
+		<result          column="PrepEO_computada"      			property="computada"				javaType="boolean"/>
+		
+		<result          column="PrepEO_pan"          				property="pan"     					javaType="Integer"/>
+		<result          column="PrepEO_pri"          				property="pri"     					javaType="Integer"/>
+		<result          column="PrepEO_prd"          				property="prd"     					javaType="Integer"/>
+		<result          column="PrepEO_pt"          				property="pt"     					javaType="Integer"/>
+		<result          column="PrepEO_pvem"          				property="pvem"     				javaType="Integer"/>
+		<result          column="PrepEO_pes"          				property="pes"     					javaType="Integer"/>
+		<result          column="PrepEO_morena"          			property="morena"     				javaType="Integer"/>
+		<result          column="PrepEO_panal"          			property="panal"     				javaType="Integer"/>
+		<result          column="PrepEO_independiente"          	property="independiente"     		javaType="Integer"/>
+		
+		<result          column="PrepEO_pri_pvem_panal_pes"     	property="pri_pvem_panal_pes"   	javaType="Integer"/>
+		<result          column="PrepEO_pri_pvem_panal"         	property="pri_pvem_panal"     		javaType="Integer"/>
+		<result          column="PrepEO_pri_pvem_pes"          		property="pri_pvem_pes"     		javaType="Integer"/>
+		<result          column="PrepEO_pri_panal_pes"          	property="pri_panal_pes"     		javaType="Integer"/>
+		<result          column="PrepEO_pvem_panal_pes"         	property="pvem_panal_pes"     		javaType="Integer"/>
+		<result          column="PrepEO_pri_pvem"          			property="pri_pvem"     			javaType="Integer"/>
+		<result          column="PrepEO_pri_panal"          		property="pri_panal"     			javaType="Integer"/>
+		<result          column="PrepEO_pri_pes"          			property="pri_pes"     				javaType="Integer"/>
+		<result          column="PrepEO_pvem_panal"          		property="pvem_panal"     			javaType="Integer"/>
+		<result          column="PrepEO_pvem_pes"          			property="pvem_pes"     			javaType="Integer"/>
+		<result          column="PrepEO_panal_pes"          		property="panal_pes"     			javaType="Integer"/>
+		
+		<result          column="PrepEO_nulos"          			property="nulos"     				javaType="Integer"/>
+		<result          column="PrepEO_noRegistrados"         	 	property="noRegistrado"     		javaType="Integer"/>
+		<result          column="PrepEO_listadoNominal"         	property="listadoNominal"     		javaType="Integer"/>
+		<result          column="PrepEO_validos"          			property="validos"     				javaType="Integer"/>
+		<result          column="PrepEO_total_pri_pvem_panal_pes"   property="total_pri_pvem_panal_pes" javaType="Integer"/>
+		<result          column="PrepEO_votosTotales"          		property="votosTotales"     		javaType="Integer"/>
+		
+		<association     column="PrepEO_casilla"          			property="casilla"     				select="catalogos.casillas.porLlaveSimple"/>
+		<association     column="PrepEO_idRegion"          			property="region"     				select="catalogos.geozonas.particionPorLlave"/>
+	</resultMap>
+	
+	
+	<resultMap type="DiaDPrepReporteEO" id="prepReporte">
+		<id          	 column="DiaDPrepReporteEO_id"         					property="id" 						javaType="Integer" />		
+		<result          column="DiaDPrepReporteEO_pan"          				property="pan"     					javaType="Integer"/>
+		<result          column="DiaDPrepReporteEO_total_pri_pvem_panal_pes"    property="total_pri_pvem_panal_pes" javaType="Integer"/>
+		<result          column="DiaDPrepReporteEO_prd"          				property="prd"     					javaType="Integer"/>
+		<result          column="DiaDPrepReporteEO_pt"          				property="pt"     					javaType="Integer"/>
+		<result          column="DiaDPrepReporteEO_morena"          			property="morena"     				javaType="Integer"/>
+		<result          column="DiaDPrepReporteEO_independiente"          		property="independiente"     		javaType="Integer"/>		
+		<result          column="DiaDPrepReporteEO_nulos"          				property="nulos"     				javaType="Integer"/>
+		<result          column="DiaDPrepReporteEO_noRegistrados"         	 	property="noRegistrado"     		javaType="Integer"/>
+		<result          column="DiaDPrepReporteEO_validos"          			property="validos"     				javaType="Integer"/>
+		<result          column="DiaDPrepReporteEO_votosTotales"          		property="votosTotales"     		javaType="Integer"/>		
+		<result          column="DiaDPrepReporteEO_conVotos"          			property="conVotos"     			javaType="Integer"/>
+		<result          column="DiaDPrepReporteEO_computadas"          		property="computadas"     			javaType="Integer"/>
+	</resultMap>
+	
+	<resultMap type="DiaDPrepReporteMunicipioEO" id="prepReporteMunicipio">
+		<id          	 column="DiaDPrepReporteMunicipioEO_id"         				property="id" 						javaType="Integer" />		
+		<result          column="DiaDPrepReporteMunicipioEO_pan"          				property="pan"     					javaType="Integer"/>
+		<result          column="DiaDPrepReporteMunicipioEO_pri"    					property="pri" 						javaType="Integer"/>
+		<result          column="DiaDPrepReporteMunicipioEO_prd"          				property="prd"     					javaType="Integer"/>
+		<result          column="DiaDPrepReporteMunicipioEO_pt"          				property="pt"     					javaType="Integer"/>
+		<result          column="DiaDPrepReporteMunicipioEO_morena"          			property="morena"     				javaType="Integer"/>
+		<result          column="DiaDPrepReporteMunicipioEO_independiente"          	property="independiente"     		javaType="Integer"/>
+		<result          column="DiaDPrepReporteMunicipioEO_ganador"          			property="ganador"     				javaType="com.saganet.politik.dominios.PartidosEleccionEdomex2017DO"/>
+		<association     column="DiaDPrepReporteMunicipioEO_llave_municipio"          	property="municipio"     			select="catalogos.municipios.buscarPorLlave"/>
+	</resultMap>
+
+	<sql id="query">
+		SELECT 
+			PrepEO.pkey							PrepEO_id,
+			PrepEO.casilla 						PrepEO_casilla,
+			PrepEO.ubicacion_casilla 			PrepEO_ubicacionCasilla,
+			PrepEO.pan 							PrepEO_pan,
+			PrepEO.pri 							PrepEO_pri,
+			PrepEO.prd 							PrepEO_prd,
+			PrepEO.pt 							PrepEO_pt,
+			PrepEO.pvem 						PrepEO_pvem,
+			PrepEO.pes 							PrepEO_pes,
+			PrepEO.morena 						PrepEO_morena,
+			PrepEO.panal 						PrepEO_panal,
+			PrepEO.independiente 				PrepEO_independiente,
+			PrepEO.pri_pvem_panal_pes 			PrepEO_pri_pvem_panal_pes,
+			PrepEO.pri_pvem_panal 				PrepEO_pri_pvem_panal,
+			PrepEO.pri_pvem_pes 				PrepEO_pri_pvem_pes,
+			PrepEO.pri_panal_pes 				PrepEO_pri_panal_pes,
+			PrepEO.pvem_panal_pes 				PrepEO_pvem_panal_pes,
+			PrepEO.pri_pvem 					PrepEO_pri_pvem,
+			PrepEO.pri_panal 					PrepEO_pri_panal,
+			PrepEO.pri_pes 						PrepEO_pri_pes,
+			PrepEO.pvem_panal 					PrepEO_pvem_panal,
+			PrepEO.pvem_pes 					PrepEO_pvem_pes,
+			PrepEO.panal_pes 					PrepEO_panal_pes,
+			PrepEO.nulos 						PrepEO_nulos,
+			PrepEO.no_registrados 				PrepEO_noRegistrados,
+			PrepEO.listado_nominal 				PrepEO_listadoNominal,
+			PrepEO.votos_totales				PrepEO_votosTotales,
+			PrepEO.computada					PrepEO_computada,
+			PrepEO.validos						PrepEO_validos,
+			PrepEO.total_pri_pvem_panal_pes		PrepEO_total_pri_pvem_panal_pes
+		FROM edomex2017.prep_2017 PrepEO
+	</sql>
+	
+	
+	
+	<sql id="querySuma">
+		SELECT 
+			1																		DiaDPrepReporteEO_id,
+			sum(CASE WHEN DiaDPrepReporteEO.votos_totales>0 THEN 1 ELSE 0 END) 		DiaDPrepReporteEO_conVotos,
+			sum(CASE WHEN DiaDPrepReporteEO.computada THEN 1 ELSE 0 END) 			DiaDPrepReporteEO_computadas,
+			sum(DiaDPrepReporteEO.pan)  											DiaDPrepReporteEO_pan,
+			sum(DiaDPrepReporteEO.total_pri_pvem_panal_pes)  						DiaDPrepReporteEO_total_pri_pvem_panal_pes,
+			sum(DiaDPrepReporteEO.prd)  											DiaDPrepReporteEO_prd,
+			sum(DiaDPrepReporteEO.pt)  												DiaDPrepReporteEO_pt,
+			sum(DiaDPrepReporteEO.morena)  											DiaDPrepReporteEO_morena,
+			sum(DiaDPrepReporteEO.independiente)  									DiaDPrepReporteEO_independiente,
+			sum(DiaDPrepReporteEO.nulos)  											DiaDPrepReporteEO_nulos,
+			sum(DiaDPrepReporteEO.no_registrados)  									DiaDPrepReporteEO_noRegistrados,
+			sum(DiaDPrepReporteEO.listado_nominal)  								DiaDPrepReporteEO_listadoNominal,
+			sum(DiaDPrepReporteEO.votos_totales)  									DiaDPrepReporteEO_votosTotales,
+			sum(DiaDPrepReporteEO.validos)  										DiaDPrepReporteEO_validos					
+		FROM edomex2017.prep_2017 													DiaDPrepReporteEO
+	</sql>
+	
+	
+	<sql id="queryMunicipios">
+		SELECT 
+       		   SeccionEO.id_municipio 																					DiaDPrepReporteMunicipioEO_id,
+			   SeccionEO.id_entidad||'-'||SeccionEO.id_municipio 														DiaDPrepReporteMunicipioEO_llave_municipio,
+		       sum(pan) 																								DiaDPrepReporteMunicipioEO_pan, 
+		       sum(total_pri_pvem_panal_pes) 																			DiaDPrepReporteMunicipioEO_pri, 
+		       sum(prd) 																								DiaDPrepReporteMunicipioEO_prd,  
+		       sum(pt) 																									DiaDPrepReporteMunicipioEO_pt,
+		       sum(morena) 																								DiaDPrepReporteMunicipioEO_morena, 
+		       sum(independiente) 																						DiaDPrepReporteMunicipioEO_independiente, 
+		       (CASE WHEN sum(total_pri_pvem_panal_pes)>=sum(pan) AND sum(total_pri_pvem_panal_pes)>=sum(prd)
+				 AND sum(total_pri_pvem_panal_pes)>=sum(pt)
+				 AND sum(total_pri_pvem_panal_pes)>=sum(morena) 
+				 AND sum(total_pri_pvem_panal_pes)>=sum(independiente) THEN 'PRI'
+			     WHEN sum(pan)>=sum(prd) AND sum(pan)>=sum(pt) AND sum(pan)>=sum(morena) 
+			          AND sum(pan)>=sum(independiente) THEN 'PAN'
+			     WHEN sum(morena)>=sum(pt) AND sum(morena)>=sum(prd) 
+			          AND sum(morena)>=sum(independiente) THEN 'MORENA'
+			     WHEN sum(prd)>=sum(pt) AND sum(prd)>=sum(independiente) THEN 'PRD'
+			     WHEN sum(pt)>=sum(independiente) THEN 'PT'
+		        ELSE 'INDEPENDIENTE' END) 																				DiaDPrepReporteMunicipioEO_ganador
+		  FROM edomex2017.prep_2017 																					DiaDPrepReporteMunicipioEO
+		  JOIN catalogos.secciones 														SeccionEO ON (DiaDPrepReporteMunicipioEO.llave_seccion=SeccionEO.llave)
+		  GROUP BY SeccionEO.id_entidad, SeccionEO.id_municipio
+	</sql>
+	
+	<sql id="OrderBy">
+		ORDER BY PrepEO.casilla, PrepEO.computada, PrepEO.listado_nominal 
+	</sql>
+	
+	
+	<select id="listadoMunicipios" resultMap="prepReporteMunicipio">
+		<include refid="queryMunicipios"/>
+	</select>
+	
+	<select id="listadoReporte" resultMap="prepReporte">
+		<include refid="querySuma"/>
+	</select>
+	
+	<select id="listado" resultMap="prep" parameterType="SeccionEO">
+		<include refid="query"/>
+		<where>
+			PrepEO.llave_seccion=#{llave}
+		</where>
+		<include refid="OrderBy"/>
+	</select>
+	
+	<update id="actualizar" parameterType="DiaDPrepEO">
+		UPDATE edomex2017.prep_2017
+		   SET
+			   pan=#{pan}, pri=#{pri}, pt=#{pt}, prd=#{prd}, panal=#{panal}, pvem=#{pvem}, pes=#{pes}, morena=#{morena}, independiente=#{independiente}, 
+		       pri_pvem_panal_pes=#{pri_pvem_panal_pes}, pri_pvem_panal=#{pri_pvem_panal}, pri_pvem_pes=#{pri_pvem_pes}, pri_panal_pes=#{pri_panal_pes}, 
+		       pvem_panal_pes=#{pvem_panal_pes}, pri_pvem=#{pri_pvem}, pri_panal=#{pri_panal}, pri_pes=#{pri_pes}, pvem_panal=#{pvem_panal}, 
+		       pvem_pes=#{pvem_pes}, panal_pes=#{panal_pes}, nulos=#{nulos}, no_registrados=#{noRegistrado}, listado_nominal=#{listadoNominal}, 
+		       votos_totales=#{votosTotales}, computada=#{computada}, validos=#{validos}, total_pri_pvem_panal_pes=#{total_pri_pvem_panal_pes}
+		 WHERE pkey=#{id}
+	</update>
+	
+	
+	
+</mapper>

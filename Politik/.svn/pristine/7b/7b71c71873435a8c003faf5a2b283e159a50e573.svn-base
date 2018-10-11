@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.dFederales">
+	<cache />
+	
+	<resultMap type="DFederalEO" id="DFederal">
+		<id column="DFederalEO_id" property="id" javaType="Integer"/>
+		<result column="DFederalEO_idDFederal" property="idDFederal" javaType="Integer"/>
+		<result column="DFederalEO_nombre" property="nombre" javaType="String"/>
+		<result column="DFederalEO_llave" property="llave" javaType="String"/>
+		<association property="entidad" resultMap="catalogos.entidades.entidad" />
+		<association property="geoData" resultMap="gis.geoData.geoData" columnPrefix="DFederalEO_" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			DFederalEO.pkey 						DFederalEO_id,
+			DFederalEO.id_dFederal 					DFederalEO_idDFederal,
+			DFederalEO.dfederal						DFederalEO_nombre,
+			DFederalEO.llave 						DFederalEO_llave,
+			st_xmin(ST_Extent(GisDFederales.geom)) 	DFederalEO_GeoDataEO_xMin,
+			st_ymin(ST_Extent(GisDFederales.geom)) 	DFederalEO_GeoDataEO_yMin,
+			st_xmax(ST_Extent(GisDFederales.geom)) 	DFederalEO_GeoDataEO_xMax,
+			st_ymax(ST_Extent(GisDFederales.geom)) 	DFederalEO_GeoDataEO_yMax,
+			EntidadEO.id_entidad 					EntidadEO_id,
+			EntidadEO.entidad 						EntidadEO_nombre,
+			st_xmin(ST_Extent(GisEntidades.geom)) 	EntidadEO_GeoDataEO_xMin,
+			st_ymin(ST_Extent(GisEntidades.geom)) 	EntidadEO_GeoDataEO_yMin,
+			st_xmax(ST_Extent(GisEntidades.geom)) 	EntidadEO_GeoDataEO_xMax,
+			st_ymax(ST_Extent(GisEntidades.geom)) 	EntidadEO_GeoDataEO_yMax
+		FROM catalogos.dfederales DFederalEO
+		JOIN catalogos.entidades EntidadEO on (DFederalEO.id_entidad = EntidadEO.id_entidad)
+		JOIN gis.entidades GisEntidades ON (EntidadEO.id_entidad = GisEntidades.id_entidad)
+		JOIN gis.dfederales GisDFederales ON (DFederalEO.llave = GisDFederales.llave)
+	</sql>
+	
+	<sql id="queryGroup">
+		GROUP BY DFederalEO.pkey, DFederalEO.id_dFederal, DFederalEO.dfederal, DFederalEO.llave, EntidadEO.id_entidad, EntidadEO.entidad
+	</sql>
+	
+	<select id="listado" resultMap="DFederal" parameterType="EntidadEO">
+		<include refid="query" />
+		<where>
+			<if test="id != null">
+				DFederalEO.id_entidad = #{id}
+			</if>
+		</where>
+		<include refid="queryGroup" />
+		ORDER BY DFederalEO.id_dfederal
+	</select>
+	
+	<select id="listadoPorEntidades" resultMap="DFederal" parameterType="list">
+		<include refid="query" />
+		<where>
+			<choose>
+				<when test="list != null">
+					DFederalEO.id_entidad in 
+					<foreach collection="list" open="(" separator="," close=")" item="item" index="index">
+						${item.id}
+					</foreach>
+				</when>
+				<otherwise>
+					DFederalEO.id_entidad = 0
+				</otherwise>
+			</choose>
+		</where>
+		<include refid="queryGroup" />
+		ORDER BY DFederalEO.id_entidad, DFederalEO.id_dfederal
+	</select>
+	
+	<select id="listadoPorEleccionLlave" resultMap="DFederal" parameterType="EleccionEO">
+		<include refid="query" />
+		<where>
+			DFederalEO.llave in (
+				SELECT EleccionesLlaves.llave 
+				FROM catalogos.elecciones_llaves EleccionesLlaves 
+				WHERE EleccionesLlaves.id_eleccion = #{id}
+			)
+		</where> 
+		<include refid="queryGroup" />
+		ORDER BY DFederalEO.id_entidad, DFederalEO.id_dfederal
+	</select>
+	
+	<select id="listadoPorUsuario" parameterType="UsuarioEO" resultMap="DFederal">
+		<include refid="query" />
+		<where>
+			DFederalEO.llave in (
+				SELECT UsuariosLlaves.llave
+				FROM administracion.usuarios_llaves UsuariosLlaves
+				WHERE nick = #{nick}
+			)
+		</where>
+		<include refid="queryGroup" />
+	</select>
+	
+	
+	<select id="dfederalInLlaves" parameterType="String" resultMap="DFederal">
+		<include refid="query"/>
+		<where>
+			DFederalEO.llave IN (${value})
+		</where>
+		<include refid="queryGroup"/>
+	</select>
+</mapper>

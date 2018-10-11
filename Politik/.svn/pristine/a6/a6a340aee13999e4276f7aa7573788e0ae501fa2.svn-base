@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	<input name="flag" type="java.lang.Boolean" />
+
+	<input name="ruta" type="java.lang.String" />
+
+	<view-state id="listado">
+		<on-entry>
+
+			<evaluate expression="ruta==null?'C:\\reportes':ruta"
+				result="viewScope.ruta" />
+
+			<!-- <set name="flowScope.ruta" value="'C:\\reportes'"/> -->
+			<evaluate expression="BibliotecaC.tabla(viewScope.ruta)"
+				result="viewScope.contenidoCarpeta" />
+
+		</on-entry>
+		<transition on="recargar">
+			<set name="flowScope.seleleccionadoAnterior" value="viewScope.ruta" />
+			<evaluate
+				expression="BibliotecaC.tabla(viewScope.contenidoCarpeta.seleccionado.getArchivo().getAbsolutePath())"
+				result="viewScope.contenidoCarpeta" />
+
+
+		</transition>
+		<transition on="descargar">
+			<evaluate
+				expression="BibliotecaC.descargaArchivo(viewScope.contenidoCarpeta.seleccionado.getArchivo())"></evaluate>
+		</transition>
+		<transition on="director">
+			<evaluate
+				expression="BibliotecaC.director(viewScope.contenidoCarpeta.seleccionado.getArchivo())"
+				result="viewScope.contenidoCarpeta" />
+		</transition>
+		<transition on="agregar" to="agregar" />
+		<transition on="cancelar" to="listado" />
+		<transition on="volver">
+
+
+			<set name="ruta" value="FileUploadManagedBean.getRutaAnterior()" />
+			<evaluate expression="BibliotecaC.tabla(ruta)" result="viewScope.contenidoCarpeta" />
+
+		</transition>
+
+		<transition on="nuevaC">
+			<set name="viewScope.nombreFolder" value="'Nueva Carpeta'"></set>
+		</transition>
+		<transition on="crearCarpeta" >
+		
+			<evaluate
+				expression="BibliotecaC.crearCarpeta(FileUploadManagedBean.getRutaActual(),viewScope.nombreFolder)"/>
+					
+					<evaluate
+				expression="BibliotecaC.tabla(FileUploadManagedBean.getRutaActual())"
+				result="viewScope.contenidoCarpeta" />
+		</transition>
+		<transition on="siguiente" to="fin">
+		<set name="requestScope.archivo" value="viewScope.contenidoCarpeta.seleccionado.getArchivo()" />
+		</transition>
+	</view-state>
+
+
+	<view-state id="agregar">
+		<transition on="guardado" to="listado"></transition>
+		<transition on="cancelar" to="listado">
+			<set name="ruta" value="FileUploadManagedBean.getRutaActual()" />
+		</transition>
+		
+	</view-state>
+
+
+	<end-state id="fin">
+		<on-entry>
+			<set name="conversationScope.archivo" value="viewScope.contenidoCarpeta.seleccionado.getArchivo" />
+		</on-entry>
+	</end-state>
+</flow>

@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:focus for="${p:component('inputFolio')}" />
+					<p:panel header="Jornada Electoral - Captura de Promoción">
+						<p:tabView>
+							<p:tab title="Folio">
+								<p:panel header="Registro por Folio">
+									<p:messages autoUpdate="true" for="registroFolio" />
+									<p:panelGrid columns="2">
+										<p:outputLabel value="Folio" />
+										<p:inputText id="inputFolio" value="${mapa.folio}" />
+									</p:panelGrid>
+									
+									<f:facet name="footer">
+										<p:commandButton value="Registrar" action="registrarFolio" update="@form" />
+									</f:facet>
+								</p:panel>
+							</p:tab>
+							<p:tab title="Listado">
+								<p:panel header="Registro por Listado">
+									<p:panelGrid  columns="2">
+										<p:outputLabel value="Municipio" />
+										<p:selectOneMenu value="${modeloMunicipios.seleccionado}" converter="ObjectConverter" style="width: 250px;">
+											<p:ajax event="itemSelect" onstart="actualizarSecciones()" />
+											<f:selectItems value="${modeloMunicipios.listado}" var="m" itemLabel="${m.nombre}" itemValue="${m}" />
+										</p:selectOneMenu>
+										<p:outputLabel value="Sección" />
+										<p:selectOneMenu id="comboSecciones" value="${modeloSecciones.seleccionado}" converter="ObjectConverter" style="width: 100px;">
+											<p:ajax event="itemSelect" onstart="actualizarMovilizadores()" />
+											<f:selectItems value="${modeloSecciones.listado}" var="s" itemLabel="${s.idSeccion}" itemValue="${s}" />
+										</p:selectOneMenu>
+									</p:panelGrid>
+									<p:separator />
+									<p:dataTable id="tablaMovilizadores" value="${modeloMovilizadores.listado}" var="fila">
+										<p:column headerText="Nombre" filterBy="${fila.primerApellido} ${fila.segundoApellido} ${fila.nombre}" filterMatchMode="contains" width="140">${fila.primerApellido} ${fila.segundoApellido} ${fila.nombre}</p:column>
+										<p:column headerText="Reg" width="50">
+											<p:commandButton value="${fila.registroJornada?'Si':'No'}" onstart="registrarFolio2()" onclick="PF('dlg1').show()" styleClass="${fila.registroJornada?'GreenButton':'RedButton'}" >
+												<f:setPropertyActionListener value="${fila.folio}" target="${mapa.folio2}" />
+												<f:setPropertyActionListener value="${fila.registroJornada}" target="${mapa.registroJornada2}" />
+											</p:commandButton>
+										</p:column>
+									</p:dataTable>
+								</p:panel>
+							</p:tab>
+						</p:tabView>
+					</p:panel>
+					
+					<p:remoteCommand name="actualizarSecciones" action="actualizarSecciones" update="${p:component('comboSecciones')}" />
+					<p:remoteCommand name="actualizarMovilizadores" action="actualizarMovilizadores" update="${p:component('tablaMovilizadores')}" />
+					<p:remoteCommand name="registrarFolio2" action="registrarFolio2" update="${p:component('tablaMovilizadores')}" oncomplete="PF('dlg1').hide();" />
+					
+					<p:dialog header="Procesando..." widgetVar="dlg1" minHeight="200"  modal="true" closable="false">
+					    <h:outputText value="Espere un momento" />
+					    <p:graphicImage value="/resources/spark-layout/images/preloader.gif" />
+					</p:dialog>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,113 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Movilizador" rendered="true">
+						<p:panelGrid columns="2" styleClass="panelNoBorder panelNoBorder">
+							<p:outputLabel value="Seccional" />
+							<p:outputLabel
+								value="${modeloSeccionales.seleccionado.nombre} ${modeloSeccionales.seleccionado.primerApellido} ${modeloSeccionales.seleccionado.segundoApellido}" />
+							<p:outputLabel value="Movilizador" />
+							<p:outputLabel
+								value="${modeloMovilizadores.seleccionado.nombre} ${modeloMovilizadores.seleccionado.primerApellido} ${modeloMovilizadores.seleccionado.segundoApellido}" />
+
+						</p:panelGrid>
+					</p:panel>
+					<p:panel header="Asignaciones a Movilizador">
+						<p:dataTable value="${modeloMovilizados.listado}" id="tablaDatos"
+							var="f" selectionMode="single"
+							selection="${modeloMovilizados.seleccionado}" rowKey="${f.id}"
+							paginator="true" rows="20" paginatorAlwaysVisible="false"
+							paginatorPosition="bottom" reflow="true">
+							<p:ajax event="rowDblselect" onstart="mostrarDetalle()" />
+							<p:column headerText="Folio" filterable="true"
+								filterBy="${f.folio}" filterMatchMode="contains">
+								<p:outputLabel value="${f.folio}  " />
+							</p:column>
+							<p:column headerText="Nombre" filterable="true"
+								filterBy="${f.region}" filterMatchMode="contains">
+								<p:outputLabel
+									value="${f.nombre} ${f.primerApellido} ${f.segundoApellido} " />
+							</p:column>
+							<p:column headerText="Calificación" filterable="true"
+								filterBy="${f.calificacion}" filterMatchMode="contains">
+								<p:outputLabel value="${f.calificacion.nombre}  " />
+							</p:column>
+
+
+							<f:facet name="footer">
+								<h:commandLink>
+									<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+									<p:dataExporter type="xls" target="tablaDatos"
+										fileName="Metas Seccionales" />
+								</h:commandLink>
+							</f:facet>
+
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandButton value="Movilizadores" action="movilizadores"
+								immediate="true" />
+							<p:commandButton value="Salir" action="salir" immediate="true" />
+						</f:facet>
+					</p:panel>
+
+					<p:remoteCommand name="mostrarDetalle" update="@form"
+						action="mostrarDetalle" oncomplete="PF('dlg2').show();" />
+					<p:dialog header="Detalle Asignación" widgetVar="dlg2" modal="true"
+						width="600" >
+						<p:panelGrid columns="2">
+						<p:outputLabel value="Ubicación Geográfica: "/>
+						<p:outputLabel value="Municipio: ${contacto.municipio} ${contacto.nombre_municipio} - Localidad: ${contacto.nombre_localidad} - Sección: ${contacto.seccion} - Manzana: ${contacto.manzana}"/>
+						<p:outputLabel value="Movilizado: "/>
+						<p:outputLabel value="(${contacto.id_interno}) ${contacto.nombre} ${contacto.apellido_paterno} ${contacto.apellido_materno}"/>
+						<p:outputLabel value="Genero: "/>
+						<p:outputLabel value="${contacto.sexo}"/>
+						<p:outputLabel value="Dirección: "/>
+						<p:outputLabel value="${contacto.calle} ${contacto.num_interior} ${contacto.numero_exterior} ${contacto.colonia}"/>
+						</p:panelGrid>
+					</p:dialog>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			}
+			.negritas{
+			font-weight: bold;
+			}
+			
+			.topAlign{
+				vertical-align: top;
+			} 
+			.ui-selectoneradio.ui-widget td {
+     border: 0 none !important;
+}
+.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+border: hidden;
+border-color: white;
+}
+.negritas{
+			font-weight: bold !important;
+			}
+		</h:outputStylesheet>
+
+		<h:outputScript>
+			window.onload = function() {
+				gmap = PF('mapaWV').getMap();
+			}
+		</h:outputScript>
+
+	</ui:define>
+
+</ui:composition>

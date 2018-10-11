@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estadisticas.variables">
+	<cache />
+	
+	<resultMap type="VariableEO" id="variable">
+		<id column="VariableEO_id" property="id" javaType="Integer"/>
+		<result column="VariableEO_campo" property="campo" javaType="String"/>
+		<result column="VariableEO_descripcion" property="descripcion" javaType="String"/>
+		<result column="VariableEO_tipoCampo" property="tipo" javaType="com.saganet.politik.dominios.TiposCampoDO"/>
+		<result column="VariableEO_valorDefault" property="valorDefault" javaType="String"/>
+		<result column="VariableEO_entidad" property="entidad" javaType="Boolean"/>
+		<result column="VariableEO_dfederal" property="dfederal" javaType="Boolean"/>
+		<result column="VariableEO_dlocal" property="dlocal" javaType="Boolean"/>
+		<result column="VariableEO_municipio" property="municipio" javaType="Boolean"/>
+		<result column="VariableEO_seccion" property="seccion" javaType="Boolean"/>
+		<result column="VariableEO_localidad" property="localidad" javaType="Boolean"/>
+		<result column="VariableEO_manzana" property="manzana" javaType="Boolean"/>
+		<result column="VariableEO_estatus" property="estatus" javaType="com.saganet.politik.dominios.EstatusVariableDO"/>
+		<result column="VariableEO_nivelCalculo" property="nivelCalculo" javaType="com.saganet.politik.dominios.NivelesDO"/>
+		<association property="consulta" resultMap="estadisticas.consultas.consulta" />
+	</resultMap>
+	
+	<select id="listado" resultMap="variable">
+		SELECT 
+			VariableEO.id_variable 				VariableEO_id, 
+			VariableEO.campo					VariableEO_campo, 
+			VariableEO.descripcion 				VariableEO_descripcion, 
+			VariableEO.entidad 					VariableEO_entidad, 
+			VariableEO.dfederal 				VariableEO_dfederal,  
+			VariableEO.dlocal 					VariableEO_dlocal, 
+			VariableEO.municipio 				VariableEO_municipio,
+			VariableEO.seccion 					VariableEO_seccion, 
+			VariableEO.localidad 				VariableEO_localidad,  
+			VariableEO.manzana 					VariableEO_manzana, 
+			VariableEO.tipo_campo 				VariableEO_tipoCampo, 
+			VariableEO.valor_default 			VariableEO_valorDefault,
+			VariableEO.estatus 					VariableEO_estatus,
+			VariableEO.nivel_calculo			VariableEO_nivelCalculo,
+			ConsultaEO.id_consulta 				ConsultaEO_id, 
+			ConsultaEO.id_variable 				ConsultaEO_idVariable, 
+			ConsultaEO.campo 					ConsultaEO_campo, 
+			ConsultaEO.operador 				ConsultaEO_operador, 
+			ConsultaEO.campo_entidad 			ConsultaEO_campoEntidad,
+			ConsultaEO.campo_dfederal 			ConsultaEO_campoDFederal, 
+			ConsultaEO.campo_dlocal 			ConsultaEO_campoDLocal, 
+			ConsultaEO.campo_municipio 			ConsultaEO_campoMunicipio, 
+			ConsultaEO.campo_seccion 			ConsultaEO_campoSeccion,
+			ConsultaEO.campo_localidad 			ConsultaEO_campoLocalidad, 
+			ConsultaEO.campo_manzana 			ConsultaEO_campoManzana,
+			ConsultaEO.condicion 				ConsultaEO_condicion,
+			TablaEO.id_tabla					TablaEO_id,
+			TablaEO.tabla						TablaEO_tabla,
+			TablaEO.descripcion					TablaEO_descripcion,
+			TablaEO.campo_particion				TablaEO_campoParticion,
+			TablaEO.particionada				TablaEO_particionada,
+			TablaParticionEO.id_tabla_particion	TablaParticionEO_id,
+			TablaParticionEO.id_tabla			TablaParticionEO_idTabla,
+			TablaParticionEO.id_particion		TablaParticionEO_idParticion,
+			TablaParticionEO.particion			TablaEO_particion
+  		FROM estadisticas.z_variables VariableEO
+  		JOIN estadisticas.z_consultas ConsultaEO on (VariableEO.id_variable = ConsultaEO.id_variable)
+  		JOIN catalogos.tablas TablaEO on (ConsultaEO.id_tabla = TablaEO.id_tabla)
+  		LEFT JOIN catalogos.tablas_particiones TablaParticionEO on (TablaEO.id_tabla = TablaParticionEO.id_tabla)
+  		order by VariableEO.campo
+	</select>
+	
+	<insert id="insertar" parameterType="VariableEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT nextval('estadisticas.variables_id_variable_seq'::regclass)
+		</selectKey>
+		
+		INSERT INTO estadisticas.z_variables(id_variable, campo, descripcion, entidad, dfederal, dlocal, municipio, 
+            seccion, localidad, manzana, tipo_campo, valor_default, estatus, nivel_calculo)
+    	VALUES (#{id}, #{campo}, #{descripcion}, #{entidad}, #{dfederal}, #{dlocal}, #{municipio}, 
+    		#{seccion}, #{localidad}, #{manzana}, #{tipo}, #{valorDefault}, #{estatus}, #{nivelCalculo});
+		
+	</insert>
+	
+	<update id="actualizarEstatus" parameterType="VariableEO">
+		UPDATE estadisticas.z_variables 
+		SET estatus = #{estatus}
+		WHERE id_variable = #{id}
+	</update>
+	
+</mapper>

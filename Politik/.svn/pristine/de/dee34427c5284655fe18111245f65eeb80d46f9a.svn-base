@@ -1,0 +1,34 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:messages autoUpdate="true"/>
+					<p:panel header="Agregar Intervencion">
+							<p:panelGrid columns="2" id="panelGrid">
+								<p:column>Resumen</p:column>
+								<p:column> 
+									<p:inputTextarea value="${nuevoIntervencion.descripcion}" cols="100" rows="10"/>
+								</p:column>
+							</p:panelGrid>
+							<f:facet name="footer">
+								<p:commandLink action="guardar">
+										<p:graphicImage value="/resources/botones/GUARDAR.png"/>
+								</p:commandLink>
+								<p:commandLink action="cancelar">
+										<p:graphicImage value="/resources/botones/CANCELAR.png"/>
+								</p:commandLink>
+							</f:facet>
+					</p:panel>	
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />					
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

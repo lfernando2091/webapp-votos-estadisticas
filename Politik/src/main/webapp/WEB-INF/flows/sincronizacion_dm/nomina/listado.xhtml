@@ -1,0 +1,88 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Nómina" />
+						<p:menuitem value="Reportes" url="/app/Nómina/Pago Quincenal" />
+					</p:breadCrumb>
+					<p:panel header="Pago Quincenal">
+						<p:dataTable var="fila" value="${listado}" paginator="true" id="pagoQuincenalTabla"
+							paginatorPosition="bottom" rows="20" scrollable="true"
+							paginatorAlwaysVisible="false">
+							<p:column headerText="Región" width="40" >
+								<p:outputLabel value="${fila.get('region')}" />
+							</p:column>
+							<p:column headerText="Id Municipio" width="55" >
+								<p:outputLabel value="${fila.get('id_municipio')}" />
+							</p:column>
+							<p:column headerText="Municipio"  width="100" >
+								<p:outputLabel value="${fila.get('municipio')}" />
+							</p:column>
+							<p:column headerText="Zona" width="30" >
+								<p:outputLabel value="${fila.get('zona')}" />
+							</p:column>
+							<p:column headerText="Sección" >
+								<p:outputLabel value="${fila.get('seccion')}" />
+							</p:column>
+							<p:column headerText="Usuario" >
+								<p:outputLabel value="${fila.get('usuario')}" />
+							</p:column>
+							<p:column headerText="Nombre" >
+								<p:outputLabel value="${fila.get('nombre')}" />
+							</p:column>
+							<p:column headerText="RFC" >
+								<p:outputLabel value="${fila.get('rfc')}" />
+							</p:column>
+							<p:column headerText="CURP" >
+								<p:outputLabel value="${fila.get('curp')}" />
+							</p:column>
+							<p:column headerText="Clave Interbancaria" >
+								<p:outputLabel value="${fila.get('clave_interbancaria')}" />
+							</p:column>
+							<p:column headerText="Banco" >
+								<p:outputLabel value="${fila.get('banco')}" />
+							</p:column>
+							<p:column headerText="Día Inicio" >
+								<p:outputLabel value="${fila.get('dia_inicio')}" />
+							</p:column>
+							<p:column headerText="Monto a Pagar" >
+								<p:outputLabel value="${fila.get('monto_a_pagar')}" />
+							</p:column>
+							<p:column headerText="Periodo a Pagar" >
+								<p:outputLabel value="${fila.get('periodo_a_pagar')}" />
+							</p:column>
+						</p:dataTable>
+						
+						
+						<f:facet name="footer">
+							<h:commandLink>
+								<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+								<p:dataExporter type="xls" target="pagoQuincenalTabla" fileName="Pago Quincenal" />
+							</h:commandLink>
+						</f:facet>
+					</p:panel>
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+						}
+					</h:outputStylesheet>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.tablasParticiones">
+	<cache />
+	
+	<resultMap type="TablaParticionEO" id="tablaParticion">
+		<id column="TablaParticionEO_id" property="id" javaType="Integer"/>
+		<result column="TablaParticionEO_idTabla" property="idTabla" javaType="Integer"/>
+		<result column="TablaParticionEO_idParticion" property="idParticion" javaType="Integer"/>
+		<result column="TablaEO_particion" property="particion" javaType="String"/>
+	</resultMap>
+	
+	<insert id="insertar" parameterType="TablaEO">
+		INSERT INTO catalogos.tablas_particiones(id_tabla, id_particion, particion)
+		VALUES
+		<foreach collection="particiones" item="item" separator="," close=";">
+			(#{id}, #{item.idParticion}, #{item.particion})
+		</foreach>
+	</insert>
+	
+	<update id="crearParticion" parameterType="hashmap">
+		CREATE TABLE wh_particiones.${tabla.tabla}_${particion.particion}
+		(
+			CONSTRAINT ${tabla.tabla}_${particion.particion}_pk PRIMARY KEY (id_politik),
+  			CONSTRAINT ${tabla.tabla}_${particion.particion}_ck_${tabla.campoParticion} CHECK (${tabla.campoParticion} = ${particion.idParticion})
+		)
+		INHERITS (warehouse.${tabla.tabla})
+		WITH (
+  			OIDS=TRUE
+		);
+	</update>
+</mapper>

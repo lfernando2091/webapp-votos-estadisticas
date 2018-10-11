@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+
+					<p:panel header="Encuesta">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Descripción" />
+							<p:outputLabel value="${modeloEncuestaSeleccionado.descripcion}" />
+							<p:outputLabel value="Captura" />
+							<p:outputLabel
+								value="${modeloEncuestaSeleccionado.nick}  - ${modeloEncuestaSeleccionado.fecha}" />
+						</p:panelGrid>
+					</p:panel>
+					<p:separator />
+
+					<p:panelGrid>
+						<p:row styleClass="topAlign">
+							<p:column style="width:50%">
+								<p:panel header="Preguntas ">
+									<p:dataTable value="${modeloPreguntas.listado}" var="fila"
+										selectionMode="single"
+										selection="${modeloPreguntas.seleccionado}"
+										rowKey="${fila.id}" paginator="true"
+										paginatorAlwaysVisible="false" paginatorPosition="bottom"
+										rows="15" reflow="true">
+										<p:ajax event="rowSelect"
+											onstart="comandoLlenarRespuestasCerradas()" />
+										<p:column headerText="#" width="7%">
+					${fila.consecutivoPregunta}
+					</p:column>
+										<p:column headerText="Tipo Pregunta" width="15%">
+					${fila.tipoPregunta}
+					</p:column>
+										<p:column headerText="Pregunta">
+					${fila.pregunta}
+					</p:column>
+
+									</p:dataTable>
+									<f:facet name="footer">
+										<p:commandButton action="nuevaPregunta"
+											disabled="${modeloCampanias.seleccionado==nul?false:true}"
+											icon="fa fa-plus-circle"
+											value="${modeloCampanias.seleccionado!=nul?'No es posible agregar mas preguntas':'Pregunta'}" />
+										<p:commandButton action="salirPreguntas" value="Salir" />
+									</f:facet>
+								</p:panel>
+							</p:column>
+							<p:column>
+								<p:panel header="Respuestas Cerradas">
+									<p:dataTable id="dtlPreguntasCerradas"
+										value="${modeloRespuestasCerradas.listado}" var="fila"
+										rowKey="${fila.id}" selectionMode="single"
+										selection="${modeloRespuestasCerradas.seleccionado}"
+										paginator="true" paginatorAlwaysVisible="false"
+										paginatorPosition="bottom" rows="15" reflow="true">
+										<p:column headerText="Respuesta">
+					${fila.respuesta}
+					</p:column>
+									</p:dataTable>
+									<f:facet name="footer">
+										<p:commandButton icon="fa fa-plus-circle"
+											disabled="${modeloCampanias.seleccionado==nul?false:true}"
+											action="nuevaRespuestaCerrada" value="Respuesta Cerrada"/>
+									</f:facet>
+								</p:panel>
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+					<p:remoteCommand name="comandoLlenarRespuestasCerradas"
+						action="respuestasCerradas" update="@form" immediate="true" />
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+						}
+					</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

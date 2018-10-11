@@ -1,0 +1,52 @@
+package com.saganet.politik.utilidades;
+
+import java.io.Serializable;
+import java.sql.Date;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+
+public class Formateador implements Serializable {
+	private static final long serialVersionUID = -7707491601937532045L;
+
+	private SimpleDateFormat fFecha, fFecha2, fFecha3;
+	private NumberFormat fEntero;
+
+	public Formateador() {
+		iniciarFecha();
+		iniciarFecha2();
+		iniciarFecha3();
+		iniciarEntero();
+	}
+
+	public String fecha(Date fecha) {
+		return fFecha.format(fecha);
+	}
+
+	public String fechaArchivo(Date fecha) {
+		return fFecha2.format(fecha);
+	}
+	
+	public String fechaCalendario(Date fecha){
+		return fFecha3.format(fecha);
+	}
+
+	public String entero(Integer entero) {
+		return fEntero.format(entero);
+	}
+
+	private void iniciarFecha() {
+		fFecha = new SimpleDateFormat("dd/MM/yyyy");
+	}
+
+	private void iniciarFecha2() {
+		fFecha2 = new SimpleDateFormat("ddMMyyyy_HHmmss");
+	}
+
+	private void iniciarFecha3() {
+		fFecha3 = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+	}
+
+	private void iniciarEntero() {
+		fEntero = NumberFormat.getIntegerInstance();
+	}
+}

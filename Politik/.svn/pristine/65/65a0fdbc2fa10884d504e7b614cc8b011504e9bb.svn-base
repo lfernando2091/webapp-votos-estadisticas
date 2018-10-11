@@ -1,0 +1,225 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+
+
+	<ui:define name="head">
+		<h:outputScript library="openlayers" name="ol.js" />
+		<h:outputStylesheet library="openlayers" name="ol.css" />
+		<h:outputScript library="openlayers" name="politikMapas.js" />
+	</ui:define>
+
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="catalogos" />
+						<p:menuitem value="Secciones" />
+					</p:breadCrumb>
+
+
+					<p:panel header="Listado de Secciones">
+
+						<!-- 	llena las Entidades Federativas -->
+						<h:panelGrid columns="2">
+							<h:outputLabel value="Entidades" />
+							<p:selectCheckboxMenu id="Entidades"
+								value="${listadoEntidades.seleccionMultiple}"
+								converter="ObjectConverter" label="Entidades"
+								style="width: 215px;" filter="true" filterMatchMode="contains">
+								<!-- antes <p:ajax event="change" update="display panelBotones" para llenar el datalist ahora <p:ajax event="change" update="panelBotones" -->
+								<p:ajax event="change" update="panelBotones"
+									onstart="actualizar();" />
+								<p:ajax event="toggleSelect" update="panelBotones"
+									onstart="actualizar();" />
+								<f:selectItems value="${listadoEntidades.listado}" var="fila"
+									itemLabel="${fila.id} - ${fila.nombre}" itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+						</h:panelGrid>
+
+						<p:separator />
+
+						<!-- 		Selecciona los check box que desee ver la informacion -->
+
+						<h:panelGrid id="panelBotones" columns="3"
+							style="width:550px;padding-left:5px;">
+
+							<h:panelGrid id="panelDFed" columns="1"
+								style="width:190px;padding-left:5px;">
+								<!--  distritos federales  -->
+								<p:panel header="Dttos. Federales  " style="">
+									<p:inputSwitch value="${dfBool}"
+										disabled="${listadoEntidades.seleccionMultiple.size() == 0 ? true : false}"
+										onLabel="Si" offLabel="No"  >
+										<p:ajax update="comboDFederales" />
+									</p:inputSwitch>
+								</p:panel>
+							</h:panelGrid>
+
+							<h:panelGrid id="panelDLoc" columns="1"
+								style="width:190px;padding-left:5px;">
+								<p:panel header="Dttos. Locales  ">
+									<p:inputSwitch value="${dlBool}"
+										disabled="${listadoEntidades.seleccionMultiple.size() == 0 ? true : false}"
+										onLabel="Si" offLabel="No">
+										<p:ajax update="comboDLocales" />
+									</p:inputSwitch>
+								</p:panel>
+
+							</h:panelGrid>
+
+							<h:panelGrid id="panelMpios" columns="1"
+								style="width:190px;padding-left:5px;">
+								<p:panel header="Municipios  ">
+									<p:inputSwitch value="${mBool}"
+										disabled="${listadoEntidades.seleccionMultiple.size() == 0 ? true : false}"
+										onLabel="Si" offLabel="No">
+										<p:ajax update="comboMunicipios" />
+									</p:inputSwitch>
+								</p:panel>
+							</h:panelGrid>
+						</h:panelGrid>
+						<p:separator />
+
+						<h:panelGrid id="panelCombos" columns="3"
+							style="margin-bottom:10px" cellpadding="5" title="">
+
+							<h:panelGrid id="pComboDF" columns="1"
+								style="width:190px;padding-left:5px;">
+
+								<p:panel>
+
+									<!--  llena los combos -->
+									<p:selectCheckboxMenu id="comboDFederales"
+										label="Dttos. Federales"
+										value="${listadoDFederales.seleccionMultiple}"
+										converter="ObjectConverter" filter="true"
+										disabled="${!dfBool}" filterMatchMode="contains">
+										<f:selectItems value="${listadoDFederales.listado}" var="fila"
+											itemLabel="${fila.entidad.nombre} - ${fila.idDFederal} - ${fila.nombre}"
+											itemValue="${fila}" />
+									</p:selectCheckboxMenu>
+								</p:panel>
+							</h:panelGrid>
+
+							<h:panelGrid id="pComboDL" columns="1"
+								style="width:190px;padding-left:5px;">
+								<p:panel>
+									<h:outputText value=" " />
+									<p:selectCheckboxMenu id="comboDLocales" label="Dttos. Locales"
+										value="${listadoDLocales.seleccionMultiple}"
+										converter="ObjectConverter" filter="true"
+										disabled="${!dlBool}" filterMatchMode="contains">
+										<f:selectItems value="${listadoDLocales.listado}" var="fila"
+											itemLabel="${fila.entidad.nombre} - ${fila.idDLocal} - ${fila.nombre}"
+											itemValue="${fila}" />
+									</p:selectCheckboxMenu>
+								</p:panel>
+							</h:panelGrid>
+
+							<h:panelGrid id="pComboM" columns="1"
+								style="width:190px;padding-left:5px;">
+
+								<p:panel>
+									<h:outputText value=" " />
+									<p:selectCheckboxMenu id="comboMunicipios" label="Municipios"
+										value="${listadoMunicipios.seleccionMultiple}"
+										converter="ObjectConverter" filter="true" disabled="${!mBool}"
+										filterMatchMode="contains">
+										<f:selectItems value="${listadoMunicipios.listado}" var="fila"
+											itemLabel="${fila.entidad.nombre} - ${fila.idMunicipio} - ${fila.nombre}"
+											itemValue="${fila}" />
+									</p:selectCheckboxMenu>
+								</p:panel>
+
+							</h:panelGrid>
+						</h:panelGrid>
+						<p:commandLink action="generaTablaSecciones" update="tablaSecciones panelRefreshMap"
+							oncomplete="agregarCapaSeccion();">
+									<p:graphicImage value="/resources/botones/CONSULTAR.png" />
+						</p:commandLink>
+						
+<!-- 						<p:commandButton value="Consultar" action="generaTablaSecciones" -->
+<!-- 							update="tablaSecciones panelRefreshMap" -->
+<!-- 							oncomplete="agregarCapaSeccion();" /> -->
+						<p:separator />
+						<p:panelGrid columns="2" columnClasses="topAlign,topAlign">
+							<p:dataTable id="tablaSecciones"
+								value="${listadoSecciones.listado}" var="fila" paginator="true"
+								rows="10" paginatorAlwaysVisible="false"
+								paginatorPosition="bottom" rowKey="${fila.id}"
+								selection="${listadoSecciones.seleccionado}"
+								selectionMode="single">
+								<p:ajax event="rowSelect" update="panelRefreshMap"
+									oncomplete="refrescarCapaSeccion();" />
+								<f:facet name="header">Secciones </f:facet>
+								<p:column headerText="Id" width="50">${fila.id}</p:column>
+								<p:column headerText="Nombre">${fila.idSeccion}</p:column>
+								<p:column headerText="Llave" width="80">${fila.llave}</p:column>
+							</p:dataTable>
+
+							<h:panelGroup id="panelMapa" layout="block"
+								style="width:400px; height: 400px;" />
+						</p:panelGrid>
+					</p:panel>
+
+					<p:remoteCommand name="actualizar" action="actualizaCombos"
+						update="comboDFederales comboDLocales comboMunicipios panelRefreshMap" oncomplete="refreshMap();" />
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+
+				</h:form>
+				<h:outputScript>
+					iniciarMapa(
+						[-118.454994376215, 14.5330668762905, -86.712489103835, 32.7220212408026],
+						'', 
+						'politik:secciones', 
+						'id_entidad = ${listadoEntidades.seleccionMultiple.isEmpty()?'0':listadoEntidades.seleccionMultiple[0].id}',
+						'#{p:component('panelMapa')}'
+					);
+					
+					agregarCapa('politik:secciones','poligono_rojo',"llave is null");
+				</h:outputScript>
+
+				<h:panelGroup id="panelRefreshMap">
+					<h:outputScript>
+						function refreshMap(){
+							actualizarCapa(1, 'id_entidad in (${geoDataGlobal.llaves})');
+							actualizarMapa([${geoDataGlobal.geoData.bounds}]);
+						}
+						
+						function agregarCapaSeccion(){	
+							actualizarCapa(1, "llave_municipio in (${geoDataGlobalMunicipios.llaves})");	
+					    	refrescarCapaSeccion();		
+							actualizarMapa([${geoDataGlobalMunicipios.geoData.bounds}]);
+						}
+						
+						function refrescarCapaSeccion(){
+							actualizarCapa(2,"llave='${listadoSecciones.seleccionado.llave}'");
+						} 
+					</h:outputScript>
+				</h:panelGroup>
+
+
+
+
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

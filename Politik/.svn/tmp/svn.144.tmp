@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.sujetosSociales.captura">
+
+	<resultMap type="sujetosSocialesEncuestaEO" id="sujetosSociales">
+		<id column="sujetosSocialesEncuestaEO_id" 					property="id" javaType="Integer" />
+		<result column="sujetosSocialesEncuestaEO_id_contacto"		property="idContacto" 	javaType="Integer" />
+		<result column="sujetosSocialesEncuestaEO_1" 				property="r1"	javaType="com.saganet.politik.dominios.SiNoNSNCDO" />
+		<result column="sujetosSocialesEncuestaEO_2" 				property="r2"	javaType="com.saganet.politik.dominios.PartidosEleccionEdomex2017DO" />
+		<result column="sujetosSocialesEncuestaEO_3" 				property="r3"   javaType="com.saganet.politik.dominios.CandidatosEdomex2017DO" />
+		<result column="sujetosSocialesEncuestaEO_4" 				property="r4"   javaType="com.saganet.politik.dominios.SiNoNSNCDO" />
+		<result column="sujetosSocialesEncuestaEO_nick" 			property="nick"		javaType="String" />
+		<result column="sujetosSocialesEncuestaEO_fecha" 			property="fecha"	javaType="java.sql.Timestamp" />
+		<result column="sujetosSocialesEncuestaEO_nombre" 			property="nombre"	javaType="String" />	
+		<result column="sujetosSocialesEncuestaEO_paterno" 			property="paterno"	javaType="String" />
+		<result column="sujetosSocialesEncuestaEO_materno" 			property="materno"	javaType="String" />
+		<result column="sujetosSocialesEncuestaEO_fecha_nacimiento" property="fechaNacimiento"	javaType="String" />
+		<result column="sujetosSocialesEncuestaEO_sexo" 			property="genero"	javaType="com.saganet.politik.dominios.GenerosDO" />
+		<result column="sujetosSocialesEncuestaEO_estatus" 			property="resultado" javaType="com.saganet.politik.dominios.ResultadoEncuestaEdomexDO"/>
+		<result column="sujetosSocialesEncuestaEO_email" 			property="email"	javaType="String" />
+		<result column="sujetosSocialesEncuestaEO_tel" 				property="tel"	javaType="String" />
+		<result column="sujetosSocialesEncuestaEO_estatusEncuestado" property="estatusEncuestado" javaType="String"/>
+		<association column="sujetosSocialesEncuestaEO_encuestador" property="encuestador" select="encuestas.supervisor.encuestador.buscarPorNickTres"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT entidad, 
+		region_edomex_2017, 
+		nombre_region, 
+		municipio,
+		nombre_municipio,
+		localidad, 
+		nombre_localidad, 
+		seccion, 
+		manzana, 
+		id_interno, 
+		clave_elector,
+		apellido_paterno, 
+		apellido_materno, 
+		nombre, 
+		fecha_nacimiento,
+		lugar_nacimiento, 
+		sexo, 
+		ocupacion, 
+		calle, 
+		num_exterior, 
+		num_interior,
+		colonia, 
+		codigo_postal, 
+		programa_todo, 
+		programa_general, 
+		estatus
+		FROM sujetos_Sociales.encuesta_edomex
+
+	</sql>
+	<select id="buscarPorId" parameterType="hashmap" resultType="hashmap">
+		<include refid="query" />
+		where id_interno = #{idInterno}
+		<if test="tipo=='ENCUESTADOR'">
+		<if test="municipio=='9999999'">
+		and programa_general = #{programa} 
+		</if>
+		<if test="municipio!='9999999'">
+		and programa_general = #{programa} and municipio = #{municipio}
+		</if>
+		</if>
+		<if test="tipo=='SUPERVISOR'">
+			and programa_general = #{programa}
+		</if>
+		<if test="tipo=='CALL_CENTER'">
+			and programa_general = #{programa}
+		</if>
+		<if test="tipo=='CAPTURISTA'">
+			and programa_general = #{programa}
+		</if>
+	</select>
+	<insert id="insertar" parameterType="sujetosSocialesEncuestaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('sujetos_Sociales.e_edomex_pkey_seq')
+		</selectKey>
+		INSERT INTO sujetos_Sociales.e_edomex(
+		pkey, id_contacto, _1, _2, _3, _4,_5, estatus, nick, encuestador, nombre, paterno, materno, fecha_nacimiento, sexo, tel, email)
+		VALUES (#{id}, #{idContacto}, #{r1}, #{r2}, #{r3}, #{r4},#{r5}, #{resultado},
+		#{nick},'${encuestador.nombre} ${encuestador.primerApellido} ${encuestador.segundoApellido}',#{nombre},#{paterno},#{materno},#{fechaNacimiento},#{genero}, #{tel}, #{email})
+
+	</insert>
+<!-- 	<insert id="insertarProspera" parameterType="Edomex2017EncuestaProsperaEO"> -->
+<!-- 		<selectKey keyProperty="id" resultType="Integer" order="BEFORE"> -->
+<!-- 			select NEXTVAL('encuestas_resultados.e_edomex_prospera_pkey_seq') -->
+<!-- 		</selectKey> -->
+<!-- 		INSERT INTO encuestas_resultados.e_edomex_prospera( -->
+<!-- 		pkey, id_contacto, _1, _2, _3, _4,_5, estatus, nick, encuestador, email, telefono, adultos, nombre_manual, primer_manual, segundo_manual, direccion_manual) -->
+<!-- 		VALUES (#{id}, #{idInterno}, #{r1}, #{r2}, #{r3}, #{r4},#{r5}, #{resultado}, -->
+<!-- 		#{nick},'${encuestador.nombre} ${encuestador.primerApellido} ${encuestador.segundoApellido}',#{email},#{telefono},#{adultos},#{nombreManual},#{primerManual},#{segundoManual},#{direccionManual}) -->
+<!-- 	</insert> -->
+
+	<update id="actualizarEstatus" parameterType="Edomex2017EncuestaEO">
+		update sujetos_Sociales.encuesta_edomex set estatus = #{resultado} where id_interno
+		= #{idContacto}
+	</update>
+
+<!-- 	<update id="actualizarEstatusProspera" parameterType="Edomex2017EncuestaProsperaEO"> -->
+<!-- 		update encuestas.encuesta_edomex set estatus = #{resultado} where id_interno -->
+<!-- 		= #{idInterno} -->
+<!-- 	</update> -->
+	
+	<select id="buscarEncuesta" parameterType="String" resultMap="sujetosSociales">
+		SELECT sujetosSocialesEncuestaEOEncuestaEO.pkey sujetosSocialesEncuestaEO_id,
+		sujetosSocialesEncuestaEOEncuestaEO.id_contacto sujetosSocialesEncuestaEO_id_contacto,
+		sujetosSocialesEncuestaEOEncuestaEO._1 sujetosSocialesEncuestaEO_1,
+		sujetosSocialesEncuestaEOEncuestaEO._2 sujetosSocialesEncuestaEO_2,
+		sujetosSocialesEncuestaEOEncuestaEO._3 sujetosSocialesEncuestaEO_3,
+		sujetosSocialesEncuestaEOEncuestaEO._4 sujetosSocialesEncuestaEO_4,
+		sujetosSocialesEncuestaEO.estatus sujetosSocialesEncuestaEO_estatus,
+		sujetosSocialesEncuestaEO.nick sujetosSocialesEncuestaEO_nick,
+		sujetosSocialesEncuestaEO.encuestador sujetosSocialesEncuestaEO_encuestador,
+		sujetosSocialesEncuestaEO.fecha sujetosSocialesEncuestaEO_fecha,
+		sujetosSocialesEncuestaEO.nombre sujetosSocialesEncuestaEO_nombre,
+		sujetosSocialesEncuestaEO.paterno sujetosSocialesEncuestaEO_paterno,
+		sujetosSocialesEncuestaEO.materno sujetosSocialesEncuestaEO_materno,
+		sujetosSocialesEncuestaEO.fecha_nacimiento sujetosSocialesEncuestaEO_fecha_nacimiento,
+		sujetosSocialesEncuestaEO.sexo sujetosSocialesEncuestaEO_sexo,
+		sujetosSocialesEncuestaEO.email sujetosSocialesEncuestaEO_email,
+		sujetosSocialesEncuestaEO.tel sujetosSocialesEncuestaEO_tel
+		FROM sujetos_Sociales.e_edomex sujetosSocialesEncuestaEO
+		where id_contacto = #{value}
+
+	</select>
+	<select id="buscarEncuestaEntrevista" parameterType="String" resultMap="sujetosSociales">
+		SELECT sujetosSocialesEncuestaEO.pkey sujetosSocialesEncuestaEO_id,
+		sujetosSocialesEncuestaEO.id_contacto sujetosSocialesEncuestaEO_id_contacto,
+		sujetosSocialesEncuestaEO._1 sujetosSocialesEncuestaEO_1,
+		sujetosSocialesEncuestaEO._2 sujetosSocialesEncuestaEO_2,
+		sujetosSocialesEncuestaEO._3 sujetosSocialesEncuestaEO_3,
+		sujetosSocialesEncuestaEO._4 sujetosSocialesEncuestaEO_4,
+		sujetosSocialesEncuestaEO._5 sujetosSocialesEncuestaEO_5,
+		sujetosSocialesEncuestaEO.estatus sujetosSocialesEncuestaEO_estatus,
+		sujetosSocialesEncuestaEO.nick sujetosSocialesEncuestaEO_nick,
+		sujetosSocialesEncuestaEO.encuestador sujetosSocialesEncuestaEO_encuestador,
+		sujetosSocialesEncuestaEO.fecha sujetosSocialesEncuestaEO_fecha,
+		sujetosSocialesEncuestaEO.nombre sujetosSocialesEncuestaEO_nombre,
+		sujetosSocialesEncuestaEO.paterno sujetosSocialesEncuestaEO_paterno,
+		sujetosSocialesEncuestaEO.materno sujetosSocialesEncuestaEO_materno,
+		sujetosSocialesEncuestaEO.fecha_nacimiento sujetosSocialesEncuestaEO_fecha_nacimiento,
+		sujetosSocialesEncuestaEO.sexo sujetosSocialesEncuestaEO_sexo,
+		sujetosSocialesEncuestaEO.email sujetosSocialesEncuestaEO_email,
+		sujetosSocialesEncuestaEO.tel sujetosSocialesEncuestaEO_tel,
+		sujetosSocialesEncuestaEO.estatus_encuestado sujetosSocialesEncuestaEO_estatusEncuestado
+		FROM sujetos_Sociales.e_edomex sujetosSocialesEncuestaEO
+		where id_contacto = #{value} and para_encuesta_telefonica=true
+	</select>
+	
+	
+	
+	<update id="actualizarEncuesta" parameterType="Edomex2017V2EncuestaEO">
+		UPDATE sujetos_Sociales.e_edomex
+		SET _1=#{r1}, _2=#{r2}, _3=#{r3}, _4=#{r4}, _5=#{r5}, estatus = #{resultado},encuestador='${encuestador.nombre} ${encuestador.primerApellido} ${encuestador.segundoApellido}',
+		nombre=#{nombre}, paterno = #{paterno}, materno = #{materno}, fecha_nacimiento = #{fechaNacimiento}, sexo =#{genero}, tel=#{tel}, email=#{email}
+		WHERE pkey = #{id};
+	</update>
+	
+	
+	<update id="actualizarEncuestado" parameterType="hashmap">
+	update sujetos_Sociales.e_edomex set estatus_encuestado = #{entrevista.resultado} where id_contacto::INTEGER=#{entrevistado.idContacto}
+	</update>
+</mapper>

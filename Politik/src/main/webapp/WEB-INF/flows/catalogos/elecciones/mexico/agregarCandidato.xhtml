@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Elecciones" url="/app/catalogos/elecciones" />
+						<p:menuitem value="Detalle de Elección" />
+						<p:menuitem value="Agregar Candidato" />
+					</p:breadCrumb>
+					<p:panel header="Agregar Candidato">
+						<p:panelGrid columns="2">
+							<f:facet name="header">Elección</f:facet>
+							<p:outputLabel value="Ejercicio" />
+							<p:outputLabel value="${detalle.ejercicio}" />
+							<p:outputLabel value="Tipo" />
+							<p:outputLabel value="${detalle.tipo.nombre}" />
+							<p:outputLabel value="Representante" />
+							<p:outputLabel value="${detalle.representante.nombre}" />
+							<p:outputLabel value="Fecha de Jornada" />
+							<p:outputLabel value="${detalle.fechaJornada}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</p:outputLabel>
+							<p:outputLabel value="Descripción" />
+							<p:outputLabel value="${detalle.descripcion}" />
+						</p:panelGrid>
+						<p:separator />
+						<p:panelGrid columns="2">
+							<f:facet name="header">Candidato</f:facet>
+							<p:outputLabel value="Nombre" />
+							<p:outputLabel value="${candidato.persona.primerApellido} ${candidato.persona.segundoApellido} ${candidato.persona.nombre}" />
+							<p:outputLabel value="Territorio" />
+							<p:selectOneMenu value="${candidato.territorio}" converter="ObjectConverter">
+								<f:selectItems value="${detalle.territorios}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Partido" />
+							<p:selectOneMenu value="${candidato.partido}" style="width: 200px;" converter="ObjectConverter">
+								<f:selectItems value="${detalle.partidos}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<f:facet name="footer">			
+							 <p:commandLink action="agregar">
+									<p:graphicImage value="/resources/botones/AGREGAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Agregar" action="agregar" /> -->
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

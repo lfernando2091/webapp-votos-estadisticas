@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="encuestas.edomex2017.v2.registroUsuarios">
+	
+
+	
+	<select id="validarCodigo" parameterType="hashmap" resultType="Integer">
+	select count(*) from encuestas_edomex.encuesta_edomex_registro_usuarios where codigo_alfanumerico = #{codigo} and id_municipio = #{municipio}
+	</select>
+	<select id="conteoUsuario" resultType="Integer">
+	select nextval('encuestas_edomex.encuesta_edomex_usuarios_seq')
+	</select>
+	
+	<select id="datosCodigo" parameterType="String" resultType="hashmap">
+	select upper(programa) programa, region, id_municipio from encuestas_edomex.encuesta_edomex_registro_usuarios where codigo_alfanumerico = #{codigo}
+	</select>
+	
+	<insert id="insertarEncuestadores" parameterType="EstructurasEdoMexVisitadorEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+				SELECT NEXTVAL('estructuras_edomex.visitadores_pkey_seq')
+		</selectKey>
+		INSERT INTO estructuras_edomex.visitadores(pkey, nombre, primer_apellido,  segundo_apellido, email, movil,  programa,nick, pw, id_municipio,id_region, usuario)
+		    VALUES (#{id}, #{nombre}, #{primerApellido}, #{segundoApellido}, #{email}, #{movil}, #{programa},#{nick},#{pw}, #{municipio.idMunicipio},#{region.idParticion}, #{usuario.nick})
+	   <!-- 
+		<if test="supervisor!=null">
+			INSERT INTO estructuras_edomex.visitadores(pkey, nombre, primer_apellido,  segundo_apellido, email, movil,  progama,nick,pw, id_municipio,id_region, supervisor)
+		    VALUES (#{id}, upper(#{nombre}), upper(#{primerApellido}), upper(#{segundoApellido}), #{email}, #{movil}, #{supervisor.progama},#{nick},#{pw}, #{supervisor.municipio.idMunicipio},  #{supervisor.usuario.nick})
+	    </if>
+	    <if test="usuario!=null">
+			INSERT INTO estructuras_edomex.visitadores(pkey, nombre, primer_apellido,  segundo_apellido, email, movil,  progama,nick, pw, id_municipio,id_region, usuario)
+		    VALUES (#{id}, #{nombre}, #{primerApellido}, #{segundoApellido}, #{email}, #{movil}, #{progama},#{nick},#{pw}, #{municipio.idMunicipio},#{idRegion}, #{usuario.nick})
+	    </if>
+		<if test="call_center!=null">
+			INSERT INTO estructuras_edomex.visitadores(pkey, nombre, primer_apellido,  segundo_apellido, email, movil,  progama,nick,pw, call_center)
+		    VALUES (#{id}, #{nombre}, #{primerApellido},#{segundoApellido}, #{email}, #{movil}, #{callCenter.progama},#{nick},#{pw}, #{callCenter.usuario.nick})
+	    </if> -->
+	</insert>
+	
+</mapper>

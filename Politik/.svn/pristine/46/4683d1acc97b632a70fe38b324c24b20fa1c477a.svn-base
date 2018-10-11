@@ -1,0 +1,143 @@
+package com.saganet.politik.beans.estructuras;
+
+import java.io.Serializable;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+import org.primefaces.event.DragDropEvent;
+import org.primefaces.event.diagram.ConnectEvent;
+import org.primefaces.model.diagram.Element;
+import org.primefaces.model.diagram.connector.Connector;
+import org.primefaces.model.diagram.connector.FlowChartConnector;
+import org.primefaces.model.diagram.endpoint.DotEndPoint;
+import org.primefaces.model.diagram.endpoint.EndPoint;
+import org.primefaces.model.diagram.endpoint.EndPointAnchor;
+import org.primefaces.model.diagram.endpoint.RectangleEndPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.saganet.politik.database.estructuras.FiguraEO;
+import com.saganet.politik.utilidades.diagram.DiagramModelPolitik;
+
+public class DiagramaB implements Serializable {
+	private static final long serialVersionUID = 354076540529814174L;
+
+	private static final Logger logger = LoggerFactory.getLogger(DiagramaB.class);
+
+	private DiagramModelPolitik diagrama;
+
+	@PostConstruct
+	public void iniciar(){
+		Element raiz, fin;
+		FiguraEO figuraRaiz, figuraFinal;
+		EndPoint endPointRaiz, endPointFin;
+		Connector connector;
+		
+		diagrama = new DiagramModelPolitik();
+		diagrama.setMaxConnections(-1);
+		
+		connector = new FlowChartConnector();
+		connector.setPaintStyle("{strokeStyle:'#DDDAD6',lineWidth:3}");
+		connector.setHoverPaintStyle("{strokeStyle:'#AEABA7',lineWidth:3}");
+		diagrama.setDefaultConnector(connector);
+		
+		figuraRaiz = new FiguraEO();
+		figuraRaiz.setId(-1);
+		figuraRaiz.setNombre("Inicio");
+		
+		figuraFinal = new FiguraEO();
+		figuraFinal.setId(-2);
+		figuraFinal.setNombre("Final");
+		
+		raiz = new Element(figuraRaiz, "0.1em", "0.1em");
+		raiz.setStyleClass("nodoRaiz");
+		raiz.setDraggable(false);
+		
+		fin = new Element(figuraFinal, "91%", "26.5em");
+		fin.setStyleClass("nodoFinal");
+		fin.setDraggable(false);
+		
+		endPointRaiz = new DotEndPoint(EndPointAnchor.BOTTOM, 5);
+		endPointRaiz.setStyle("{fillStyle:'#98AFC7'}");
+		endPointRaiz.setHoverStyle("{fillStyle:'#5C738B'}");
+		endPointRaiz.setSource(true);
+		raiz.addEndPoint(endPointRaiz);
+		
+		endPointFin = new RectangleEndPoint(EndPointAnchor.TOP, 10, 10);
+		endPointFin.setStyle("{fillStyle:'#98AFC7'}");
+		endPointFin.setHoverStyle("{fillStyle:'#5C738B'}");
+		endPointFin.setTarget(true);
+		fin.addEndPoint(endPointFin);
+				
+		diagrama.addElement(raiz);
+		diagrama.addElement(fin);
+	}
+	
+	public DiagramModelPolitik getDiagrama() {
+		return diagrama;
+	}
+	
+	public void onDrop(DragDropEvent ddEvent) {
+		Element elemento;
+		EndPoint endPointSource, endPointTarget;
+		FiguraEO figura;
+
+		logger.debug("dragdId: {}", ddEvent.getDragId());
+		logger.debug("dropId: {}", ddEvent.getDropId());
+		logger.debug("data: {}", ddEvent.getData());
+
+		figura = (FiguraEO) ddEvent.getData();
+		
+		endPointSource = new DotEndPoint(EndPointAnchor.BOTTOM, 5);
+		endPointSource.setStyle("{fillStyle:'#98AFC7'}");
+		endPointSource.setHoverStyle("{fillStyle:'#5C738B'}");
+		endPointSource.setSource(true);
+		
+		endPointTarget = new RectangleEndPoint(EndPointAnchor.TOP, 10, 10);
+		endPointTarget.setStyle("{fillStyle:'#98AFC7'}");
+		endPointTarget.setHoverStyle("{fillStyle:'#5C738B'}");
+		endPointTarget.setTarget(true);
+		
+		elemento = new Element(figura, "5em", "5em");
+		elemento.addEndPoint(endPointTarget);
+		elemento.addEndPoint(endPointSource);
+
+		logger.debug("Se genera ElementoPolitik: {}", elemento);
+
+		diagrama.addElement(elemento);
+		logger.debug("diagrama: {}", diagrama);
+	}
+
+	public void moverElemento(ActionEvent param) {
+		Map<String, String> atributos;
+		String idElemento, x, y;
+		Element elemento;
+
+		atributos = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+
+		idElemento = atributos.get("idElemento");
+		x = atributos.get("x");
+		y = atributos.get("y");
+
+		logger.debug("idElemento: {}", idElemento);
+		logger.debug("x: {}", x);
+		logger.debug("y: {}", y);
+
+		idElemento = idElemento.replaceFirst("form:diagrama-", "");
+		logger.debug("idElemento arreglado: {}", idElemento);
+
+		elemento = diagrama.findElement(idElemento);
+		logger.debug("elemento: {}", elemento);
+
+		elemento.setX(x);
+		elemento.setY(y);
+		logger.debug("Se establecen nuevas coordenadas");
+	}
+	
+	public void onConnect(ConnectEvent event){
+		logger.debug("Diagrama: {}", diagrama);
+	}
+	
+}

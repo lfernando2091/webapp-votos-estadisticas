@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Agregado">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nombre : "/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="${persona.nombre} ${persona.primerApellido} ${persona.segundoApellido}"/>
+							</p:column>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton action="regresar" value="Regresar"/>
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

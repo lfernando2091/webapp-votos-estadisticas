@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Programas de Promoción" url="/app/estructuras/programasPromocion" />
+						<p:menuitem value="${programaCRUD.id == null ? 'Agregar' : 'Editar'} Programa de Promoción" />
+					</p:breadCrumb>
+					
+					<p:focus />
+					<p:panel header="${programaCRUD.id == null ? 'Agregar' : 'Editar'} Programa de Promoción">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Nombre" />
+							<p:inputText value="${programaCRUD.nombre}" size="50" />
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandLink action="guardar">
+									<p:graphicImage value="/resources/botones/GUARDAR.png" />
+							</p:commandLink>
+							<p:commandLink action="cancelar" immediate="true">
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Guardar" action="guardar" /> -->
+<!-- 							<p:commandButton value="Cancelar" action="cancelar" immediate="true" /> -->
+						</f:facet>
+					</p:panel>
+            		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="log.bitacoras">
+	<cache />
+	
+	<resultMap type="BitacoraEO" id="bitacora">
+		<id column="BitacoraEO_id" property="id" javaType="Integer"/>
+		<result column="BitacoraEO_tipoAccion" property="tipoAccion" javaType="String"/>
+		<result column="BitacoraEO_involucrado" property="involucrado" javaType="String"/>
+		<result column="BitacoraEO_descripcion" property="descripcion" javaType="String"/>
+		<result column="BitacoraEO_fecha" property="fecha" javaType="String"/>
+		<result column="BitacoraEO_nick" property="nick" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			BitacoraEO.pkey											BitacoraEO_id, 
+			BitacoraEO.tipo_accion									BitacoraEO_tipoAccion, 
+			BitacoraEO.involucrado									BitacoraEO_involucrado, 
+			BitacoraEO.descripcion									BitacoraEO_descripcion, 
+			to_char(BitacoraEO.fecha, 'YYYY-MM-DD HH24:MI:SS') 		BitacoraEO_fecha, 
+			BitacoraEO.nick											BitacoraEO_nick
+  		FROM log.bitacoras BitacoraEO
+	</sql>
+	
+	<select id="listado" resultMap="bitacora">
+		<include refid="query"/>
+		ORDER BY BitacoraEO.nick, BitacoraEO.pkey DESC
+	</select>
+	
+	<select id="listadoPorNick" parameterType="hashmap" resultMap="bitacora">
+		<include refid="query"/>
+		<where>
+			BitacoraEO.nick in (
+				<foreach collection="usuarios" item="item" separator=",">
+					#{item.nick}
+				</foreach>
+			)
+		</where>
+		ORDER BY BitacoraEO.nick, BitacoraEO.pkey DESC
+	</select>
+	
+	<select id="concentrado" resultType="hashmap" parameterType="hashmap">
+		select tipo_accion accion, count(*) conteo
+		from log.bitacoras BitacoraEO
+		where BitacoraEO.nick = #{nick}
+		group by tipo_accion
+	</select>
+	<insert id="insertar" parameterType="BitacoraEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT nextval('log.bitacoras_pkey_seq')
+		</selectKey>
+		INSERT INTO log.bitacoras(pkey, tipo_accion, involucrado, descripcion, nick)
+    	VALUES (#{id}, #{tipoAccion}, #{involucrado}, #{descripcion}, #{nick});
+	</insert>
+	
+</mapper>

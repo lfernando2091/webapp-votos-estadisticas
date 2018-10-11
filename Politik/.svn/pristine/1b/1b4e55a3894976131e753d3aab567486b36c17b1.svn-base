@@ -1,0 +1,311 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Reporte Eventos" id="pnlFiltro">
+						<p:panelGrid columns="2" columnClasses="topAlign topAlign">
+							<p:outputLabel value="Mes:" />
+							<p:selectOneMenu id="menuMes" value="${mes}">
+								<p:ajax event="change" />
+								<f:selectItem itemLabel="Julio 2016" itemValue="07-2016" />
+								<f:selectItem itemLabel="Agosto 2016" itemValue="08-2016" />
+								<f:selectItem itemLabel="Septiembre 2016" itemValue="09-2016" />
+								<f:selectItem itemLabel="Octubre 2016" itemValue="10-2016" />
+								<f:selectItem itemLabel="Noviembre 2016" itemValue="11-2016" />
+								<f:selectItem itemLabel="Diciembre 2016" itemValue="12-2016" />
+								<f:selectItem itemLabel="Enero 2017" itemValue="01-2017" />
+								<f:selectItem itemLabel="Febrero 2017" itemValue="02-2017" />
+								<f:selectItem itemLabel="Marzo 2017" itemValue="03-2017" />
+								<f:selectItem itemLabel="Abril 2017" itemValue="04-2017" />
+								<f:selectItem itemLabel="Mayo 2017" itemValue="05-2017" />
+								<f:selectItem itemLabel="Junio 2017" itemValue="06-2017" />
+								<f:selectItem itemLabel="Julio 2017" itemValue="07-2017" />
+								<f:selectItem itemLabel="Agosto 2017" itemValue="08-2017" />
+								<f:selectItem itemLabel="Septiembre 2017" itemValue="09-2017" />
+								<f:selectItem itemLabel="Octubre 2017" itemValue="10-2017" />
+								<f:selectItem itemLabel="Noviembre 2017" itemValue="11-2017" />
+								<f:selectItem itemLabel="Diciembre 2017" itemValue="12-2017" />
+							</p:selectOneMenu>
+
+
+						</p:panelGrid>
+						<f:facet name="footer">
+
+							<p:commandLink title="Realizar Consulta"
+								action="llenarDatosMes"
+								onstart="PF('cargandoResultados').show()"
+								oncomplete="PF('cargandoResultados').hide()" update="@form">
+								<p:graphicImage url="/resources/botones/BUSCAR.png" />
+							</p:commandLink>
+						</f:facet>
+					</p:panel>
+					<p:accordionPanel>
+						<p:tab title="Dependencias">
+							<p:dataTable value="${modeloResultadosMes.listado}" var="fila"
+								paginator="true" paginatorAlwaysVisible="false"
+								paginatorPosition="buttom"
+								emptyMessage="Sin resultados que mostrar" reflow="true"
+								draggableColumns="true" tableStyle="width:auto">
+								<p:column headerText="Territorio" style="width:15%; heigt:auto">
+					${fila.particion}
+					</p:column>
+								<p:column headerText="01">
+					${fila.dia_1}
+					</p:column>
+								<p:column headerText="02">
+					${fila.dia_2}
+					</p:column>
+								<p:column headerText="03">
+					${fila.dia_3}
+					</p:column>
+								<p:column headerText="04">
+					${fila.dia_4}
+					</p:column>
+								<p:column headerText="05">
+					${fila.dia_5}
+					</p:column>
+								<p:column headerText="06">
+					${fila.dia_6}
+					</p:column>
+								<p:column headerText="07">
+					${fila.dia_7}
+					</p:column>
+								<p:column headerText="08">
+					${fila.dia_8}
+					</p:column>
+								<p:column headerText="09">
+					${fila.dia_9}
+					</p:column>
+
+								<p:column headerText="10">
+					${fila.dia_10}
+					</p:column>
+								<p:column headerText="11">
+					${fila.dia_11}
+					</p:column>
+								<p:column headerText="12">
+					${fila.dia_12}
+					</p:column>
+								<p:column headerText="13">
+					${fila.dia_13}
+					</p:column>
+								<p:column headerText="14">
+					${fila.dia_14}
+					</p:column>
+								<p:column headerText="15">
+					${fila.dia_15}
+					</p:column>
+								<p:column headerText="16">
+					${fila.dia_16}
+					</p:column>
+								<p:column headerText="17">
+					${fila.dia_17}
+					</p:column>
+								<p:column headerText="18">
+					${fila.dia_18}
+					</p:column>
+								<p:column headerText="19">
+					${fila.dia_19}
+					</p:column>
+								<p:column headerText="20">
+					${fila.dia_20}
+					</p:column>
+
+								<p:column headerText="21">
+					${fila.dia_21}
+					</p:column>
+								<p:column headerText="22">
+					${fila.dia_22}
+					</p:column>
+								<p:column headerText="23">
+					${fila.dia_23}
+					</p:column>
+								<p:column headerText="24">
+					${fila.dia_24}
+					</p:column>
+								<p:column headerText="25">
+					${fila.dia_25}
+					</p:column>
+								<p:column headerText="26">
+					${fila.dia_26}
+					</p:column>
+								<p:column headerText="27">
+					${fila.dia_27}
+					</p:column>
+								<p:column headerText="28">
+					${fila.dia_28}
+					</p:column>
+								<p:column headerText="29">
+					${fila.dia_29}
+					</p:column>
+								<p:column headerText="30">
+					${fila.dia_30}
+					</p:column>
+
+								<p:column headerText="31">
+					${fila.dia_31}
+					</p:column>
+							</p:dataTable>
+
+						</p:tab>
+
+						<p:tab title="Conteo">
+
+							<p:dataTable value="${modeloResultadosMesConteo.listado}" var="f"
+								paginator="true" paginatorAlwaysVisible="false"
+								paginatorPosition="buttom"
+								emptyMessage="Sin resultados que mostrar" reflow="true"
+								draggableColumns="true" tableStyle="width:auto">
+								<p:column headerText="Territorio" style="width:15%; heigt:auto">
+					${f.particion}
+					</p:column>
+								<p:column headerText="01">
+					${f.dia_1 ne '0'?f.dia_1:''}
+					</p:column>
+								<p:column headerText="02">
+					${f.dia_2!=0?f.dia_2:''}
+					</p:column>
+								<p:column headerText="03">
+					${f.dia_3 ne '0'?f.dia_3:''}
+					</p:column>
+								<p:column headerText="04">
+					${f.dia_4 ne '0'?f.dia_4:''}
+					</p:column>
+								<p:column headerText="05">
+					${f.dia_5 ne '0'?f.dia_5:''}
+					</p:column>
+								<p:column headerText="06">
+					${f.dia_6 ne '0'?f.dia_6:''}
+					</p:column>
+								<p:column headerText="07">
+					${f.dia_7 ne '0'?f.dia_7:''}
+					</p:column>
+								<p:column headerText="08">
+					${f.dia_8 ne '0'?f.dia_8:''}</p:column>
+								<p:column headerText="09">
+					${f.dia_9 ne '0'?f.dia_9:''}
+					</p:column>
+
+								<p:column headerText="10">
+					${f.dia_10 ne '0'?f.dia_10:''}
+					</p:column>
+								<p:column headerText="11">
+					${f.dia_11 ne '0'?f.dia_11:''}
+					</p:column>
+								<p:column headerText="12">
+					${f.dia_12 ne '0'?f.dia_12:''}
+					</p:column>
+								<p:column headerText="13">
+					${f.dia_13 ne '0'?f.dia_13:''}
+					</p:column>
+								<p:column headerText="14">
+					${f.dia_14 ne '0'?f.dia_14:''}
+					</p:column>
+								<p:column headerText="15">
+					${f.dia_15 ne '0'?f.dia_15:''}
+					</p:column>
+								<p:column headerText="16">
+					${f.dia_16 ne '0'?f.dia_16:''}
+					</p:column>
+								<p:column headerText="17">
+					${f.dia_17 ne '0'?f.dia_17:''}
+					</p:column>
+								<p:column headerText="18">
+					${f.dia_18 ne '0'?f.dia_18:''}
+					</p:column>
+								<p:column headerText="19">
+					${f.dia_19 ne '0'?f.dia_19:''}
+					</p:column>
+								<p:column headerText="20">
+					${f.dia_20 ne '0'?f.dia_20:''}
+					</p:column>
+
+								<p:column headerText="21">
+					${f.dia_21 ne '0'?f.dia_21:''}
+					</p:column>
+								<p:column headerText="22">
+					${f.dia_22 ne '0'?f.dia_22:''}
+					</p:column>
+								<p:column headerText="23">
+					${f.dia_23 ne '0'?f.dia_23:''}
+					</p:column>
+								<p:column headerText="24">
+					${f.dia_24 ne '0'?f.dia_24:''}
+					</p:column>
+								<p:column headerText="25">
+					${f.dia_25 ne '0'?f.dia_25:''}
+					</p:column>
+								<p:column headerText="26">
+					${f.dia_26 ne '0'?f.dia_26:''}
+					</p:column>
+								<p:column headerText="27">
+					${f.dia_27 ne '0'?f.dia_27:''}
+					</p:column>
+								<p:column headerText="28">
+					${f.dia_28 ne '0'?f.dia_28:''}
+					</p:column>
+								<p:column headerText="29">
+					${f.dia_29 ne '0'?f.dia_29:''}
+					</p:column>
+								<p:column headerText="30">
+					${f.dia_30 ne '0'?f.dia_30:''}
+					</p:column>
+
+								<p:column headerText="31">
+					${f.dia_31 ne '0'?f.dia_31:''}
+					</p:column>
+							</p:dataTable>
+
+
+						</p:tab>
+
+					</p:accordionPanel>
+
+					<p:dialog widgetVar="cargandoResultados"
+						header="Cargando Resultados" closeOnEscape="false"
+						closable="false" modal="true" appendTo="@(body)">
+						<p:panelGrid columns="1">
+							<p:outputLabel value="Se están cargando los resultados." />
+							<p:outputLabel
+								value="Esta operación puede tardar, por favor espere." />
+							<p:outputLabel
+								value="No refresque la página ni oprima el botón atrás del explorador." />
+							<!-- <p:graphicImage name="cargando.gif" /> -->
+						</p:panelGrid>
+					</p:dialog>
+
+					<h:outputStylesheet>
+					.topAlign{
+						width:200px;
+					}
+					.topAlign2{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<script type="text/javascript">
+					function start() {
+						PF('cargandoResultados').show();
+					}
+
+					function stop() {
+						PF('cargandoResultados').hide();
+					}
+				</script>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

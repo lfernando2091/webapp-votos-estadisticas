@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="warehouse.redesSociales">
+	<cache />
+	<resultMap type="RedSocialEO" id="redSocial">
+		<id column="RedSocialEO_id" property="id" javaType="Integer" />
+		<result column="RedSocialEO_usuario" property="usuario" javaType="String" />
+		<result column="RedSocialEO_observaciones" property="observaciones" javaType="String" />
+		<association property="tipo" resultMap="catalogos.tiposRedesSociales.tipoRedSocial" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			RedSocialEO.id_red_social 			RedSocialEO_id, 
+			RedSocialEO.usuario 				RedSocialEO_usuario, 
+			RedSocialEO.observaciones 			RedSocialEO_observaciones,
+			TipoRedSocialEO.id_tipo_red_social 	TipoRedSocialEO_id, 
+			TipoRedSocialEO.tipo_red_social 	TipoRedSocialEO_nombre, 
+			TipoRedSocialEO.direccion 			TipoRedSocialEO_direccion, 
+			TipoRedSocialEO.logo 				TipoRedSocialEO_logo
+  		FROM warehouse.redes_sociales RedSocialEO
+		JOIN catalogos.tipos_redes_sociales TipoRedSocialEO on (RedSocialEO.id_tipo_red_social = TipoRedSocialEO.id_tipo_red_social)
+	</sql>
+	
+	<select id="buscarPorPersona" parameterType="PersonaEO" resultMap="redSocial">
+		<include refid="query" />
+		WHERE RedSocialEO.id_entidad_nac = #{entidadNacimiento.id} AND RedSocialEO.id_persona = #{id}
+		ORDER BY RedSocialEO.id_red_social
+	</select>
+	
+	<insert id="insertar" parameterType="hashmap">
+		<selectKey keyProperty="redSocial.id" resultType="Integer" order="BEFORE">
+			SELECT NEXTVAL('warehouse.redes_sociales_id_red_social_seq')
+		</selectKey>
+		
+		INSERT INTO warehouse.redes_sociales(id_red_social, id_persona, id_entidad_nac, usuario, id_tipo_red_social,observaciones)
+   		VALUES (#{redSocial.id}, #{persona.id}, #{persona.entidadNacimiento.id}, #{redSocial.usuario}, #{redSocial.tipo.id}, #{redSocial.observaciones});
+	</insert>
+</mapper>

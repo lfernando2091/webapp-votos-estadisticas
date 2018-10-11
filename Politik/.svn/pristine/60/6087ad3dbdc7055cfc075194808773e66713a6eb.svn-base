@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.dFederales">
+	<cache />
+	
+	<resultMap type="DFederalEO" id="DFederal">
+		<id column="DFederalEO_id" property="id" javaType="Integer"/>
+		<result column="DFederalEO_idDFederal" property="idDFederal" javaType="Integer"/>
+		<result column="DFederalEO_nombre" property="nombre" javaType="String"/>
+		<result column="DFederalEO_llave" property="llave" javaType="String"/>
+		<association property="entidad" resultMap="catalogos.entidades.entidad" />
+	</resultMap>
+	
+	<select id="listado" resultMap="DFederal" parameterType="EntidadEO">
+		SELECT 
+			DFederalEO.pkey 		DFederalEO_id,
+			DFederalEO.id_dFederal 	DFederalEO_idDFederal,
+			DFederalEO.dfederal		DFederalEO_nombre,
+			DFederalEO.llave 		DFederalEO_llave,
+			EntidadEO.id_entidad 	EntidadEO_id,
+			EntidadEO.entidad 		EntidadEO_nombre
+		FROM catalogos.dfederales DFederalEO
+		JOIN catalogos.entidades EntidadEO on (DFederalEO.id_entidad = EntidadEO.id_entidad)
+		<where>
+			<if test="id != null">
+				DFederalEO.id_entidad = #{id}
+			</if>
+		</where>
+		ORDER BY DFederalEO.id_dfederal
+	</select>
+	
+	<select id="listadoPorEntidades" resultMap="DFederal" parameterType="list">
+		SELECT 
+			DFederalEO.pkey 		DFederalEO_id,
+			DFederalEO.id_dFederal 	DFederalEO_idDFederal,
+			DFederalEO.dfederal		DFederalEO_nombre,
+			DFederalEO.llave 		DFederalEO_llave,
+			EntidadEO.id_entidad 	EntidadEO_id,
+			EntidadEO.entidad 		EntidadEO_nombre
+		FROM catalogos.dfederales DFederalEO
+		JOIN catalogos.entidades EntidadEO on (DFederalEO.id_entidad = EntidadEO.id_entidad)
+		<where>
+			<if test="list != null">
+				DFederalEO.id_entidad in 
+				<foreach collection="list" open="(" separator="," close=")" item="item" index="index">
+					${item.id}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY DFederalEO.id_entidad, DFederalEO.id_dfederal
+	</select>
+	
+	<select id="listadoPorEleccionLlave" resultMap="DFederal" parameterType="EleccionEO">
+		SELECT 
+			DFederalEO.pkey 		DFederalEO_id,
+			DFederalEO.id_dFederal 	DFederalEO_idDFederal,
+			DFederalEO.dfederal		DFederalEO_nombre,
+			DFederalEO.llave 		DFederalEO_llave,
+			EntidadEO.id_entidad 	EntidadEO_id,
+			EntidadEO.entidad 		EntidadEO_nombre
+		FROM catalogos.dfederales DFederalEO
+		JOIN catalogos.entidades EntidadEO on (DFederalEO.id_entidad = EntidadEO.id_entidad)
+		<where>
+			DFederalEO.llave in (
+				SELECT EleccionesLlaves.llave 
+				FROM catalogos.elecciones_llaves EleccionesLlaves 
+				WHERE EleccionesLlaves.id_eleccion = #{id}
+			)
+		</where> 
+		ORDER BY DFederalEO.id_entidad, DFederalEO.id_dfederal
+	</select>
+</mapper>

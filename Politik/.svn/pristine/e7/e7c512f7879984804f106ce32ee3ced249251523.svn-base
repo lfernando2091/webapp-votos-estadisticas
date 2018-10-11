@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventos.calendarioEventos">
+	<resultMap type="CalendarioEventoSocialEO" id="calendarioEventoSocial">
+		<result column="CalendarioEventoSocialEO_fecha" property="fecha" javaType="java.sql.Date" />
+		<result column="CalendarioEventoSocialEO_fechaFin" property="fechaFin" javaType="java.sql.Date" />
+		<result column="CalendarioEventoSocialEO_n_eventos" property="conteo" javaType="Integer" />
+		<result column="CalendarioEventoSocialEO_dependencias" property="dependencias" javaType="String" />
+		
+	</resultMap>
+
+	<sql id="query">
+		SELECT 
+			to_date(to_char(CalendarioEventoSocialEO.fecha,'DD/MM/YYYY'), 'DD/MM/YYYY') 		CalendarioEventoSocialEO_fecha ,	
+			to_date(to_char(CalendarioEventoSocialEO.fecha_fin,'DD/MM/YYYY'), 'DD/MM/YYYY') 	CalendarioEventoSocialEO_fechaFin ,	
+			CalendarioEventoSocialEO.pkey														CalendarioEventoSocialEO_n_eventos,
+			(CASE WHEN (
+								SELECT count(*)
+  								FROM eventos_sociales.eventos_programas EventosProgramas
+  								WHERE EventosProgramas.id_evento_social=CalendarioEventoSocialEO.pkey
+  					 	)!=0
+				THEN (
+								SELECT STRING_AGG(DISTINCT(Dependencia.siglas),',')
+  								FROM eventos_sociales.eventos_programas EventosProgramas
+  								JOIN catalogos.programas_ejercicios EjerciciosProgramas on (EjerciciosProgramas.pkey=EventosProgramas.id_ejercicio_programa)
+								JOIN catalogos.programas Programas on (Programas.pkey=EjerciciosProgramas.id_programa)
+								JOIN catalogos.dependencias Dependencia on (Dependencia.pkey=Programas.id_dependencia)
+  								WHERE EventosProgramas.id_evento_social=CalendarioEventoSocialEO.pkey)	
+  				ELSE (			
+  								SELECT STRING_AGG(DISTINCT(Dependencias.siglas),',')
+  								FROM administracion.usuarios_dependencias dep
+   								JOIN catalogos.dependencias Dependencias on (Dependencias.pkey=dep.id_dependencia)
+   								WHERE  dep.nick=CalendarioEventoSocialEO.nick)	
+   				END)							CalendarioEventoSocialEO_dependencias
+		FROM eventos_sociales.eventos_sociales CalendarioEventoSocialEO
+	</sql>
+	
+<!-- 	<sql id="groupBy"> -->
+<!-- 		GROUP BY to_date(to_char(CalendarioEventoSocialEO.fecha,'DD/MM/YYYY'), 'DD/MM/YYYY'), -->
+<!-- 		to_date(to_char(CalendarioEventoSocialEO.fecha_fin,'DD/MM/YYYY'), 'DD/MM/YYYY') -->
+<!-- 	</sql> -->
+	
+	<select id="listado" resultMap="calendarioEventoSocial" parameterType="list">
+		SELECT  
+				a.CalendarioEventoSocialEO_fecha,
+				a.CalendarioEventoSocialEO_fechaFin,
+				count(a.CalendarioEventoSocialEO_n_eventos) 									CalendarioEventoSocialEO_n_eventos,
+				string_agg(DISTINCT(a.CalendarioEventoSocialEO_dependencias), ',') 				CalendarioEventoSocialEO_dependencias
+		FROM (
+			<include refid="query"/>
+			WHERE CalendarioEventoSocialEO.pkey in 
+						<foreach collection="list" open="(" separator="," close=")" item="item" index="index">
+							#{item.id}
+						</foreach>
+		) a
+		GROUP BY a.CalendarioEventoSocialEO_fecha, a.CalendarioEventoSocialEO_fechaFin
+	</select>
+</mapper>

@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estadísticas" />
+						<p:menuitem value="Variables" url="/app/estadisticas/variables" />
+						<p:menuitem value="Log" />
+					</p:breadCrumb>
+					<p:panel header="Log de Variable">
+						<p:dataTable value="${tablaLog.listado}" var="fila" scrollable="true" scrollHeight="600">
+							<p:column headerText="Fecha" width="100">
+								<p:outputLabel value="${fila.fecha}">
+									<f:convertDateTime locale="es_MX" timeZone="America/Mexico_City" timeStyle="short" type="both"  />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Descripción">${fila.descripcion}</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandLink action="actualizar" update="@form"> 
+									<p:graphicImage value="/resources/botones/ACTUALIZAR.png" />
+							</p:commandLink>
+							<p:commandLink action="regresar">
+									<p:graphicImage value="/resources/botones/REGRESAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Actualizar" action="actualizar" update="@form" /> -->
+<!-- 							<p:commandButton value="Regresar" action="regresar" /> -->
+						</f:facet>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

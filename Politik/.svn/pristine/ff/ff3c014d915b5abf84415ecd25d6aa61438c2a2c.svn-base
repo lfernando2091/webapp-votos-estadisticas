@@ -1,0 +1,21 @@
+package com.saganet.politik.dominios;
+
+public enum ResultadoEncuestaEdomexDO {
+	EXITOSO("Exitoso"),
+	NO_HUBO_QUIEN_CONTESTARA("No hubo quien respondiera"),
+	MENOR_DE_EDAD("Menor de edad"),
+	DOMICILIO_NO_ENCONTRADO("Domicilio no encontrado"),
+	NO_QUISIERON_CONTESTAR("No quisieron contestar"),
+	OTRO("Otro");
+	
+	private final String nombre;
+
+	private ResultadoEncuestaEdomexDO(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+	
+}

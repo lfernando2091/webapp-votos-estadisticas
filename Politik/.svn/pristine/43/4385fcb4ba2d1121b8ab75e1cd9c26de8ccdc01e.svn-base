@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.entidades">
+	<cache />
+	
+	<resultMap type="EntidadEO" id="entidad">
+		<id column="EntidadEO_id" property="id" javaType="Integer"/>
+		<result column="EntidadEO_nombre" property="nombre" javaType="String"/>
+	</resultMap>
+	
+	<select id="listado" resultMap="entidad">
+		select 
+			id_entidad EntidadEO_id,
+			entidad EntidadEO_nombre
+		from catalogos.entidades
+		order by EntidadEO_id
+	</select>
+	
+	<select id="entidadById" resultMap="entidad" parameterType="Integer">
+		select 
+			id_entidad EntidadEO_id,
+			entidad EntidadEO_nombre
+		from catalogos.entidades
+		where id_entidad = #{param}
+	</select>
+	
+	<select id="listadoBuscador" resultMap="entidad">
+		select -1 EntidadEO_id, 'CUALQUIERA' EntidadEO_nombre
+		UNION
+		select 
+			id_entidad EntidadEO_id,
+			entidad EntidadEO_nombre
+		from catalogos.entidades
+		where id_entidad between 1 and 32
+		order by EntidadEO_id
+	</select>
+	
+	<select id="listadoSimple" resultMap="entidad">
+		select 
+			id_entidad EntidadEO_id,
+			entidad EntidadEO_nombre
+		from catalogos.entidades
+		where id_entidad between 1 and 32
+		order by EntidadEO_id
+	</select>
+	
+	<select id="listadoPorEleccionLlave" resultMap="entidad" parameterType="EleccionEO">
+		SELECT 
+			EntidadEO.id_entidad 	EntidadEO_id,
+			EntidadEO.entidad 		EntidadEO_nombre
+		FROM catalogos.entidades EntidadEO
+		<where>
+			EntidadEO.id_entidad in (
+				SELECT EleccionesLlaves.llave::integer 
+				FROM catalogos.elecciones_llaves EleccionesLlaves 
+				WHERE EleccionesLlaves.id_eleccion = #{id} 
+			)
+		</where> 
+		ORDER BY EntidadEO.id_entidad
+	</select>
+	
+	<select id="listadoPorGeozonaParticionLlave" resultMap="entidad" parameterType="GeozonaParticionEO">
+		SELECT 
+			EntidadEO.id_entidad 	EntidadEO_id,
+			EntidadEO.entidad 		EntidadEO_nombre
+		FROM catalogos.entidades EntidadEO
+		<where>
+			EntidadEO.id_entidad in (
+				SELECT GeozonasParticionLlaves.llave::integer 
+				FROM catalogos.geozonas_llaves GeozonasParticionLlaves 
+				WHERE GeozonasParticionLlaves.id_geozona_particion = #{id} 
+			)
+		</where> 
+		ORDER BY EntidadEO.id_entidad
+	</select>
+</mapper>

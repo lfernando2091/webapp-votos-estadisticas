@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	
+	<input name="flag" type="java.lang.Boolean"/>
+	
+	<decision-state id="checarSubflow">
+		<if test="flowScope.flag" then="buscar" else="noEjecucionDirecta"/>
+	</decision-state>
+	
+	<view-state id="buscar">
+		<on-entry>
+			<evaluate expression="MDMPersonasC.modeloVacio()" result="viewScope.modeloPersonas" />
+			<evaluate expression="CatalogosEntidadesC.tablaBuscadorSimple()"
+				result="viewScope.tablaEntidadesClaves" />
+			<evaluate expression="CatalogosEntidadesC.modeloEdomex()"
+				result="viewScope.tablaEntidadesDatos" />
+			<evaluate expression="CatalogosTiposClaveC.tabla()" result="viewScope.tablaTiposClave" />
+			<evaluate expression="UtilidadesDominiosC.modeloMeses()"
+				result="viewScope.tablaMeses" />
+			<evaluate expression="MDMPersonasC.personaVacia()" result="viewScope.personaBuscar" />
+			<set name="viewScope.clave" value="''" />
+		</on-entry>
+		<transition on="buscarPorClave">
+			<evaluate
+				expression="MDMPersonasC.modeloPorClave(viewScope.tablaEntidadesClaves.seleccionado, viewScope.tablaTiposClave.seleccionado, viewScope.clave)"
+				result="viewScope.modeloPersonas" />
+		</transition>
+		<transition on="buscarPorDatos">
+			<evaluate
+				expression="MDMPersonasC.modeloPorDatos(viewScope.tablaEntidadesDatos.seleccionado, viewScope.personaBuscar)"
+				result="viewScope.modeloPersonas" />
+		</transition>
+		<transition on="personaLocalizada" to="personaLocalizada">
+			<set name="requestScope.persona" value="viewScope.modeloPersonas.seleccionado" />
+		</transition>
+		<transition on="cancelar" to="personaNoLocalizada" />
+	</view-state>
+	
+	<view-state id="noEjecucionDirecta" />
+
+	<end-state id="personaLocalizada">
+		<on-entry>
+			<set name="conversationScope.persona" value="requestScope.persona" />
+			<evaluate expression="MDMPersonasC.completarPersona(conversationScope.persona)" />
+		</on-entry>
+	</end-state>
+	
+	<end-state id="personaNoLocalizada" />
+</flow>

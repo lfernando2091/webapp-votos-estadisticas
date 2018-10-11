@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventos.calendarioEventos">
+	<resultMap type="CalendarioEventoSocialEO" id="calendarioEventoSocial">
+		<result column="CalendarioEventoSocialEO_fecha" property="fecha" javaType="java.sql.Date" />
+		<result column="CalendarioEventoSocialEO_fechaFin" property="fechaFin" javaType="java.sql.Date" />
+		<result column="CalendarioEventoSocialEO_n_eventos" property="conteo" javaType="Integer" />
+		<result column="CalendarioEventoSocialEO_dependencias" property="dependencias" javaType="String" />
+		
+	</resultMap>
+
+	<sql id="query">
+		SELECT 
+			to_date(to_char(CalendarioEventoSocialEO.fecha,'DD/MM/YYYY'), 'DD/MM/YYYY') 		CalendarioEventoSocialEO_fecha ,	
+			to_date(to_char(CalendarioEventoSocialEO.fecha_fin,'DD/MM/YYYY'), 'DD/MM/YYYY') 	CalendarioEventoSocialEO_fechaFin ,	
+			count(CalendarioEventoSocialEO.*) 													CalendarioEventoSocialEO_n_eventos,
+			string_agg(Dependencia.siglas,',') 													CalendarioEventoSocialEO_dependencias
+		FROM eventos_sociales.eventos_sociales CalendarioEventoSocialEO
+		LEFT JOIN eventos_sociales.eventos_programas EventosProgramas on (EventosProgramas.id_evento_social=CalendarioEventoSocialEO.pkey) 
+		LEFT JOIN catalogos.programas_ejercicios EjerciciosProgramas on (EjerciciosProgramas.pkey=EventosProgramas.id_ejercicio_programa)
+		LEFT JOIN catalogos.programas Programas on (Programas.pkey=EjerciciosProgramas.id_programa)
+		LEFT JOIN catalogos.dependencias Dependencia on (Dependencia.pkey=Programas.id_dependencia)
+	</sql>
+	
+	<sql id="groupBy">
+		GROUP BY to_date(to_char(CalendarioEventoSocialEO.fecha,'DD/MM/YYYY'), 'DD/MM/YYYY'),to_date(to_char(CalendarioEventoSocialEO.fecha_fin,'DD/MM/YYYY'), 'DD/MM/YYYY') 
+	</sql>
+	
+	<select id="listado" resultMap="calendarioEventoSocial" parameterType="list">
+		<include refid="query"/>
+		WHERE CalendarioEventoSocialEO.pkey in 
+					<foreach collection="list" open="(" separator="," close=")" item="item" index="index">
+						#{item.id}
+					</foreach>
+		<include refid="groupBy"/>
+	</select>
+</mapper>

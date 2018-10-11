@@ -1,0 +1,119 @@
+package com.saganet.politik.components.encuestas.edomex2017.callCenter;
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.RolEO;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.encuestas.edomex2017.callCenter.CapturistaEO;
+import com.saganet.politik.database.encuestas.edomex2017.callCenter.EncargadoEO;
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.modelos.Modelo;
+
+
+@Component("Edomex2017CapturistaC")
+public class CapturistaC{
+@Autowired
+SqlSession sqlSession;
+private static final Logger logger = LoggerFactory.getLogger(CapturistaC.class);
+
+private UsuarioEO getUsuario(){
+	return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+}
+
+public EncargadoEO encargadoLogeado(){
+	EncargadoEO encargado= sqlSession.selectOne("encuestas.callcenter.encargado.buscarPorNick", getUsuario().getNick());
+	logger.debug("Usuario logueado {}",encargado);
+	return encargado;
+}
+
+public Modelo<CapturistaEO> listadoCapturistas(EncargadoEO encargado){
+	Modelo<CapturistaEO> modelo;
+	List<CapturistaEO> listado;
+	modelo = new Modelo<>();
+	listado=sqlSession.selectList("encuestas.edomex2017.callcenter.capturista.listadoCapturistas",encargado.getUsuario().getId());
+	logger.debug("listado {}",listado);
+	modelo.setListado(listado);
+	return modelo;
+}
+
+
+
+public  CapturistaEO crearCapturista(EncargadoEO encargado){
+	encargado.setUsuario(getUsuario());
+	CapturistaEO capturista=new CapturistaEO();
+	capturista.setEncargado(encargado);
+	return capturista;
+}
+
+
+public CapturistaEO  agregarCapturista(CapturistaEO capturista){
+		HashMap<String, Object> mapa=new HashMap<>();
+		List<RolEO> listado;
+		RolEO rol;
+		
+		mapa = new HashMap<>();
+		listado = new ArrayList<>();
+		rol =  new RolEO();
+		rol.setRol("ROLE_ENCUESTAS_EDOMEX_CALL_CENTER_CAPTURISTAS");
+		listado.add(rol);
+		rol =  new RolEO();
+		rol.setRol("ROLE_USER");
+		listado.add(rol);
+		
+		capturista.getUsuario().setNick("em_" + sqlSession.selectOne("encuestas.edomex2017.registroUsuarios.conteoUsuario"));
+		capturista.getUsuario().setNombre(capturista.getNombre()+" " + capturista.getPrimerApellido() + " " + capturista.getSegundoApellido());
+		capturista.getUsuario().setPw(clave());
+		capturista.getUsuario().setHabilitado(true);
+		capturista.getUsuario().setNivel(NivelesDO.NACIONAL);
+		capturista.getUsuario().setRoles(listado);
+		
+		
+//		capturista.getUsuario().setCelular(capturista.getMovil());
+//		capturista.getUsuario().setMail(capturista.getEmail());
+		
+		logger.debug("USUARIO A INGRESAR {}", capturista);
+		
+		mapa.put("nick_capturista", capturista.getUsuario().getNick());
+		mapa.put("encargado", capturista.getEncargado().getUsuario().getId());
+		
+		logger.debug("USUARIO A INGRESAR insertarEncargadoCapturista{}", mapa);
+		sqlSession.insert("administracion.usuarios.insertar", capturista);
+		sqlSession.insert("administracion.roles.insertarAutorizacionesPorUsuario", capturista);
+		sqlSession.insert("encuestas.edomex2017.callcenter.captura.insertarEncargadoCapturista", mapa);
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Registro", "Exitoso"));
+		return capturista;
+}
+
+	public String clave(){
+	 String pass = "";
+	 char[] caracteres;
+       caracteres = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+       for (int i = 0; i < 9; i++) {
+           pass += caracteres[new Random().nextInt(62)];
+       }
+      return pass;
+	}
+	
+	public void eliminar(CapturistaEO capturista){
+		logger.debug("Encuestador a Eliminar {}",capturista);
+		sqlSession.delete("",capturista);
+	}
+}
+		
+	
+

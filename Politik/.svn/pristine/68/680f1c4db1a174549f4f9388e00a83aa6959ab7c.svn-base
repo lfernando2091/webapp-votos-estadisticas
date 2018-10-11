@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	<view-state id="concentrado">
+		<on-entry>
+			<evaluate expression="UsuariosC.modelo()" result="viewScope.modeloUsuarios" />
+			<evaluate
+				expression="BitacorasC.listadoConcentrado(viewScope.modeloUsuarios.seleccionado.nick)"
+				result="viewScope.listadoConcentrado" />
+			<evaluate expression="BitacorasC.nuevo()" result="viewScope.apoyoFechas" />
+		</on-entry>
+		<transition on="consultaConcentrado">
+			<evaluate
+				expression="BitacorasC.listadoConcentrado(viewScope.modeloUsuarios.seleccionado.nick)"
+				result="viewScope.listadoConcentrado" />
+		</transition>
+		<transition on="actualizarConcentrado">
+			<evaluate expression="UsuariosC.modeloBitacora(viewScope.apoyoFechas)"
+				result="viewScope.modeloUsuarios" />
+		</transition>
+		<transition on="listadoCompleto" to="bitacora">
+
+		</transition>
+	</view-state>
+
+	<view-state id="bitacora">
+		<on-entry>
+			<evaluate expression="UsuariosC.modelo()" result="viewScope.modeloUsuarios" />
+			<evaluate expression="BitacorasC.modeloGenerico()" result="viewScope.modeloBitacoras" />
+		</on-entry>
+		<transition on="llenarBitacora">
+			<evaluate
+				expression="BitacorasC.modeloNick(viewScope.modeloUsuarios.seleccionMultiple)"
+				result="viewScope.modeloBitacoras" />
+
+		</transition>
+		<transition on="salir" to="fin" />
+	</view-state>
+
+	<end-state id="fin"></end-state>
+</flow>

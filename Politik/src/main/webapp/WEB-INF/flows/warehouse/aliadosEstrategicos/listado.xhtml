@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Aliados Estratégicos">
+						<p:dataTable value="${tablaAliadosEstrategicos.listado}" var="fila"
+							rowKey="${fila.id}" selection="${tablaAliadosEstrategicos.seleccionado}"
+							selectionMode="single" paginator="true" rows="15">
+							<p:column headerText="Id_Politik" width="55">
+								<p:outputLabel value="${fila.id}"/>
+							</p:column>
+							<p:column headerText="Aliado">
+								<p:outputLabel value="${fila.persona.id} - ${fila.persona.nombre} ${fila.persona.primerApellido} ${fila.persona.segundoApellido}"/>
+							</p:column>
+							<p:column headerText="Entidad Nacimiento" >
+								<p:outputLabel value="${fila.persona.entidadNacimiento.id} - ${fila.persona.entidadNacimiento.nombre}"/>
+							</p:column>
+							<p:column headerText="Entidad" >
+								<p:outputLabel value="${fila.entidad.id} - ${fila.entidad.nombre}"/>
+							</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandLink  action="agregar">
+									<p:graphicImage value="/resources/botones/NUEVO.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Nuevo" action="agregar"/> -->
+						</f:facet>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

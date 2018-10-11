@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="gis.geoData">
+	<cache />
+	
+	<resultMap type="GeoData" id="geoData">
+		<result column="GeoDataEO_xMin" property="xMin" javaType="Double"/>
+		<result column="GeoDataEO_yMin" property="yMin" javaType="Double"/>
+		<result column="GeoDataEO_xMax" property="xMax" javaType="Double"/>
+		<result column="GeoDataEO_yMax" property="yMax" javaType="Double"/>
+	</resultMap>
+	
+	<select id="porListadoEntidades" parameterType="list" resultMap="geoData">
+		SELECT 
+			st_xmin(ST_Extent(GisEntidades.geom)) 	GeoDataEO_xMin,
+			st_ymin(ST_Extent(GisEntidades.geom)) 	GeoDataEO_yMin,
+			st_xmax(ST_Extent(GisEntidades.geom)) 	GeoDataEO_xMax,
+			st_ymax(ST_Extent(GisEntidades.geom)) 	GeoDataEO_yMax
+		FROM gis.entidades GisEntidades
+		WHERE id_entidad in (
+			<foreach collection="list" item="item" separator=",">
+				${item.id}
+			</foreach>
+		)
+	</select>
+	
+	<select id="porListadoMunicipios" parameterType="list" resultMap="geoData">
+		SELECT 
+			st_xmin(ST_Extent(GisMunicipios.geom)) 	GeoDataEO_xMin,
+			st_ymin(ST_Extent(GisMunicipios.geom)) 	GeoDataEO_yMin,
+			st_xmax(ST_Extent(GisMunicipios.geom)) 	GeoDataEO_xMax,
+			st_ymax(ST_Extent(GisMunicipios.geom)) 	GeoDataEO_yMax
+		FROM gis.municipios GisMunicipios
+		WHERE llave in (
+			<foreach collection="list" item="item" separator="," >
+				'${item.llave}'
+			</foreach>
+		)
+	</select>
+	
+</mapper>

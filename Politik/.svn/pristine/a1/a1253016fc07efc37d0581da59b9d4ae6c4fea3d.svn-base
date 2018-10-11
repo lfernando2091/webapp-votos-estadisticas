@@ -1,0 +1,103 @@
+package com.saganet.politik.components.diaD.reportes;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.apache.jasper.tagplugins.jstl.core.ForEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+
+import com.saganet.politik.components.diaD.SeccionalC;
+import com.saganet.politik.database.diaD.reportes.ExitosoNoExitosoEO;
+import com.saganet.politik.dominios.NivelesReporteDO;
+import com.saganet.politik.dominios.ProgramasEdoMexDO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("DiadReportesExitososNoExitososC")
+public class ExitososNoExitososC {
+@Autowired
+SqlSession sqlSession;
+private static final Logger logger = LoggerFactory.getLogger(ExitososNoExitososC.class);
+
+	public String modelo(RequestContext context,  NivelesReporteDO nivel, ProgramasEdoMexDO programa){
+		HashMap<String, Object> flowScope;
+		List<ExitosoNoExitosoEO> listado;
+		Integer _1;
+		Integer _2;
+		Integer _3;
+		Integer _4;
+		Integer _5;
+		Integer _6;
+		Integer _7;
+		Integer _8;
+		Integer _9;
+		Integer _10;
+		Integer _11;
+		Integer _12;
+		Integer _13;
+
+		_1 =0;
+		_2 =0;
+		_3 =0;
+		_4 =0;
+		_5 =0;
+		_6 =0;
+		_7 =0;
+		_8 =0;
+		_9 =0;
+		_10 =0;
+		_11 =0;
+		_12 =0;
+		_13 =0;
+
+		
+		flowScope = (HashMap<String, Object>) context.getFlowScope().asMap();
+		flowScope.put("nivel", nivel);
+		flowScope.put("programa", programa.getNombre2());
+		logger.debug("Listado: {}", flowScope);
+		try{
+		listado = sqlSession.selectList("diaD.reportes.exitososNoExitosos.listado", flowScope);
+		flowScope.put("modelo", new Modelo<>(listado));
+		logger.debug("Listado despues: {}", listado);
+		for (ExitosoNoExitosoEO exitosoNoExitosoEO : listado) {
+			_1 = _1 + exitosoNoExitosoEO.getContactos();
+			_2 = _2 + exitosoNoExitosoEO.getaFavor();
+			_3 = _3 + exitosoNoExitosoEO.getIndeciso();
+			_4 = _4 + exitosoNoExitosoEO.getEnContra();
+			_5 = _5 + exitosoNoExitosoEO.getTotalExitosas();
+			_6 = _6 + exitosoNoExitosoEO.getMe();
+			_7 = _7 + exitosoNoExitosoEO.getF();
+			_8 = _8 + exitosoNoExitosoEO.getO();
+			_9 = _9 + exitosoNoExitosoEO.getNva();
+			_10 = _10 + exitosoNoExitosoEO.getNqc();
+			_11 = _11 + exitosoNoExitosoEO.getNhqc();
+			_12 = _12 + exitosoNoExitosoEO.getDne();
+			_13 = _13 + exitosoNoExitosoEO.getTotalNoExitosas();
+			
+		}
+		flowScope.put("_1", _1);
+		flowScope.put("_2", _2);
+		flowScope.put("_3", _3);
+		flowScope.put("_4", _4);
+		flowScope.put("_5", _5);
+		flowScope.put("_6", _6);
+		flowScope.put("_7", _7);
+		flowScope.put("_8", _8);
+		flowScope.put("_9", _9);
+		flowScope.put("_10", _10);
+		flowScope.put("_11", _11);
+		flowScope.put("_12", _12);
+		flowScope.put("_13", _13);
+
+		return "succes";
+		}catch(Exception e){
+			logger.debug("Error: {}", e.getMessage());
+			return "error";
+		}
+		
+	}
+}

@@ -1,0 +1,170 @@
+package com.saganet.politik.database.catalogos;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("ProgramaEjercicioEO")
+public class ProgramaEjercicioEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = -4908221854936830689L;
+	
+	private Integer id;
+	private Integer idPrograma;
+	private Integer ejercicio;
+	private String fechaInicio;
+	private String fechaTermino;
+	private String poblacionObjetivo;
+	private Integer beneficiariosProyectados;
+	private String observaciones;
+	private String nick;
+	private String fecha;
+	private String nickActualizacion;
+	private String fechaActualizacion;
+	private Date ini;
+	private Date fin;
+	private ProgramaEO programa; 
+	private List<JavaBeanT> territorios;
+	
+	@Override
+	public String toString() {
+		return "ProgramaEjercicioEO [id=" + id + ", idPrograma=" + idPrograma + ", ejercicio=" + ejercicio
+				+ ", fechaInicio=" + fechaInicio + ", fechaTermino=" + fechaTermino + ", poblacionObjetivo="
+				+ poblacionObjetivo + ", beneficiariosProyectados=" + beneficiariosProyectados + ", observaciones="
+				+ observaciones + ", nick=" + nick + ", fecha=" + fecha + ", nickActualizacion=" + nickActualizacion
+				+ ", fechaActualizacion=" + fechaActualizacion + ", ini=" + ini + ", fin=" + fin + ", programa="
+				+ programa + ", territorios=" + territorios + "]";
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getIdPrograma() {
+		return idPrograma;
+	}
+
+	public void setIdPrograma(Integer idPrograma) {
+		this.idPrograma = idPrograma;
+	}
+
+	public Integer getEjercicio() {
+		return ejercicio;
+	}
+
+	public void setEjercicio(Integer ejercicio) {
+		this.ejercicio = ejercicio;
+	}
+
+	public String getFechaInicio() {
+		return fechaInicio;
+	}
+
+	public void setFechaInicio(String fechaInicio) {
+		this.fechaInicio = fechaInicio;
+	}
+
+	public String getFechaTermino() {
+		return fechaTermino;
+	}
+
+	public void setFechaTermino(String fechaTermino) {
+		this.fechaTermino = fechaTermino;
+	}
+
+	public String getPoblacionObjetivo() {
+		return poblacionObjetivo;
+	}
+
+	public void setPoblacionObjetivo(String poblacionObjetivo) {
+		this.poblacionObjetivo = poblacionObjetivo;
+	}
+
+	public Integer getBeneficiariosProyectados() {
+		return beneficiariosProyectados;
+	}
+
+	public void setBeneficiariosProyectados(Integer beneficiariosProyectados) {
+		this.beneficiariosProyectados = beneficiariosProyectados;
+	}
+
+	public String getObservaciones() {
+		return observaciones;
+	}
+
+	public void setObservaciones(String observaciones) {
+		this.observaciones = observaciones;
+	}
+
+	public String getNick() {
+		return nick;
+	}
+
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+
+	public String getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(String fecha) {
+		this.fecha = fecha;
+	}
+
+	public String getNickActualizacion() {
+		return nickActualizacion;
+	}
+
+	public void setNickActualizacion(String nickActualizacion) {
+		this.nickActualizacion = nickActualizacion;
+	}
+
+	public String getFechaActualizacion() {
+		return fechaActualizacion;
+	}
+
+	public void setFechaActualizacion(String fechaActualizacion) {
+		this.fechaActualizacion = fechaActualizacion;
+	}
+
+	public Date getIni() {
+		return ini;
+	}
+
+	public void setIni(Date ini) {
+		this.ini = ini;
+	}
+
+	public Date getFin() {
+		return fin;
+	}
+
+	public void setFin(Date fin) {
+		this.fin = fin;
+	}
+
+	public ProgramaEO getPrograma() {
+		return programa;
+	}
+
+	public void setPrograma(ProgramaEO programa) {
+		this.programa = programa;
+	}
+
+	public List<JavaBeanT> getTerritorios() {
+		return territorios;
+	}
+
+	public void setTerritorios(List<JavaBeanT> territorios) {
+		this.territorios = territorios;
+	}
+	
+}

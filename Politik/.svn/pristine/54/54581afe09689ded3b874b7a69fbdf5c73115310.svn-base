@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="diaD.registroUsuariosMovilizadores">
+	<resultMap type="RegistroMovilizadorEO" id="registroMovilizador">
+		<id 			column="RegistroMovilizadorEO_pkey" 						property="id" 					javaType="Integer" />
+		<result 		column="RegistroMovilizadorEO_region" 						property="region"				javaType="Integer"/>
+		<result  		column="RegistroMovilizadorEO_nombreRegion"					property="nombreRegion" 		javaType="String"/>
+		<result  		column="RegistroMovilizadorEO_idMunicipio"					property="idMunicipio" 			javaType="Integer"/>
+		<result  		column="RegistroMovilizadorEO_nombreMunicipio"				property="nombreMunicipio" 		javaType="String"/>
+		<result  		column="RegistroMovilizadorEO_codigoAlfanumerico"			property="codigoAlfanumerico" 	javaType="String"/>
+		<result 		column="RegistroMovilizadorEO_programa" 					property="programa"				javaType="com.saganet.politik.dominios.ProgramasEdoMexDO"/>
+	</resultMap>
+	
+
+	<sql id="query">
+		SELECT 
+				RegistroMovilizadorEO.pkey								RegistroMovilizadorEO_pkey, 
+				RegistroMovilizadorEO.region							RegistroMovilizadorEO_region, 
+				RegistroMovilizadorEO.nombre_region						RegistroMovilizadorEO_nombreRegion, 
+				RegistroMovilizadorEO.id_municipio						RegistroMovilizadorEO_idMunicipio, 
+				RegistroMovilizadorEO.municipio							RegistroMovilizadorEO_nombreMunicipio, 
+				RegistroMovilizadorEO.programa							RegistroMovilizadorEO_programa, 
+				RegistroMovilizadorEO.codigo_alfanumerico				RegistroMovilizadorEO_codigoAlfanumerico	
+ 		 FROM dia_d.registro_movilizadores			RegistroMovilizadorEO
+	</sql>
+	
+	<select id="validarCodigo" parameterType="hashmap"  resultMap="registroMovilizador">
+			<include refid="query"/>
+			WHERE codigo_alfanumerico = #{codigo}  and id_municipio=#{municipio}
+	</select>
+	
+	
+</mapper>

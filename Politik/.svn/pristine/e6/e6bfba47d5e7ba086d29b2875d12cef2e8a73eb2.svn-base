@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+<secured attributes="ROLE_ENCUESTAS_EDOMEX_CALL_CENTER" />
+	
+	<view-state id="listadoCapturistas">
+		<on-entry>
+			<evaluate expression="Edomex2017CapturistaC.encargadoLogeado()" result="viewScope.encargado"/>
+			<evaluate expression="Edomex2017CapturistaC.listadoCapturistas(viewScope.encargado)" result="viewScope.capturistas"/>
+			
+		</on-entry>
+		<transition on="agregar" to="agregarCapturistas">
+			<set name="requestScope.encargado" value="viewScope.encargado"/>
+		</transition>
+	</view-state>
+	
+	<view-state id="agregarCapturistas">
+		<on-entry>
+			<set name="viewScope.encargado" value="requestScope.encargado"/>
+			<evaluate expression="Edomex2017CapturistaC.crearCapturista(viewScope.encargado)" result="viewScope.nuevo"/>
+		</on-entry>
+			
+		<transition on="guardar">
+			<evaluate expression="Edomex2017CapturistaC.agregarCapturista(viewScope.nuevo)" result="viewScope.capturista"/>
+		</transition>
+		
+		<transition on="cerrar" to="agregarCapturistas">
+			<set name="requestScope.encargado" value="viewScope.encargado"/>
+		</transition>
+		<transition on="regresar" to="listadoCapturistas"/>
+	</view-state>
+
+	<end-state id="salirCallCenter"/>
+	
+</flow>

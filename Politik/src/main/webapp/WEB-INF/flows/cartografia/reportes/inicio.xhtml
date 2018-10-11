@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Reportes Cartográficos">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Reporte" />
+							<p:selectOneMenu value="${modelo.seleccionado}" style="width: 250px;">
+								<f:selectItems value="${modelo.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<f:facet name="footer">
+								<p:commandButton value="Ver Reporte" action="siguiente" />
+							</f:facet>
+						</p:panelGrid>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

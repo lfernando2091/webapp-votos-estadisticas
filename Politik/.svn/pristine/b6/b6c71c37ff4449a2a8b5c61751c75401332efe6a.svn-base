@@ -1,0 +1,61 @@
+package com.saganet.politik.components.catalogos;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.catalogos.TablaEO;
+import com.saganet.politik.database.catalogos.TablaParticionEO;
+import com.saganet.politik.modelos.catalogos.TablasT;
+
+@Component("CatalogosTablasC")
+public class TablasC {
+	private static final Logger logger = LoggerFactory.getLogger(TablasC.class);
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	public TablasT tabla(){
+		TablasT tabla;
+		List<TablaEO> listado;
+		
+		tabla = new TablasT();
+		
+		listado = sqlSession.selectList("catalogos.tablas.listado");
+		if(!listado.isEmpty())
+			tabla.setSeleccionado(listado.get(0));
+		tabla.setListado(listado);
+		
+		return tabla;
+	}
+	
+	public TablaEO nuevo(){
+		TablaEO nuevo;
+		List<TablaParticionEO> particiones;
+		
+		nuevo = new TablaEO();
+		particiones = new ArrayList<TablaParticionEO>();
+		nuevo.setParticiones(particiones);
+		logger.debug("Se crea objeto TablaEO nuevo: {}", nuevo);
+		
+		return nuevo;
+	}
+	
+	public String necesitaParticiones(TablaEO nuevo){
+		String respuesta;
+		
+		respuesta = nuevo.getParticionada() ? "Si" : "No";
+		logger.debug("Se obtiene respuesta de decision: {}", respuesta);
+		
+		return respuesta;
+	}
+	
+	public void insertar(TablaEO nuevo){
+		return;
+	}
+}

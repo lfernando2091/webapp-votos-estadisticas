@@ -1,0 +1,60 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Encuesta">
+					<p:panelGrid columns="2">
+					<p:outputLabel value="ID: "/>
+					<p:outputLabel value="${modeloEncuestaSeleccionado.id}"/>
+					<p:outputLabel value="Descripción"/>
+					<p:outputLabel value="${modeloEncuestaSeleccionado.descripcion}"/>
+					</p:panelGrid>					
+					</p:panel>
+					<p:separator/>
+					
+					<p:panelGrid>
+					<p:row>
+					<p:column>
+					<p:panel header="Preguntas ">
+					<p:dataTable value="${modeloPreguntas.listado}" var="fila"
+					selectionMode="single" selection="${modeloPreguntas.seleccionado}" rowKey="${fila.id}"
+					paginator="true" paginatorAlwaysVisible="false" paginatorPosition="button" 
+					rows="15" reflow="true">
+					<p:column headerText="Tipo Pregunta" width="15%">
+					${fila.tipoPregunta}
+					</p:column>
+					<p:column headerText="Pregunta">
+					${fila.pregunta}
+					</p:column>
+					
+					</p:dataTable>
+					<f:facet name="fotter">
+					<p:commandButton action="nuevaPregunta" icon="fa fa-plus-circle" value="Pregunta"/>
+					<p:commandButton action="salirPreguntas" value="Salir"/>
+					</f:facet>
+					</p:panel>
+					</p:column>
+					</p:row>
+					</p:panelGrid>
+					
+					
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+						}
+					</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

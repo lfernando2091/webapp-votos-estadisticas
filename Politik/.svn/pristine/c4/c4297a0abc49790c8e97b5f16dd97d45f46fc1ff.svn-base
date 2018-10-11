@@ -1,0 +1,188 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Estadisticas Por Estatus de Encuesta">
+						<p:tabView>
+							<p:tab title="Concentrado Region">
+							<p:panelGrid >
+							<p:row>
+							<p:column>
+							<p:outputLabel value="Tipo Filtro: ${tipoFiltro}"/>
+							</p:column>
+							<p:column>
+							<p:selectOneMenu value="${tipoFiltro}">
+							<p:ajax event="change" update="@form" />
+							<f:selectItem itemLabel="Por Región" itemValue="1"/>
+							<f:selectItem itemLabel="Por Municipio" itemValue="2"/>
+							<f:selectItem itemLabel="Por Zona" itemValue="4"/>
+							<f:selectItem itemLabel="Por Sección" itemValue="5"/>
+							</p:selectOneMenu>
+							</p:column>
+							</p:row>
+							<p:row rendered="${tipoFiltro ne 1?'true':'false'}">
+							<p:column>
+							<p:outputLabel value="Región: ${region}" />
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${region}">
+								<p:ajax event="change" update="@form" />
+									<f:selectItems var="r" value="${regiones}"
+										itemLabel="${r.nombre}" itemValue="${r.id}" />
+								</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							</p:panelGrid>
+							<h:commandLink action="actualizaFiltro" rendered="${tipoFiltro eq 1?'true':'false'}"  title="Buscar por Region">
+										<p:graphicImage value="/resources/botones/BUSCAR.png" />
+										
+									</h:commandLink>
+									
+									<h:commandLink action="actualizaFiltro" rendered="${tipoFiltro eq 2?'true':'false'}"  title="Filtrar por Muniicpio">
+										<p:graphicImage value="/resources/botones/BUSCAR.png" />
+										
+									</h:commandLink>
+							<p:separator/>
+							
+								<p:dataTable value="${listadoRegion}" id="dtRegion" var="l"
+									sortBy="${l.get('reporte')}">
+									<p:column headerText="Región">
+										<p:outputLabel value="${l.get('region')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</p:outputLabel>
+									</p:column>
+									
+									<p:column headerText="Municipio" rendered="${tipoFiltro eq 2?'true':'false'}">
+										<p:outputLabel value="${l.get('region')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</p:outputLabel>
+									</p:column>
+									
+									<p:column headerText="Completa">
+										<p:outputLabel value="${l.get('completa')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</p:outputLabel>
+									</p:column>
+									<p:column headerText="Incompleta">
+										<p:outputLabel value="${l.get('incompleta')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</p:outputLabel>
+									</p:column>
+									<p:column headerText="Se Nego a dar Información">
+										<p:outputLabel value="${l.get('nego_dar_informacion')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</p:outputLabel>
+									</p:column>
+									<p:column headerText="No tiene Credencial">
+										<p:outputLabel value="${l.get('no_tiene_credencial')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</p:outputLabel>
+									</p:column>
+									<p:column headerText="Persona no Encontrada">
+										<p:outputLabel value="${l.get('no_se_encontro_persona')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</p:outputLabel>
+
+									</p:column>
+									<p:column headerText="Vivienda no Encontrada">
+										<p:outputLabel value="${l.get('no_se_encontro_vivienda')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</p:outputLabel>
+									</p:column>
+									<p:column headerText="No Hubo quien Respondieran">
+										<p:outputLabel value="${l.get('no_hubo_quien_respondiera')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</p:outputLabel>
+									</p:column>
+									<p:column headerText="Sin Estado">
+										<p:outputLabel value="${l.get('sin_estado')}" />
+									</p:column>
+
+
+									<p:summaryRow>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText value="Totales: " />
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<p:outputLabel value="${totalesRegion.get('t_completa')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</p:outputLabel>
+										</p:column>
+										<p:column>
+											<p:outputLabel value="${totalesRegion.get('t_incompleta')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</p:outputLabel>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<p:outputLabel
+												value="${totalesRegion.get('t_nego_dar_informacion')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</p:outputLabel>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<p:outputLabel
+												value="${totalesRegion.get('t_no_tiene_credencial')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</p:outputLabel>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<p:outputLabel
+												value="${totalesRegion.get('t_no_se_encontro_persona')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</p:outputLabel>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<p:outputLabel
+												value="${totalesRegion.get('t_no_se_encontro_vivienda')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</p:outputLabel>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<p:outputLabel
+												value="${totalesRegion.get('t_no_hubo_quien_respondiera')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</p:outputLabel>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<p:outputLabel value="${totalesRegion.get('t_sin_estado')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</p:outputLabel>
+										</p:column>
+
+									</p:summaryRow>
+									<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="dtRegion"
+												fileName="Concentrado por regiones" />
+										</h:commandLink>
+									</f:facet>
+								</p:dataTable>
+
+							</p:tab>
+						</p:tabView>
+
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

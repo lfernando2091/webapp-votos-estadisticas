@@ -1,0 +1,51 @@
+package com.saganet.politik.components.diaD;
+
+//import java.util.ArrayList;
+//import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+//import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.catalogos.SeccionEO;
+import com.saganet.politik.database.diaD.MovilizadorEO;
+import com.saganet.politik.database.diaD.SeccionalEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("diaDMovilicadoresC")
+public class MovilizadoresC {
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(MovilizadoresC.class);
+
+	@Autowired
+	SqlSession sqlSession;
+
+	public Modelo<MovilizadorEO> modelo(){
+		List<MovilizadorEO> listado = sqlSession.selectList("diaD.capturaMovilizador.listado");
+		return new Modelo<>(listado);
+	}
+	
+	public Modelo<MovilizadorEO> modeloMovilizador(SeccionEO seccion){
+		List<MovilizadorEO> listado = sqlSession.selectList("diaD.capturaMovilizador.listadoRegionMunicipio", seccion);
+		return new Modelo<>(listado);
+	}
+	
+	public void guarda(MovilizadorEO movilizador){
+		if(movilizador.getId()==null) sqlSession.insert("diaD.capturaMovilizador.insertar", movilizador);
+		else  sqlSession.update("diaD.capturaMovilizador.actualizar", movilizador);
+		
+	}
+	
+	
+	public void  eliminar(MovilizadorEO movilizador){
+		logger.debug("OBJETO ELIMINAR ------------------------------->><<<<<<<>>>>: {}", movilizador.getId());
+		sqlSession.delete("diaD.capturaMovilizador.eliminar", movilizador.getId());
+	}
+
+	public MovilizadorEO nuevo(){
+		return new MovilizadorEO();
+	}
+}

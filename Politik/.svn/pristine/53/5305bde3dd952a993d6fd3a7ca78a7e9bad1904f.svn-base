@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Partidos Políticos"
+							url="/app/catalogos/partidos" />
+					</p:breadCrumb>
+
+					<p:panel header="Listado de Partidos Políticos">
+						<p:dataTable value="${modeloPartidos.listado}" var="fila"
+							paginatorPosition="bottom" paginator="true" rows="15"
+							rowKey="${fila.id}" selection="${modeloPartidos.seleccionado}"
+							selectionMode="single">
+							<p:column headerText="Id" width="40">${fila.id}</p:column>
+							<p:column headerText="Nombre" filterBy="${fila.nombre}"
+								filterMatchMode="contains" filterStyle="width: 95%;">${fila.nombre}</p:column>
+							<p:column headerText="Siglas" width="120"
+								filterBy="${fila.siglas}" filterMatchMode="contains">${fila.siglas}</p:column>
+							<p:column headerText="Coalición" width="70">${fila.coalicion ? 'Si' : 'No'}</p:column>
+							<p:column headerText="Logo" width="35"><p:graphicImage library="logos_partidos" name="p${fila.id}_small.jpg" /></p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandLink action="agregar">
+									<p:graphicImage value="/resources/botones/AGREGAR.png" />
+							</p:commandLink>
+							<p:commandLink action="editar" rendered="false">
+									<p:graphicImage value="/resources/botones/EDITAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Agregar" action="agregar" /> -->
+<!-- 							<p:commandButton value="Editar" action="editar" rendered="false" /> -->
+						</f:facet>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

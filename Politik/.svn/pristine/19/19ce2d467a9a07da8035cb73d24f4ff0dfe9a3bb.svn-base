@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Eventos" url="/app/evento/" />
+						<p:menuitem value="Agregar Evento" />
+					</p:breadCrumb>
+					<p:panel header="Agregar Programa">
+						<p:messages autoUpdate="true" />
+						<p:panelGrid columns="2" id="panelGridPrincipal" columnClasses="topAlign, topAlign2">
+							<p:column>
+								<p:panelGrid columns="2" id="panelGrid">
+									<p:column>Dependencia</p:column>
+									<p:column>
+										<p:selectOneMenu value="${nuevoPrograma.dependencia}" style="width: 350px;"  />
+											<f:selectItems value="${dependencia.listadoDependencias}" var="fila" itemLabel="${fila.dependencia}" itemValue="${fila}" />
+											<p:ajax event="itemSelect" onstart="atualizarPrograma()"/>
+										</p:selectOneMenu>
+									</p:column>
+									<p:column>Programa</p:column>
+									<p:column>
+										<p:selectOneMenu value="${nuevoPrograma.programa}" style="width: 350px;" converter="ObjectConverter">
+											<f:selectItems value="${programa.listadoProgramas}" var="fila" itemLabel="${fila.programa}" itemValue="${fila}" />
+											<p:ajax event="itemSelect" onstart="actualizarEjercicio()"/>
+										</p:selectOneMenu>
+									</p:column>
+									<p:column>Ejercicio</p:column>
+									<p:column>
+										<p:selectOneMenu value="${nuevoPrograma.ejercicio" style="width: 350px;" converter="ObjectConverter">
+											<f:selectItems value="${ejercicio.listadoEjercicios}" var="fila" itemLabel="${fila.ejercicio}" itemValue="${fila}" />
+										</p:selectOneMenu>
+									</p:column>
+								</p:panelGrid>
+								<f:facet name="footer">
+									<p:commandButton value="Guardar" action="guardar" />
+									<p:commandButton value="Cancelar" action="cancelar" />
+								</f:facet>
+					</p:panel>
+					<p:remoteCommand name="atualizarPrograma" action="atualizarPrograma" update="panelGridPrincipal"  partialSubmit="true"  immediate="true"/>
+					<p:remoteCommand name="actualizarEjercicio" action="actualizarEjercicio" update="panelGridPrincipal"  partialSubmit="true"  immediate="true"/>
+				</h:form>
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+					.topAlign2{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

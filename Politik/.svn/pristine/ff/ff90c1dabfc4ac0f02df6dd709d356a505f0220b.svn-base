@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="CatalogosTablasC.tabla()" result="viewScope.tablaTablas" />
+		</on-entry>
+		<transition on="agregar" to="crearNuevo" />
+	</view-state>
+	
+	<action-state id="crearNuevo">
+		<evaluate expression="CatalogosTablasC.nuevo()" result="flowScope.nuevo" />
+		<transition on="success" to="agregar" />
+	</action-state>
+	
+	<view-state id="agregar">
+		<transition on="cancelar" to="listado">
+			<evaluate expression="flowScope.nuevo = null" />
+		</transition>
+		<transition on="guardar" to="necesitaParticiones" />
+	</view-state>
+	
+	<action-state id="necesitaParticiones">
+		<evaluate expression="CatalogosTablasC.necesitaParticiones(flowScope.nuevo)" />
+		<transition on="Si" to="agregarParticiones" />
+		<transition on="No" to="agregarCampos" />
+	</action-state>
+	
+	<view-state id="agregarParticiones">
+		<on-entry>
+			<evaluate expression="CatalogosTablasC.nuevaParticion(flowScope.nuevo)" result="viewScope.particion" />
+			<evaluate expression="UtilidadesDominiosC.modeloPlantillasPaticion()" result="viewScope.modeloPlantillas" />
+		</on-entry>
+		<transition on="aplicarPlantilla">
+			<evaluate expression="CatalogosTablasC.aplicarPlantilla(viewScope.modeloPlantillas.seleccionado, flowScope.nuevo)" />
+		</transition>
+		<transition on="guardarParticion">
+			<evaluate expression="flowScope.nuevo.getParticiones().add(viewScope.particion)" />
+			<evaluate expression="CatalogosTablasC.nuevaParticion(flowScope.nuevo)" result="viewScope.particion" />
+		</transition>
+		<transition on="regresar" to="agregar" />
+		<transition on="cancelar" to="listado">
+			<evaluate expression="flowScope.nuevo = null" />
+		</transition>
+		<transition on="guardar" to="agregarCampos" />
+	</view-state>
+	
+	<view-state id="agregarCampos">
+		<on-entry>
+			<evaluate expression="CatalogosTablasC.nuevoModeloCampos()" result="viewScope.modeloCampos" />
+			<evaluate expression="CatalogosTablasC.nuevoCampo()" result="viewScope.campo" />
+			<evaluate expression="UtilidadesDominiosC.modeloTiposCampo()" result="viewScope.modeloTiposCampo" />
+		</on-entry>
+		<transition on="guardarCampo">
+			<evaluate expression="CatalogosTablasC.agregarCampo(viewScope.modeloCampos, viewScope.campo)" />
+			<evaluate expression="CatalogosTablasC.nuevoCampo()" result="viewScope.campo" />
+		</transition>
+		<transition on="guardar" to="listado">
+			<evaluate expression="CatalogosTablasC.insertar(flowScope.nuevo, viewScope.modeloCampos.listado)" />
+			<evaluate expression="flowScope.nuevo = null" />
+		</transition>
+		<transition on="regresar" to="agregar" />
+		<transition on="cancelar" to="listado">
+			<evaluate expression="flowScope.nuevo = null" />
+		</transition>
+	</view-state>
+</flow>

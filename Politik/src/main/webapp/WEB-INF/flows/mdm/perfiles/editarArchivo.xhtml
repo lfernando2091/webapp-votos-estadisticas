@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Buscar Persona" action="buscar" />
+						<p:menuitem value="Perfil Personal" action="general" immediate="true" />
+						<p:menuitem value="Cargar Archivo" action="regresar" immediate="true" />
+						<p:menuitem value="Editar Archivo" />
+					</p:breadCrumb>
+					
+					<p:panel header="Editar Archivo">
+						<p:outputLabel value="${fotoBean.toString()}" />
+						<p:imageCropper value="#{fotoBean.croppedImage}"
+							aspectRatio="1" initialCoords="0,0,100,100"
+							image="/app/resources/tempFotos/logo_pri.png" />
+						<f:facet name="footer">
+							<p:commandLink action="crop">
+									<p:graphicImage value="/resources/botones/ACTUALIZAR.png" />
+							</p:commandLink>
+							<p:commandLink action="regresar" immediate="true">
+									<p:graphicImage value="/resources/botones/REGRESAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Actualizar" action="crop" /> -->
+<!-- 							<p:commandButton value="Regresar" action="regresar" immediate="true" /> -->
+						</f:facet>
+					</p:panel>
+					
+					<p:remoteCommand name="guardar" action="guardarFoto" />
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+					
+				</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

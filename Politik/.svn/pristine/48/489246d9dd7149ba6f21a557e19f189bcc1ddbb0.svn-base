@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+    http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+    <view-state id="listado">
+		<on-entry>
+		<evaluate expression="DominiosModelosC.programasEdoMex3()" result="flowScope.modeloProgramas"/>
+			<evaluate expression="CatalogoSeccionalC.modelo(flowScope.modeloProgramas.seleccionado)" result="viewScope.modelo" />
+		</on-entry>
+		<transition on="agregar" to="agregarEditar">
+			<evaluate expression="CatalogoSeccionalC.nuevo()" result="flowScope.seccional"/>
+		</transition>
+		<transition on="editar" to="agregarEditar">
+			<set name="requestScope.seccional" value="viewScope.modelo.seleccionado"/>
+		</transition>
+	</view-state>
+	<view-state id="agregarEditar">
+		<on-entry>
+			<evaluate expression="CatalogosMunicipiosC.modelo('15')" result="viewScope.ListadoMunicipios"/>
+			<evaluate expression="CatalogosSeccionesC.seccionesMunicipio('15',viewScope.ListadoMunicipios.seleccionado.idMunicipio)" result="viewScope.modeloSeccion" />
+			
+			<set name="viewScope.seccional" value="flowScope.seccional"/>
+			<set name="viewScope.modeloGeneros" value="DominiosModelosC.modeloGenero()" />
+		</on-entry>
+		<transition on="fin" to="fin" />
+		<transition on="guardar" to="listado" >
+		<evaluate expression="CatalogoSeccionalC.guardar(viewScope.seccional)"/>
+		</transition>
+		<transition on="seccActualizar">
+		    <evaluate expression="CatalogosSeccionesC.seccionesMunicipio('15', viewScope.ListadoMunicipios.seleccionado.idMunicipio)" result="viewScope.modeloSeccion" />
+		</transition>
+		
+	</view-state>
+	
+	<end-state id="fin" />
+</flow>

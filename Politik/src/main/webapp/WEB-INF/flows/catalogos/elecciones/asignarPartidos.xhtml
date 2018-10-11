@@ -1,0 +1,66 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:focus />
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Elecciones" action="cancelar" immediate="true" />
+						<p:menuitem value="Agregar Elección" action="regresar"
+							immediate="true" />
+						<p:menuitem value="Asignar Partidos" />
+					</p:breadCrumb>
+					<p:panel header="Asignar Partidos">
+						<p:panelGrid columns="2">
+							<f:facet name="header">Elección</f:facet>
+							<p:outputLabel value="Ejercicio" />
+							<p:outputLabel value="${eleccion.ejercicio}" />
+							<p:outputLabel value="Tipo" />
+							<p:outputLabel value="${eleccion.tipo.nombre}" />
+							<p:outputLabel value="Representante" />
+							<p:outputLabel value="${eleccion.representante.nombre}" />
+							<p:outputLabel value="Fecha de Jornada" />
+							<p:outputLabel value="${eleccion.fechaJornada}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</p:outputLabel>
+							<p:outputLabel value="Descripción" />
+							<p:outputLabel value="${eleccion.descripcion}" />
+						</p:panelGrid>
+						<p:separator />
+						<p:panelGrid columns="1">
+							<f:facet name="header">Asignar Partidos</f:facet>
+							<p:pickList value="${tablaPartidos.modeloDual}" var="p"
+								itemLabel="${p.siglas}" itemValue="${p}"
+								converter="ObjectConverter" showSourceFilter="true"
+								showTargetControls="true">
+								<f:facet name="sourceCaption">Disponibles</f:facet>
+								<f:facet name="targetCaption">Asignados</f:facet>
+							</p:pickList>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandLink action="guardar">
+									<p:graphicImage value="/resources/botones/GUARDAR.png" />
+							</p:commandLink>
+							<p:commandLink action="cancelar">
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Guardar" action="guardar" /> -->
+<!-- 							<p:commandButton value="Cancelar" action="cancelar" /> -->
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

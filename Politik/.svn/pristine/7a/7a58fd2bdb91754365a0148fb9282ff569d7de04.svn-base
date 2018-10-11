@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Listado de Usuarios">
+					<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}" selectionMode="single"
+					rows="10" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom" >
+							<p:column headerText="Id" sortable="true"
+									sortBy="${fila.id}" filterable="true"
+									filterBy="${fila.id}" filterMatchMode="contains" filterStyle="width:90%;">
+									<p:outputLabel value="${fila.id}"/>
+							</p:column>
+							<p:column headerText="NICK" sortable="true"
+									sortBy="${fila.usuario}" filterable="true"
+									filterBy="${fila.usuario}" filterMatchMode="contains" filterStyle="width:90%;">
+									<p:outputLabel value="${fila.usuario}"/>
+							</p:column>
+<!-- 							<p:column headerText="Password" sortable="true" -->
+<!-- 									sortBy="${fila.password}" filterable="true" -->
+<!-- 									filterBy="${fila.password}" filterMatchMode="contains" filterStyle="width:90%;"> -->
+<!-- 									<p:outputLabel value="${fila.password}"/> -->
+<!-- 							</p:column> -->
+							<p:column headerText="Nombre" sortable="true"
+									sortBy="${fila.nombre}" filterable="true"
+									filterBy="${fila.nombre}" filterMatchMode="contains" filterStyle="width:90%;">
+									<p:outputLabel value="${fila.nombre}"/>
+							</p:column>
+							<p:column headerText="Primer Apellido" sortable="true"
+									sortBy="${fila.primerApellido}" filterable="true"
+									filterBy="${fila.primerApellido}" filterMatchMode="contains" filterStyle="width:90%;">
+									<p:outputLabel value="${fila.primerApellido}"/>
+							</p:column>
+							<p:column headerText="Segundo Apellido" sortable="true"
+									sortBy="${fila.segundoApellido}" filterable="true"
+									filterBy="${fila.segundoApellido}" filterMatchMode="contains" filterStyle="width:90%;">
+									<p:outputLabel value="${fila.segundoApellido}"/>
+							</p:column>
+							<p:column headerText="Región" sortable="true"
+									sortBy="${fila.region}" filterable="true"
+									filterBy="${fila.region}" filterMatchMode="contains" filterStyle="width:90%;">
+									<p:outputLabel value="${fila.region.nombre}"/>
+							</p:column>
+							<p:column headerText="Estatus" sortable="true"
+									sortBy="${fila.estatus}" filterable="true"
+									filterBy="${fila.estatus}" filterMatchMode="contains" filterStyle="width:90%;">
+									<p:outputLabel value="${fila.estatus.nombre}"/>
+							</p:column>
+					</p:dataTable>
+					<f:facet name="footer">
+						
+							<p:commandLink action="agregar">
+								<p:graphicImage value="/resources/botones/AGREGAR.png"/>
+							</p:commandLink>
+							<p:commandLink action="editar" rendered="${modelo.seleccionado!=null}">
+									<p:graphicImage value="/resources/botones/EDITAR.png" />
+							</p:commandLink>
+					</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

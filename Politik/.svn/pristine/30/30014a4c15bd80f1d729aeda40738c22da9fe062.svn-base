@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="datos">
+		<on-entry>
+			<evaluate expression="CatalogosMunicipiosC.modelo('15')" result="viewScope.modeloMunicipios"/>
+			<evaluate expression="CatalogosSeccionesC.seccionesMunicipio('15',viewScope.modeloMunicipios.seleccionado.idMunicipio)" result="viewScope.modeloSecciones"/>	
+			<evaluate expression="RegistroMovilizadoresC.nuevo()" result="viewScope.nuevo"/>
+			<set value="DominiosModelosC.modeloGenero()"  name="viewScope.modeloGeneros" />
+		</on-entry>
+		<transition on="actualizarSecciones">
+			<evaluate expression="CatalogosSeccionesC.seccionesMunicipio('15',viewScope.nuevo.idMunicipio)" result="viewScope.modeloSecciones"/>	
+		</transition>
+		<transition on="registrar" to="vistaRegistro">
+			<evaluate expression="RegistroMovilizadoresC.validarDatos(flowRequestContext,viewScope.nuevo)" />
+			<set value="viewScope.nombre"	 name="requestScope.nombre"/>
+			<set value="viewScope.primerApellido" name="requestScope.primerApellido"/>
+			<set value="viewScope.segundoApellido" name="requestScope.segundoApellido"/>
+			<set value="viewScope.email" name="requestScope.email"/>
+			<set value="viewScope.telefono" name="requestScope.telefono"/>
+			<set value="viewScope.idMunicipio" name="requestScope.idMunicipio"/>
+			<set value="viewScope.celular" name="requestScope.celular"/>
+			<set value="viewScope.fechaNacimiento" name="requestScope.fechaNacimiento"/>
+			<set value="viewScope.calle" name="requestScope.calle"/>
+			<set value="viewScope.numeroExterior" name="requestScope.numeroExterior"/>
+			<set value="viewScope.numeroInterior" name="requestScope.numeroInterior"/>
+			<set value="viewScope.colonia" name="requestScope.colonia"/>
+			<set value="viewScope.cp" name="requestScope.cp"/>
+			<set value="viewScope.codigoAlfanumerico" name="requestScope.codigoAlfanumerico"/>
+			<set value="viewScope.seccion" name="requestScope.seccion"/>
+		</transition>
+		<transition on="fin" to="fin"/>
+	</view-state>
+	
+	<view-state id="vistaRegistro">
+		<transition on="salir" to="fin"/>
+	</view-state>
+	<end-state id="fin"/>
+
+</flow>

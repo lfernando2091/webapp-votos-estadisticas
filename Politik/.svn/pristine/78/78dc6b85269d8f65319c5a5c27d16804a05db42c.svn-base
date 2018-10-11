@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+        
+	<secured attributes="ROLE_REPORTES_DM_RESULTADOS_ENCUESTAS" />
+	
+	<view-state id="listado">
+		<on-entry>
+			<set name="viewScope.archivoDescarga" value="null" type="java.lang.String" />
+			<set name="viewScope.nombreDescarga" value="''" type="java.lang.String" />
+			<evaluate expression="ResultadosEncuestasC.getFecha()" result="viewScope.fInicio" />
+			<evaluate expression="ResultadosEncuestasC.getFecha()" result="viewScope.fFin"/>
+			<evaluate expression="ResultadosEncuestasC.listado(ResultadosEncuestasC.combierteDateToString(viewScope.fInicio), ResultadosEncuestasC.combierteDateToString(viewScope.fFin))" result="viewScope.tabla"/>
+			</on-entry>
+		<transition on="actualizar">
+			<evaluate expression="ResultadosEncuestasC.listado(ResultadosEncuestasC.combierteDateToString(viewScope.fInicio), ResultadosEncuestasC.combierteDateToString(viewScope.fFin))" result="viewScope.tabla"/>
+		</transition>
+		<transition on="reiniciar">
+			<evaluate expression="ResultadosEncuestasC.listado( null, null)" result="viewScope.tabla"/>
+		</transition>
+		<transition on="generar">
+			<set name="viewScope.nombreDescarga" value="'filtrado'" />
+			<evaluate expression="ResultadosEncuestasC.generarReporte(ResultadosEncuestasC.combierteDateToString(viewScope.fInicio), ResultadosEncuestasC.combierteDateToString(viewScope.fFin))" result="viewScope.archivoDescarga" />
+		</transition>
+		<transition on="generarCompleto">
+			<set name="viewScope.nombreDescarga" value="'completo'" />
+			<evaluate expression="ResultadosEncuestasC.generarReporte(null, null)" result="viewScope.archivoDescarga" />
+		</transition>
+	</view-state>
+	
+</flow>

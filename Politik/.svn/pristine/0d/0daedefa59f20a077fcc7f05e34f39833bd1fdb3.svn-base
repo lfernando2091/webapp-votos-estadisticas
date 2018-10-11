@@ -1,0 +1,77 @@
+package com.saganet.politik.components.administracion;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.administracion.RolEO;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("UsuariosC")
+public class UsuariosC {
+
+	@Autowired
+	SqlSession sqlSession;
+
+	private static final Logger logger = LoggerFactory.getLogger(UsuariosC.class);
+
+	public Modelo<UsuarioEO> modelo() {
+
+		Modelo<UsuarioEO> modelo;
+		List<UsuarioEO> listado;
+
+		listado = sqlSession.selectList("administracion.usuarios.listado");
+		logger.debug("listadoUsuarios: {}", listado);
+
+		modelo = new Modelo<>();
+		modelo.setListado(listado);
+
+		if (!listado.isEmpty()) {
+			modelo.setSeleccionado(listado.get(0));
+		}
+
+		logger.debug("modeloUsuarios: {}", modelo);
+
+		return modelo;
+	}
+
+	public UsuarioEO nuevoUsuario() {
+		UsuarioEO usuario;
+
+		usuario = new UsuarioEO();
+
+		return usuario;
+	}
+	
+	public void agregarRol(UsuarioEO usuario, RolEO rol) {
+		if (rol != null) {
+			if (!usuario.getRoles().contains(rol)) {
+				usuario.getRoles().add(rol);
+			}
+		}
+	}
+	
+	public void quitarRol(UsuarioEO usuario, RolEO rol){
+		if(rol != null){
+			usuario.getRoles().remove(rol);
+		}
+	}
+
+	public void insertarActualizar(UsuarioEO usuario) {
+		logger.debug("Usuario recibido: {}", usuario);
+		if(usuario.getId() == null){
+			sqlSession.insert("administracion.usuarios.insertar", usuario);
+		} else {
+			sqlSession.update("administracion.usuarios.actualizar", usuario);
+		}
+		
+		sqlSession.delete("administracion.roles.eliminarAutorizacionesPorUsuario", usuario);
+		sqlSession.insert("administracion.roles.insertarAutorizacionesPorUsuario", usuario);
+	}
+
+}

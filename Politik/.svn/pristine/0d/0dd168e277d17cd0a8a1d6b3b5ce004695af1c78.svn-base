@@ -1,0 +1,50 @@
+package com.saganet.politik.database.estructuras;
+
+import java.io.Serializable;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("FiguraEO")
+public class FiguraEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 6046211172722991229L;
+
+	private Integer id;
+	private NivelesDO nivel;
+	private String nombre;
+	
+	public FiguraEO(){
+		nivel = NivelesDO.ENTIDAD;
+	}
+
+	@Override
+	public String toString() {
+		return "FiguraEO [id=" + id + ", nivel=" + nivel + ", nombre=" + nombre + "]";
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public NivelesDO getNivel() {
+		return nivel;
+	}
+
+	public void setNivel(NivelesDO nivel) {
+		this.nivel = nivel;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+}

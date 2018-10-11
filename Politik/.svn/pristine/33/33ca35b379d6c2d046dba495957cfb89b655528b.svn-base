@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+<secured attributes="ROLE_ENCUESTA_EDOMEX,ROLE_ENCUESTAS_SUPERVISOR_EDOMEX,ROLE_ENCUESTAS_EDOMEX_CALL_CENTER,ROLE_ENCUESTAS_EDOMEX_CALL_CENTER_CAPTURISTA" />
+	<view-state id="buscar">
+		<on-entry>
+			<set name="viewScope.folioBusqueda" value="''"/>
+		</on-entry>
+		<transition on="buscar" to="validarSeccion">
+			<evaluate expression="Edomex2017V2Captura.buscarId(flowRequestContext,folioBusqueda)" />
+		</transition>
+		<transition on="noEncuestado" to="noEncuestado">
+		<evaluate expression="Edomex2017V2Captura.buscarId(flowRequestContext,folioBusqueda)" />
+		</transition>
+	</view-state>
+	<decision-state id="validarSeccion">
+    <if test="flowScope.contacto.get('programa_general')=='PROSPERAs'" then="capturaEncuestaProspera" else="capturaEncuesta"/>
+</decision-state>
+	<view-state id="capturaEncuesta">
+		<on-entry>
+			
+			<set name="viewScope.encuesta" value="Edomex2017V2Captura.nuevo(flowScope.contacto.get('id_interno'),flowScope.contacto.get('estatus'))"/>
+			<set name="viewScope.sino" value="DominiosModelosC.sino()"/>
+			<set name="viewScope.muchoRegularNada" value="DominiosModelosC.muchoRegularNada()"/>
+			<set name="viewScope.buenaRegularNada" value="DominiosModelosC.buenaRegularNada()"/>
+			<set name="viewScope.modeloResultadoEncuesta" value="DominiosModelosC.modeloResultadoEncuesta()"/>
+			<set name="viewScope.modeloSiNoNsNc" value="DominiosModelosC.modeloSiNoNsNc()"/>
+			<set name="viewScope.modeloPartidos" value="DominiosModelosC.modeloPartidosEdomex()"/>
+			<set name="viewScope.modeloCandidatos" value="DominiosModelosC.modeloCandidatosEdomex()"/>
+			<set name="viewScope.modeloGeneros" value="DominiosModelosC.modeloGenero()"/>
+			<evaluate expression="Edomex2017V2Captura.encuestadores()" result="viewScope.modeloEncuestadores"/>
+		</on-entry>
+		<transition on="guardar" to="salirCaptura">
+		<evaluate expression="Edomex2017V2Captura.guardar(viewScope.encuesta)"/>
+		</transition>
+		<transition on="actualizar" to="salirCaptura">
+		<evaluate expression="Edomex2017V2Captura.actualizar(viewScope.encuesta)"/>
+		</transition>
+		<transition on="salir" to="salirCaptura"/>
+	</view-state>
+	<view-state id="noEncuestado">
+	<on-entry>
+	<set name="viewScope.encuesta" value="Edomex2017V2Captura.nuevo(flowScope.contacto.get('id_interno'),flowScope.contacto.get('estatus'))"/>
+	<set name="viewScope.modeloResultadoEncuesta" value="DominiosModelosC.modeloResultadoEncuestaNo()"/>
+	<evaluate expression="Edomex2017V2Captura.encuestadores()" result="viewScope.modeloEncuestadores"/>
+	</on-entry>
+	<transition on="salir" to="salirCaptura"/>
+		<transition on="guardar" to="salirCaptura">
+		<evaluate expression="Edomex2017Captura.guardar(viewScope.encuesta)"/>
+		</transition>
+	</view-state>
+	<view-state id="capturaEncuestaProspera">
+		<on-entry>
+			<set name="viewScope.encuesta" value="Edomex2017Captura.nuevoProspera(flowScope.contacto.get('id_interno'),flowScope.contacto.get('estatus'))"/>
+			<set name="viewScope.sino" value="DominiosModelosC.sino()"/>
+			<set name="viewScope.modeloGobiernos" value="DominiosModelosC.modeloGobierno()"/>
+			<set name="viewScope.buenaRegularMalo" value="DominiosModelosC.modeloBuenoRegularMalo()"/>
+			<set name="viewScope.modeloBuenoRegularMaloNoRecibo" value="DominiosModelosC.modeloBuenoRegularMaloNoRecibo()"/>
+			<set name="viewScope.modeloResultadoEncuesta" value="DominiosModelosC.modeloResultadoEncuesta()"/>
+			<evaluate expression="Edomex2017Captura.encuestadores()" result="viewScope.modeloEncuestadores"/>
+		</on-entry>
+		<transition on="guardar" to="salirCaptura">
+		<evaluate expression="Edomex2017Captura.guardar(viewScope.encuesta)"/>
+		</transition>
+		<transition on="actualizar" to="salirCaptura">
+		<evaluate expression="Edomex2017Captura.actualizar(viewScope.encuesta)"/>
+		</transition>
+		<transition on="salir" to="salirCaptura"/>
+	</view-state>
+	
+	<end-state id="salirCaptura"/>
+</flow>

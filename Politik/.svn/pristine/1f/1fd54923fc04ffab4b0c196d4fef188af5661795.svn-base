@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Importación" action="end" />
+						<p:menuitem value="Nueva" />
+					</p:breadCrumb>
+					<p:panel header="Nueva Importacion">
+						<p:panelGrid columns="2">
+							<p:column>
+								Nombre Archivo:
+							</p:column>
+							<p:column>
+								${archivo.getName()}
+							</p:column>
+							<p:column>
+								<h:outputText value="Crear tabla: "/>
+							</p:column>
+							<p:column>
+								<p:inputSwitch value="${crearTabla}" onLabel="Si" offLabel="No"/>
+							</p:column>
+							<p:column>
+								<p:commandButton action="siguiente" value="Siguiente"/>
+							</p:column> 
+							<p:column>
+								<p:commandButton action="cancelar" value="Cancelar" immediate="true"/> 
+							</p:column>
+						</p:panelGrid>
+					</p:panel>
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

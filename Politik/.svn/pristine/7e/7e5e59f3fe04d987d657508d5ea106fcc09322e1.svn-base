@@ -1,0 +1,61 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:messages autoUpdate="true" />
+					<p:panel header="Agregar Beneficiarios">
+						<p:panelGrid columns="2" id="panelGrid">
+							<p:column>
+								Evento	
+							</p:column>
+							<p:column>
+								${evento.nombre}
+							</p:column>
+							<p:column>
+								Beneficiario
+							</p:column>
+							<p:column>
+								${persona.nombre} ${persona.primerApellido} ${persona.segundoApellido}
+							</p:column>
+						</p:panelGrid>
+						<p:separator />
+						<p:panelGrid columns="2" id="panelGrid1">
+							<p:column>
+									Ejercicio:
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${nuevoBeneficiario.ejercicio}" converter="ObjectConverter" style="width:300px">
+									<f:selectItems value="${listadoEjercicios.listado}" var="fila" itemLabel="${fila.ejercicio}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+									Programa:
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${nuevoBeneficiario.programa}" converter="ObjectConverter" style="width:300px">
+									<f:selectItems value="${programa.listadoProgramas}" var="fila" itemLabel="${fila.programa}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandLink action="guardar">
+										<p:graphicImage value="/resources/botones/GUARDAR.png"/>
+							</p:commandLink>
+							<p:commandLink action="cancelar" immediate="true">
+										<p:graphicImage value="/resources/botones/CANCELAR.png"/>
+							</p:commandLink>
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}"	value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form enctype="multipart/form-data">
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Buscar Persona" action="buscar" />
+						<p:menuitem value="Perfil Personal" action="regresar" immediate="true" />
+						<p:menuitem value="Cargar Archivo" />
+					</p:breadCrumb>
+					
+					<p:panel header="Cargar Archivo">
+						<p:fileUpload fileUploadListener="#{fotoBean.handleFileUpload}"
+							label="Explorar" uploadLabel="Subir" cancelLabel="Borrar"
+							fileLimit="1" fileLimitMessage="Sólo se puede subir una foto"
+							oncomplete="guardarFoto();" />
+						<f:facet name="footer">
+							<p:commandButton value="Regresar" action="regresar" immediate="true" />
+						</f:facet>
+					</p:panel>
+					
+					<p:remoteCommand name="editarArchivo" action="editarArchivo" />
+					<p:remoteCommand name="guardarFoto" action="guardarFoto" />
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+					
+				</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

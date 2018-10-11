@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.tiposTelefonos">
+	<cache />
+	<resultMap type="TipoTelefonoEO" id="tipoTelefono">
+		<id column="TipoTelefonoEO_id" property="id" javaType="Integer" />
+		<result column="TipoTelefonoEO_nombre" property="nombre" javaType="String" />
+	</resultMap>
+
+	<select id="listado" resultMap="tipoTelefono">
+		SELECT 
+			TipoTelefonoEO.id_tipo_telefono 	TipoTelefonoEO_id, 
+			TipoTelefonoEO.tipo_telefono 		TipoTelefonoEO_nombre
+		FROM catalogos.tipos_telefonos TipoTelefonoEO
+		ORDER BY TipoTelefonoEO.id_tipo_telefono
+	</select>
+
+</mapper>

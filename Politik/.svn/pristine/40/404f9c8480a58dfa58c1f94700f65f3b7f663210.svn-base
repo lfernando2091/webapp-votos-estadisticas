@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructuras.nodos">
+	<cache />
+	
+	<resultMap type="NodoEO" id="nodo">
+		<id column="NodoEO_id" property="id" javaType="Integer"/>
+		<result column="NodoEO_nodo" property="nodo" javaType="String"/>
+		<result column="NodoEO_nivel" property="nivel" javaType="Integer"/>
+		<association property="figura" resultMap="estructuras.figuras.figura" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			NodoEO.id_nodo 			NodoEO_id,
+			NodoEO.nodo 			NodoEO_nodo,
+			nlevel(NodoEO.nodo) 	NodoEO_nivel,
+			FiguraEO.id_figura 		FiguraEO_id, 
+			FiguraEO.nivel 			FiguraEO_nivel, 
+			FiguraEO.figura 		FiguraEO_nombre
+  		FROM estructuras.nodos NodoEO
+  		JOIN estructuras.figuras FiguraEO on (NodoEO.id_figura = FiguraEO.id_figura)
+	</sql>
+	
+	<select id="listadoPorEstructura" resultMap="nodo" parameterType="EstructuraEO">
+		<include refid="query" />
+		WHERE NodoEO.id_estructura = #{id}
+		ORDER BY NodoEO.nodo 
+	</select>
+
+	<insert id="insertar" parameterType="hashmap">
+		INSERT INTO estructuras.nodos(id_estructura, id_figura, nodo)
+		VALUES
+    	<foreach collection="nodos" item="item" separator="," close=";">
+    		(#{estructura.id}, #{item.figura.id}, '${item.nodo}')
+    	</foreach>
+	</insert>
+	
+</mapper>

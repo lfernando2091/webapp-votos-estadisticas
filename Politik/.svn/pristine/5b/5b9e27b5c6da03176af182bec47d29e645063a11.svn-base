@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<secured attributes="ROLE_CALENDARIO_EVENTOS"/>
+	
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="EventosSocialesC.tablaCalendario()" result="viewScope.tablaCalendario"/>
+			<evaluate expression="EventosSocialesC.calendario(tablaCalendario.listado)" result="viewScope.calendario"/>
+			<evaluate expression="EventosSocialesC.tablaEventosSocialesCalendario()" result="viewScope.tabla"/>
+			<evaluate expression="DependenciasC.modeloByUsuario()" result="viewScope.modeloDependencias"/>
+			<set name="viewScope.fechaDesde" value="EventosSocialesC.getFecha()"/>
+			<set name="viewScope.fechaHasta" value="EventosSocialesC.getFecha()"/>
+			<set name="viewScope.modeloTerritoriosUsuario" value="EventosSocialesC.modeloTerritoriosUsuario()" />
+			<set name="viewScope.bandera" value="0"/>
+		</on-entry>
+		<transition on="actualizarTabla">
+			<evaluate expression="viewScope.bandera ==0?EventosSocialesC.tablaEventosSocialesCalendario():EventosSocialesC. tablaEventosSocialesFiltroCalendario(viewScope.modeloDependencias.seleccionado, viewScope.modeloTerritoriosUsuario.seleccionMultiple)" result="viewScope.tabla"/>
+		</transition>
+		<transition on="filtrar">
+		<set name="viewScope.bandera" value="1"/>
+			<evaluate expression="EventosSocialesC.tablaCalendarioFiltro(viewScope.fechaDesde, viewScope.fechaHasta, viewScope.modeloDependencias.seleccionado, viewScope.modeloTerritoriosUsuario.seleccionMultiple)" result="viewScope.tablaCalendario"/>
+			<evaluate expression="EventosSocialesC.calendario(tablaCalendario.listado)" result="viewScope.calendario"/>
+			<evaluate expression="viewScope.bandera ==0?EventosSocialesC.tablaEventosSocialesCalendario():EventosSocialesC. tablaEventosSocialesFiltroCalendario(viewScope.modeloDependencias.seleccionado, viewScope.modeloTerritoriosUsuario.seleccionMultiple)" result="viewScope.tabla"/>
+		</transition>
+		<transition on="refrescar" to="listado"/>
+	</view-state>
+	
+	<end-state id="fin"/>
+</flow>

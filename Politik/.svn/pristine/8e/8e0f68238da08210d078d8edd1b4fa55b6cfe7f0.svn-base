@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Listado de Entrevistas">
+					<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}" selectionMode="single"
+					rows="10" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom" >
+							<p:column headerText="Id">
+									<p:outputLabel value="${fila.id}"/>
+							</p:column>
+					</p:dataTable>
+					
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

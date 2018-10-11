@@ -1,0 +1,348 @@
+package com.saganet.politik.components.diaD.reportes;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.primefaces.model.chart.Axis;
+import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.CategoryAxis;
+import org.primefaces.model.chart.LegendPlacement;
+import org.primefaces.model.chart.LineChartModel;
+import org.primefaces.model.chart.LineChartSeries;
+import org.primefaces.model.chart.MeterGaugeChartModel;
+import org.primefaces.model.map.MapModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+
+import com.saganet.politik.components.catalogos.MunicipiosC;
+import com.saganet.politik.components.sig.PoligonosC;
+import com.saganet.politik.database.catalogos.GeozonaParticionEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.catalogos.SeccionEO;
+import com.saganet.politik.database.encuestas.fuerzaCiudadana.ResultadoEncuestaEO;
+import com.saganet.politik.dominios.NivelReporteCompletoDO;
+import com.saganet.politik.dominios.NivelesReporteDO;
+import com.saganet.politik.dominios.ProgramaFuerzaCiudadanaDO;
+import com.saganet.politik.dominios.ProgramasEdoMexDO;
+import com.saganet.politik.dominios.TiposColumnaDO;
+import com.saganet.politik.modelos.Modelo;
+import com.saganet.politik.utilidades.Columna;
+import com.saganet.politik.utilidades.Poligono;
+
+import mx.com.saganet.peon.database.dominios.TiposPoligonoDO;
+
+@Component("diaDReportesMetasJornada")
+public class MetasJornadaC {
+	@SuppressWarnings("unused")
+	private static final Logger logger = LoggerFactory.getLogger(MetasJornadaC.class);
+	
+	@Autowired SqlSession sqlSession;
+	@Autowired PoligonosC poligonosC;
+	@Autowired MunicipiosC municipiosC;
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> metasJornada(RequestContext rc){
+		List<HashMap<String, Object>> listado;
+		HashMap<String, Object> mapa, parametros, viewScope;
+		List<Columna> columnas; 
+		NivelReporteCompletoDO nivel;
+		Modelo<NivelReporteCompletoDO> modeloNiveles;
+		Modelo<GeozonaParticionEO> modeloRegiones;
+		Modelo<MunicipioEO> modeloMunicipios;
+		Modelo<SeccionEO> modeloSecciones;
+		
+		
+		mapa = new HashMap<>();
+		parametros = new HashMap<>();
+		columnas = new ArrayList<>();
+		viewScope = (HashMap<String, Object>) rc.getViewScope().asMap();
+		modeloNiveles = (Modelo<NivelReporteCompletoDO>) viewScope.get("modeloNiveles");
+		modeloRegiones = (Modelo<GeozonaParticionEO>) viewScope.get("modeloRegiones");
+		modeloMunicipios = (Modelo<MunicipioEO>) viewScope.get("modeloMunicipios");
+		modeloSecciones = (Modelo<SeccionEO>) viewScope.get("modeloSecciones");
+		
+		listado = null;
+		parametros.put("grupo", viewScope.get("grupo"));
+		nivel = modeloNiveles.getSeleccionado();
+		switch(nivel){
+		case GENERAL:
+			listado = sqlSession.selectList("diaD.reportes.metasJornada.general", parametros);
+			columnas.add(new Columna("Entidad", "entidad", TiposColumnaDO.TEXTO));
+			columnas.add(new Columna("Registrados", "registrados", TiposColumnaDO.ENTERO));
+			columnas.add(new Columna("No Registrados", "no_registrados", TiposColumnaDO.ENTERO));
+			break;
+		case ESTATAL:
+			listado = sqlSession.selectList("diaD.reportes.metasJornada.estatal", parametros);
+			columnas.add(new Columna("idRegión", "region", TiposColumnaDO.TEXTO));
+			columnas.add(new Columna("Región", "nombre_region", TiposColumnaDO.TEXTO));
+			columnas.add(new Columna("Registrados", "registrados", TiposColumnaDO.ENTERO));
+			columnas.add(new Columna("No Registrados", "no_registrados", TiposColumnaDO.ENTERO));
+			break;
+		case REGION:
+			parametros.put("idRegion", modeloRegiones.getSeleccionado().getIdParticion());
+			listado = sqlSession.selectList("diaD.reportes.metasJornada.region", parametros);
+			columnas.add(new Columna("idMunicipio", "municipio", TiposColumnaDO.ENTERO));
+			columnas.add(new Columna("Municipio", "nombre_municipio", TiposColumnaDO.TEXTO));
+			columnas.add(new Columna("Registrados", "registrados", TiposColumnaDO.ENTERO));
+			columnas.add(new Columna("No Registrados", "no_registrados", TiposColumnaDO.ENTERO));
+			break;
+		case MUNICIPIO:
+			parametros.put("idMunicipio", modeloMunicipios.getSeleccionado().getIdMunicipio());
+			listado = sqlSession.selectList("diaD.reportes.metasJornada.municipio", parametros);
+			columnas.add(new Columna("Sección", "seccion", TiposColumnaDO.ENTERO));
+			columnas.add(new Columna("Registrados", "registrados", TiposColumnaDO.ENTERO));
+			columnas.add(new Columna("No Registrados", "no_registrados", TiposColumnaDO.ENTERO));
+			break;
+		case SECCION:
+			parametros.put("idSeccion", modeloSecciones.getSeleccionado().getIdSeccion());
+			listado = sqlSession.selectList("diaD.reportes.metasJornada.seccion", parametros);
+			columnas.add(new Columna("Registrados", "registrados", TiposColumnaDO.ENTERO));
+			columnas.add(new Columna("No Registrados", "no_registrados", TiposColumnaDO.ENTERO));
+			break;
+		}
+		
+		mapa.put("modeloMetas", new Modelo<>(listado));
+		mapa.put("columnas", columnas);
+		
+		return mapa;
+	}
+	
+	public HashMap<String, Object> tablero(){
+		HashMap<String, Object> mapaGlobal, mapaGrupo;
+		List<HashMap<String, Object>> listado;
+		MeterGaugeChartModel medidor;
+		MapModel modeloMapa;
+		List<Poligono> poligonos;
+		Poligono poligono;
+		MunicipioEO municipio;
+		long meta, registrados, noRegistrados;
+		double avance;
+		
+		mapaGlobal = new HashMap<>();
+		mapaGrupo = new HashMap<>();
+		
+		//Medidor General
+		medidor = modeloMedidorAvance(NivelReporteCompletoDO.GENERAL, "Todos", "Total", mapaGrupo);
+		mapaGlobal.put("general", new HashMap<>(mapaGrupo));
+		mapaGlobal.put("medidorGeneral", medidor);
+		logger.debug("mapaGrupo General: {}", mapaGlobal.get("general"));
+		
+		//Medidor Rowan
+		medidor = modeloMedidorAvance(NivelReporteCompletoDO.GENERAL, ProgramasEdoMexDO.INSUS.getNombre2(), "Rowan", mapaGrupo);
+		mapaGlobal.put("rowan", new HashMap<>(mapaGrupo));
+		mapaGlobal.put("medidorRowan", medidor);
+		logger.debug("mapaGrupo Rowan: {}", mapaGlobal.get("rowan"));
+		
+		//Medidor Abby
+		medidor = modeloMedidorAvance(NivelReporteCompletoDO.GENERAL, ProgramasEdoMexDO.PROSPERA.getNombre2(), "Abby", mapaGrupo);
+		mapaGlobal.put("abby", new HashMap<>(mapaGrupo));
+		mapaGlobal.put("medidorAbby", medidor);
+		logger.debug("mapaGrupo Abby: {}", mapaGlobal.get("abby"));
+		
+		//Medidor Fitz
+		medidor = modeloMedidorAvance(NivelReporteCompletoDO.GENERAL, ProgramasEdoMexDO.LICONSA.getNombre2(), "Fitz", mapaGrupo);
+		mapaGlobal.put("fitz", new HashMap<>(mapaGrupo));
+		mapaGlobal.put("medidorFitz", medidor);
+		logger.debug("mapaGrupo Fitz: {}", mapaGlobal.get("fitz"));
+		
+		//Mapa Municipal
+		poligonos = new ArrayList<>();
+		
+		//Polígono entidad
+		poligono = new Poligono();
+		poligono.setTipo(TiposPoligonoDO.ENTIDAD);
+		poligono.setLlave("15");
+		poligono.setOpacidadRelleno(0);
+		poligono.setGrosorLinea(2);
+		poligono.setOpacidadLinea(1);
+		poligonos.add(poligono);
+		
+		//Polígonos Municipios
+		listado = sqlSession.selectList("diaD.reportes.metasJornada.municipiosMapa");
+		for(HashMap<String, Object> m : listado){
+			municipio = municipiosC.buscarPorLlave((String) m.get("llave"));
+			registrados = (long) m.get("registrados");
+			noRegistrados = (long) m.get("no_registrados");
+			meta = registrados + noRegistrados;
+			avance = registrados / meta;
+			
+			poligono = new Poligono();
+			poligono.setTipo(TiposPoligonoDO.MUNICIPIO);
+			poligono.setLlave(municipio.getLlave());
+			poligono.setOpacidadRelleno(0.5);
+
+			if (avance < 0.5)
+				poligono.setColorRelleno("RED");
+			else if (avance < 0.75)
+				poligono.setColorRelleno("YELLOW");
+			else if (avance < 1)
+				poligono.setColorRelleno("ORANGE");
+			else
+				poligono.setColorRelleno("GREEN");
+
+			poligonos.add(poligono);
+		}
+		
+		modeloMapa = poligonosC.modeloMapa(poligonos);
+		mapaGlobal.put("modeloMapa", modeloMapa);
+		
+		//Gráfica de Cortes
+		List<HashMap<String, Object>> cortes;
+		LineChartModel grafica;
+		LineChartSeries serieRowan, serieAbby, serieFitz, serieTodos, serieMeta;
+		String etiquetasCortes[];
+		Axis yAxis;
+		
+		grafica = new LineChartModel();
+		grafica.setTitle("Avance");
+		grafica.setLegendPosition("e");
+		grafica.setLegendPlacement(LegendPlacement.INSIDE);
+		grafica.setShowPointLabels(true);
+		grafica.getAxes().put(AxisType.X, new CategoryAxis("Hora"));
+		yAxis = grafica.getAxis(AxisType.Y);
+		yAxis.setLabel("Promovidos");
+		yAxis.setMin(0);
+		
+		serieRowan = new LineChartSeries();
+		serieAbby = new LineChartSeries();
+		serieFitz = new LineChartSeries();
+		serieTodos = new LineChartSeries();
+		serieMeta = new LineChartSeries();
+		
+		etiquetasCortes = new String[5];
+		etiquetasCortes[0] = "10:00";
+		etiquetasCortes[1] = "12:00";
+		etiquetasCortes[2] = "14:00";
+		etiquetasCortes[3] = "16:00";
+		etiquetasCortes[4] = "18:00";
+		
+		cortes = sqlSession.selectList("diaD.reportes.metasJornada.cortes");
+
+		for(HashMap<String, Object> corte : cortes){
+			switch((String) corte.get("grupo")){
+			case "Rowan-JAL":
+				logger.debug("Corte: {}", corte);
+				serieRowan.setLabel((String) corte.get("grupo"));
+				serieRowan.set(etiquetasCortes[0], (Number) corte.get("c1"));
+				serieRowan.set(etiquetasCortes[1], (Number) corte.get("c2"));
+				serieRowan.set(etiquetasCortes[2], (Number) corte.get("c3"));
+				serieRowan.set(etiquetasCortes[3], (Number) corte.get("c4"));
+				serieRowan.set(etiquetasCortes[4], (Number) corte.get("c5"));
+				break;
+			case "Fitz-HP":
+				logger.debug("Corte: {}", corte);
+				serieFitz.setLabel((String) corte.get("grupo"));
+				serieFitz.set(etiquetasCortes[0], (Number) corte.get("c1"));
+				serieFitz.set(etiquetasCortes[1], (Number) corte.get("c2"));
+				serieFitz.set(etiquetasCortes[2], (Number) corte.get("c3"));
+				serieFitz.set(etiquetasCortes[3], (Number) corte.get("c4"));
+				serieFitz.set(etiquetasCortes[4], (Number) corte.get("c5"));
+				break;
+			case "Abby-PH":
+				logger.debug("Corte: {}", corte);
+				serieAbby.setLabel((String) corte.get("grupo"));
+				serieAbby.set(etiquetasCortes[0], (Number) corte.get("c1"));
+				serieAbby.set(etiquetasCortes[1], (Number) corte.get("c2"));
+				serieAbby.set(etiquetasCortes[2], (Number) corte.get("c3"));
+				serieAbby.set(etiquetasCortes[3], (Number) corte.get("c4"));
+				serieAbby.set(etiquetasCortes[4], (Number) corte.get("c5"));
+				break;
+			case "Todos":
+				logger.debug("Corte: {}", corte);
+				serieTodos.setLabel("Todos");
+				serieTodos.set(etiquetasCortes[0], (Number) corte.get("c1"));
+				serieTodos.set(etiquetasCortes[1], (Number) corte.get("c2"));
+				serieTodos.set(etiquetasCortes[2], (Number) corte.get("c3"));
+				serieTodos.set(etiquetasCortes[3], (Number) corte.get("c4"));
+				serieTodos.set(etiquetasCortes[4], (Number) corte.get("c5"));
+				
+				serieMeta.setLabel("Meta");
+				serieMeta.set(etiquetasCortes[0], (Number) corte.get("meta"));
+				serieMeta.set(etiquetasCortes[1], (Number) corte.get("meta"));
+				serieMeta.set(etiquetasCortes[2], (Number) corte.get("meta"));
+				serieMeta.set(etiquetasCortes[3], (Number) corte.get("meta"));
+				serieMeta.set(etiquetasCortes[4], (Number) corte.get("meta"));
+				//yAxis.setMax(((Integer)corte.get("meta")).longValue() + 10);
+				break;
+			}
+		}
+		
+		grafica.addSeries(serieRowan);
+		grafica.addSeries(serieFitz);
+		grafica.addSeries(serieAbby);
+		grafica.addSeries(serieTodos);
+		grafica.addSeries(serieMeta);
+		
+		mapaGlobal.put("grafica", grafica);
+		
+		return mapaGlobal;
+	}
+	
+	private MeterGaugeChartModel modeloMedidorAvance(NivelReporteCompletoDO nivel, String grupo, String titulo, HashMap<String, Object> mapa){
+		MeterGaugeChartModel modelo;
+		List<Number> intervalos;
+		float intervalo, auxTotal;
+		String colores, etiquetaMovilizados;
+		HashMap<String, Object> parametros, resultado;
+		
+		colores = "DF0101, FFFF00, 31B404";
+		etiquetaMovilizados = "Movilizados";
+		
+		parametros = new HashMap<>();
+		
+		resultado = null;
+		switch(nivel){
+		case GENERAL:
+			parametros.put("grupo", grupo);
+			resultado = sqlSession.selectOne("diaD.reportes.metasJornada.general", parametros);
+			break;
+		case ESTATAL:
+			break;
+		case REGION:
+			break;
+		case MUNICIPIO:
+			break;
+		case SECCION:
+			break;
+		}
+		
+		if(!resultado.isEmpty()){
+			mapa.clear();
+			for(String key : resultado.keySet()){
+				mapa.put(key, resultado.get(key));
+			}
+		}
+		
+		if(!mapa.containsKey("registrados")){
+			mapa.put("registrados", new Long(0));
+		}
+		if(!mapa.containsKey("no_registrados")){
+			mapa.put("no_registrados", new Long(10));
+		}
+		
+		mapa.put("meta", ((Long)mapa.get("registrados")).intValue() + ((Long)mapa.get("no_registrados")).intValue());
+		
+		intervalos = new ArrayList<>();
+		auxTotal = Float.parseFloat(mapa.get("meta").toString()) ;
+		if((auxTotal % 2) == 1){
+			auxTotal += 1;
+		}
+		
+		intervalo = auxTotal / 4;
+		intervalos.add(intervalo * 2);
+		intervalos.add(intervalo * 3);
+		intervalos.add(auxTotal);
+		modelo = new MeterGaugeChartModel(((Long)mapa.get("registrados")).intValue(), intervalos);
+		modelo.setTitle(titulo);
+		modelo.setGaugeLabel(etiquetaMovilizados);
+		modelo.setSeriesColors(colores);
+		
+		return modelo;
+	}
+	
+}

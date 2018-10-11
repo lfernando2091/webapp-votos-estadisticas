@@ -1,0 +1,96 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Tablas Warehouse" action="cancelar" />
+						<p:menuitem value="Agregar" action="regresar" />
+						<p:menuitem value="Agregar Campos" />
+					</p:breadCrumb>
+
+					<p:panel header="Agregar Nueva Tabla">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Nombre" />
+							<p:outputLabel value="${nuevo.tabla}" />
+							<p:outputLabel value="Descripcion" />
+							<p:outputLabel value="${nuevo.descripcion}" />
+							<p:outputLabel value="Tabla Particionada?" />
+							<p:outputLabel value="${nuevo.particionada}" />
+							<p:outputLabel value="Campo de Particion" />
+							<p:outputLabel value="${nuevo.campoParticion}" />
+						</p:panelGrid>
+					</p:panel>
+					
+					<p:panel header="Campos de la Tabla">
+						<p:dataTable id="tablaCampos" value="${modeloCampos.listado}" var="fila">
+							<p:column headerText="ID" width="50">${fila.id}</p:column>
+							<p:column headerText="Nombre">${fila.nombre}</p:column>
+							<p:column headerText="Tipo" width="100">${fila.tipo}</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandLink  onstart="PF('dialogoAgregarCampoWV').show();">
+									<p:graphicImage value="/resources/botones/AGREGAR CAMPO.png" />
+							</p:commandLink>
+							<p:commandLink action="regresar" immediate="true" >
+									<p:graphicImage value="/resources/botones/REGRESAR.png" />
+							</p:commandLink>
+							<p:commandLink action="guardar">
+									<p:graphicImage value="/resources/botones/GUARDAR.png" />
+							</p:commandLink>
+							<p:commandLink action="cancelar" immediate="true" >
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Agregar Campo" onstart="PF('dialogoAgregarCampoWV').show();"/> -->
+<!-- 							<p:commandButton value="Regresar" action="regresar" -->
+<!-- 								immediate="true" /> -->
+<!-- 							<p:commandButton value="Guardar" action="guardar" /> -->
+<!-- 							<p:commandButton value="Cancelar" action="cancelar" -->
+<!-- 								immediate="true" /> -->
+						</f:facet>
+					</p:panel>
+					
+					<p:dialog id="dialogoAgregarCampo"
+						widgetVar="dialogoAgregarCampoWV" header="Agregar Campo"
+						modal="true" visible="false">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Nombre" />
+							<p:inputText value="${campo.nombre}" style="width: 200px;" />
+							<p:outputLabel value="Tipo" />
+							<p:selectOneMenu value="${campo.tipo}" converter="ObjectConverter" style="width: 150px;">
+								<f:selectItems value="${modeloTiposCampo.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<f:facet name="footer">
+								<p:commandLink  action="guardarCampo"
+									oncomplete="PF('dialogoAgregarCampoWV').hide();"
+									update="#{p:component('tablaCampos')}, #{p:component('dialogoAgregarCampo')}" >
+										<p:graphicImage value="/resources/botones/GUARDAR.png" />
+								</p:commandLink>
+								<p:commandLink  immediate="true"
+									onclick="PF('dialogoAgregarCampoWV').hide();" >
+										<p:graphicImage value="/resources/botones/CANCELAR.png" />
+								</p:commandLink>
+<!-- 								<p:commandButton value="Guardar" action="guardarCampo" -->
+<!-- 									oncomplete="PF('dialogoAgregarCampoWV').hide();" -->
+<!-- 									update="#{p:component('tablaCampos')}, #{p:component('dialogoAgregarCampo')}" /> -->
+<!-- 								<p:commandButton value="Cancelar" immediate="true" -->
+<!-- 									onclick="PF('dialogoAgregarCampoWV').hide();" /> -->
+							</f:facet>
+						</p:panelGrid>
+					</p:dialog>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

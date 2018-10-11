@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructurasEdoMex.visitador">
+	<cache />
+	<resultMap type="EstructurasEdoMexVisitadorEO" id="visitador">
+		<id 			column="VisitadorEO_pkey" 					property="id" 				javaType="Integer"/>
+		<result			column="VisitadorEO_nombre"					property="nombre"			javaType="String"/>
+		<result			column="VisitadorEO_primer_apellido"		property="primerApellido"	javaType="String"/>
+		<result			column="VisitadorEO_segundo_apellido"		property="segundoApellido"	javaType="String"/>
+		<result			column="VisitadorEO_email"					property="email"			javaType="String"/>
+		<result			column="VisitadorEO_movil"					property="movil"			javaType="String"/>
+		<result			column="VisitadorEO_programa"				property="programa"			javaType="com.saganet.politik.dominios.ProgramasEdoMexDO"/>
+		<result			column="VisitadorEO_nick"					property="nick"				javaType="String"/>
+		<result			column="VisitadorEO_pw"					    property="pw"				javaType="String"/>
+		<association 	column="VisitadorEO_nick"					property="supervisor" 		select="administracion.usuarios.porNick"/>
+		<association 	column="VisitadorEO_id_region"				property="region" 			select="catalogos.geozonas.regionPorLlave"/>
+		<association 	column="VisitadorEO_llave_municipio"		property="municipio" 		select="catalogos.municipios.buscarPorLlave"/>
+	</resultMap>
+
+	<sql id="query">
+		SELECT 
+			VisitadorEO.pkey 								VisitadorEO_pkey, 
+			VisitadorEO.nick								VisitadorEO_nick,
+			VisitadorEO.id_region							VisitadorEO_id_region, 
+			'15-'||VisitadorEO.id_municipio::text			VisitadorEO_llave_municipio,
+			VisitadorEO.nombre								VisitadorEO_nombre,
+			VisitadorEO.primer_apellido						VisitadorEO_primer_apellido,
+			VisitadorEO.segundo_apellido					VisitadorEO_segundo_apellido,
+			VisitadorEO.email								VisitadorEO_email,
+			VisitadorEO.movil								VisitadorEO_movil,
+			VisitadorEO.programa							VisitadorEO_programa,
+			VisitadorEO.pw									VisitadorEO_pw
+		FROM estructuras_edomex.visitadores 	 VisitadorEO			
+	</sql>
+	
+	<sql id="orderBy">
+		ORDER BY  VisitadorEO.nick, VisitadorEO.id_region, VisitadorEO.id_municipio
+	</sql>
+
+	<select id="listado" resultMap="visitador" parameterType="hashmap">
+		<include refid="query" />
+		<where>
+			<if test="region!=null">
+				VisitadorEO.id_region=#{region.idParticion}
+				<if test="municipio!=null">
+					AND VisitadorEO.id_municipio=#{municipio.idMunicipio}
+				</if>
+			</if>
+			<if test="region==null">
+				<if test="municipio!=null">
+					VisitadorEO.id_municipio=#{municipio.idMunicipio}
+				</if>
+			</if>
+		</where>
+		<include refid="orderBy" />
+	</select>
+	
+</mapper>

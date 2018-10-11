@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.levantamientoRowan.entrevistado">
+<resultMap type="LevantamientoRowanEntrevistadoEO" id="entrevistadoLevantamientoRowan">
+<id column="LevantamientoRowanEntrevistadoEO_id" 							property="id" 					javaType="Integer"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_entidad" 				property="entidad" 				javaType="Integer"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_region_edomex_2017" 	property="regionEdomex2017" 	javaType="Integer"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_nombre_region" 		property="nombreRegion" 		javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_municipio" 			property="municipio" 			javaType="Integer"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_nombre_municipio" 		property="nombreMunicipio" 		javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_localidad" 			property="localidad" 			javaType="Integer"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_nombre_localidad" 		property="nombreLocalidad" 		javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_seccion" 				property="seccion" 				javaType="Integer"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_manzana" 				property="manzana" 				javaType="Integer"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_id_interno" 			property="idInterno" 			javaType="Integer"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_clave_elector" 		property="claveElector" 		javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_apellido_paterno" 		property="apellidoPaterno" 		javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_apellido_materno" 		property="apellidoMaterno" 		javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_nombre" 				property="nombre" 				javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_fecha_nacimiento" 		property="fechaNacimiento" 		javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_lugar_nacimiento" 		property="lugarNacimiento" 		javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_sexo" 					property="sexo" 				javaType="com.saganet.politik.dominios.GenerosDO"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_ocupacion" 			property="ocupacion" 			javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_calle" 				property="calle" 				javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_num_exterior" 			property="numExterior" 			javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_num_interior" 			property="numInterior" 			javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_colonia"				property="colonia" 				javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_codigo_postal" 		property="codigoPostal" 		javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_programa_todo" 		property="programaTodo" 		javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_programa_general" 		property="programaGeneral" 		javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_estatus" 				property="estatus" 				javaType="String"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_folio" 				property="folio" 				javaType="Integer"/>
+ 	<result column="LevantamientoRowanEntrevistadoEO_duplicado" 			property="duplicado" 			javaType="boolean"/>
+ 	
+</resultMap>
+
+<sql id="query">
+	select
+		LevantamientoRowanEntrevistadoEO.entidad 					LevantamientoRowanEntrevistadoEO_entidad,
+		LevantamientoRowanEntrevistadoEO.region_edomex_2017 		LevantamientoRowanEntrevistadoEO_region_edomex_2017,
+		LevantamientoRowanEntrevistadoEO.nombre_region 			LevantamientoRowanEntrevistadoEO_nombre_region,
+		LevantamientoRowanEntrevistadoEO.municipio 				LevantamientoRowanEntrevistadoEO_municipio,
+		LevantamientoRowanEntrevistadoEO.nombre_municipio 		LevantamientoRowanEntrevistadoEO_nombre_municipio,
+		LevantamientoRowanEntrevistadoEO.localidad 				LevantamientoRowanEntrevistadoEO_localidad,
+		LevantamientoRowanEntrevistadoEO.nombre_localidad 		LevantamientoRowanEntrevistadoEO_nombre_localidad,
+		LevantamientoRowanEntrevistadoEO.seccion 					LevantamientoRowanEntrevistadoEO_seccion,
+		LevantamientoRowanEntrevistadoEO.manzana 					LevantamientoRowanEntrevistadoEO_manzana,
+		LevantamientoRowanEntrevistadoEO.id_interno 				LevantamientoRowanEntrevistadoEO_id_interno,
+		LevantamientoRowanEntrevistadoEO.clave_elector 			LevantamientoRowanEntrevistadoEO_clave_elector,
+		LevantamientoRowanEntrevistadoEO.apellido_paterno 		LevantamientoRowanEntrevistadoEO_apellido_paterno,
+		LevantamientoRowanEntrevistadoEO.apellido_materno 		LevantamientoRowanEntrevistadoEO_apellido_materno,
+		LevantamientoRowanEntrevistadoEO.nombre 					LevantamientoRowanEntrevistadoEO_nombre,
+		LevantamientoRowanEntrevistadoEO.fecha_nacimiento 		LevantamientoRowanEntrevistadoEO_fecha_nacimiento,
+		LevantamientoRowanEntrevistadoEO.lugar_nacimiento 		LevantamientoRowanEntrevistadoEO_lugar_nacimiento,
+		LevantamientoRowanEntrevistadoEO.sexo 					LevantamientoRowanEntrevistadoEO_sexo,
+		LevantamientoRowanEntrevistadoEO.ocupacion 				LevantamientoRowanEntrevistadoEO_ocupacion,
+		LevantamientoRowanEntrevistadoEO.calle 					LevantamientoRowanEntrevistadoEO_calle,
+		LevantamientoRowanEntrevistadoEO.num_exterior 			LevantamientoRowanEntrevistadoEO_num_exterior,
+		LevantamientoRowanEntrevistadoEO.num_interior 			LevantamientoRowanEntrevistadoEO_num_interior,
+		LevantamientoRowanEntrevistadoEO.colonia 					LevantamientoRowanEntrevistadoEO_colonia,
+		LevantamientoRowanEntrevistadoEO.codigo_postal 			LevantamientoRowanEntrevistadoEO_codigo_postal,
+		LevantamientoRowanEntrevistadoEO.programa_todo 			LevantamientoRowanEntrevistadoEO_programa_todo,
+		LevantamientoRowanEntrevistadoEO.programa_general 		LevantamientoRowanEntrevistadoEO_programa_general,
+		LevantamientoRowanEntrevistadoEO.estatus 					LevantamientoRowanEntrevistadoEO_estatus,
+		LevantamientoRowanEntrevistadoEO.grupo 					LevantamientoRowanEntrevistadoEO_grupo,
+		LevantamientoRowanEntrevistadoEO.folio 					LevantamientoRowanEntrevistadoEO_folio,
+		LevantamientoRowanEntrevistadoEO.duplicado 				LevantamientoRowanEntrevistadoEO_duplicado
+	from levantamiento_rowan.encuesta_edomex 						LevantamientoRowanEntrevistadoEO
+</sql>
+
+<select id="buscarId" parameterType="hashmap" resultMap="entrevistadoLevantamientoRowan">
+<include refid="query"/>
+		where levantamiento_rowanEntrevistadoEO.id_interno=#{folio} limit 1
+</select>
+
+
+<select id="duplicados" parameterType="hashmap" resultMap="entrevistadoLevantamientoRowan">
+<include refid="query"/>
+		where levantamiento_rowanEntrevistadoEO.folio=#{folio} 
+</select>
+<select id="buscarIdInterno" parameterType="hashmap" resultMap="entrevistadoLevantamientoRowan">
+<include refid="query"/>
+		where Levantamiento_rowanEntrevistadoEO.id_interno=#{folio} 
+</select>
+
+
+
+
+
+</mapper>

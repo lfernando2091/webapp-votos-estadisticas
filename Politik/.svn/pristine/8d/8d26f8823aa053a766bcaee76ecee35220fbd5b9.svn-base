@@ -1,0 +1,119 @@
+package com.saganet.politik.components.catalogos;
+
+import java.util.List;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.DispositivoMovilEO;
+import com.saganet.politik.dominios.EstatusDispositivoDO;
+import com.saganet.politik.dominios.ModelosDispositivoDO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("DispositivosMovilesC")
+public class DispositivosMovilesC {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	private static final Logger logger = LoggerFactory.getLogger(DispositivosMovilesC.class);
+	
+	public Modelo<DispositivoMovilEO> modelo(){
+		Modelo<DispositivoMovilEO> modelo;
+		List<DispositivoMovilEO> listado;
+		
+		listado = sqlSession.selectList("catalogos.dispositivosMoviles.listado");
+		logger.debug("Listado DispositivosMoviles: {}", listado);
+		
+		modelo = new Modelo<>();
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Modelo DispositivosMoviles: {}", modelo);
+		return modelo;
+	}
+	
+	public DispositivoMovilEO nuevo(){
+		DispositivoMovilEO nuevo = new DispositivoMovilEO();
+		nuevo.setNick(getUsuario().getNick());
+		return nuevo;
+	}
+	
+	public Boolean guardar(DispositivoMovilEO nuevo){
+		logger.debug("Dispositivo Recibido: {}", nuevo);
+		
+		if(validacionDispositivo(nuevo)){
+			try {
+				sqlSession.insert("catalogos.dispositivosMoviles.insertar", nuevo);
+				logger.debug("El Dispositivo se guardo correctamente.");
+				return true;
+			} catch (Exception e) {
+				// TODO: handle exception
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "El dispositivo que está intentando registrar, ya existe.", null));
+				return false;
+			}
+		}else{
+			logger.debug("El Dispositivo no se guardo correctamente.");
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "El dispositivo que está intentando registrar, ya existe.", null));
+			return false;
+		}
+	}
+	
+	public Boolean actualizar(DispositivoMovilEO dispositivoMovil){
+		dispositivoMovil.setNickActualizacion(getUsuario().getNick());
+		logger.debug("DispositivoMovil Recibido: {}", dispositivoMovil);
+		if(validacionDispositivo(dispositivoMovil)){
+			try {
+				sqlSession.update("catalogos.dispositivosMoviles.actualizar", dispositivoMovil);
+				logger.debug("El DispositivoMovil se actualizo correctamente.");
+				return true;
+			} catch (Exception e) {
+				// TODO: handle exception
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "El dispositivo que está intentando registrar, ya existe.", null));
+				return false;
+			}
+			
+		}else{
+			logger.debug("El DispositivoMovil no se actualizo correctamente.");
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "El dispositivo que está intentando registrar, ya existe.", null));
+			return false;
+		}
+	}
+	
+	public UsuarioEO getUsuario(){
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+	
+	public Boolean validacionDispositivo(DispositivoMovilEO dispositivoMovil){
+		Integer result;
+		logger.debug("Dispositivo recibido para la validacion: {}", dispositivoMovil);
+		result = sqlSession.selectOne("catalogos.dispositivosMoviles.validacion", dispositivoMovil);
+		if(result==0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	public EstatusDispositivoDO[] estatusDispositivo(){
+		logger.debug("Se genera listado de Estatus Dispositivos");
+		return EstatusDispositivoDO.values();
+	}
+	
+	public ModelosDispositivoDO[] modelosDispositivo(){
+		logger.debug("Se genera listado de Modelos Dispositivos");
+		return ModelosDispositivoDO.values();
+	}
+}

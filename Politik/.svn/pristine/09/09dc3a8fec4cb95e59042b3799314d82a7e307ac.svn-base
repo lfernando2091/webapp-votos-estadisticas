@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventos.intervenciones">
+	<cache />
+	<resultMap type="IntervencionEO" id="intervencion">
+		<id column="IntervencionEO_id" property="id" javaType="Integer" />
+		<result column="IntervencionEO_descripcion" property="descripcion" javaType="String" />
+		<association property="asistente" select="eventos.asistentes.buscarPorId" column="IntervencionEO_id_asistente"/> 
+
+	</resultMap>
+	<sql id="query">
+		SELECT
+		IntervencionEO.pkey								IntervencionEO_id,
+		IntervencionEO.descripcion 						IntervencionEO_descripcion,
+		IntervencionEO.id_asistente						IntervencionEO_id_asistente
+		FROM eventos_sociales.intervenciones 			IntervencionEO
+	</sql>
+	
+	<select id="listado" resultMap="intervencion">
+			<include refid="query" />
+		ORDER BY IntervencionEO.pkey
+	</select>
+	
+	<select id="listadoPorAsistente" resultMap="intervencion" parameterType="Integer">
+		<include refid="query" />
+		WHERE IntervencionEO.id_asistente=#{id}
+		ORDER BY IntervencionEO.pkey
+	</select>
+			
+	<select id="buscarPorId" resultMap="intervencion" parameterType="Integer">
+		<include refid="query" />
+		WHERE IntervencionEO.pkey = #{value}
+		ORDER BY IntervencionEO.pkey
+	</select>
+
+	<insert id="insertar" parameterType="IntervencionEO">
+		INSERT INTO	eventos_sociales.intervenciones(id_asistente, descripcion)
+		VALUES (#{asistente.id},#{descripcion});
+	</insert>
+
+	<delete id="eliminar" parameterType="IntervencionEO">
+		DELETE FROM eventos_sociales.intervenciones WHERE pkey=#{id}
+	</delete>
+	
+	<select id="listadoPorEvento" resultMap="intervencion" parameterType="Integer">
+		<include refid="query" />
+		JOIN eventos_sociales.asistentes b on (IntervencionEO.id_asistente = b.id_asistente)
+		WHERE b.id_evento_social=#{id}
+	</select>
+	
+	<delete id="eliminarAsistenteEO" parameterType="AsistenteEO">
+		DELETE FROM eventos_sociales.intervenciones WHERE id_asistente=#{id}
+	</delete>
+	
+	<delete id="eliminarEventoSocialEOA" parameterType="EventoSocialEO">
+		DELETE FROM eventos_sociales.intervenciones
+		WHERE id_asistente in 
+			(SELECT id_asistente  FROM eventos_sociales.asistente WHERE id_evento_social=#{id})
+	</delete>
+	
+</mapper>

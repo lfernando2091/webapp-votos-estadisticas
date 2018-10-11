@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nomina.nomina">
+	
+	<select id="listado" resultType="hashmap">
+		<![CDATA[
+		select
+		us.region, us.id_municipio, us.municipio, us.zona, us.seccion, us.usuario, us.nombre||' '||us.primerapellido||' '||segundoapellido nombre, us.rfc, us.curp, ''::text domicilio, edmx.telefono_local, edmx.telefono_celular, us.clave_interbancaria, us.banco, us.dia_inicio, '2016-10-15 al 2016-10-31' periodo_a_pagar,
+		coalesce(sum(case when (en.codigo_resultado = 1 or (en.codigo_resultado = 8 and en.tiene_ine is not null)) then 1 else 0 end),0)con_resp,
+ 		coalesce(e.sin_resp, 0) sin_resp,
+		(coalesce(sum(case when (en.codigo_resultado = 1 or (en.codigo_resultado = 8 and en.tiene_ine is not null)) then 1 else 0 end),0) + coalesce(e.sin_resp, 0)) encuestas_total,
+		coalesce(MAX(to_date('2016-10-31', 'yyyy-mm-dd') - us.dia_inicio + 1),0) dias_a_considerar,
+		MAX(case when us.tipo_municipio = 'URBANO' then 9 else 4 end) meta_por_dia
+		from encuesta en
+		right join usuario us on (en.usuario_id = us.id)
+		left join (select usuario_id, count(Distinct(encuestado_id)) sin_resp from encuesta where (codigo_resultado in (2,3,4,5,6,7,9) or (codigo_resultado = 8 and tiene_ine is null)) GROUP BY usuario_id) e ON (e.usuario_id = us.id)
+		left join administracion.usuarios_dispositivos_moviles_edomex_completa edmx on (us.usuario = edmx.nick)
+		where us.validado_campo = 1 and en.creada <= to_date('2016-10-31', 'yyyy-mm-dd')
+		group by us.region, us.id_municipio, us.municipio, us.zona, us.seccion, us.id, us.usuario, us.nombre, us.rfc, us.curp, edmx.telefono_local, edmx.telefono_celular, us.clave_interbancaria, us.banco, us.dia_inicio, e.sin_resp
+		order by us.region, us.id_municipio, us.municipio, us.zona, us.seccion, us.id, us.usuario, us.nombre, us.rfc, us.curp, edmx.telefono_local, edmx.telefono_celular, us.clave_interbancaria, us.banco, us.dia_inicio, e.sin_resp
+		]]>
+	</select>
+	
+</mapper>

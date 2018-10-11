@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.admin.respuestasCerradas">
+	<cache />
+	
+	<resultMap type="RespuestaCerradaEO" id="respuestaCerrada">
+	
+		<id column="RespuestaCerradaEO_id" property="id" javaType="Integer" />
+		
+		<result column="RespuestaCerradaEO_idPregunta" property="idPregunta" javaType="Integer"/>
+		<result column="RespuestaCerradaEO_respuesta" property="respuesta" javaType="String"/>
+		<result column="RespuestaCerradaEO_nick" property="nick" javaType="String"/>
+		<result column="RespuestaCerradaEO_fecha" property="fecha" javaType="String"/>
+		
+		
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			pkey										RespuestaCerradaEO_id,
+			id_pregunta									RespuestaCerradaEO_idPregunta,
+			respuesta									RespuestaCerradaEO_respuesta,
+			nick										RespuestaCerradaEO_nick,
+			to_char(fecha, 'YYYY-MM-DD HH12:MI:SS') 	RespuestaCerradaEO_fecha
+  		FROM encuestas.respuestas_cerradas
+	</sql>
+	
+	<select id="listado" resultMap="respuestaCerrada" parameterType="PreguntaEO">
+		<include refid="query" />
+		where id_pregunta = #{id}
+		ORDER BY pkey
+	</select>
+	
+	<select id="listadoById" resultMap="respuestaCerrada" parameterType="Integer">
+		<include refid="query" />
+		where id_pregunta = #{value}
+		ORDER BY pkey
+	</select>
+	
+	<insert id="insertar" parameterType="RespuestaCerradaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('encuestas.respuestas_cerradas_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas.respuestas_cerradas(pkey, id_pregunta, respuesta, nick)
+    	VALUES (#{id}, #{idPregunta}, #{respuesta}, #{nick});
+	</insert>
+	
+</mapper>

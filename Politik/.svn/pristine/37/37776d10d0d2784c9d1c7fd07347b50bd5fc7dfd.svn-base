@@ -1,0 +1,58 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+<h:outputStylesheet name="/resources/spark-layout/css/custom.css" library="css" />
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:commandButton action="volver" icon="fa fa-home" value="Volver" process="@form" immediate="true" update="@form"></p:commandButton>
+					<p:commandButton action="agregar" value="Agregar" icon="fa fa-plus-square-o"></p:commandButton>
+					
+						<p:dataTable id="tablaBiblioteca"
+							value="${contenidoCarpeta.listado}" var="fila"
+							rowKey="${fila.id}"
+							selectionMode="single" selection="${contenidoCarpeta.seleccionado}"  styleClass="hide-column-names" >
+							<p:ajax event="rowDblselect"  disabled="${fila.archivo.isDirectory()==false?true:false}"  onstart="comandoNiveles()"/>
+							<p:column headerText="Archivo" sortBy="${fila.archivo}" width="50%">
+							<p:graphicImage value="${fila.archivo.isDirectory()==true?'/resources/spark-layout/images/folder-close-gray.svg':'/resources/spark-layout/images/info.svg'}" width="20px" height="20px" />
+							${fila.archivo.getName()}</p:column>
+							<p:column headerText="Tipo" sortBy="${fila.archivo.isDirectory()==true?'Directorio':'Archivo'}" width="20%">${fila.archivo.isDirectory()==true?"Directorio":"Archivo"}</p:column>
+							<p:column headerText="Tamanio" sortBy="${fila.archivo.length()}" width="20%">
+							<p:outputLabel value="${fila.archivo.length()==0?'':fila.archivo.length()}">
+							<f:convertNumber type="number" groupingUsed="true" minFractionDigits="0" pattern="#000,000"/> 
+							</p:outputLabel><p:outputLabel value="${fila.archivo.length()==0?'':' Bytes'}"/>
+							</p:column>
+							
+							<p:column headerText="Opciones" width="20%">
+							
+							<p:commandLink action="descargar"
+							rendered="#{fila.archivo.isFile()==true}" target="descargaArchivo"
+							oncomplete="window.open('#{request.contextPath}/app/descargaArchivo.html','excelReport');"
+							ajax="false">
+
+							<p:graphicImage value="/resources/spark-layout/images/descargar.png"
+								rendered="#{fila.archivo.isFile()==true}" />
+						</p:commandLink>
+							
+							</p:column>
+							
+							
+						</p:dataTable>
+				<p:remoteCommand name="comandoNiveles" action="recargar"
+					process="@form" immediate="true" update="@form" />
+					
+					<p:remoteCommand name="comandoDirector" action="director"
+					process="@form" immediate="true" update="@form"/>
+					<p:commandButton action="volver" icon="fa fa-home" value="Volver" process="@form" immediate="true" update="@form"/>
+					
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

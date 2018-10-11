@@ -1,0 +1,70 @@
+package com.saganet.politik.components.diaD;
+
+import java.util.HashMap;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.binding.message.MessageBuilder;
+import org.springframework.binding.message.MessageContext;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContextHolder;
+
+import com.saganet.politik.database.diaD.MovilizadoEO;
+import com.saganet.politik.database.diaD.MovilizadorEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("diaDJornadaC")
+public class JornadaC {
+	@SuppressWarnings("unused")
+	private static final Logger logger = LoggerFactory.getLogger(JornadaC.class);
+	
+	@Autowired SqlSession sqlSession;
+	
+	public HashMap<String, Object> nuevoMapa(){
+		return new HashMap<>();
+	}
+	
+	public void registrarFolio(HashMap<String, Object> mapa){
+		MessageContext messageContext;
+		Boolean flag;
+		Integer folio;
+		
+		messageContext = RequestContextHolder.getRequestContext().getMessageContext();
+		folio = Integer.parseInt((String) mapa.get("folio"));
+		
+		flag = sqlSession.selectOne("diaD.movilizado.estadoRegistroJornada", folio);
+		
+		if (flag != null) {
+
+			if (flag) {
+				messageContext.addMessage(new MessageBuilder().error().source("registroFolio")
+						.defaultText("El Folio " + folio + " ya estaba asignado").build());
+			} else {
+				sqlSession.update("diaD.movilizado.registrarJornada", folio);
+				messageContext.addMessage(new MessageBuilder().info().source("registroFolio")
+						.defaultText("Folio " + folio + " registrado exitosamente").build());
+			}
+		} else {
+			messageContext.addMessage(new MessageBuilder().error().source("registroFolio")
+					.defaultText("El Folio " + folio + " no existe").build());
+		}
+		
+		mapa.remove("folio");
+	}
+	
+	public void registrarFolio2(HashMap<String, Object> mapa, Modelo<MovilizadoEO> modeloMovilizados){
+		Integer folio;
+		
+		folio = (Integer) mapa.get("folio2");
+		
+		sqlSession.update("diaD.movilizado.registrarJornada2", folio);
+		
+		for(MovilizadoEO m : modeloMovilizados.getListado()){
+			if(m.getFolio().equals(folio)){
+				m.setRegistroJornada(!m.getRegistroJornada().booleanValue());
+			}
+		}
+	}
+}

@@ -1,0 +1,54 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ps="http://primefaces.org/spark"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <h:form enctype="multipart/form-data">
+        <ps:menu>
+			<p:submenu label="Catalogos" icon="fa fa-book">
+				<p:submenu label="Geográfico" icon="fa fa-map-marker">
+					<p:menuitem value="Entidades Federativas" url="/app/catalogos/entidades" />
+					<p:menuitem value="Distritos Federales" url="/app/catalogos/dFederales" />
+					<p:menuitem value="Distritos Locales" url="/app/catalogos/dLocales" />
+					<p:menuitem value="Municipios" url="/app/catalogos/municipios" />
+					<p:menuitem value="Secciones" url="/app/catalogos/secciones" />
+				</p:submenu>
+				<p:menuitem value="Tipos de Clave" url="/app/catalogos/tiposClave" />
+				<p:menuitem value="Tablas Warehouse" url="/app/catalogos/tablas" />
+				<p:menuitem value="Partidos Políticos" url="/app/catalogos/partidos" />
+				<p:menuitem value="Elecciones" url="/app/catalogos/elecciones" />
+			</p:submenu>
+			<p:separator />
+			<p:submenu label="MDM" icon="fa fa-users">
+				<p:menuitem value="Perfiles" url="/app/mdm/perfiles" />
+			</p:submenu>
+			<p:separator />
+			<p:submenu label="Cronograma" icon="fa fa-clock-o">
+				<p:menuitem value="Timeline" url="/app/cronograma/timeline" />
+			</p:submenu>
+			<p:separator />
+			<p:submenu label="Estructuras" icon="fa fa-sitemap">
+				<p:menuitem value="Figuras" url="/app/estructuras/figuras" />
+				<p:menuitem value="Estructuras" url="/app/estructuras/estructuras" />
+				<p:menuitem value="Diagrama" url="/app/estructuras/diagrama" />
+			</p:submenu>
+			<p:separator />
+			
+			<p:submenu label="Biblioteca" icon="fa fa-folder-o">
+				<p:menuitem value="Archivos" url="/app/biblioteca" />
+			</p:submenu>
+			<p:separator />
+			<p:submenu label="Importaciones" icon="fa fa-folder-o">
+				<p:menuitem value="Archivos" url="/app/importaciones" />
+			</p:submenu>
+			<p:separator />
+			<p:submenu label="Estadísticas" icon="fa fa-line-chart">
+				<p:menuitem value="Reportes" url="/app/estadisticas/reportes" />
+				<p:menuitem value="Variables" url="/app/estadisticas/variables" />
+			</p:submenu>
+        </ps:menu>
+    </h:form>
+
+</ui:composition>

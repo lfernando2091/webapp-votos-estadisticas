@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventos.presidium">
+	<cache />
+
+	<resultMap type="PresidiumEO" id="presidium">
+		<id column="PresidiumEO_id" property="id" javaType="Integer" />
+		<result column="PresidiumEO_cargo" property="cargo" javaType="String" />
+		<result column="PresidiumEO_presidio" property="presidio" javaType="boolean" />
+		<association property="evento" column="PresidiumEO_id_evento_social" select="eventos.eventos.buscarID"/>
+		<association property="dependencia" column="PresidiumEO_id_dependencia" select="catalogos.dependencias.dependenciaById"/>
+		<association property="persona" column="PresidiumEO_id_persona" select="mdm.personas.buscarPorIdPersona"/>
+	</resultMap>
+
+	<sql id="query">
+		SELECT
+		PresidiumEO.pkey PresidiumEO_id,
+		PresidiumEO.id_evento_social PresidiumEO_id_evento_social,
+		PresidiumEO.id_persona PresidiumEO_id_persona,
+		PresidiumEO.id_dependencia PresidiumEO_id_dependencia,
+		PresidiumEO.cargo PresidiumEO_cargo,
+		PresidiumEO.presidio PresidiumEO_presidio
+		FROM eventos_sociales.presidium PresidiumEO
+	</sql>
+	
+	<select id="listado" resultMap="presidium">
+		<include refid="query"/>
+		ORDER BY PresidiumEO.pkey,PresidiumEO.id_evento_social
+	</select>
+	
+	
+	<select id="buscarPorEvento" resultMap="presidium" parameterType="Integer">
+		<include refid="query"/>
+		WHERE PresidiumEO.id_evento_social=#{value}
+		ORDER BY PresidiumEO.pkey, PresidiumEO.id_evento_social
+	</select>
+	
+	
+	<select id="buscarPorID" resultMap="presidium" parameterType="Integer">
+		<include refid="query"/>
+		WHERE PresidiumEO.pkey=#{value}
+		ORDER BY PresidiumEO.pkey, PresidiumEO.id_evento_social
+	</select>
+	
+	
+	<select id="nuevoID" resultType="Integer">
+		SELECT nextval('eventos_sociales.presidium_pkey_seq')
+	</select>
+	
+	<insert id="agregar" parameterType="PresidiumEO">
+		INSERT INTO eventos_sociales.presidium(pkey, id_evento_social, id_persona, cargo, id_dependencia, presidio)
+    	VALUES (#{id}, #{evento.id}, #{persona.id}, #{cargo}, #{dependencia.id}, #{presidio})
+	</insert>
+
+	<delete id="eliminar" parameterType="PresidiumEO">
+			DELETE FROM eventos_sociales.presidium WHERE pkey=#{id}
+	</delete>
+	
+	
+</mapper>

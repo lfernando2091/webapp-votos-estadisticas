@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.callcenter.encargado">
+
+	<resultMap type="Edomex2017CallcenterEncargadoEO" id="encargado">
+		<id 			column="Edomex2017CallcenterEncargadoEO_id" 					property="id" 			javaType="Integer"/>
+		<result 		column="Edomex2017CallcenterEncargadoEO_programa" 				property="progama" 		javaType="com.saganet.politik.dominios.ProgramasEdoMexDO"/>
+		<association 	column="Edomex2017CallcenterEncargadoEO_nick" 					property="usuario" 		select="administracion.usuarios.porNick"/>
+	</resultMap>
+
+	<sql id="query">
+		SELECT 
+			Edomex2017CallcenterEncargadoEO.pkey 								Edomex2017CallcenterEncargadoEO_id, 
+			Edomex2017CallcenterEncargadoEO.programa 							Edomex2017CallcenterEncargadoEO_programa,
+			Edomex2017CallcenterEncargadoEO.nick								Edomex2017CallcenterEncargadoEO_nick 
+  		FROM encuestas.encuesta_edomex_call_center 								Edomex2017CallcenterEncargadoEO
+	</sql>
+	
+	<select id="buscarPorNick" parameterType="String" resultMap="encargado">
+		<include refid="query"/>
+		WHERE Edomex2017CallcenterEncargadoEO.nick = #{nick}
+	</select>
+	<select id="buscarProgramaEncargado" resultType="String" parameterType="String">
+	SELECT  programa
+  FROM encuestas.encuesta_edomex_call_center_capturistas
+	where id_call_center = #{value}
+	</select>
+	
+	<select id="buscarPorID" parameterType="String" resultMap="encargado">
+		<include refid="query"/>
+		WHERE Edomex2017CallcenterEncargadoEO.nick = #{nick}
+	</select>
+</mapper>

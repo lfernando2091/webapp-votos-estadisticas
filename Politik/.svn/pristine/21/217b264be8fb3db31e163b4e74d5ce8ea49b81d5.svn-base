@@ -1,0 +1,164 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:growl autoUpdate="true" globalOnly="true" life="12000" for="msg" widgetVar="msgWid"/>
+					<p:panel header="Agregar Promovido" id="panelResultados">
+						<p:panelGrid columns="2" id="gridFiltros">
+							<p:column>
+								<p:outputLabel value="Promotor :"/>
+							</p:column>
+							<p:column>
+									<p:outputLabel value="${movilizador.nombre} ${movilizador.primerApellido} ${movilizador.segundoApellido}"  style="width: 300px"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Region " style="width:150px;"/>
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${modeloRegiones.seleccionado}" converter="ObjectConverter" style="width:300px;"  filter="true">
+									<p:ajax onstart="mpioActualizar();" event="itemSelect" />
+									<f:selectItems value="${modeloRegiones.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}"  />						
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Municipio"  style="width:150px;"/>
+							</p:column>
+							<p:column>
+								<p:selectOneMenu id="comboMpio" value="${modeloMunicipios.seleccionado}" style="width:300px;" converter="ObjectConverter"   filter="true">
+									<p:ajax onstart="seccActualizar();" event="itemSelect" />
+									<f:selectItems value="${modeloMunicipios.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}"/>							
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Seccion"  style="width:150px;"/>
+							</p:column>
+							<p:column>
+								<p:selectOneMenu id="comboSecc" value="${modeloSeccion.seleccionado}" style="width:300px;" converter="ObjectConverter"  filter="true" >
+									<f:selectItems value="${modeloSeccion.listado}" var="fila" itemLabel="${fila.idSeccion}" itemValue="${fila}"/>							
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Nombre :"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="${movilizado.nombre}" style="width: 300px"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Primer Apellido :"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="${movilizado.primerApellido}" style="width: 300px"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Segundo Apellido :"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="${movilizado.segundoApellido}" style="width: 300px"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Telefono :"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="${movilizado.telefono}"  style="width: 300px"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Email :"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="${movilizado.email}"  style="width: 300px" />
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Colonia :"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="${movilizado.colonia}" style="width: 300px"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Calle :"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="${movilizado.calle}" style="width: 300px"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Num Exterior :"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="${movilizado.numExterior}" style="width: 300px"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Num Interior :"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="${movilizado.numInterior}" style="width: 300px"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Codigo Postal :"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="${movilizado.cp}" style="width: 300px"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Clave :"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="${movilizado.clave}" style="width: 300px"/>
+							</p:column>
+							
+							<p:column>
+								<p:outputLabel value="Dia Nac." />
+							</p:column>
+							<p:column>
+								<p:inputText value="${dia}" style="width:300px"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Mes Nac." />
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${mes}" style="width:300px;" filter="true" filterMatchMode="contains" tabindex="6">
+									<f:selectItems value="${tablaMeses.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.id.toString()}" />
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Año Nac." />
+							</p:column>
+							<p:column>
+								<p:inputText value="${anho}" style="width:300px"/>
+							</p:column>
+							
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregar">
+								<p:confirm header="Confirmación" message="¿Esta Seguro De Agregar Directamente?" icon="ui-icon-alert" />
+							</p:commandButton>
+							<p:commandButton value="Regresar" action="regresar" immediate="true"/>
+						</f:facet>
+					</p:panel>	
+					
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandLink  styleClass="ui-confirmdialog-yes">
+								<p:graphicImage value="/resources/botones/SI.png" />
+						</p:commandLink>
+					 	<p:commandLink  styleClass="ui-confirmdialog-no">
+								<p:graphicImage value="/resources/botones/NO.png" />
+						</p:commandLink>
+					</p:confirmDialog>
+					
+					<p:remoteCommand action="mpioActualizar" name="mpioActualizar" update="#{p:component('panelResultados')}"/>					
+					<p:remoteCommand action="seccActualizar" name="seccActualizar" update="#{p:component('panelResultados')}"/>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

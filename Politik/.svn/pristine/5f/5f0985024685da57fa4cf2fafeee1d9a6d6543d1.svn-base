@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+<secured attributes="ROLE_ENCUESTA_EDOMEX_ENTREVISTADORES" />
+	<view-state id="buscar">
+		<on-entry>
+			<set name="viewScope.folioBusqueda" value="''"></set>
+		</on-entry>
+		<transition on="buscar" to="capturaEncuesta">
+			<evaluate expression="Edomex2017EntrevistaEntrevistadosEntrevistaEntrevistadosC.buscarFolio(flowRequestContext, viewScope.folioBusqueda)"/>
+		</transition>
+	</view-state>
+	
+	<view-state id="capturaEncuesta">
+		<on-entry>
+			<set name="viewScope.modeloSiNoNsNc" value="DominiosModelosC.modeloSiNoNsNc()"/>
+			<set name="viewScope.modeloPartidos" value="DominiosModelosC.modeloPartidosEdomex()"/>
+			<set name="viewScope.modeloCandidatos" value="DominiosModelosC.modeloCandidatosEdomex()"/>
+			<set name="viewScope.modeloCandidatoPartidos" value="DominiosModelosC.modeloCandidadtosPartidosEdomex()"/>
+			<evaluate expression="DominiosModelosC.modeloResultadoEntrevistaEntrevistador()" result="viewScope.modeloResultadoEncuesta"/>
+		</on-entry>
+		<transition on="guardar" to="fin">
+			<evaluate expression="Edomex2017EntrevistaEntrevistadorC.guardar(flowRequestContext)" />
+		</transition>
+		<transition on="actualizar" to="fin">
+			<evaluate expression="Edomex2017EntrevistaEntrevistadorC.actualizar(flowRequestContext)" />
+		</transition>
+		<transition on="salir" to="fin"/>
+	</view-state>
+	
+	<end-state id="fin"/>
+	
+</flow>

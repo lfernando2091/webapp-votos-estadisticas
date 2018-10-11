@@ -1,0 +1,138 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Avance de Estructuras">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nivel :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloNiveles.seleccionado}" style="width:300px">
+										<p:ajax event="itemSelect" oncomplete="actualizar()"/>
+										<p:ajax event="itemSelect" oncomplete="actualizarSecciones()"/>
+					            		<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+									</p:selectOneMenu>	
+							</p:column>	
+							<p:outputLabel value="Programa" />
+							<p:selectOneMenu value="${modeloProgramas.seleccionado}"
+								style="width:300px">
+								<p:ajax event="itemSelect" onsuccess="actualizar()" />
+								<f:selectItems value="${modeloProgramas.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<p:panel id="gridAcance">
+							<p:dataTable value="${avanceEntidad.listado}" var="fila" paginator="true" rows="15" id="tablaResultados" paginatorPosition="bottom">
+								<p:columnGroup type="header">
+            					<p:row>
+            						<p:column headerText="Entidad" rowspan="3" width="90" />
+            						<p:column headerText="Regiones" rowspan="3" width="150" rendered="${modeloNiveles.seleccionado!='ENTIDAD'}" filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.region.nombre}"/>
+            						<p:column headerText="Municipios" rowspan="3" width="150"   rendered="${modeloNiveles.seleccionado!='ENTIDAD' and modeloNiveles.seleccionado!='GEOZONA'?true:false}" filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.municipio.nombre}" />
+            						<p:column headerText="Secciones" rowspan="3" width="150" rendered="${modeloNiveles.seleccionado=='SECCION'}"   filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.seccion.idSeccion}"/>
+            					</p:row>
+            					<p:row>
+            						<p:column headerText="Coordinador Regional" colspan="3" />
+            						<p:column headerText="Coordinador Municipal" colspan="3" />
+            						<p:column headerText="Supervisor" colspan="3" />
+            						<p:column headerText="Entrevistador" colspan="3" />
+            					</p:row>
+            					<p:row>
+            						<p:column headerText="Avance" />
+            						<p:column headerText="Meta" />
+            						<p:column headerText="Porcentaje" />
+            						<p:column headerText="Avance" />
+            						<p:column headerText="Meta" />
+            						<p:column headerText="Porcentaje" />
+            						<p:column headerText="Avance" /> 
+            						<p:column headerText="Meta" />
+            						<p:column headerText="Porcentaje" />
+            						<p:column headerText="Avance" />
+            						<p:column headerText="Meta" />
+            						<p:column headerText="Porcentaje" />
+            					</p:row>
+            				</p:columnGroup>
+								<p:column>
+								<p:outputLabel value="${fila.entidad.nombre}"/>
+								</p:column>
+								<p:column rendered="${modeloNiveles.seleccionado ne 'ENTIDAD'}"  >
+								<p:outputLabel value="${fila.region.nombre}"  />
+								</p:column>
+								<p:column rendered="${modeloNiveles.seleccionado!='ENTIDAD' and modeloNiveles.seleccionado!='GEOZONA'?true:false}"  >
+								<p:outputLabel value="${fila.municipio.nombre}" />
+								</p:column>
+								<p:column rendered="${modeloNiveles.seleccionado=='SECCION'}" >
+								<p:outputLabel value="${fila.seccion.idSeccion}"  />
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.avance_cr}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.meta_cr}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.porcentaje_cr} '%'"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.avance_cm}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.meta_cm}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.porcentaje_cm} '%'"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.avance_s} "/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.meta_s}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.porcentaje_s} '%'"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.avance_v}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.meta_v}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.porcentaje_v} '%'"/>
+								</p:column>
+								
+							</p:dataTable>
+						
+						</p:panel>
+					</p:panel>	
+					
+					<p:remoteCommand action="actualizarMunicipios" name="actualizarMunicipios" update="@form"/>
+					<p:remoteCommand action="actualizarRegiones" name="actualizarRegiones" update="@form"/>
+					<p:remoteCommand action="actualizarSecciones" name="actualizarSecciones" update="@form" partialSubmit="true"/>
+					<p:remoteCommand action="actualizar" name="actualizar" update="@form" partialSubmit="true"/>
+					
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

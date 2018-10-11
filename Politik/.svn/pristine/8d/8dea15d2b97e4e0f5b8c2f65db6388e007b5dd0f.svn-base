@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Entidades Federativas" />
+					</p:breadCrumb>
+					<p:panel header="Entidades Federativas">
+						<p:dataTable value="${tablaEntidades.listado}" var="fila"
+							rowKey="${fila.id}" selection="${tablaEntidades.seleccionado}"
+							selectionMode="single" paginator="true" rows="15">
+							<p:column headerText="Id" width="50">
+								${fila.id}
+							</p:column>
+							<p:column headerText="Nombre">
+								${fila.nombre}
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

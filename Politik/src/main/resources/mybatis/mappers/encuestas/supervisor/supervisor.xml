@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.supervisor.supervisor">
+
+	<resultMap type="Edomex2017SupervisorSupervisorEO" id="supervisor">
+		<id 	column="Edomex2017SupervisorSupervisorEO_id" 					property="id" 			javaType="Integer"/>
+		<result column="Edomex2017SupervisorSupervisorEO_programa" 				property="progama" 		javaType="com.saganet.politik.dominios.ProgramasEdoMexDO"/>
+		<association column="Edomex2017SupervisorSupervisorEO_nick" 			property="usuario" 		select="administracion.usuarios.porNick"/>
+		<association column="Edomex2017SupervisorSupervisorEO_llave_municipio" 	property="municipio" 	select="catalogos.municipios.buscarPorLlave"/>
+	</resultMap>
+
+	<sql id="query">
+		SELECT 
+			Edomex2017SupervisorSupervisorEO.pkey 								Edomex2017SupervisorSupervisorEO_id, 
+			Edomex2017SupervisorSupervisorEO.nick								Edomex2017SupervisorSupervisorEO_nick, 
+			Edomex2017SupervisorSupervisorEO.programa 							Edomex2017SupervisorSupervisorEO_programa, 
+			'15-'||Edomex2017SupervisorSupervisorEO.id_municipio::text   		Edomex2017SupervisorSupervisorEO_llave_municipio
+  		FROM encuestas.encuesta_edomex_supervisores 							Edomex2017SupervisorSupervisorEO
+	</sql>
+	
+	<select id="buscarPorId" parameterType="String" resultMap="supervisor">
+		<include refid="query"/>
+		where Edomex2017SupervisorSupervisorEO.nick = #{value}
+	</select>
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="Edomex2017SupervisorSupervisor.obtenerSupervisor()" result="viewScope.supervisor"/>
+			<evaluate expression="Edomex2017SupervisorEncuestador.modelo()" result="viewScope.modelo"/>
+		</on-entry>
+		<transition on="agregar" to="agregar"/>
+		<transition on="eliminar" to="listado">
+				<evaluate expression="Edomex2017SupervisorEncuestador.eliminar(viewScope.modelo.seleccionado)"/>
+		</transition>
+	</view-state>
+	
+	<view-state id="agregar">
+		<on-entry>
+			<evaluate expression="Edomex2017SupervisorEncuestador.nuevo()" result="viewScope.nuevo"/>
+		</on-entry>
+		<transition on="cancelar" to="fin"/>
+		<transition on="guardar" to="fin">
+				<evaluate expression="Edomex2017SupervisorEncuestador.guardar(viewScope.nuevo)"/>
+		</transition>
+	</view-state>
+	
+	<end-state id="fin"></end-state>
+</flow>

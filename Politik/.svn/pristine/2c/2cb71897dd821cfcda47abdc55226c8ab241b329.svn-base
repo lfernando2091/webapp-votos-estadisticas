@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.sujetosSociales.captura">
+
+	<resultMap type="sujetosSocialesEncuestaEO" id="sujetoSocial">
+		<id column="sujetosSocialesEncuestaEO_id" 					property="id" 				javaType="Integer" />
+		<result column="sujetosSocialesEncuestaEO_idContacto"		property="idContacto" 		javaType="Integer" />
+		<result column="sujetosSocialesEncuestaEO_r1" 				property="r1"				javaType="com.saganet.politik.dominios.SiNoNSNCDO" />
+		<result column="sujetosSocialesEncuestaEO_r2" 				property="r2"				javaType="com.saganet.politik.dominios.PartidosEleccionEdomex2017DO" />
+		<result column="sujetosSocialesEncuestaEO_r3" 				property="r3"   			javaType="com.saganet.politik.dominios.CandidatosEdomex2017DO" />
+		
+		<result column="sujetosSocialesEncuestaEO_estatus"			property="estatus"			javaType="String" />
+		
+		<result column="sujetosSocialesEncuestaEO_nick" 				property="nick"				javaType="String" />
+		<result column="sujetosSocialesEncuestaEO_fecha" 				property="fecha"			javaType="java.sql.Timestamp" />
+		<result column="sujetosSocialesEncuestaEO_nombre" 			property="nombre"			javaType="String" />	
+		<result column="sujetosSocialesEncuestaEO_paterno" 			property="paterno"			javaType="String" />
+		<result column="sujetosSocialesEncuestaEO_materno" 			property="materno"			javaType="String" />
+		<result column="sujetosSocialesEncuestaEO_fechaNacimiento" 	property="fechaNacimiento"	javaType="String" />
+		<result column="sujetosSocialesEncuestaEO_sexo" 				property="genero"			javaType="com.saganet.politik.dominios.GenerosDO" />
+		<result column="sujetosSocialesEncuestaEO_estatus" 			property="resultado" 		javaType="com.saganet.politik.dominios.ResultadoEncuestaEdomexDO"/>
+		<result column="esujetosSocialesEncuestaEO_mail" 				property="email"			javaType="String" />
+		<result column="sujetosSocialesEncuestaEO_tel" 				property="tel"				javaType="String" />
+		<association column="sujetosSocialesEncuestaEO_encuestador" 	property="encuestador" 		select="encuestas.supervisor.encuestador.buscarPorNickTres"/>
+		
+	</resultMap>
+	
+	<sql id="query">	
+	SELECT Edomex2017EncuestaEO.pkey 			sujetosSocialesEncuestaEO_id,
+		Edomex2017EncuestaEO.id_contacto 		sujetosSocialesEncuestaEO_idContacto,
+		Edomex2017EncuestaEO._1 				sujetosSocialesEncuestaEO_r1,
+		Edomex2017EncuestaEO._2 				sujetosSocialesEncuestaEO_r2,
+		Edomex2017EncuestaEO._3 				sujetosSocialesEncuestaEO_r3,
+		Edomex2017EncuestaEO._4 				sujetosSocialesEncuestaEO_r4,
+		
+		Edomex2017EncuestaEO.estatus 			sujetosSocialesEncuestaEO_estatus,
+		Edomex2017EncuestaEO.encuestador	 	sujetosSocialesEncuestaEO_encuestador,
+		
+		Edomex2017EncuestaEO.nick 				sujetosSocialesEncuestaEO_nick,	
+		Edomex2017EncuestaEO.fecha 				sujetosSocialesEncuestaEO_fecha,
+		Edomex2017EncuestaEO.nombre 			sujetosSocialesEncuestaEO_nombre,
+		Edomex2017EncuestaEO.paterno 			sujetosSocialesEncuestaEO_paterno,
+		Edomex2017EncuestaEO.materno 			sujetosSocialesEncuestaEO_materno,
+		Edomex2017EncuestaEO.fecha_nacimiento 	sujetosSocialesEncuestaEO_fechaNacimiento,
+		Edomex2017EncuestaEO.sexo 				sujetosSocialesEncuestaEO_genero,
+		Edomex2017EncuestaEO.email 				sujetosSocialesEncuestaEO_email,
+		Edomex2017EncuestaEO.tel 				sujetosSocialesEncuestaEO_tel
+	FROM encuestas_edomex.e_edomex 			sujetosSocialesEncuestaEO
+	</sql>
+	
+	
+	<select id="buscarPorId" parameterType="SujetosSocialesEntrevistadoEO" resultMap="sujetoSocial">
+		<include refid="query" />
+		where id_interno = #{idInterno}
+	
+	</select>
+	<insert id="insertar" parameterType="sujetosSocialesEncuestaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('sujetos_Sociales.e_edomex_pkey_seq')
+		</selectKey>
+		INSERT INTO sujetos_Sociales.e_edomex(
+		pkey, id_contacto, _1, _2, _3, _4,estatus, nick, encuestador, nombre, paterno, materno, fecha_nacimiento, sexo, tel, email, version)
+		VALUES (#{id}, #{idContacto}, #{r1}, #{r2}, #{r3}, #{r4}, #{resultado},
+		#{nick},'${encuestador.nombre} ${encuestador.primerApellido} ${encuestador.segundoApellido}',#{nombre},#{paterno},#{materno},#{fechaNacimiento},#{genero}, #{tel}, #{email},1)
+
+	</insert>
+
+	<update id="actualizarEstatus" parameterType="sujetosSocialesEncuestaEO">
+		update sujetos_sociales.encuesta_edomex set estatus = #{resultado} where id_interno
+		= #{idContacto}
+	</update>
+	
+	
+	<update id="actualizarEncuesta" parameterType="sujetosSocialesEncuestaEO">
+		UPDATE sujetos_sociales.e_edomex
+		SET _1=#{r1}, _2=#{r2}, _3=#{r3}, _4=#{r4},  estatus = #{resultado},encuestador='${encuestador.nombre} ${encuestador.primerApellido} ${encuestador.segundoApellido}',
+		nombre=#{nombre}, paterno = #{paterno}, materno = #{materno}, fecha_nacimiento = #{fechaNacimiento}, sexo =#{genero}, tel=#{tel}, email=#{email}, nick_actualizacion=#{nickActualizacion}, fecha_actualizacion=now(), version_captura=#{versionCaptura}
+		WHERE pkey = #{id};
+	</update>
+	
+</mapper>

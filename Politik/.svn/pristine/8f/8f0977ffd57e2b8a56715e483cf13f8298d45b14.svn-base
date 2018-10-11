@@ -1,0 +1,267 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Datos de Ejercicio">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Programa: " />
+							<p:outputLabel value="${programa.programa}" />
+							<p:outputLabel value="Dependencia: " />
+							<p:outputLabel
+								value="${programa.dependencia.siglas} - ${programa.dependencia.dependencia}" />
+							<p:outputLabel value="Nivel Dependencia" />
+							<p:outputLabel value="${programa.dependencia.nivelDependencia}" />
+							<p:outputLabel value="Nivel Geográfico:" />
+							<p:outputLabel value="${programa.dependencia.nivelGeografico}" />
+							<p:outputLabel value="Fecha Ejercicio: " />
+							<p:outputLabel value="${ejercicio.ejercicio}" />
+							<p:outputLabel value="Fecha Inicio:" />
+							<p:outputLabel value="${ejercicio.fechaInicio}" />
+
+							<p:outputLabel value="Fecha Terminación:    " />
+							<p:outputLabel value="${ejercicio.fechaTermino}" />
+						</p:panelGrid>
+					</p:panel>
+					
+					<p:spacer height="10px" />
+					<p:panel header="Observaciones">
+
+						<p:panelGrid columns="2" style="width: 60%"
+							columnClasses="topAlign, topAlign">
+
+							<p:outputLabel value="Observaciones:    " />
+							<p:outputLabel value="${ejercicio.observaciones}" />
+
+
+						</p:panelGrid>
+					</p:panel>
+
+					<p:spacer height="10px" />
+					<p:panel header="Tipos de Inversión">
+						<p:commandButton process="dtlProgramasFuentes" value="Agregar" icon="fa fa-plus-circle" oncomplete="PF('agregarinvercionDialog').show()" update="agregarinvercionDetail" />
+						<p:commandButton process="dtlProgramasFuentes" value="Editar" icon="fa fa-edit" oncomplete="PF('invDialog').show()" update="invDetail"/>
+						<p:commandButton value="Eliminar" icon="fa fa-times-circle" action="eliminarTipoDeInversion">
+							<p:confirm header="Confirmación"
+									message="¿Esta seguro de eliminar el Tipo de Inversión?"
+									icon="ui-icon-alert" />
+						</p:commandButton>
+						
+						<p:separator/>
+						<p:dataTable value="${modeloProgramasFuentes.listado}" var="fila"
+							rowKey="${fila.id}"
+							selection="${modeloProgramasFuentes.seleccionado}"
+							selectionMode="single" rows="10" paginator="true"
+							paginatorAlwaysVisible="false" paginatorPosition="bottom"
+							id="dtlProgramasFuentes">
+							<p:column headerText="Tipo de Inversión">
+${fila.tipoInversion}
+</p:column>
+							<p:column headerText="Monto">
+$ ${fila.monto}
+</p:column>
+							<p:column headerText="Observaciones">
+${fila.observaciones}
+</p:column>
+							<p:column headerText="Fuente de Financiamiento">
+${fila.fuenteFinanciamiento}
+</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+						
+						<p:spacer height="10px"/>
+							<p:outputLabel value="Total: "/>
+							<p:outputLabel value="${totalFuentes}"/>
+							<p:spacer height="10px"/>
+						</f:facet>
+					</p:panel>
+					
+					<p:dialog header="Editar tipo de inversión" 
+								widgetVar="invDialog" 
+								modal="true" 
+								showEffect="fade" 
+								hideEffect="fade" 
+								resizable="false" 
+								rendered="${modeloProgramasFuentes.seleccionado!=null}"
+								closable="true">
+						<p:panel id="invDetail">
+							<p:panelGrid columns="2">
+								<h:outputText value="Tipo de Inversión: "/>
+								<p:selectOneMenu value="${modeloProgramasFuentes.seleccionado.tipoInversion}" >
+									<f:selectItems value="${tiposInversion}" var="${fila}"
+										itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+								<h:outputText value="Monto: $" />
+								<p:inputText value="${modeloProgramasFuentes.seleccionado.monto}" />
+								<h:outputText value="Observaciones: " />
+								<p:inputText value="${modeloProgramasFuentes.seleccionado.observaciones}" />
+								<h:outputText value="Fuente de Financiamiento: " />
+								<p:inputText value="${modeloProgramasFuentes.seleccionado.fuenteFinanciamiento}" />
+							</p:panelGrid>
+							<f:facet name="footer">
+<!-- 								<p:commandButton value="Actualizar" action="actualizarTipoDeInversion" /> -->
+								<p:commandLink action="actualizarTipoDeInversion">
+									<p:graphicImage value="/resources/botones/ACTUALIZAR.png"/>
+								</p:commandLink>
+<!-- 								<p:commandButton value="Cancelar" onclick="PF('invDialog').hide()" /> -->
+								<p:commandLink onclick="PF('invDialog').hide()">
+									<p:graphicImage value="/resources/botones/CANCELAR.png"/>
+								</p:commandLink>
+							</f:facet>
+						</p:panel>
+					</p:dialog>
+					
+					<p:dialog header="Nuevo tipo de inversión" 
+								widgetVar="agregarinvercionDialog" 
+								modal="true" 
+								showEffect="fade" 
+								hideEffect="fade" 
+								resizable="false"
+								closable="true">
+						<p:panel id="agregarinvercionDetail">
+							<p:panelGrid columns="2">
+								<h:outputText value="Tipo de Inversión: "/>
+								<p:selectOneMenu value="${nuevoTipoInversion.tipoInversion}" >
+									<f:selectItems value="${tiposInversion}" var="${fila}"
+										itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+								<h:outputText value="Monto: $" />
+								<p:inputText value="${nuevoTipoInversion.monto}" />
+								<h:outputText value="Observaciones: " />
+								<p:inputText value="${nuevoTipoInversion.observaciones}" />
+								<h:outputText value="Fuente de Financiamiento: " />
+								<p:inputText value="${nuevoTipoInversion.fuenteFinanciamiento}" />
+							</p:panelGrid>
+							<f:facet name="footer">
+<!-- 								<p:commandButton value="Guardar" action="guardarTipoDeInversion"/> -->
+								<p:commandLink action="guardarTipoDeInversion">
+									<p:graphicImage value="/resources/botones/GUARDAR.png"/>
+								</p:commandLink>
+<!-- 								<p:commandButton value="Cancelar" onclick="PF('agregarinvercionDialog').hide()" /> -->
+								<p:commandLink onclick="PF('agregarinvercionDialog').hide()">
+									<p:graphicImage value="/resources/botones/CANCELAR.png"/>
+								</p:commandLink>
+							</f:facet>
+						</p:panel>
+					</p:dialog>
+
+
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="Yes" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+							update="messages" />
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+					<p:spacer height="10px" />
+					<p:panelGrid columns="2" columnClasses="topAlign,topAlign">
+						<p:panel header="Territorios Dependencia">
+							<p:dataTable value="${modeloTerritorios.listado}" var="fila" paginator="true"
+							rows="10" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+								<p:column headerText="Listado">
+									<c:if
+										test="#{programa.dependencia.nivelGeografico.nombre eq 'Entidad'}">
+										<p:outputLabel value="${fila.id} ${fila.nombre}" />
+									</c:if>
+									<c:if
+										test="#{programa.dependencia.nivelGeografico.nombre eq 'Municipio'}">
+										<p:outputLabel
+											value="${fila.llave}  ${fila.entidad.nombre} - ${fila.nombre}" />
+									</c:if>
+									<c:if
+										test="#{programa.dependencia.nivelGeografico.nombre eq 'Distrito Federal'}">
+										<p:outputLabel
+											value="${fila.llave}  ${fila.entidad.nombre} - ${fila.nombre}" />
+									</c:if>
+									<c:if
+										test="#{programa.dependencia.nivelGeografico.nombre eq 'Distrito Local'}">
+										<p:outputLabel
+											value="${fila.llave}  ${fila.entidad.nombre} - ${fila.nombre}" />
+									</c:if>
+									<c:if
+										test="#{programa.dependencia.nivelGeografico.nombre eq 'Sección'}">
+										<p:outputLabel
+											value="${fila.llave}  ${fila.entidad.nombre} - ${fila.id}" />
+									</c:if>
+
+								</p:column>
+							</p:dataTable>
+
+						</p:panel>
+
+
+						<p:panel header="Territorios Ejercicio">
+							<p:dataTable value="${ejercicio.territorios}" var="fila" paginator="true"
+							rows="10" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+								<p:column headerText="Llave">
+									<c:if
+										test="#{programa.dependencia.nivelGeografico.nombre eq 'Entidad'}">
+										<p:outputLabel value="${fila.id} ${fila.nombre}" />
+									</c:if>
+									<c:if
+										test="#{programa.dependencia.nivelGeografico.nombre eq 'Municipio'}">
+										<p:outputLabel
+											value="${fila.llave}  ${fila.entidad.nombre} - ${fila.nombre}" />
+									</c:if>
+									<c:if
+										test="#{programa.dependencia.nivelGeografico.nombre eq 'Distrito Federal'}">
+										<p:outputLabel
+											value="${fila.llave}  ${fila.entidad.nombre} - ${fila.nombre}" />
+									</c:if>
+									<c:if
+										test="#{programa.dependencia.nivelGeografico.nombre eq 'Distrito Local'}">
+										<p:outputLabel
+											value="${fila.llave}  ${fila.entidad.nombre} - ${fila.nombre}" />
+									</c:if>
+									<c:if
+										test="#{programa.dependencia.nivelGeografico.nombre eq 'Sección'}">
+										<p:outputLabel
+											value="${fila.llave}  ${fila.entidad.nombre} - ${fila.id}" />
+									</c:if>
+								</p:column>
+							</p:dataTable>
+
+						</p:panel>
+					</p:panelGrid>
+
+<p:commandLink title="Regresar al Listado" action="cancelar">
+<p:graphicImage value="/resources/botones/REGRESAR.png"/>
+</p:commandLink>
+
+<p:commandLink title="Eliminar el Ejercicio" action="eliminarEjercicio">
+<p:graphicImage value="/resources/botones/ELIMINAR.png"/>
+<p:confirm header="Confirmación"
+							message="Está seguro de eliminar el ejercicio?"
+							icon="ui-icon-alert" />
+</p:commandLink>
+
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="Si" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

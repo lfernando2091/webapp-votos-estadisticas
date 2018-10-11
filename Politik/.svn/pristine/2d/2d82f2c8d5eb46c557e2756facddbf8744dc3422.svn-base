@@ -1,0 +1,92 @@
+package com.saganet.politik.components.catalogos;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.catalogos.DependenciaEO;
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.dominios.NivelesDependenciasDO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("DependenciasC")
+public class DependenciasC {
+
+	@Autowired
+	SqlSession sqlSession;
+	
+	private static final Logger logger = LoggerFactory.getLogger(DependenciasC.class);
+	
+	public Modelo<DependenciaEO> modelo(){
+		Modelo<DependenciaEO> modelo;
+		List<DependenciaEO> listado;
+		
+		listado = sqlSession.selectList("catalogos.dependencias.listado");
+		
+		modelo = new Modelo<>();
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			logger.debug("ListadoDependecias: {}", listado);
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("ModeloDependecias: {}", modelo);
+		
+		return modelo;
+	}
+	
+	public DependenciaEO nuevo(){
+		return new DependenciaEO();
+	}
+	
+	public void guardar(DependenciaEO nuevaDependencia){
+		logger.debug("Nueva Dependencia Recibida: {}", nuevaDependencia);
+		
+		sqlSession.insert("catalogos.dependencias.insertar", nuevaDependencia);
+		
+		logger.debug("La Dependecia se guardo correctamente!");
+		
+	}
+	
+	public void actualizar(DependenciaEO dependencia){
+		logger.debug("Dependencia Recibida: {}", dependencia);
+		
+		sqlSession.update("catalogos.dependencias.actualizar", dependencia);
+		
+		logger.debug("La dependencia fue actualizada correctamente!");
+	}
+	
+	public NivelesDependenciasDO[] nivelesDependencias(){
+		logger.debug("Se genera listado de Niveles Dependencias");
+		return NivelesDependenciasDO.values();
+	}
+	
+	public NivelesDO[] niveles(){
+		logger.debug("Se genera listado de Niveles");
+		return NivelesDO.values();
+	}
+	
+	public DependenciaEO consultaLlaves(DependenciaEO dependencia){
+		
+		switch (dependencia.getNivelGeografico()) {
+			
+		case "Entidad":
+			
+			return dependencia;
+			
+		case "Municipio":
+			
+			return dependencia;
+
+		default:
+			return dependencia;
+		}
+		
+	}
+	
+}

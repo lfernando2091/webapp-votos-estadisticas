@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="catalogos.dispositivosMoviles">
+
+	<cache/>
+	
+	<resultMap type="DispositivoMovilEO" id="dispositivoMovil">
+		<id column="DispositivoMovilEO_id" property="id" javaType="Integer"/>
+		<result column="DispositivoMovilEO_idRegistro" property="idRegistro" javaType="Integer"/>
+		<result column="DispositivoMovilEO_serie" property="serie" javaType="String"/>
+		<result column="DispositivoMovilEO_imei1" property="imei1" javaType="String"/>
+		<result column="DispositivoMovilEO_imei2" property="imei2" javaType="String"/>
+		<result column="DispositivoMovilEO_modelo" property="modelo" javaType="com.saganet.politik.dominios.ModelosDispositivoDO"/>
+		<result column="DispositivoMovilEO_precarga" property="precarga" javaType="com.saganet.politik.dominios.PrecargaDO"/>
+		<result column="DispositivoMovilEO_estatus" property="estatus" javaType="com.saganet.politik.dominios.EstatusDispositivoDO"/>
+		<result column="DispositivoMovilEO_nick" property="nick" javaType="String"/>
+		<result column="DispositivoMovilEO_fechaCaptura" property="fechaCaptura" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+		DispositivoMovilEO.pkey												DispositivoMovilEO_id, 
+		DispositivoMovilEO.id_registro										DispositivoMovilEO_idRegistro, 
+		DispositivoMovilEO.serie											DispositivoMovilEO_serie, 
+		DispositivoMovilEO.imei1											DispositivoMovilEO_imei1, 
+		DispositivoMovilEO.imei2											DispositivoMovilEO_imei2, 
+		DispositivoMovilEO.modelo											DispositivoMovilEO_modelo,
+		DispositivoMovilEO.precarga											DispositivoMovilEO_precarga, 
+    	DispositivoMovilEO.estatus											DispositivoMovilEO_estatus,
+    	DispositivoMovilEO.nick												DispositivoMovilEO_nick,
+        to_char(DispositivoMovilEO.fecha_captura, 'YYYY-MM-DD HH24:MI:SS')	DispositivoMovilEO_fechaCaptura
+  		FROM catalogos.dispositivos_moviles DispositivoMovilEO
+	</sql>
+	
+	<select id="listado" resultMap="dispositivoMovil">
+		<include refid="query"/>
+		ORDER BY DispositivoMovilEO.pkey desc
+		limit 10
+	</select>
+	
+	<select id="validacion" resultType="Integer" parameterType="DispositivoMovilEO">
+		SELECT count(*)
+  		FROM catalogos.dispositivos_moviles
+  		where id_registro = #{idRegistro} and serie = '${serie}'
+	</select>
+	
+	<insert id="insertar" parameterType="DispositivoMovilEO">
+		INSERT INTO catalogos.dispositivos_moviles(
+            id_registro, serie, imei1, imei2, modelo, precarga, estatus, nick)
+    	VALUES (#{idRegistro}, #{serie}, #{imei1}, #{imei2}, #{modelo}, #{precarga}, #{estatus}, #{nick})
+	</insert>
+	
+	<update id="actualizar" parameterType="DispositivoMovilEO">
+		UPDATE catalogos.dispositivos_moviles
+   		SET id_registro = #{idRegistro}, serie = #{serie}, imei1 = #{imei1}, imei2 = #{imei2}, modelo = #{modelo}, precarga = #{precarga}, estatus = #{estatus}, 
+      	nick_actualizacion = #{nickActualizacion}, fecha_actualizacion = now()
+		WHERE pkey = #{id}
+	</update>
+	
+	<select id="getUltimoRegistro" resultMap="dispositivoMovil">
+		<include refid="query"/>
+		ORDER BY id_registro DESC
+		LIMIT 1  
+	</select>
+
+</mapper>

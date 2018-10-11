@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="encuestas.edomex2017.registroUsuarios">
+	
+
+	
+	<select id="validarCodigo" parameterType="hashmap" resultType="Integer">
+	select count(*) from encuestas.encuesta_edomex_registro_usuarios where codigo_alfanumerico = #{codigo} and id_municipio = #{municipio}
+	</select>
+	<select id="conteoUsuario" resultType="Integer">
+	select nextval('encuestas.encuesta_edomex_usuarios_seq')
+	</select>
+	
+</mapper>

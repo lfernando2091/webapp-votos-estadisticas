@@ -1,0 +1,65 @@
+package com.saganet.politik.database.match;
+
+import java.io.Serializable;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("MatchEO")
+public class MatchEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = -8023303647150043092L;
+	
+	private Integer id;
+	private String nombre;
+	private String objeto;
+	private String tipo;
+	private String estatus;
+	
+	@Override
+	public String toString() {
+		return "MatchEO [id=" + id + ", nombre=" + nombre + ", objeto=" + objeto + ", tipo=" + tipo + ", estatus="
+				+ estatus + "]";
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getObjeto() {
+		return objeto;
+	}
+
+	public void setObjeto(String objeto) {
+		this.objeto = objeto;
+	}
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+	public String getEstatus() {
+		return estatus;
+	}
+
+	public void setEstatus(String estatus) {
+		this.estatus = estatus;
+	}
+	
+}

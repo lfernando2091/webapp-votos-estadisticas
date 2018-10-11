@@ -1,0 +1,43 @@
+package com.saganet.politik.database.eventos;
+
+
+import com.saganet.politik.database.mdm.PersonaEO;
+import com.saganet.politik.modelos.JavaBeanT;
+
+import java.io.Serializable;
+import org.apache.ibatis.type.Alias;
+
+
+@Alias("AsistenteEO")
+public class AsistenteEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private Integer id;
+	private EventoSocialEO evento;
+	private PersonaEO persona;
+	@Override
+	public String toString() {
+		return "AsistenteEO [id=" + id + ", evento=" + evento + ", persona=" + persona + "]";
+	}
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public EventoSocialEO getEvento() {
+		return evento;
+	}
+	public void setEvento(EventoSocialEO evento) {
+		this.evento = evento;
+	}
+	public PersonaEO getPersona() {
+		return persona;
+	}
+	public void setPersona(PersonaEO persona) {
+		this.persona = persona;
+	}
+	
+	
+	
+	
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.admin.tablasContactos">
+	<cache />
+	
+	<resultMap type="TablaContactoEO" id="tablaContacto">
+		<id column="TablaContactoEO_id" property="id" javaType="Integer" />
+		<result column="TablaContactoEO_tabla" property="tabla" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			pkey		TablaContactoEO_id, 
+			tabla		TablaContactoEO_tabla
+  		FROM encuestas.tablas_contactos
+	</sql>
+	
+	<select id="listado" resultMap="tablaContacto">
+		<include refid="query" />
+		order by pkey
+	</select>
+
+</mapper>

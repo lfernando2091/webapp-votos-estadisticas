@@ -1,0 +1,19 @@
+package com.saganet.politik.dominios_dm;
+
+public enum CatPriPrdDO {
+	PRI("PRI"),
+	PRD("PRD"),
+	NO_SABE ("No sabe"),
+	NO_CONTESTA("No contesta");
+	
+	private final String nombre;
+
+	private CatPriPrdDO(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+	
+}

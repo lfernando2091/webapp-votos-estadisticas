@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="AdministracionRolesC.modelo()" result="viewScope.modelo" />
+		</on-entry>
+		<transition on="agregar" to="agregarEditar">
+			<evaluate expression="AdministracionRolesC.nuevo()" result="flowScope.rolCRUD" />
+		</transition>
+	</view-state>
+
+	<view-state id="agregarEditar">
+		<transition on="guardar" to="fin">
+			<evaluate expression="AdministracionRolesC.insertarActualizar(flowScope.rolCRUD)" />
+			<set name="flowScope.rolCRUD" value="null" />
+		</transition>
+		<transition on="cancelar" to="fin">
+			<set name="flowScope.rolCRUD" value="null" />
+		</transition>
+	</view-state>
+	
+	<end-state id="fin" />
+</flow>

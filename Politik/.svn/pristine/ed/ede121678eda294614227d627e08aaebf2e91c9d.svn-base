@@ -1,0 +1,32 @@
+package com.saganet.politik.components.administracion;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.components.log.BitacorasC;
+
+@Component("AvisosC")
+public class AvisosC {
+	@Autowired
+	SqlSession sqlSession;
+	@Autowired
+	BitacorasC bitacora;
+	private String mensaje;	
+	public AvisosC(){
+		super();
+	}
+	
+	public String getMensaje() {
+		return mensaje;
+	}
+	public void setMensaje(String mensaje) {
+		this.mensaje = mensaje;
+	}
+	
+	
+	public String valor(){
+		mensaje = sqlSession.selectOne("administracion.avisos.mostrar");
+		return mensaje;
+	}
+}

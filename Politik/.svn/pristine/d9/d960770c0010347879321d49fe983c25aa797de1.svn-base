@@ -1,0 +1,437 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+xmlns:f="http://java.sun.com/jsf/core"
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ps="http://primefaces.org/spark"
+xmlns:ui="http://java.sun.com/jsf/facelets"
+xmlns:p="http://primefaces.org/ui"
+xmlns:sec="http://www.springframework.org/security/tags">
+
+<h:form enctype="multipart/form-data">
+<sec:authorize ifAllGranted="ROLE_MOSTRAR_MENU">
+<ps:menu>
+
+<sec:authorize ifAllGranted="CAPTURA_ESTRUCTURAS_V2">
+<p:submenu icon="menuEstructura">
+<p:menuitem value="Captura" url="/app/estructurasEdoMex" icon="fa fa-table"/>
+</p:submenu>
+<p:separator />
+</sec:authorize>
+
+<sec:authorize ifAllGranted="ROLE_CATALOGOS">
+<p:submenu icon="menuCatalogos">
+<p:menuitem value="Partidos Políticos" icon="fa fa-archive" url="/app/catalogos/partidos" />
+<sec:authorize ifAllGranted="ROLE_CATALOGOS_DEP_PROG">
+<p:submenu label="Dependencias" icon="fa fa-building">
+<p:menuitem value="Listado" url="/app/catalogos/dependencias" />
+<p:menuitem value="Programas" url="/app/catalogos/programas" />
+</p:submenu>
+</sec:authorize>
+<p:menuitem value="Programas de Promoción" url="/app/estructuras/programasPromocion" rendered="#{sec:areAllGranted('ROLE_DEVELOPER')}" icon="fa fa-building " />
+<p:menuitem value="Legislaturas" icon="fa fa-bank" url="/app/estructuras/legislaturas" rendered="#{sec:areAllGranted('ROLE_DEVELOPER')}" />
+</p:submenu>
+</sec:authorize>
+
+<sec:authorize ifAllGranted="ROLE_CATALOGOS_GEOGRAFICOS">
+<p:separator />
+<p:submenu icon="menuCartografia">
+<p:menuitem value="Entidades Federativas" icon="fa fa-caret-right" url="/app/catalogos/entidades" />
+<p:menuitem value="Distritos Federales" icon="fa fa-caret-right" url="/app/catalogos/dFederales" />
+<p:menuitem value="Distritos Locales" icon="fa fa-caret-right" url="/app/catalogos/dLocales" />
+<p:menuitem value="Municipios" icon="fa fa-caret-right" url="/app/catalogos/municipios" />
+<p:menuitem value="Secciones" icon="fa fa-caret-right" url="/app/catalogos/secciones" />
+<p:menuitem value="Geozonas" icon="fa fa-caret-right" url="/app/catalogos/geozonas" />
+<p:menuitem value="Reportes" icon="fa fa-caret-right" url="/app/cartografia/reportes" />
+</p:submenu>
+</sec:authorize>
+
+<sec:authorize ifAllGranted="ROLE_MDM">
+<p:menuitem url="/app/mdm/perfiles" icon="menuBuscador" />
+</sec:authorize>
+
+<sec:authorize ifAllGranted="ROLE_ENCUESTAS_SUPERVISOR_EDOMEX">
+<p:submenu label="Supervisor" rendered="false">
+<p:menuitem value="Encuestadores" url="/app/entrevistas/edomex2017/supervisores" icon="fa fa-pencil-square" />
+<p:menuitem value="Captura" url="/app/entrevistas/edomex2017" icon="fa fa-pencil-square" />
+</p:submenu>
+</sec:authorize>
+
+
+<sec:authorize ifAllGranted="ROLE_ESTRUCTURAS">
+<p:separator />
+<p:submenu icon="menuOperacionPolitica">
+<p:menuitem value="Elecciones" url="/app/catalogos/elecciones"
+icon="fa fa-pencil-square" />
+<sec:authorize ifAllGranted="ROLE_CRONOGRAMA">
+<p:menuitem value="Linea del Tiempo"
+url="/app/cronograma/timeline" icon="fa fa-calendar" />
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_ESTRUCTURAS">
+<p:submenu label="Estructura" icon="fa fa-building">
+<p:menuitem value="Estructura 2018"
+url="/app/estructuras/reportes/desglose"
+rendered="#{sec:areAllGranted('ROLE_ESTRUCTURAS_REPORTES')}" />
+<p:menuitem value="Representantes" url="/app/estructuras/figuras"
+rendered="#{sec:areAllGranted('ROLE_ESTRUCTURAS_FIGURAS')}" />
+<p:menuitem value="Estructuras" url="/app/estructuras/estructuras" />
+<p:menuitem value="Captura" url="/app/estructuras/captura"
+rendered="#{sec:areAllGranted('ROLE_ESTRUCTURAS_CAPTURA')}" />
+<p:menuitem value="Reportes" url="/app/estructuras/reportes"
+rendered="#{sec:areAllGranted('ROLE_ESTRUCTURAS_REPORTES')}" />
+
+</p:submenu>
+</sec:authorize>
+
+
+</p:submenu>
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_BIBLIOTECA">
+<p:separator />
+<p:submenu icon="menuBiblioteca">
+<p:menuitem value="Archivos" url="/app/biblioteca" icon="fa fa-files-o" />
+<sec:authorize ifAllGranted="ROLE_IMPORTACIONES">
+<p:menuitem value="Importaciones" url="/app/importaciones" icon="fa fa-database" />
+</sec:authorize>
+</p:submenu>
+</sec:authorize>
+
+<sec:authorize ifAllGranted="ROLE_ENCUESTAS">
+<p:separator />
+<p:submenu icon="menuEncuestas">
+<p:menuitem value="Administración" url="/app/entrevistas/admin" icon="fa fa-wrench" />
+<p:menuitem value="Captura" url="/app/entrevistas/captura" icon="fa fa-phone" />
+</p:submenu>
+</sec:authorize>
+
+
+
+<sec:authorize ifAllGranted="ROLE_ESTADISTICAS">
+<p:separator />
+<p:submenu icon="menuEstadisticas">
+<p:menuitem value="Reportes" url="/app/estadisticas/reportes" icon="fa fa-table"/>
+<p:menuitem value="Variables" url="/app/estadisticas/variables" icon="fa fa-edit"/>
+</p:submenu>
+</sec:authorize>
+
+<sec:authorize ifAllGranted="ROLE_EVENTOS">
+<p:separator />
+<p:submenu icon="menuEventos">
+<p:menuitem value="Calendario" url="/app/eventos/calendario" icon="fa fa-calendar-o" />
+<sec:authorize ifAllGranted="ROLE_DEVELOPER">
+<p:menuitem value="Mapa" url="/app/eventos/mapa" icon="fa fa-map-marker" />
+</sec:authorize>
+<p:menuitem value="Programar" url="/app/eventos" icon="fa fa-edit"/>
+<p:menuitem value="Eventos Realizados"
+url="/app/eventos/realizados" icon="fa fa-check-square"/>
+<sec:authorize ifAllGranted="ROLE_EVENTOS_REPORTE">
+<p:menuitem value="Reporte Eventos" url="/app/eventos/reporte" icon="fa fa-reorder" />
+</sec:authorize>
+</p:submenu>
+</sec:authorize>
+
+
+<sec:authorize ifAllGranted="ROLE_DEVELOPER_QUITAR">
+<p:separator />
+<p:submenu label="Match">
+<p:menuitem value="Listado" url="/app/match" />
+</p:submenu>
+</sec:authorize>
+
+<sec:authorize ifAllGranted="ROLE_DISPOSITIVOS_MOVILES">
+
+<p:submenu icon="menuMoviles" rendered="false">
+<p:separator />
+<sec:authorize ifAllGranted="ROLE_DISPOSITIVOS_MOVILES_GENERAL">
+<p:menuitem value="Listado"
+url="/app/catalogos/dispositivos_moviles" />
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_DISPOSITIVOS_MOVILES_GENERAL">
+<p:menuitem value="Catalogo Comunicaciones"
+url="/app/sincronizacion_dm/catalogos/comunicacion" />
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_REPORTES_DM">
+<p:menuitem value="Estadísticas Generales"
+url="/app/sincronizacion_dm/estadisticas" />
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_REPORTES_DM">
+<p:menuitem value="Estadísticas Estado Encuesta"
+url="/app/sincronizacion_dm/estadisticas_estado_encuesta" />
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_REPORTES_DM_RESULTADOS_ENCUESTAS">
+<p:menuitem value="Resultados Encuestas"
+url="/app/sincronizacion_dm/resultados_entrevistas" />
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_REPORTES_DM_AVANCES">
+<p:menuitem value="Estadísticas Avances"
+url="/app/sincronizacion_dm/estadisticas_avances" />
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_REPORTES_DM">
+<p:menuitem value="Estadísticas Por Día"
+url="/app/sincronizacion_dm/estadisticas_por_dia" />
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_DISPOSITIVOS_MOVILES_GENERAL">
+<p:menuitem value="entrevistas"
+url="/app/sincronizacion_dm/entrevistas" />
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_DISPOSITIVOS_MOVILES_GENERAL">
+<p:menuitem value="Usuarios" url="/app/sincronizacion_dm/usuarios" />
+</sec:authorize>
+</p:submenu>
+</sec:authorize>
+
+<sec:authorize ifAllGranted="ROLE_NOMINA">
+<p:submenu icon="menuNomina">
+<p:menuitem value="Pago Quincenal"
+url="/app/sincronizacion_dm/nomina" />
+</p:submenu>
+</sec:authorize>
+
+
+<sec:authorize ifAllGranted="ROLE_ENCUESTAS_EDOMEX_CALL_CENTER">
+<p:submenu icon="fa fa-users" label="Encargados de Call Center">
+<p:menuitem value="Capturistas" url="/app/entrevistas/edomex2017/callCenter" icon="fa fa-user"/>
+<p:menuitem value="Encuestadores" url="/app/entrevistas/edomex2017/supervisores" icon="fa fa-pencil-square" />
+</p:submenu>
+</sec:authorize>
+
+<sec:authorize ifAllGranted="ROLE_REPORTES_ENTREVISTA_SUJETOS_SOCIALES">
+<p:separator />
+<p:submenu icon="menuEntrevistaSujetosSociales">
+<p:menuitem value="Entrevistadores Conectados" url="/app/entrevistas/edomex2017/encuestadoresConectados" icon="fa fa-wrench" />
+<p:menuitem value="Avance Entrevistas" url="/app/entrevistas/sujetosSociales/resultados" icon="fa fa-wrench" />
+<p:menuitem value="Avance Entrevistas General" url="/app/entrevistas/sujetosSociales/resultadosCompletos" icon="fa fa-wrench" />
+<p:menuitem value="Reporte De Levantamiento" url="/app/entrevistas/sujetosSociales/resultadosCompletosVertical" icon="fa fa-wrench" />
+<p:menuitem value="Mapas" url="/app/entrevistas/sujetosSociales/mapas" icon="fa fa-wrench" />
+<p:menuitem value="Calificación por Dia" url="/app/reportes/MetasResultados.pdf" icon="fa fa-user" target="_blank" rendered="true"/>
+<p:menuitem value="Calificación por Dia2" url="/app/reportes/MetasResultados2.pdf" icon="fa fa-user" target="_blank" rendered="true"/>
+</p:submenu>
+</sec:authorize>
+
+<sec:authorize ifAllGranted="ROLE_ENCUESTA_FUERZA_CIUDADANA_REPORTES">
+<p:separator />
+<p:submenu icon="menuLevantamiento">
+<p:menuitem value="Avance Entrevistas" url="/app/entrevistas/fuerzaCiudadana/resultados" icon="fa fa-wrench" />
+<p:menuitem value="Avance Entrevistas General" url="/app/entrevistas/fuerzaCiudadana/resultadosCompletos" icon="fa fa-wrench" />
+<p:menuitem value="Reporte De Levantamiento" url="/app/entrevistas/fuerzaCiudadana/resultadosCompletosVertical" icon="fa fa-wrench" />
+<p:menuitem value="Mapas" url="/app/entrevistas/fuerzaCiudadana/mapas" icon="fa fa-wrench" />
+<p:menuitem value="Calificación por Dia" url="/app/reportes/MetasResultados3.pdf" icon="fa fa-user" target="_blank" rendered="true"/>
+<p:menuitem value="Calificación por Dia2" url="/app/reportes/MetasResultados23.pdf" icon="fa fa-user" target="_blank" rendered="true"/>
+</p:submenu>
+</sec:authorize>
+
+
+
+<sec:authorize ifAllGranted="ROLE_ENTREVISTA_LEVANTAMIENTO_ROWAN_REPORTES">
+	<p:separator />
+	<p:submenu icon="menuLevantamientoROWAN">
+		<p:menuitem value="Avance Entrevistas" url="/app/entrevistas/levantamientoRowan/resultados" icon="fa fa-wrench" />
+		<p:menuitem value="Avance Entrevistas General" url="/app/entrevistas/levantamientoRowan/resultadosCompletos" icon="fa fa-wrench" />
+		<p:menuitem value="Reporte De Levantamiento" url="/app/entrevistas/levantamientoRowan/resultadosCompletosVertical" icon="fa fa-wrench" />
+		<p:menuitem value="Mapas" url="/app/entrevistas/levantamientoRowan/mapas" icon="fa fa-wrench" />
+		<p:menuitem value="Por Pregunta" url="/app/entrevistas/levantamientoRowan/porPregunta" icon="fa fa-wrench" />
+		<p:menuitem value="Por Pregunta 2" url="/app/entrevistas/levantamientoRowan/porPregunta2" icon="fa fa-wrench" />
+		<p:menuitem value="Respuestas Preguntas" url="/app/entrevistas/levantamientoRowan/todasPreguntas" icon="fa fa-wrench" />
+	</p:submenu>
+</sec:authorize>
+
+<sec:authorize ifAllGranted="ROLE_ENTREVISTA_HERMANOS_REPORTES">
+	<p:separator />
+	<p:submenu icon="menuHermanos">
+		<p:menuitem value="Avance Entrevistas" url="/app/entrevistas/hermanos/resultados" icon="fa fa-wrench" />
+		<p:menuitem value="Avance Entrevistas General" url="/app/entrevistas/hermanos/resultadosCompletos" icon="fa fa-wrench" />
+		<p:menuitem value="Reporte De Levantamiento" url="/app/entrevistas/hermanos/resultadosCompletosVertical" icon="fa fa-wrench" />
+		<p:menuitem value="Mapas" url="/app/entrevistas/hermanos/mapas" icon="fa fa-wrench" />
+		<p:menuitem value="Calificación por Dia" url="/app/reportes/MetasResultados4.pdf" icon="fa fa-user" target="_blank" rendered="true"/>
+		<p:menuitem value="Calificación por Dia2" url="/app/reportes/MetasResultados24.pdf" icon="fa fa-user" target="_blank" rendered="true"/>
+	</p:submenu>
+</sec:authorize>
+
+<sec:authorize access="hasAnyRole('ROLE_ENCUESTA_EDOMEX_REPORTES', 'ROLE_ENCUESTA_EDOMEX_RESPUESTAS')">
+<p:separator />
+<p:submenu icon="menuEntrevistaEDOMEX">
+<p:menuitem value="Entrevistadores Conectados" url="/app/entrevistas/edomex2017/encuestadoresConectados" icon="fa fa-wrench" />
+<p:menuitem value ="Respuestas" url="/app/entrevistas/edomex2017/resultados/preguntas/otros" icon="fa fa-pencil-square"/>
+<p:menuitem value="Avance Entrevistadores" url="/app/entrevistas/edomex2017/avanceEncuestadores" icon="fa fa-wrench" />
+<p:menuitem value="Avance Entrevistas" url="/app/entrevistas/edomex2017/resultados" icon="fa fa-wrench" />
+<sec:authorize ifAllGranted="ROLE_ENCUESTA_EDOMEX_RESPUESTAS_ADMIN">
+<p:menuitem value="Avance Entrevistas General" url="/app/entrevistas/edomex2017/resultadosCompletos" icon="fa fa-wrench" />
+<p:menuitem value="Reporte De Levantamiento" url="/app/entrevistas/edomex2017/resultadosCompletosVertical" icon="fa fa-wrench" />
+
+</sec:authorize>
+<p:menuitem value="Mapas Edo Mex 2017" url="/app/entrevistas/edomex2017/mapas" icon="fa fa-wrench" />
+<sec:authorize ifAllGranted="ROLE_AVANCE_ENTREVISTAS_NICK">
+<p:menuitem value="Avance Nick" url="/app/entrevistas/edomex2017/avanceNick" icon="fa fa-user"/>
+</sec:authorize>
+<p:menuitem rendered="false" value="Calificación Entrevistas" url="/app/entrevistas/edomex2017/calificacionEntrevistas" icon="fa fa-user"/>
+<sec:authorize ifAllGranted="ROLE_ENCUESTA_EDOMEX_RESPUESTAS_ADMIN">
+<p:menuitem value="Calificación por Dia" url="/app/reportes/MetasResultados.c++" icon="fa fa-user" target="_blank"/>
+<p:menuitem value="Calificación por Dia 2" url="/app/reportes/MetasResultados2.c++" icon="fa fa-user" target="_blank"/>
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_ENCUESTA_EDOMEX_REPORTES_ESPECIALES">
+<p:menuitem value="Promotores" url="/app/reportes/promotores.aspx" icon="fa fa-user" target="_blank"/>
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_ENCUESTA_EDOMEX_RESPUESTAS_ADMIN">
+<p:menuitem value="Reporte por Rango de Edad" url="/app/entrevistas/edomex2017/reportes/edad" icon="fa fa-user"/>
+<p:menuitem value="Reporte por Genero" url="/app/entrevistas/edomex2017/reportes/genero" icon="fa fa-user"/>
+<sec:authorize ifAllGranted="ROLE_ENCUESTA_EDOMEX_ENTREVISTADORES_ADMIN">
+<p:menuitem value="Captura" url="/app/entrevistas/edomex2017/reporteCallCenter" icon="fa fa-table"/>
+</sec:authorize>
+</sec:authorize>
+
+</p:submenu>
+
+
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_ENCUESTA_EDOMEX_ENTREVISTADORES_ADMIN">
+<p:submenu icon="menuEntrevistaVisitadosEDOMEX">
+<p:menuitem value="Captura " url="/app/entrevistas/edomex2017/reporteCallCenter2" icon="fa fa-table"/>
+<p:menuitem value="Resultados Regiones Sonora" url="/app/entrevistas/edomex2017/resultadosRegionesSonora" icon="fa fa-wrench" />
+<p:menuitem value="Resultados Regiones" url="/app/entrevistas/edomex2017/resultadosRegiones" icon="fa fa-wrench" />
+
+</p:submenu>
+</sec:authorize>
+<sec:authorize ifAllGranted="ROLE_ENCUESTA_EDOMEX_RESPUESTAS_ADMIN">
+<p:submenu icon="fa fa-users" label="Reportes" rendered="false">
+<p:menuitem value="Desglose 30 Abril" url="/app/reportes/desglose30Abril.aspx" icon="fa fa-user" target="_blank"/>
+</p:submenu>
+</sec:authorize>
+
+<sec:authorize ifAllGranted="ROLE_MOVILIZACION_REPORTES">
+<p:separator/>
+<p:submenu icon="menuCapturaMovilizador" rendered="true">
+<p:menuitem value="Exitosos No Exitosos" url="/app/diaD/reportes/exitososNoExitosos" icon="fa fa-check-square-o" />
+<p:menuitem value="Metas Seccionales" url="/app/diaD/reportes/metasSeccionales" icon="fa fa-check-square-o"/>
+<p:menuitem value="Metas Movilizadores" url="/app/diaD/reportes/metasMovilizadores" icon="fa fa-check-square-o" />
+<p:menuitem value="Metas Movilizados" url="/app/diaD/reportes/metasMovilizados" icon="fa fa-check-square-o" />
+<p:menuitem value="Listado Seccionales" url="/app/diaD/reportes/listadoSeccionales" icon="fa fa-check-square-o" />
+<p:menuitem value="Listado Movilizadores" url="/app/diaD/reportes/listadoMovilizadores" icon="fa fa-check-square-o" />
+
+<sec:authorize ifAllGranted="ROLE_DEVELOPER">
+<p:submenu label="Jornada">
+<p:menuitem value="Captura" url="/app/diaD/jornada/captura" icon="fa fa-check-square-o" />
+<p:menuitem value="Avance" url="/app/diaD/jornada/reportes/avance" icon="fa fa-check-square-o" />
+<p:menuitem value="Tablero" url="/app/diaD/jornada/reportes/tablero" icon="fa fa-check-square-o" />
+</p:submenu>
+</sec:authorize>
+</p:submenu>
+</sec:authorize>
+
+
+
+<sec:authorize ifAllGranted="ROLE_DIA_D_JORNADA">
+<p:submenu icon="menuJorrnada">
+<p:menuitem value="Captura" url="/app/diaD/jornada/captura" icon="fa fa-check-square-o" />
+<p:menuitem value="Avance Mapa" url="/app/diaD/jornada/reportes/avance" icon="fa fa-check-square-o" />
+<p:menuitem value="Avance Pastel" url="/app/diaD/jornada/reportes/avanceSinMapa" icon="fa fa-check-square-o" />
+<p:menuitem value="Tablero" url="/app/diaD/jornada/reportes/tablero" icon="fa fa-check-square-o" />
+</p:submenu>
+</sec:authorize>
+
+
+<sec:authorize ifAllGranted="ROLE_MOVILIZACION_CAPTURISTA">
+<p:separator/>
+<p:submenu icon="menuCapturaMovilizador" rendered="true">
+<p:menuitem value="Seccionales" url="/app/diaD/seccional" icon="fa fa-check-square-o" />
+<p:menuitem value="Movilizadores" url="/app/diaD/movilizadorCGF" icon="fa fa-check-square-o" />
+<sec:authorize ifAllGranted="ROLE_MOVILIZACION_ASIGNACION">
+<p:menuitem value="Asignación de movilizado" url="/app/diaD/movilizados" icon="fa fa-check-square-o" />
+</sec:authorize>
+</p:submenu>
+</sec:authorize>
+
+
+
+<sec:authorize ifAllGranted="ROLE_PREP">
+	<p:submenu icon="menuPREP">
+			<sec:authorize ifAllGranted="ROLE_PREP_CAPTURA">
+				<p:menuitem value="Captura" url="/app/diaD/prep" icon="fa fa-check-square-o" />
+			</sec:authorize>
+			<sec:authorize ifAllGranted="ROLE_PREP_REPORTE">
+				<p:menuitem value="Reporte" url="/app/diaD/prep/reporte" icon="fa fa-check-square-o" />
+				<p:menuitem value="Mapas" url="/app/diaD/prep/mapas" icon="fa fa-check-square-o" />
+			</sec:authorize>
+	</p:submenu>
+</sec:authorize>
+
+
+
+
+<sec:authorize ifAllGranted="ROLE_INCIDENCIAS">
+	<p:submenu label="INCIDENCIAS">
+			<p:menuitem value="Listado" url="/app/diaD/incidencias" icon="fa fa-check-square-o" />
+	</p:submenu>
+</sec:authorize>
+
+</ps:menu>
+</sec:authorize>
+</h:form>
+<h:outputStylesheet>
+.menuPREP:before{
+content:url("/politik/app/resources/iconos_menu/ICN_PREP.png");
+}
+.menuJorrnada:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Movilizacion.png");
+}
+.menuBuscador:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Buscador.png");
+}
+.menuEstructura:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Estructura.png");
+}
+.menuBiblioteca:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Biblioteca.png");
+}
+.menuCatalogos:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Catalogos.png");
+}
+.menuCartografia:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Cartografia.png");
+}
+.menuNomina:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Nomina.png");
+}
+.menuEncuestas:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Entrevistas.png");
+}
+
+.menuEstadisticas:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Estadisticas.png");
+}
+
+.menuLevantamiento:before{
+content:url("/politik/app/resources/iconos_menu/ICN_LEVANTAMIENTO.png");
+}
+.menuEventos:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Eventos.png");
+}
+
+.menuMoviles:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Moviles.png");
+}
+
+.menuOperacionPolitica:before{
+content:url("/politik/app/resources/iconos_menu/ICN_OperacionPolitica.png");
+}
+.menuEntrevistaEDOMEX:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Entrevista1ravuelta.png");
+}
+.menuEntrevistaSujetosSociales:before{
+content:url("/politik/app/resources/iconos_menu/ICNEntrevista2daVuelta.png");
+}
+.menuMovilizacion:before{
+content:url("/politik/app/resources/iconos_menu/ICN_MovilizacionReportes.png");
+}
+.menuCapturaMovilizador:before{
+content:url("/politik/app/resources/iconos_menu/ICN_AsignacionCaptura.png");
+}
+.menuEntrevistaVisitadosEDOMEX:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Entrevistas_EDOMEX.png");
+}
+.menuHermanos:before{
+content:url("/politik/app/resources/iconos_menu/ICN_Entrevista_Hermanos.png");
+}
+.menuLevantamientoROWAN:before{
+content:url("/politik/app/resources/iconos_menu/ICN_LevantaRowan.png");
+}
+</h:outputStylesheet>
+</ui:composition>

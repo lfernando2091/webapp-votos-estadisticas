@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	<secured attributes="ROLE_ENTREVISTA_HERMANOS" />
+	<view-state id="buscar">
+		<on-entry>
+			<set name="flowScope.folioBusqueda" value="''"/>
+		<set name="flowScope.d" value="''"/>
+		</on-entry>
+		<transition on="buscar" to="capturaEncuesta">
+			<evaluate
+				expression="HermanosCapturaC.buscarId(flowRequestContext, flowScope.folioBusqueda)" />
+		</transition>
+		<transition on="noEncuestado" to="noEncuestado">
+			<evaluate
+				expression="HermanosCapturaC.buscarId(flowRequestContext, flowScope.folioBusqueda)" />
+		</transition>
+		<transition on="mandarDuplicado" to="capturaEncuesta">
+			<evaluate expression="HermanosCapturaC.buscaInterno(flowRequestContext, flowScope.d)" />
+		</transition>
+	</view-state>
+
+	<view-state id="capturaEncuesta">
+		<on-entry>
+			<set name="viewScope.modeloSiNoNsNc" value="DominiosModelosC.modeloSiNoNsNc()" />
+			<set name="viewScope.modeloPartidos" value="DominiosModelosC.modeloPartidosEdomex()" />
+			<set name="viewScope.modeloCandidatos" value="DominiosModelosC.modeloCandidatosEdomex()" />
+			<evaluate expression="DominiosModelosC.modeloResultadoEncuesta()" result="viewScope.modeloResultadoEncuesta" />
+			<set name="viewScope.modeloGeneros" value="DominiosModelosC.modeloGenero()" />
+			
+		</on-entry>
+		<transition on="insertar" to="fin">
+			<evaluate expression="HermanosCapturaC.guardar(flowRequestContext)" />
+		</transition>
+		<transition on="actualizar" to="fin">
+			<evaluate expression="HermanosCapturaC.actualizar(flowRequestContext)" />
+		</transition>
+		<transition on="buscarPersona" to="buscador">
+		
+		</transition>
+		<transition on="salir" to="fin" />
+	</view-state>
+	
+	<view-state id="noEncuestado">
+		<on-entry>
+			<set name="viewScope.modeloGeneros" value="DominiosModelosC.modeloGenero()" />
+			<set name="viewScope.modeloResultadoEncuestaNo" value="DominiosModelosC.modeloResultadoEncuestaNo()" />
+			<evaluate expression="HermanosCapturaC.modeloEntrevistadores()"
+				result="viewScope.modeloEntrevistadores" />
+		</on-entry>
+		<transition on="guardar" to="fin">
+			<evaluate expression="HermanosCapturaC.guardar(flowRequestContext)" />
+		</transition>
+		<transition on="actualizar" to="fin">
+			<evaluate expression="HermanosCapturaC.actualizar(flowRequestContext)" />
+		</transition>
+		<transition on="buscarPersona" to="buscadorNo"/>
+		<transition on="salir" to="fin" />
+	</view-state>
+	<end-state id="fin" />
+	
+	
+	
+	
+	    
+    <subflow-state id="buscador" subflow="mdm/buscadores/personas">
+		<input name="flag" value="true"/>
+		<transition on="personaLocalizada" to="capturaEncuesta">
+			<set name="flowScope.persona" value="conversationScope.persona" />
+			<evaluate expression="HermanosCapturaC.establecerPersona(flowRequestContext, flowScope.persona)"></evaluate>
+		</transition>
+		<transition on="personaNoLocalizada" to="capturaEncuesta" />
+	</subflow-state>
+	 <subflow-state id="buscadorNo" subflow="mdm/buscadores/personas">
+		<input name="flag" value="true"/>
+		<transition on="personaLocalizada" to="noEncuestado">
+			<set name="flowScope.persona" value="conversationScope.persona" />
+			<evaluate expression="HermanosCapturaC.establecerPersona(flowRequestContext, flowScope.persona)"></evaluate>
+		</transition>
+		<transition on="personaNoLocalizada" to="noEncuestado" />
+	</subflow-state>
+    
+
+</flow>

@@ -1,0 +1,73 @@
+package com.saganet.politik.database.catalogos;
+
+import java.io.Serializable;
+
+import com.saganet.politik.modelos.JavaBeanT;
+
+public class ProgramaPoblacionObjetivoEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = -7986315087266803532L;
+
+	 private Integer id;
+	 private Integer idPrograma;
+	 private String poblacion;
+	 private Integer beneficiariosProyectados;
+	 private String nick;
+	 private String fecha;
+	 
+	@Override
+	public String toString() {
+		return "ProgramaPoblacionObjetivoEO [id=" + id + ", idPrograma=" + idPrograma + ", poblacion=" + poblacion
+				+ ", beneficiariosProyectados=" + beneficiariosProyectados + ", nick=" + nick + ", fecha=" + fecha
+				+ "]";
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getIdPrograma() {
+		return idPrograma;
+	}
+
+	public void setIdPrograma(Integer idPrograma) {
+		this.idPrograma = idPrograma;
+	}
+
+	public String getPoblacion() {
+		return poblacion;
+	}
+
+	public void setPoblacion(String poblacion) {
+		this.poblacion = poblacion;
+	}
+
+	public Integer getBeneficiariosProyectados() {
+		return beneficiariosProyectados;
+	}
+
+	public void setBeneficiariosProyectados(Integer beneficiariosProyectados) {
+		this.beneficiariosProyectados = beneficiariosProyectados;
+	}
+
+	public String getNick() {
+		return nick;
+	}
+
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+
+	public String getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(String fecha) {
+		this.fecha = fecha;
+	}
+	 
+	
+}

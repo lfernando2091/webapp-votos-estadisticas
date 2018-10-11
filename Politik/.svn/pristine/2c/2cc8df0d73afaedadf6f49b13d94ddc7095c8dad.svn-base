@@ -1,0 +1,133 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Reportes" url="/app/estructuras/reportes" />
+						<p:menuitem value="Estructura Operativa 2018" action="regresar" />
+						<p:menuitem value="Desglose por Entidad"></p:menuitem>
+					</p:breadCrumb>
+            		
+            		<p:panel header="Estructura Operativa 2018 - Desglose por Entidad">
+            			<p:dataTable value="${tabla}" var="fila">
+            				<p:columnGroup type="header">
+            					<p:row>
+            						<p:column headerText="Entidad" rowspan="3" width="175" />
+            						<p:column headerText="Coordinadores" colspan="10" />
+            					</p:row>
+            					<p:row>
+            						<p:column headerText="Estatal" colspan="2" />
+            						<p:column headerText="Dtto. Federal" colspan="2" />
+            						<p:column headerText="Municipal" colspan="2" />
+            						<p:column headerText="Sección" colspan="2" />
+            						<p:column headerText="Casilla" colspan="2" />
+            					</p:row>
+            					<p:row>
+            						<p:column headerText="Meta" />
+            						<p:column headerText="Avance" />
+            						<p:column headerText="Meta" />
+            						<p:column headerText="Avance" />
+            						<p:column headerText="Meta" />
+            						<p:column headerText="Avance" />
+            						<p:column headerText="Meta" />
+            						<p:column headerText="Avance" />
+            						<p:column headerText="Meta" />
+            						<p:column headerText="Avance" />
+            					</p:row>
+            				</p:columnGroup>
+
+							<p:column>${fila.entidad}</p:column>
+							<p:column style="text-align: right;">
+								<h:outputText value="${fila.meta_73}">
+									<f:convertNumber integerOnly="true" />
+								</h:outputText>
+							</p:column>
+							<p:column style="text-align: right;">
+								<h:outputText value="${fila.avance_73}">
+									<f:convertNumber integerOnly="true" />
+								</h:outputText>
+							</p:column>
+							<p:column style="text-align: right;">
+								<h:outputText value="${fila.meta_74}">
+									<f:convertNumber integerOnly="true" />
+								</h:outputText>
+							</p:column>
+							<p:column style="text-align: right;">
+								<h:outputText value="${fila.avance_74}">
+									<f:convertNumber integerOnly="true" />
+								</h:outputText>
+							</p:column>
+							<p:column style="text-align: right;">
+								<h:outputText value="${fila.meta_75}">
+									<f:convertNumber integerOnly="true" />
+								</h:outputText>
+							</p:column>
+							<p:column style="text-align: right;">
+								<h:outputText value="${fila.avance_75}">
+									<f:convertNumber integerOnly="true" />
+								</h:outputText>
+							</p:column>
+							<p:column style="text-align: right;">
+								<h:outputText value="${fila.meta_76}">
+									<f:convertNumber integerOnly="true" />
+								</h:outputText>
+							</p:column>
+							<p:column style="text-align: right;">
+								<h:outputText value="${fila.avance_76}">
+									<f:convertNumber integerOnly="true" />
+								</h:outputText>
+							</p:column>
+							<p:column style="text-align: right;">
+								<h:outputText value="${fila.meta_77}">
+									<f:convertNumber integerOnly="true" />
+								</h:outputText>
+							</p:column>
+							<p:column style="text-align: right;">
+								<h:outputText value="${fila.avance_77}">
+									<f:convertNumber integerOnly="true" />
+								</h:outputText>
+							</p:column>
+							
+							<p:columnGroup type="footer">
+								<p:row>
+									<p:column style="text-align: right;" footerText="Totales:" />
+									<p:column style="text-align: right;"  footerText="${tMeta[0]}" />
+									<p:column style="text-align: right;"  footerText="${tAvance[0]}" />
+									<p:column style="text-align: right;"  footerText="${tMeta[1]}" />
+									<p:column style="text-align: right;"  footerText="${tAvance[1]}" />
+									<p:column style="text-align: right;"  footerText="${tMeta[2]}" />
+									<p:column style="text-align: right;"  footerText="${tAvance[2]}" />
+									<p:column style="text-align: right;"  footerText="${tMeta[3]}" />
+									<p:column style="text-align: right;"  footerText="${tAvance[3]}" />
+									<p:column style="text-align: right;"  footerText="${tMeta[4]}" />
+									<p:column style="text-align: right;"  footerText="${tAvance[4]}" />
+								</p:row>
+							</p:columnGroup>
+
+						</p:dataTable>
+						
+						<f:facet name="footer">
+							<p:commandLink action="regresar" immediate="true" >
+									<p:graphicImage value="/resources/botones/REGRESAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Regresar" action="regresar" immediate="true" /> -->
+						</f:facet>
+            		</p:panel>
+            		
+            		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

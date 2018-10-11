@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+		
+		<view-state id="listado">
+			<on-entry>
+				<evaluate expression="DominiosModelosC.nivelesReporte()" result="viewScope.modeloNiveles"/>
+				<evaluate expression="HermanosResultadoEncuestas.modelo(viewScope.modeloNiveles.seleccionado)" result="viewScope.modelo"/>
+				<evaluate expression="HermanosResultadoEncuestas.filaTotales(viewScope.modelo)" result="viewScope.filaTotal"/>
+				<evaluate expression="HermanosResultadoEncuestas.generaGrafica(viewScope.modelo.seleccionado,viewScope.modeloNiveles.seleccionado)" result="viewScope.chart"/>
+			</on-entry>
+			<transition on="actualizar">
+				<evaluate expression="HermanosResultadoEncuestas.modelo(viewScope.modeloNiveles.seleccionado)" result="viewScope.modelo"/>
+				<evaluate expression="HermanosResultadoEncuestas.filaTotales(viewScope.modelo)" result="viewScope.filaTotal"/>
+				<evaluate expression="HermanosResultadoEncuestas.generaGrafica(viewScope.modelo.seleccionado,viewScope.modeloNiveles.seleccionado)" result="viewScope.chart"/>
+			</transition>
+			<transition on="actualizarGrafica">
+				<evaluate expression="HermanosResultadoEncuestas.generaGrafica(viewScope.modelo.seleccionado,viewScope.modeloNiveles.seleccionado)" result="viewScope.chart"/>
+			</transition>
+		</view-state>
+</flow>

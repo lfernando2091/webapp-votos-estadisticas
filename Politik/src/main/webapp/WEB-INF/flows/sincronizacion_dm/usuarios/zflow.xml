@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+		<secured attributes="ROLE_DISPOSITIVOS_MOVILES"/>
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="UsuarioC.modelo()" result="viewScope.modelo"/>
+		</on-entry>
+		<transition on="agregar" to="edicion_agregado">
+			<evaluate expression="UsuarioC.crearUsuario()" result="requestScope.usuario"/>
+		</transition>
+		<transition on="editar" to="edicion_agregado">
+			<set name="requestScope.usuario" value="viewScope.modelo.seleccionado"/>
+		</transition>
+	</view-state>
+	
+	<view-state id="edicion_agregado">
+		<on-entry>
+			<set name="viewScope.usuario" value="requestScope.usuario"/>
+			<evaluate expression="UsuarioC.listadoRegiones()" result="viewScope.listadoRegiones"/>
+			<evaluate expression="UsuarioC.listadoEstatus()" result="viewScope.listadoEstatus"/>
+		</on-entry>
+		<transition on="guardar" to="fin">
+			<evaluate expression="UsuarioC.editarUsuario(viewScope.usuario)"/>
+		</transition>
+		<transition on="agregar" to="fin">
+			<evaluate expression="UsuarioC.agregarUsuario(viewScope.usuario)"/>
+		</transition>
+		<transition on="cancelar" to="fin"/>
+	</view-state>
+	
+	<end-state id="fin"/>
+</flow>

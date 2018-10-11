@@ -1,0 +1,147 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Resultados Entrevistas General">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nivel :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloNiveles.seleccionado}" style="width:300px">
+										<p:ajax event="itemSelect" onsuccess="actualizar()" />
+					            		<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+									</p:selectOneMenu>
+							</p:column>
+						</p:panelGrid>
+						<p:panel id="gridEncuestas">
+							<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}" summary="true"
+									selectionMode="single" paginator="true" rows="15" id="tablaResultados" paginatorPosition="bottom">
+									
+									<p:column headerText="Region"  width="200" filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.nombreRegion}">
+										<p:outputLabel value="${fila.nombreRegion}"/>
+									</p:column>
+									<p:column headerText="Municipio"  width="200" filterable="true" filterMatchMode="contains" filterStyle="width:90%;"
+										 filterBy="${fila.municipio} ${fila.nombreMunicipio}" rendered="${modeloNiveles.seleccionado!='REGION'}">
+										<p:outputLabel value="${fila.municipio} ${fila.nombreMunicipio}"/>
+									</p:column>
+									<p:column headerText="N° Municipios" width="150" rendered="${modeloNiveles.seleccionado=='REGION'}">
+										<p:outputLabel value="${fila.numMunicipio}"/>
+									</p:column>
+									<p:column headerText="Seccion" width="150" filterable="true" filterMatchMode="contains" filterStyle="width:90%;"
+										 filterBy="${fila.seccion}" rendered="${modeloNiveles.seleccionado=='SECCION'}">
+										<p:outputLabel value="${fila.seccion}"/>
+									</p:column>
+									<p:column headerText="N° Secciones" width="100" rendered="${modeloNiveles.seleccionado!='SECCION'}">
+										<p:outputLabel value="${fila.numSeccion}"/>
+									</p:column>
+									
+									
+									<p:column headerText="Realizadas Coordinadores" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.totalCoordinadores}"/>
+									</p:column>
+									<p:column headerText="Esperadas Coordinadores" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.metaCoordinadores}"/>
+									</p:column>
+									<p:column headerText="% Esperadas Coordinadores" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeMetaCoordinadores!=null?fila.porcentajeMetaCoordinadores:'0.00%'}"/>
+									</p:column>
+									<p:column headerText="Meta Coordinadores" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.totalTotalCoordinadores}"/>
+									</p:column>
+									<p:column headerText="% Meta Coordinadores" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeTotalCoordinadores!=null?fila.porcentajeTotalCoordinadores:'0.00%'}"/>
+									</p:column>
+									
+									<p:column headerText="Realizadas Negativos" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.totalNegativo}"/>
+									</p:column>
+									<p:column headerText="Esperadas Negativos" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.metaNegativo}"/>
+									</p:column>
+									<p:column headerText="% Esperadas Negativos" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeMetaNegativo!=null?fila.porcentajeMetaNegativo:'0.00%'}"/>
+									</p:column>
+									<p:column headerText="Meta Negativos" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.totalTotalNegativo}"/>
+									</p:column>
+									<p:column headerText="% Meta Negativos" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeTotalNegativo!=null?fila.porcentajeTotalNegativo:'0.00%'}"/>
+									</p:column>
+											
+									<p:column headerText="Realizadas Total" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.total}"/>
+									</p:column>
+									<p:column headerText="Esperadas Total" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.meta}"/>
+									</p:column>
+									<p:column headerText="% Esperadas Total" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeMeta!=null?fila.porcentajeMeta:'0.00%'}"/>
+									</p:column>
+									<p:column headerText="Meta Total" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.totalTotal}"/>
+									</p:column>
+									<p:column headerText="% Meta Total" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeTotal!=null?fila.porcentajeTotal:'0.00%'}"/>
+									</p:column>
+									<p:columnGroup type="footer">
+										 <p:row>
+								            <p:column colspan="3" style="text-align:right" footerText="Total:" />
+								            
+								            
+											<p:column footerText="${filaTotal.totalCoordinadores}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.metaCoordinadores}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeMetaCoordinadores}"  style="text-align:center"/>
+											<p:column footerText="${filaTotal.totalTotalCoordinadores}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeTotalCoordinadores}"  style="text-align:center"/>
+								            
+											<p:column footerText="${filaTotal.totalNegativo}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.metaNegativo}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeMetaNegativo}"  style="text-align:center"/>
+											<p:column footerText="${filaTotal.totalTotalNegativo}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeTotalNegativo}"  style="text-align:center"/>
+								            
+											<p:column footerText="${filaTotal.total}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.meta}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeMeta}"  style="text-align:center"/>
+											<p:column footerText="${filaTotal.totalTotal}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeTotal}"  style="text-align:center"/>
+										</p:row>
+							        </p:columnGroup>
+									<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tablaResultados" fileName="ResultadosEntrevistas"/>
+										</h:commandLink>
+									</f:facet>
+							</p:dataTable>
+						</p:panel>
+					</p:panel>	
+
+					<p:remoteCommand name="actualizar" action="actualizar" update="gridEncuestas"/>
+					
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

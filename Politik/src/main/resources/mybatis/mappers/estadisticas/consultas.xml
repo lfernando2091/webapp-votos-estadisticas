@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estadisticas.consultas">
+	<cache />
+	
+	<resultMap type="ConsultaEO" id="consulta">
+		<id column="ConsultaEO_id" property="id" javaType="Integer"/>
+		<result column="ConsultaEO_idVariable" property="idVariable" javaType="Integer"/>
+		<result column="ConsultaEO_operador" property="operador" javaType="com.saganet.politik.dominios.OperadoresDO"/>
+		<result column="ConsultaEO_campoEntidad" property="campoEntidad" javaType="String"/>
+		<result column="ConsultaEO_campoDFederal" property="campoDFederal" javaType="String"/>
+		<result column="ConsultaEO_campoDLocal" property="campoDLocal" javaType="String"/>
+		<result column="ConsultaEO_campoMunicipio" property="campoMunicipio" javaType="String"/>
+		<result column="ConsultaEO_campoSeccion" property="campoSeccion" javaType="String"/>
+		<result column="ConsultaEO_campolocalidad" property="campoLocalidad" javaType="String"/>
+		<result column="ConsultaEO_campoManzana" property="campoManzana" javaType="String"/>
+		<result column="ConsultaEO_condicion" property="condicion" javaType="String"/>
+		<association property="tabla" resultMap="catalogos.tablas.tabla" />
+		<association property="campo" resultMap="catalogos.camposTabla.campoTabla" />
+	</resultMap>
+	
+	<select id="listado" resultMap="consulta">
+		SELECT 
+			ConsultaEO.id_consulta 				ConsultaEO_id, 
+			ConsultaEO.id_variable 				ConsultaEO_idVariable, 
+			ConsultaEO.operador 				ConsultaEO_operador, 
+			ConsultaEO.campo_entidad 			ConsultaEO_campoEntidad,
+			ConsultaEO.campo_dfederal 			ConsultaEO_campoDFederal, 
+			ConsultaEO.campo_dlocal 			ConsultaEO_campoDLocal, 
+			ConsultaEO.campo_municipio 			ConsultaEO_campoMunicipio, 
+			ConsultaEO.campo_seccion 			ConsultaEO_campoSeccion,
+			ConsultaEO.campo_localidad 			ConsultaEO_campoLocalidad, 
+			ConsultaEO.campo_manzana 			ConsultaEO_campoManzana,
+			ConsultaEO.condicion 				ConsultaEO_condicion,
+			TablaEO.id_tabla					TablaEO_id,
+			TablaEO.tabla						TablaEO_tabla,
+			TablaEO.descripcion					TablaEO_descripcion,
+			TablaEO.campo_particion				TablaEO_campoParticion,
+			TablaEO.particionada				TablaEO_particionada,
+			TablaParticionEO.id_tabla_particion	TablaParticionEO_id,
+			TablaParticionEO.id_tabla			TablaParticionEO_idTabla,
+			TablaParticionEO.id_particion		TablaParticionEO_idParticion,
+			TablaParticionEO.particion			TablaEO_particion,
+			CampoTablaEO.ordinal_position 		CampoTablaEO_id, 
+			CampoTablaEO.column_name 			CampoTablaEO_nombre, 
+			CampoTablaEO.data_type 				CampoTablaEO_tipo
+  		FROM estadisticas.z_consultas ConsultaEO
+  		JOIN catalogos.tablas TablaEO on (ConsultaEO.id_tabla = TablaEO.id_tabla)
+  		LEFT JOIN catalogos.tablas_particiones TablaParticionEO on (TablaEO.id_tabla = TablaParticionEO.id_tabla)
+  		LEFT JOIN information_schema.columns CampoTablaEO on (CampoTablaEO.table_schema = 'warehouse' and CampoTablaEO.table_name = TablaEO.tabla and CampoTablaEO.column_name = ConsultaEO.campo)
+	</select>
+	
+	<insert id="insertar" parameterType="ConsultaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT nextval('estadisticas.z_consultas_id_consulta_seq'::regclass)
+		</selectKey>
+		
+		INSERT INTO estadisticas.z_consultas(id_consulta, id_variable, id_tabla, campo, operador, campo_entidad, 
+            campo_dfederal, campo_dlocal, campo_municipio, campo_seccion, 
+            campo_localidad, campo_manzana, condicion)
+    	VALUES (#{id}, #{idVariable}, #{tabla.id}, #{campo.nombre}, #{operador}, #{campoEntidad}, 
+    		#{campoDFederal}, #{campoDLocal}, #{campoMunicipio}, #{campoSeccion}, 
+    		#{campoLocalidad}, #{campoManzana}, #{condicion});
+		
+	</insert>
+</mapper>

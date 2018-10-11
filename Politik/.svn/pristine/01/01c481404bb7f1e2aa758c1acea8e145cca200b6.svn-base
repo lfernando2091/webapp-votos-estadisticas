@@ -1,0 +1,373 @@
+package com.saganet.politik.components.encuestas.fuerzaCiudadana;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import org.apache.ibatis.session.SqlSession;
+import org.primefaces.model.chart.Axis;
+import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.BarChartModel;
+import org.primefaces.model.chart.ChartSeries;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.GeozonaEO;
+import com.saganet.politik.database.catalogos.GeozonaParticionEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.dominios.NivelesReporteDO;
+import com.saganet.politik.dominios.NivelesReporteVerticalDO;
+import com.saganet.politik.modelos.JavaBeanT;
+import com.saganet.politik.modelos.Modelo;
+import com.saganet.politik.database.encuestas.fuerzaCiudadana.ResultadoEncuestaCompletoEO;
+import com.saganet.politik.database.encuestas.fuerzaCiudadana.ResultadoEncuestaCompletoVerticalEO;
+
+@Component("FuerzaCiudadanaResultadoEncuestasCompleto")
+public class ResultadoEncuestasCompletoC {
+	@Autowired
+	SqlSession sqlSession;
+	private static final Logger logger = LoggerFactory.getLogger(ResultadoEncuestasCompletoC.class);
+
+	public Modelo<ResultadoEncuestaCompletoEO> modelo(NivelesReporteDO nivel) {
+		Modelo<ResultadoEncuestaCompletoEO> tabla;
+		List<ResultadoEncuestaCompletoEO> listado=new ArrayList<>();
+		HashMap<String, Object> mapa=new HashMap<>();
+		mapa.put("programas", getUsuario().getProgamas2());
+		UsuarioEO usuario=getUsuario();
+		if (usuario.getTerritorios()!=null) {
+			switch (usuario.getNivel()) {
+				case GEOZONA:
+					List<GeozonaParticionEO> geozonasParticiones=new ArrayList<>();
+					logger.debug("Territorio : {} ", usuario.getTerritorios());
+					for (JavaBeanT geozona : usuario.getTerritorios()) {
+						geozonasParticiones.add((GeozonaParticionEO)geozona);
+					} 
+					mapa.put("regiones",geozonasParticiones);
+				break;
+				default:
+				break;
+			}
+		}
+		if (nivel!=null) {
+			switch (nivel) {
+				case REGION:
+					listado=sqlSession.selectList("encuestas.fuerzaCiudadana.resultadoEncuestasCompletos.resultadoRegionPrograma",mapa);			
+				break;
+				case MUNICIPIO:
+					listado=sqlSession.selectList("encuestas.fuerzaCiudadana.resultadoEncuestasCompletos.resultadoMunicipioPrograma",mapa);
+				break;
+				case SECCION:
+					listado=sqlSession.selectList("encuestas.fuerzaCiudadana.resultadoEncuestasCompletos.resultadoSeccionPrograma",mapa);
+				break;
+			}
+		}
+		tabla=new Modelo<>(listado);
+		return tabla;
+	}
+		
+	public ResultadoEncuestaCompletoEO filaTotales(Modelo<ResultadoEncuestaCompletoEO> modelo){
+		ResultadoEncuestaCompletoEO total=new ResultadoEncuestaCompletoEO();		
+		total.setExitoso(0);
+		total.setMenorDeEdad(0);
+		total.setNoHuboQuienContestara(0);
+		total.setNoQuisieronContestar(0);
+		total.setDomicilioNoEncontrado(0);
+		total.setOtro(0);		
+		total.setTotal(0);
+		total.setTotalTotal(0);
+		total.setMeta(0);
+		
+		total.setExitosoNegativo(0);
+		total.setMenorDeEdadNegativo(0);
+		total.setNoHuboQuienContestaraNegativo(0);
+		total.setNoQuisieronContestarNegativo(0);
+		total.setDomicilioNoEncontradoNegativo(0);
+		total.setOtroNegativo(0);		
+		total.setTotalNegativo(0);
+		total.setTotalTotalNegativo(0);
+		total.setMetaNegativo(0);		
+		
+		
+		total.setExitosoCoordinadores(0);
+		total.setMenorDeEdadCoordinadores(0);
+		total.setNoHuboQuienContestaraCoordinadores(0);
+		total.setNoQuisieronContestarCoordinadores(0);
+		total.setDomicilioNoEncontradoCoordinadores(0);
+		total.setOtroCoordinadores(0);		
+		total.setTotalCoordinadores(0);
+		total.setTotalTotalCoordinadores(0);
+		total.setMetaCoordinadores(0);	
+		
+		for (ResultadoEncuestaCompletoEO actual : modelo.getListado()) {
+			total.setExitoso(total.getExitoso()+actual.getExitoso());
+			total.setMenorDeEdad(total.getMenorDeEdad()+actual.getMenorDeEdad());
+			total.setNoHuboQuienContestara(total.getNoHuboQuienContestara()+actual.getNoHuboQuienContestara());
+			total.setNoQuisieronContestar(total.getNoQuisieronContestar()+actual.getNoQuisieronContestar());
+			total.setDomicilioNoEncontrado(total.getDomicilioNoEncontrado()+actual.getDomicilioNoEncontrado());
+			total.setOtro(total.getOtro()+actual.getOtro());			
+			total.setTotal(total.getTotal()+actual.getTotal());
+			total.setTotalTotal(total.getTotalTotal()+actual.getTotalTotal());
+			total.setMeta(total.getMeta()+actual.getMeta());			
+
+			total.setExitosoNegativo(total.getExitosoNegativo()+actual.getExitosoNegativo());
+			total.setMenorDeEdadNegativo(total.getMenorDeEdadNegativo()+actual.getMenorDeEdadNegativo());
+			total.setNoHuboQuienContestaraNegativo(total.getNoHuboQuienContestaraNegativo()+actual.getNoHuboQuienContestaraNegativo());
+			total.setNoQuisieronContestarNegativo(total.getNoQuisieronContestarNegativo()+actual.getNoQuisieronContestarNegativo());
+			total.setDomicilioNoEncontradoNegativo(total.getDomicilioNoEncontradoNegativo()+actual.getDomicilioNoEncontradoNegativo());
+			total.setOtroNegativo(total.getOtroNegativo()+actual.getOtroNegativo());			
+			total.setTotalNegativo(total.getTotalNegativo()+actual.getTotalNegativo());
+			total.setTotalTotalNegativo(total.getTotalTotalNegativo()+actual.getTotalTotalNegativo());
+			total.setMetaNegativo(total.getMetaNegativo()+actual.getMetaNegativo());
+
+			total.setExitosoCoordinadores(total.getExitosoCoordinadores()+actual.getExitosoCoordinadores());
+			total.setMenorDeEdadCoordinadores(total.getMenorDeEdadCoordinadores()+actual.getMenorDeEdadCoordinadores());
+			total.setNoHuboQuienContestaraCoordinadores(total.getNoHuboQuienContestaraCoordinadores()+actual.getNoHuboQuienContestaraCoordinadores());
+			total.setNoQuisieronContestarCoordinadores(total.getNoQuisieronContestarCoordinadores()+actual.getNoQuisieronContestarCoordinadores());
+			total.setDomicilioNoEncontradoCoordinadores(total.getDomicilioNoEncontradoCoordinadores()+actual.getDomicilioNoEncontradoCoordinadores());
+			total.setOtroCoordinadores(total.getOtroCoordinadores()+actual.getOtroCoordinadores());			
+			total.setTotalCoordinadores(total.getTotalCoordinadores()+actual.getTotalCoordinadores());
+			total.setTotalTotalCoordinadores(total.getTotalTotalCoordinadores()+actual.getTotalTotalCoordinadores());
+			total.setMetaCoordinadores(total.getMetaCoordinadores()+actual.getMetaCoordinadores());	
+			
+		}
+		return total;
+	}
+	
+	public BarChartModel generaGrafica(ResultadoEncuestaCompletoEO seleccionado, NivelesReporteDO nivel){
+		BarChartModel model = new BarChartModel();
+		ChartSeries completadas = new ChartSeries();
+        completadas.setLabel("Completadas");
+        completadas.set("Estatus", (seleccionado!=null?seleccionado.getExitoso():0));
+        ChartSeries noHuboQuienContestara = new ChartSeries();
+        noHuboQuienContestara.setLabel("No Hubo Quien Contestara");
+        noHuboQuienContestara.set("Estatus", (seleccionado!=null?seleccionado.getNoHuboQuienContestara():0));
+        ChartSeries menorDeEdad = new ChartSeries();
+        menorDeEdad.setLabel("Menor De Edad");
+        menorDeEdad.set("Estatus", (seleccionado!=null?seleccionado.getMenorDeEdad():0));
+        ChartSeries domicilioNoEncontrado = new ChartSeries();
+        domicilioNoEncontrado.setLabel("Domicilio No Encontrado");
+        domicilioNoEncontrado.set("Estatus", (seleccionado!=null?seleccionado.getDomicilioNoEncontrado():0));
+        ChartSeries noQuisieronContestar = new ChartSeries();
+        noQuisieronContestar.setLabel("No Quisieron Contestar");
+        noQuisieronContestar.set("Estatus", (seleccionado!=null?seleccionado.getNoQuisieronContestar():0));
+        ChartSeries otro = new ChartSeries();
+        otro.setLabel("Otro");
+        otro.set("Estatus", (seleccionado!=null?seleccionado.getOtro():0));
+        model.addSeries(completadas); 
+        model.addSeries(noHuboQuienContestara);  
+        model.addSeries(menorDeEdad);  
+        model.addSeries(domicilioNoEncontrado);  
+        model.addSeries(noQuisieronContestar);  
+        model.addSeries(otro);        
+        model.setLegendPosition("ne");
+        switch (nivel) {
+			case REGION:
+		        model.setTitle("Región : "+(seleccionado!=null?seleccionado.getNombreRegion():"")); 			
+			break;
+			case MUNICIPIO:
+		        model.setTitle("Municipio : "+(seleccionado!=null?seleccionado.getNombreMunicipio():"")); 			
+			break;
+			case SECCION:
+		        model.setTitle("Sección :"+(seleccionado!=null?seleccionado.getSeccion():"")); 			
+			break;
+		} 
+        model.setSeriesColors("3DC946,D5AC15,549F8E,103769,AA0B08,B6B9BA");
+        Axis yAxis = model.getAxis(AxisType.Y);
+        yAxis.setLabel("N° Encuestas");
+        yAxis.setMin(0);
+        Integer maximo=0;
+        if (seleccionado!=null) {
+            if (maximo<seleccionado.getExitoso()) {
+    			maximo=seleccionado.getExitoso();
+    		}
+            if (maximo<seleccionado.getNoHuboQuienContestara()) {
+    			maximo=seleccionado.getNoHuboQuienContestara();
+    		}
+            if (maximo<seleccionado.getMenorDeEdad()) {
+    			maximo=seleccionado.getMenorDeEdad();
+    		}
+            if (maximo<seleccionado.getDomicilioNoEncontrado()) {
+    			maximo=seleccionado.getDomicilioNoEncontrado();
+    		}
+            if (maximo<seleccionado.getNoQuisieronContestar()) {
+    			maximo=seleccionado.getNoQuisieronContestar();
+    		}
+            if (maximo<seleccionado.getOtro()) {
+    			maximo=seleccionado.getOtro();
+    		}   
+		}  
+        yAxis.setMax(maximo);
+		return model;
+	}
+	
+	public Modelo<ResultadoEncuestaCompletoVerticalEO> modeloVertical(NivelesReporteVerticalDO nivel, GeozonaParticionEO region, MunicipioEO municipio) {
+		List<ResultadoEncuestaCompletoEO> listado=new ArrayList<>();
+		if (nivel!=null) {
+			HashMap<String, Object> mapa=new HashMap<>();
+			mapa.put("programas", getUsuario().getProgamas2());
+			if (nivel.equals(NivelesReporteVerticalDO.REGION)) {
+				List<GeozonaParticionEO> geozonasParticiones=new ArrayList<>();
+				geozonasParticiones.add(region);
+				mapa.put("regiones",geozonasParticiones);
+			}
+			if (nivel.equals(NivelesReporteVerticalDO.MUNICIPIO)) {
+				List<MunicipioEO> municipios=new ArrayList<>();
+				municipios.add(municipio);
+				mapa.put("municipios",municipios);
+			}
+			listado=sqlSession.selectList("encuestas.fuerzaCiudadana.resultadoEncuestasCompletos.resultadoRegionPrograma",mapa);	
+		}
+		List<ResultadoEncuestaCompletoVerticalEO> listadoVertical=new ArrayList<>();
+		DecimalFormat numero = new DecimalFormat("#,##0");
+		
+		ResultadoEncuestaCompletoEO total=new ResultadoEncuestaCompletoEO();				
+		total.setExitoso(0);
+		total.setMenorDeEdad(0);
+		total.setNoHuboQuienContestara(0);
+		total.setNoQuisieronContestar(0);
+		total.setDomicilioNoEncontrado(0);
+		total.setOtro(0);		
+		total.setTotal(0);
+		total.setTotalTotal(0);
+		total.setMeta(0);		
+		total.setExitosoNegativo(0);
+		total.setMenorDeEdadNegativo(0);
+		total.setNoHuboQuienContestaraNegativo(0);
+		total.setNoQuisieronContestarNegativo(0);
+		total.setDomicilioNoEncontradoNegativo(0);
+		total.setOtroNegativo(0);		
+		total.setTotalNegativo(0);
+		total.setTotalTotalNegativo(0);
+		total.setMetaNegativo(0);			
+		total.setExitosoCoordinadores(0);
+		total.setMenorDeEdadCoordinadores(0);
+		total.setNoHuboQuienContestaraCoordinadores(0);
+		total.setNoQuisieronContestarCoordinadores(0);
+		total.setDomicilioNoEncontradoCoordinadores(0);
+		total.setOtroCoordinadores(0);		
+		total.setTotalCoordinadores(0);
+		total.setTotalTotalCoordinadores(0);
+		total.setMetaCoordinadores(0);	
+		for (ResultadoEncuestaCompletoEO actual : listado) {	
+			total.setTotal(total.getTotal()+actual.getTotal());
+			total.setTotalTotal(total.getTotalTotal()+actual.getTotalTotal());
+			total.setMeta(total.getMeta()+actual.getMeta());			
+			total.setTotalNegativo(total.getTotalNegativo()+actual.getTotalNegativo());
+			total.setTotalTotalNegativo(total.getTotalTotalNegativo()+actual.getTotalTotalNegativo());
+			total.setMetaNegativo(total.getMetaNegativo()+actual.getMetaNegativo());				
+			total.setTotalCoordinadores(total.getTotalCoordinadores()+actual.getTotalCoordinadores());
+			total.setTotalTotalCoordinadores(total.getTotalTotalCoordinadores()+actual.getTotalTotalCoordinadores());
+			total.setMetaCoordinadores(total.getMetaCoordinadores()+actual.getMetaCoordinadores());	
+		}
+		ResultadoEncuestaCompletoVerticalEO nuevo=new ResultadoEncuestaCompletoVerticalEO();
+		nuevo.setId(0);
+		nuevo.setNombre("Meta de Levantamiento");
+		nuevo.setCantidadCoordinadores(numero.format(total.getTotalTotalCoordinadores()));
+		nuevo.setPorcentajeCoordinadores("100%");
+		
+		nuevo.setCantidadCoordinadores(numero.format(total.getTotalTotalCoordinadores()));
+		nuevo.setPorcentajeCoordinadores("100%");
+		
+		nuevo.setCantidadNegativos(numero.format(total.getTotalTotalNegativo()));
+		nuevo.setPorcentajeNegativos("100%");
+		
+		nuevo.setCantidadTotal(numero.format(total.getTotalTotal()));
+		nuevo.setPorcentajeTotal("100%");
+		listadoVertical.add(nuevo);
+		
+		nuevo=new ResultadoEncuestaCompletoVerticalEO();
+		nuevo.setId(1);
+		nuevo.setNombre("Encuestas Esperadas");
+		nuevo.setCantidadCoordinadores(numero.format(total.getMetaCoordinadores()));
+		nuevo.setPorcentajeCoordinadores(total.getPorcentajeMetaCoordinadores());
+		
+		nuevo.setCantidadCoordinadores(numero.format(total.getMetaCoordinadores()));
+		nuevo.setPorcentajeCoordinadores(total.getPorcentajeMetaCoordinadores());
+		
+		nuevo.setCantidadNegativos(numero.format(total.getMetaNegativo()));
+		nuevo.setPorcentajeNegativos(total.getPorcentajeMetaNegativo());
+		
+		nuevo.setCantidadTotal(numero.format(total.getMeta()));
+		nuevo.setPorcentajeTotal(total.getPorcentajeMeta());
+		listadoVertical.add(nuevo);
+		
+		nuevo=new ResultadoEncuestaCompletoVerticalEO();
+		nuevo.setId(2);
+		nuevo.setNombre("Encuestas Aplicadas");
+		nuevo.setCantidadCoordinadores(numero.format(total.getTotalCoordinadores()));
+		nuevo.setPorcentajeCoordinadores(total.getPorcentajeTotalCoordinadores());
+		
+		nuevo.setCantidadCoordinadores(numero.format(total.getTotalCoordinadores()));
+		nuevo.setPorcentajeCoordinadores(total.getPorcentajeTotalCoordinadores());
+		
+		nuevo.setCantidadNegativos(numero.format(total.getTotalNegativo()));
+		nuevo.setPorcentajeNegativos(total.getPorcentajeTotalNegativo());
+		
+		nuevo.setCantidadTotal(numero.format(total.getTotal()));
+		nuevo.setPorcentajeTotal(total.getPorcentajeTotal());
+		listadoVertical.add(nuevo);
+		
+		return new Modelo<>(listadoVertical);
+	}
+	
+	public Modelo<NivelesReporteVerticalDO> modeloNiveles() {
+		List<NivelesReporteVerticalDO> listado=new ArrayList<>();
+		switch (getUsuario().getNivel()) {
+			case ENTIDAD:
+				 listado.add(NivelesReporteVerticalDO.ESTATAL);
+				 listado.add(NivelesReporteVerticalDO.REGION);
+				 listado.add(NivelesReporteVerticalDO.MUNICIPIO);	
+			break;
+			case NACIONAL:
+				 listado.add(NivelesReporteVerticalDO.ESTATAL);
+				 listado.add(NivelesReporteVerticalDO.REGION);
+				 listado.add(NivelesReporteVerticalDO.MUNICIPIO);				
+			break;
+			case GEOZONA:
+				 listado.add(NivelesReporteVerticalDO.REGION);	
+				 listado.add(NivelesReporteVerticalDO.MUNICIPIO);			
+			break;
+			case MUNICIPIO:
+				 listado.add(NivelesReporteVerticalDO.MUNICIPIO);		
+			break;
+			default:
+			break;
+		}
+		return new Modelo<>(listado);
+	}
+
+	
+	public Modelo<GeozonaParticionEO> modeloRegiones() {
+		List<GeozonaParticionEO> listado=new ArrayList<>();
+		switch (getUsuario().getNivel()) {
+			case ENTIDAD:
+				GeozonaEO geozona=sqlSession.selectOne("catalogos.geozonas.porId",4);
+				listado.addAll(geozona.getParticiones());
+			break;
+			case NACIONAL:
+				GeozonaEO geozona2=sqlSession.selectOne("catalogos.geozonas.porId",4);
+				listado.addAll(geozona2.getParticiones());
+			break;
+			case GEOZONA:
+				logger.debug("Territorio : {} ", getUsuario().getTerritorios());
+				for (JavaBeanT geozonap : getUsuario().getTerritorios()) {
+					listado.add((GeozonaParticionEO)geozonap);
+				} 		
+			break;
+			default:
+			break;
+		}
+		
+		return new Modelo<>(listado);
+	}
+	
+	
+	public UsuarioEO getUsuario() {
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+
+}

@@ -1,0 +1,539 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:panel header="Filtro">
+				<p:panelGrid columns="2">
+				<p:outputLabel value="Pregunta: "/>
+				<p:outputLabel value="${pregunta}.- ${modeloDatos.nombre_pregunta}"/>
+				<p:outputLabel value="Territorio: "/>
+				<p:outputLabel value="${modeloDatos.anterior.tipo} ${modeloDatos.anterior.id} ${modeloDatos.anterior.nombre}"/>
+				</p:panelGrid>
+				</p:panel>
+				<p:separator/>
+				<p:commandButton value="Inicio" action="volver" icon="fa fa-home" immediate="true" update="@form"/>
+					<p:panel header="Resultados" rendered="#{pregunta eq  '1'?'true':'false'}">
+						<p:dataTable id="tabla2" value="${modeloDatos.actual.listado}" var="f" rowKey="${f.id}" selection="${modeloDatos.actual.seleccionado}" selectionMode="single" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom" rows="20" reflow="true" >
+						<p:ajax  event="rowDblselect" onstart="rcActualizar();"/>
+						<p:columnGroup type="header">
+						<p:row>
+		                	<p:column rowspan="2" colspan="2" headerText="Territorio" style="width:17%" />
+		                	<p:column colspan="3" headerText="NO CONTESTO" />
+		                	<p:column colspan="3" headerText="GOBIERNO FEDERAL" />
+		                	<p:column colspan="3" headerText="GOBIERNO ESTATAL" />
+		                	<p:column colspan="3" headerText="GOBIERNO MUNICIPAL" />
+		                	<p:column colspan="3" headerText="NO SABE" />
+		                	<p:column colspan="3" headerText="Total" />
+		                </p:row>
+		              <p:row>
+		              <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		              </p:row>
+						</p:columnGroup>
+						<p:column>
+						<p:outputLabel value="${f.get('id')}"/>
+						</p:column>
+						<p:column >
+						<p:outputLabel value="${f.get('nombre')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('nc_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('nc_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('nc_total')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('gobierno_federal_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('gobierno_federal_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('gobierno_federal_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('gobierno_estatal_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('gobierno_estatal_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('gobierno_estatal_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('gobierno_municipal_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('gobierno_municipal_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('gobierno_municipal_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('no_sabe_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('no_sabe_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('no_sabe_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('hombres')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('mujeres')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('total')}"/>
+						</p:column>
+						<p:columnGroup type="footer">
+						 <p:row>
+						 <p:column colspan="2" footerText="Totales"/>
+						   <p:column  footerText="${mapaSubto.get('nc_hombres_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('nc_mujeres_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('nc_total_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('gobierno_federal_hombres_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('gobierno_federal_mujeres_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('gobierno_federal_total_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('gobierno_estatal_hombres_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('gobierno_estatal_mujeres_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('gobierno_estatal_total_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('gobierno_municipal_hombres_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('gobierno_municipal_mujeres_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('gobierno_municipal_total_total')}"/>
+						    <p:column  footerText="${mapaSubto.get('no_sabe_hombres_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('no_sabe_mujeres_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('no_sabe_total_total')}"/>
+						    <p:column  footerText="${mapaSubto.get('hombres_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('mujeres_total')}"/>
+						   <p:column  footerText="${mapaSubto.get('total_total')}"/>
+						 </p:row>
+						 </p:columnGroup>
+						<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tabla2" fileName="ResultadosEncuestas" />
+										</h:commandLink>
+									</f:facet>
+						</p:dataTable>
+						<p:remoteCommand name="rcActualizar" action="actualizar" update="@form"/>
+						</p:panel>
+						<p:panel header="Resultados" rendered="#{pregunta eq  '2'?'true':'false'}">
+						<p:dataTable id="tabla" value="${modeloDatos.actual.listado}" var="f" rowKey="${f.id}" selection="${modeloDatos.actual.seleccionado}" selectionMode="single" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom" rows="20" reflow="true">
+						<p:ajax event="rowDblselect" onstart="rcActualizar2();"/>
+						<p:columnGroup type="header">
+						<p:row>
+		                	<p:column rowspan="2" colspan="2" headerText="Territorio" style="width:17%" />
+		                	<p:column colspan="3" headerText="NO CONTESTO" />
+		                	<p:column colspan="3" headerText="SI" />
+		                	<p:column colspan="3" headerText="NO" />
+		                	<p:column colspan="3" headerText="Total" />
+		                </p:row>
+		              <p:row>
+		              <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		              </p:row>
+						</p:columnGroup>
+						<p:column>
+						<p:outputLabel value="${f.get('id')}"/>
+						</p:column>
+						<p:column >
+						<p:outputLabel value="${f.get('nombre')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('nc_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('nc_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('nc_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('si_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('si_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('si_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('no_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('no_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('no_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('hombres')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('mujeres')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('total')}"/>
+						</p:column><f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tabla" fileName="ResultadosEncuestas" />
+										</h:commandLink>
+									</f:facet>
+						</p:dataTable>
+						</p:panel>
+						<p:remoteCommand name="rcActualizar2" action="actualizar" update="@form"/>
+						<p:panel header="Resultados" rendered="#{pregunta eq  '3'?'true':'false'}">
+						<p:dataTable id="tabla3" value="${modeloDatos.actual.listado}" var="f" rowKey="${f.id}" selection="${modeloDatos.actual.seleccionado}" selectionMode="single" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom" rows="20" reflow="true">
+						<p:ajax event="rowDblselect" onstart="rcActualizar3();"/>
+						<p:columnGroup type="header">
+						<p:row>
+		                	<p:column rowspan="2" colspan="2" headerText="Territorio" style="width:17%" />
+		                	<p:column colspan="3" headerText="NO CONTESTO" />
+		                	<p:column colspan="3" headerText="BUENO">
+		                	 <f:facet name="header">
+		                	  <img src="/politik/app/resources/iconos/reportes/buena.png" style="width:40px; height: 40px" alt="BUENO" />
+		                	  </f:facet>
+		                	</p:column>
+		                	<p:column colspan="3" headerText="REGULAR">
+		                	<f:facet name="header">
+		                	  <img src="/politik/app/resources/iconos/reportes/regular.png" style="width:40px; height: 40px" alt="REGULAR" />
+		                	  </f:facet>
+		                	</p:column>
+		                	<p:column colspan="3" headerText="MALO">
+		                	<f:facet name="header">
+		                	  <img src="/politik/app/resources/iconos/reportes/nada.png" style="width:40px; height: 40px" alt="MALO" />
+		                	  </f:facet>
+		                	</p:column>
+		                	<p:column colspan="3" headerText="Total" />
+		                </p:row>
+		              <p:row>
+		              <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		               <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		              </p:row>
+						</p:columnGroup>
+						<p:column>
+						<p:outputLabel value="${f.get('id')}"/>
+						</p:column>
+						<p:column >
+						<p:outputLabel value="${f.get('nombre')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('nc_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('nc_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('nc_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('bueno_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('bueno_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('bueno_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('regular_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('regular_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('regular_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('malo_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('malo_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('malo_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('hombres')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('mujeres')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('total')}"/>
+						</p:column>
+						<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tabla3" fileName="ResultadosEncuestas" />
+										</h:commandLink>
+									</f:facet>
+						</p:dataTable>
+						
+						</p:panel>
+						<p:remoteCommand name="rcActualizar3" action="actualizar" update="@form"/>
+						<p:panel header="Resultados" rendered="#{pregunta eq  '4'?'true':'false'}">
+						<p:dataTable id="tabla4" value="${modeloDatos.actual.listado}" var="f" rowKey="${f.id}" selection="${modeloDatos.actual.seleccionado}" selectionMode="single" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom" rows="20" reflow="true">
+						<p:ajax event="rowDblselect" onstart="rcActualizar4();"/>
+						<p:columnGroup type="header">
+						<p:row>
+		                	<p:column rowspan="2" colspan="2" headerText="Territorio" style="width:17%" />
+		                	<p:column colspan="3" headerText="NO CONTESTO" />
+		                	<p:column colspan="3" headerText="BUENO">
+		                	<f:facet name="header">
+		                	  <img src="/politik/app/resources/iconos/reportes/buena.png" style="width:40px; height: 40px" alt="BUENO" />
+		                	  </f:facet>
+		                	</p:column>
+		                	<p:column colspan="3" headerText="REGULAR">
+		                	<f:facet name="header">
+		                	  <img src="/politik/app/resources/iconos/reportes/regular.png" style="width:40px; height: 40px" alt="REGULAR" />
+		                	  </f:facet>
+		                	</p:column>
+		                	<p:column colspan="3" headerText="MALO">
+		                	<f:facet name="header">
+		                	  <img src="/politik/app/resources/iconos/reportes/nada.png" style="width:40px; height: 40px" alt="NADA" />
+		                	  </f:facet>
+		                	</p:column>
+		                	<p:column colspan="3" headerText="NO RECIBE" >
+		                	<f:facet name="header">
+		                	  <img src="/politik/app/resources/iconos/reportes/nada.png" style="width:40px; height: 40px" alt="NO RECIBE" />
+		                	  </f:facet>
+		                	</p:column>
+		                	<p:column colspan="3" headerText="Total" />
+		                </p:row>
+		              <p:row>
+		              <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		               <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		              </p:row>
+						</p:columnGroup>
+						<p:column>
+						<p:outputLabel value="${f.get('id')}"/>
+						</p:column>
+						<p:column >
+						<p:outputLabel value="${f.get('nombre')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('nc_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('nc_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('nc_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('bueno_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('bueno_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('bueno_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('regular_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('regular_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('regular_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('malo_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('malo_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('malo_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('no_recibe_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('no_recibe_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('no_recibe_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('hombres')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('mujeres')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('total')}"/>
+						</p:column>
+						<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tabla4" fileName="ResultadosEncuestas" />
+										</h:commandLink>
+									</f:facet>
+						</p:dataTable>
+						</p:panel>
+						<p:remoteCommand name="rcActualizar4" action="actualizar" update="@form"/>
+						<p:panel header="Resultados" rendered="#{pregunta eq  '5'?'true':'false'}">
+						<p:dataTable id="tabla5" value="${modeloDatos.actual.listado}" var="f" rowKey="${f.id}" selection="${modeloDatos.actual.seleccionado}" selectionMode="single" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom" rows="20" reflow="true" >
+						<p:ajax event="rowDblselect" onstart="rcActualizar5();"/>
+						<p:columnGroup type="header">
+						<p:row>
+		                	<p:column rowspan="2" colspan="2" headerText="Territorio" style="width:17%" />
+		                	<p:column colspan="3" headerText="NO CONTESTO" />
+		                	<p:column colspan="3" headerText="SI" />
+		                	<p:column colspan="3" headerText="NO" />
+		                	<p:column colspan="3" headerText="Total" />
+		                </p:row>
+		              <p:row>
+		              <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		                <p:column headerText="Hombres" />
+		               <p:column headerText="Mujeres" />
+		               <p:column headerText="Total" />
+		               </p:row>
+						</p:columnGroup>
+						<p:column>
+						<p:outputLabel value="${f.get('id')}"/>
+						</p:column>
+						<p:column >
+						<p:outputLabel value="${f.get('nombre')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('nc_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('nc_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('nc_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('si_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('si_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('si_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('no_hombres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('no_mujeres')}"/>
+						</p:column>
+							<p:column>
+						<p:outputLabel value="${f.get('no_total')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('hombres')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('mujeres')}"/>
+						</p:column>
+						<p:column>
+						<p:outputLabel value="${f.get('total')}"/>
+						</p:column>
+						<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tabla5" fileName="ResultadosEncuestas" />
+										</h:commandLink>
+									</f:facet>
+						</p:dataTable>
+						</p:panel>
+						<p:remoteCommand name="rcActualizar5" action="actualizar" update="@form"/>
+						<p:commandLink value="I">
+						   <p:dataExporter type="pdf" target="tabla" fileName="cars" pageOnly="true"/>
+						</p:commandLink>
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

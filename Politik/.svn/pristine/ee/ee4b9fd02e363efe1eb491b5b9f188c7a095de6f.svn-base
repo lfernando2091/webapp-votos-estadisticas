@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="gis.geoData">
+	<cache />
+	
+	<resultMap type="GeoData" id="geoData">
+		<result column="GeoDataEO_xMin" property="xMin" javaType="Double"/>
+		<result column="GeoDataEO_yMin" property="yMin" javaType="Double"/>
+		<result column="GeoDataEO_xMax" property="xMax" javaType="Double"/>
+		<result column="GeoDataEO_yMax" property="yMax" javaType="Double"/>
+	</resultMap>
+	
+</mapper>

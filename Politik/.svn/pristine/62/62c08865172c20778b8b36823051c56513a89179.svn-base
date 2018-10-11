@@ -1,0 +1,121 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:focus />
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Buscar Personas" />
+					</p:breadCrumb>
+					<p:panel header="Buscar Personas">
+						<p:tabView>
+							<p:tab title="Buscar por Datos">
+								<p:outputLabel value="Se puede utilizar * como comodín" />
+								<p:panelGrid columns="4">
+									<p:outputLabel value="Nombre" />
+									<p:inputText value="${personaBuscar.nombre}" size="30"
+										tabindex="1" />
+									<p:outputLabel value="Dia Nac." />
+									<pe:inputNumber value="${personaBuscar.dia}" maxValue="31"
+										decimalPlaces="0" size="5" tabindex="5" />
+									<p:outputLabel value="Primer Apellido" />
+									<p:inputText value="${personaBuscar.primerApellido}" size="30"
+										tabindex="2" />
+									<p:outputLabel value="Mes Nac." />
+									<p:selectOneMenu value="${personaBuscar.mes}"
+										style="width: 100px;" filter="true" filterMatchMode="contains"
+										tabindex="6">
+										<f:selectItems value="${tablaMeses.listado}" var="fila"
+											itemLabel="${fila.nombre}" itemValue="${fila}" />
+									</p:selectOneMenu>
+									<p:outputLabel value="Segundo Apellido" />
+									<p:inputText value="${personaBuscar.segundoApellido}" size="30"
+										tabindex="3" />
+									<p:outputLabel value="Año Nac." />
+									<pe:inputNumber value="${personaBuscar.anho}" maxValue="2000"
+										decimalPlaces="0" size="5" tabindex="7" />
+									<p:outputLabel value="Entidad" />
+									<p:selectOneMenu value="${tablaEntidadesDatos.seleccionado}"
+										converter="ObjectConverter" style="width: 215px;"
+										filter="true" filterMatchMode="contains" tabindex="4">
+										<f:selectItems value="${tablaEntidadesDatos.listado}"
+											var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+									</p:selectOneMenu>
+									<f:facet name="footer">
+										<p:commandLink action="buscarPorDatos"
+											update="${p:component('tablaResultados')}">
+											<p:graphicImage
+												value="/resources/imagenes/botones/buscar.png" height="70%" />
+										</p:commandLink>
+									</f:facet>
+								</p:panelGrid>
+							</p:tab>
+							<p:tab title="Buscar Por Clave">
+								<p:panelGrid columns="2">
+									<p:outputLabel value="Entidad" />
+									<p:selectOneMenu value="${tablaEntidadesClaves.seleccionado}"
+										converter="ObjectConverter" style="width: 215px;"
+										filter="true" filterMatchMode="contains">
+										<f:selectItems value="${tablaEntidadesClaves.listado}"
+											var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+									</p:selectOneMenu>
+									<p:outputLabel value="Tipo" />
+									<p:selectOneMenu value="${tablaTiposClave.seleccionado}"
+										converter="ObjectConverter" style="width: 140px;">
+										<f:selectItems value="${tablaTiposClave.listado}" var="fila"
+											itemLabel="${fila.nombre}" itemValue="${fila}" />
+									</p:selectOneMenu>
+									<p:outputLabel value="Clave" />
+									<p:inputText value="${clave}" size="25" />
+									<f:facet name="footer">
+										<p:commandLink action="buscarPorClave"
+											update="${p:component('tablaResultados')}">
+											<p:graphicImage
+												value="/resources/imagenes/botones/buscar.png" height="70%" />
+										</p:commandLink>
+									</f:facet>
+								</p:panelGrid>
+							</p:tab>
+						</p:tabView>
+						<p:separator />
+						<p:outputLabel
+							value="Sólo se muestran los primeros 10 registros localizados" />
+						<p:dataTable id="tablaResultados"
+							value="${modeloPersonas.listado}" var="fila" rowKey="${fila.id}"
+							selection="${modeloPersonas.seleccionado}" selectionMode="single">
+							<f:facet name="header">Personas Localizadas</f:facet>
+							<p:column headerText="Id" width="75">${fila.id}</p:column>
+							<p:column headerText="Nombre">${fila.primerApellido} ${fila.segundoApellido} ${fila.nombre}</p:column>
+							<p:column headerText="Fech. Nac." width="130">${fila.dia}/${fila.mes.nombre}/${fila.anho}</p:column>
+							<p:column headerText="Entidad Nac." width="150">${fila.entidadNacimiento.nombre}</p:column>
+							<f:facet name="footer">
+								<p:commandButton value="Siguiente" action="personaLocalizada"
+									disabled="${modeloPersonas.seleccionado == null}" />
+								<p:commandButton value="Cancelar" action="cancelar" />
+							</f:facet>
+						</p:dataTable>
+					</p:panel>
+
+					<h:outputStylesheet>
+						.ui-datatable-footer{
+							text-align: left !important;
+						}
+					</h:outputStylesheet>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

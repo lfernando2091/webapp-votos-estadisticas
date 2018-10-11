@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.programasEjerciciosFuentes">
+	<cache />
+	
+	<resultMap type="ProgramaEjercicioFuenteEO" id="programaEjercicioFuente">
+	
+		<id column="ProgramaEjercicioFuenteEO_id" property="id" javaType="Integer" />
+		
+		<result column="ProgramaEjercicioFuenteEO_idEjercicio" property="idEjercicio" javaType="Integer" />
+		<result column="ProgramaEjercicioFuenteEO_tipoInversion" property="tipoInversion" javaType="com.saganet.politik.dominios.TiposInversionDO" />
+		<result column="ProgramaEjercicioFuenteEO_monto" property="monto" javaType="Double" />
+		<result column="ProgramaEjercicioFuenteEO_observaciones" property="observaciones" javaType="String" />
+		<result column="ProgramaEjercicioFuenteEO_fuenteFinanciamiento" property="fuenteFinanciamiento" javaType="String" />
+		<result column="ProgramaEjercicioFuenteEO_nick" property="nick" javaType="String"/>
+		<result column="ProgramaEjercicioFuenteEO_fecha" property="fecha" javaType="String"/>
+		<result column="ProgramaEjercicioFuenteEO_nickActualizacion" property="nickActualizacion" javaType="String"/>
+		<result column="ProgramaEjercicioFuenteEO_fechaActualizacion" property="fechaActualizacion" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+		ProgramaEjercicioFuenteEO.pkey													ProgramaEjercicioFuenteEO_id, 
+		ProgramaEjercicioFuenteEO.id_ejercicio											ProgramaEjercicioFuenteEO_idEjercicio, 
+		ProgramaEjercicioFuenteEO.tipo_inversion										ProgramaEjercicioFuenteEO_tipoInversion, 
+		ProgramaEjercicioFuenteEO.monto													ProgramaEjercicioFuenteEO_monto, 
+		ProgramaEjercicioFuenteEO.observaciones											ProgramaEjercicioFuenteEO_observaciones, 
+		ProgramaEjercicioFuenteEO.fuente_financiamiento									ProgramaEjercicioFuenteEO_fuenteFinanciamiento,
+		ProgramaEjercicioFuenteEO.nick													ProgramaEjercicioFuenteEO_nick,
+		to_char(ProgramaEjercicioFuenteEO.fecha, 'YYYY-MM-DD HH24:MI:SS')				ProgramaEjercicioFuenteEO_fecha,
+		ProgramaEjercicioFuenteEO.nick_actualizacion									ProgramaEjercicioFuenteEO_nickActualizacion,
+		to_char(ProgramaEjercicioFuenteEO.fecha_actualizacion, 'YYYY-MM-DD HH24:MI:SS')	ProgramaEjercicioFuenteEO_fechaActualizacion
+  		FROM catalogos.programas_ejercicios_fuentes ProgramaEjercicioFuenteEO
+	</sql>
+	
+	<select id="listadoByIdEjercicio" parameterType="ProgramaEjercicioEO" resultMap="programaEjercicioFuente">
+		<include refid="query"/>
+		<where>
+			ProgramaEjercicioFuenteEO.id_ejercicio = #{id}
+		</where>
+		ORDER BY ProgramaEjercicioFuenteEO.pkey
+	</select>
+	
+	<insert id="insertar" parameterType="ProgramaEjercicioFuenteEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT NEXTVAL('catalogos.programas_ejercicios_fuentes_pkey_seq')
+		</selectKey>
+		INSERT INTO catalogos.programas_ejercicios_fuentes(pkey, id_ejercicio, tipo_inversion, monto, observaciones, fuente_financiamiento, nick)
+    	VALUES (#{id}, #{idEjercicio}, #{tipoInversion}, #{monto}, #{observaciones}, #{fuenteFinanciamiento}, #{nick})
+	</insert>
+	
+	<delete id="eliminar" parameterType="Integer">
+		DELETE FROM catalogos.programas_ejercicios_fuentes
+ 		WHERE pkey = #{value}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.partidos">
+	<cache />
+	
+	<resultMap type="PartidoEO" id="partido">
+		<id column="PartidoEO_id" property="id" javaType="Integer"/>
+		<result column="PartidoEO_nombre" property="nombre" javaType="String"/>
+		<result column="PartidoEO_siglas" property="siglas" javaType="String"/>
+		<result column="PartidoEO_coalicion" property="coalicion" javaType="Boolean"/>
+		<collection property="partidosCoalicion" resultMap="coalicion" />
+	</resultMap>
+	
+	<resultMap type="PartidoEO" id="coalicion">
+		<id column="Coalicion_id" property="id" javaType="Integer"/>
+		<result column="Coalicion_nombre" property="nombre" javaType="String"/>
+		<result column="Coalicion_siglas" property="siglas" javaType="String"/>
+		<result column="Coalicion_coalicion" property="coalicion" javaType="Boolean"/>
+	</resultMap>
+	
+	<select id="listado" resultMap="partido" parameterType="Boolean">
+		SELECT
+			PartidoEO.id_partido 			PartidoEO_id,
+			PartidoEO.nombre 				PartidoEO_nombre,
+			PartidoEO.siglas 				PartidoEO_siglas,
+			PartidoEO.coalicion 			PartidoEO_coalicion,
+			CoalicionesPartidos.id_partido	Coalicion_id,
+			CoalicionesPartidos.nombre 		Coalicion_nombre,
+			CoalicionesPartidos.siglas 		Coalicion_siglas,
+			CoalicionesPartidos.coalicion 	Coalicion_coalicion
+		FROM catalogos.partidos PartidoEO
+		LEFT JOIN catalogos.coaliciones Coaliciones on (PartidoEO.id_partido = Coaliciones.id_coalicion)
+		LEFT JOIN catalogos.partidos CoalicionesPartidos on (Coaliciones.id_partido = CoalicionesPartidos.id_partido)
+		<where>
+			<if test="value != null">
+				PartidoEO.coalicion = #{value}
+			</if>
+		</where>
+		ORDER BY PartidoEO.coalicion, PartidoEO.id_partido
+	</select>
+	
+	<insert id="insertar" parameterType="PartidoEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT nextval('catalogos.partidos_id_partido_seq'::regclass)
+		</selectKey>
+	
+		INSERT INTO catalogos.partidos(id_partido, nombre, siglas, coalicion)
+		VALUES(#{id}, #{nombre}, #{siglas}, #{coalicion})
+	</insert>
+	
+	<insert id="insertarCoalicion" parameterType="hashmap">
+		INSERT INTO catalogos.coaliciones(id_coalicion, id_partido, principal)
+		VALUES(#{idCoalicion}, #{idPartido}, #{principal})
+	</insert>
+</mapper>

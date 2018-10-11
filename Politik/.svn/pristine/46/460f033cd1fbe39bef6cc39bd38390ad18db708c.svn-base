@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+	<ui:define name="content">
+	
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				 <p:messages id="messages" showDetail="true"  autoUpdate="true"  closable="true"/>
+					<p:panel header="Listado Capturistas">
+						<p:panelGrid id="agregarCapturista" columns="2">
+							<p:outputLabel value="Nombre*" />
+							<p:inputText value="${nuevo.nombre}" size="25" required="true"/>
+							<p:outputLabel value="Primer Apellido*" />
+							<p:inputText value="${nuevo.primerApellido}" size="25" required="true"/>
+							<p:outputLabel value="Nombre" />
+							<p:inputText value="${nuevo.segundoApellido}" size="25" />
+							<p:outputLabel value="Celular* "/>
+							<p:inputText value="${nuevo.usuario.celular}" required="true" >
+<!-- 								<f:validateRegex pattern="^[+]?[0-9]+$" />  -->
+<!-- 								<f:validateLength minimum="10" maximum="10" /> -->
+							</p:inputText>	
+							<p:outputLabel value="Mail"/>
+							<p:inputText value="${nuevo.usuario.mail}" size="25"  />
+									
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="guardar" update="dlgDatos"  icon="fa fa-save" oncomplete="PF('dlgDatos').show();"/>
+							<p:commandButton value="Regresar" action="regresar" immediate="true"/>
+						</f:facet>
+						
+							<!-- 					Dialogo para Mostrar NICK y CONTRASEÑA  -->
+						<p:dialog header="Datos de Usuario" id="dlgDatos" widgetVar="dlgDatos" modal="true" height="50%" responsive="true">
+							<p:messages autoUpdate="true"  />
+							
+							<p:panelGrid columns="2">
+									<p:outputLabel value="Nick:" />
+									<p:outputLabel value="${nuevo.usuario.nick}"/>
+									<p:outputLabel value="Contraseña: " />
+									<p:outputLabel value="${nuevo.usuario.pw}"/>
+								<p:commandButton action="cerrar" value="cerrar"  oncomplete="PF('dlgDatos').hide();" immediate="true" />
+							</p:panelGrid>
+							
+						</p:dialog>
+					</p:panel>
+
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

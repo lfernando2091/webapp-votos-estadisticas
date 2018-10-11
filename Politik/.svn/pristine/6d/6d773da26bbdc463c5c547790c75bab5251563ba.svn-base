@@ -1,0 +1,70 @@
+package com.saganet.politik.components.catalogos;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.catalogos.ProgramaEjercicioEO;
+import com.saganet.politik.database.catalogos.ProgramaEjercicioFuenteEO;
+import com.saganet.politik.dominios.TiposInversionDO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("ProgramasEjerciciosFuentesC")
+public class ProgramasEjerciciosFuentesC {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ProgramasEjerciciosFuentesC.class);
+	
+	public Modelo<ProgramaEjercicioFuenteEO> modelo(ProgramaEjercicioEO programaEjercicio){
+		Modelo<ProgramaEjercicioFuenteEO> modelo;
+		List<ProgramaEjercicioFuenteEO> listado;
+		
+		listado = sqlSession.selectList("catalogos.programasEjerciciosFuentes.listadoByIdEjercicio", programaEjercicio);
+		logger.debug("listado ProgramasEjerciciosFuentes: {}", listado);
+		
+		modelo = new Modelo<>();
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Modelo ProgramasEjerciciosFuentes: {}",modelo);
+		
+		return modelo;
+	}
+	
+	public ProgramaEjercicioFuenteEO nuevo(ProgramaEjercicioEO programaEjercicio){
+		ProgramaEjercicioFuenteEO nuevo;
+		nuevo = new ProgramaEjercicioFuenteEO();
+		nuevo.setIdEjercicio(programaEjercicio.getId());
+		return nuevo;
+	}
+	
+	public ProgramaEjercicioFuenteEO guardar(ProgramaEjercicioFuenteEO nuevo){
+		logger.debug("ProgramaEjercicioFuente Recibido: {}", nuevo);
+		
+		sqlSession.insert("catalogos.programasEjerciciosFuentes.insertar", nuevo);
+		
+		logger.debug("El ProgramaEjercicioFuente fue guardado correctamente");
+		return nuevo;
+	}
+	
+	public TiposInversionDO[] listadoTiposInversion(){
+		logger.debug("Se genera listado de Tipos de Inversion");
+		return TiposInversionDO.values();
+	}
+	
+	public void eliminar(ProgramaEjercicioFuenteEO programaEjercicioFuenteEO){
+		logger.debug("ProgramaEjercicioFuenteEO Recibido: {}", programaEjercicioFuenteEO);
+		sqlSession.delete("catalogos.programasEjerciciosFuentes.eliminar",programaEjercicioFuenteEO.getId());
+		logger.debug("La fuente se elimino correctamente");
+	}
+	
+}

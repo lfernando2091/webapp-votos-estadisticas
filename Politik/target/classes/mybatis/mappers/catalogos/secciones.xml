@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.secciones">
+	<cache />
+
+	<resultMap type="SeccionEO" id="seccion">
+		<id column="SeccionEO_id" property="id" javaType="Integer" />
+		<result column="SeccionEO_idSeccion" property="idSeccion"
+			javaType="Integer" />
+		<result column="SeccionEO_llave" property="llave" javaType="String" />
+		<association property="entidad" resultMap="catalogos.entidades.entidad" />
+		<association property="dFederal" resultMap="catalogos.dFederales.DFederal" />
+		<association property="dLocal" resultMap="catalogos.dLocales.DLocal" />
+		<association property="municipio" resultMap="catalogos.municipios.municipio" />
+		<association property="tipo" resultMap="catalogos.tiposSeccion.tipoSeccion" />
+		<association property="geoData" resultMap="gis.geoData.geoData" columnPrefix="SeccionEO_" />
+	</resultMap>
+	
+	
+	<resultMap type="SeccionEO" id="seccionSimple">
+		<id 			column="SeccionEO_id" 			property="id" 			javaType="Integer" />
+		<result 		column="SeccionEO_idSeccion" 	property="idSeccion"	javaType="Integer" />
+		<result 		column="SeccionEO_llave"	 	property="llave" 		javaType="String" />
+		<association 									property="entidad" 		resultMap="catalogos.entidades.entidad" />
+		<association 									property="dFederal" 	resultMap="catalogos.dFederales.DFederal" />
+		<association 									property="dLocal" 		resultMap="catalogos.dLocales.DLocal" />
+		<association 									property="municipio" 	resultMap="catalogos.municipios.municipio" />
+		<association 									property="tipo" 		resultMap="catalogos.tiposSeccion.tipoSeccion" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT
+		SeccionEO.pkey SeccionEO_id,
+		SeccionEO.id_seccion SeccionEO_idSeccion,
+		SeccionEO.llave SeccionEO_llave,
+		EntidadEO.id_entidad EntidadEO_id,
+		EntidadEO.entidad EntidadEO_nombre,
+		DFederalEO.pkey DFederalEO_id,
+		DFederalEO.id_dFederal DFederalEO_idDFederal,
+		DFederalEO.dfederal DFederalEO_nombre,
+		DFederalEO.llave DFederalEO_llave,
+		DLocalEO.pkey DLocalEO_id,
+		DLocalEO.id_dlocal DLocalEO_idDLocal,
+		DLocalEO.dlocal DLocalEO_nombre,
+		DLocalEO.llave DLocalEO_llave,
+		MunicipioEO.pkey MunicipioEO_id,
+		MunicipioEO.id_municipio MunicipioEO_idMunicipio,
+		MunicipioEO.municipio MunicipioEO_nombre,
+		MunicipioEO.llave MunicipioEO_llave,
+		TipoSeccionEO.id_tipo_seccion TipoSeccionEO_id,
+		TipoSeccionEO.tipo_seccion TipoSeccionEO_nombre,
+		st_xmin(ST_Extent(GisSecciones.geom)) SeccionEO_GeoDataEO_xMin,
+		st_ymin(ST_Extent(GisSecciones.geom)) SeccionEO_GeoDataEO_yMin,
+		st_xmax(ST_Extent(GisSecciones.geom)) SeccionEO_GeoDataEO_xMax,
+		st_ymax(ST_Extent(GisSecciones.geom)) SeccionEO_GeoDataEO_yMax,
+
+		st_xmin(ST_Extent(GisEntidades.geom)) EntidadEO_GeoDataEO_xMin,
+		st_ymin(ST_Extent(GisEntidades.geom)) EntidadEO_GeoDataEO_yMin,
+		st_xmax(ST_Extent(GisEntidades.geom)) EntidadEO_GeoDataEO_xMax,
+		st_ymax(ST_Extent(GisEntidades.geom)) EntidadEO_GeoDataEO_yMax,
+
+		st_xmin(ST_Extent(GisDFederales.geom)) DFederalEO_GeoDataEO_xMin,
+		st_ymin(ST_Extent(GisDFederales.geom)) DFederalEO_GeoDataEO_yMin,
+		st_xmax(ST_Extent(GisDFederales.geom)) DFederalEO_GeoDataEO_xMax,
+		st_ymax(ST_Extent(GisDFederales.geom)) DFederalEO_GeoDataEO_yMax,
+
+		st_xmin(ST_Extent(GisMunicipios.geom)) MunicipioEO_GeoDataEO_xMin,
+		st_ymin(ST_Extent(GisMunicipios.geom)) MunicipioEO_GeoDataEO_yMin,
+		st_xmax(ST_Extent(GisMunicipios.geom)) MunicipioEO_GeoDataEO_xMax,
+		st_ymax(ST_Extent(GisMunicipios.geom)) MunicipioEO_GeoDataEO_yMax
+
+
+		FROM catalogos.secciones SeccionEO
+		JOIN catalogos.entidades EntidadEO on
+		(SeccionEO.id_entidad = EntidadEO.id_entidad)
+		LEFT JOIN
+		catalogos.dfederales DFederalEO on (SeccionEO.id_entidad =
+		DFederalEO.id_entidad and SeccionEO.id_dfederal =
+		DFederalEO.id_dfederal)
+		LEFT JOIN catalogos.dlocales DLocalEO on
+		(SeccionEO.id_entidad = DLocalEO.id_entidad and SeccionEO.id_dlocal =
+		DLocalEO.id_dlocal)
+		LEFT JOIN catalogos.municipios MunicipioEO on
+		(SeccionEO.id_entidad = MunicipioEO.id_entidad and
+		SeccionEO.id_municipio = MunicipioEO.id_municipio)
+		LEFT JOIN
+		catalogos.tipos_secciones TipoSeccionEO on (SeccionEO.id_tipo_seccion
+		= TipoSeccionEO.id_tipo_seccion)
+		left JOIN gis.secciones GisSecciones
+		ON (GisSecciones.llave = SeccionEO.llave)
+		left JOIN gis.entidades
+		GisEntidades ON (EntidadEO.id_entidad = GisEntidades.id_entidad)
+		left
+		JOIN gis.dfederales GisDFederales ON (DFederalEO.llave =
+		GisDFederales.llave)
+		left JOIN gis.municipios GisMunicipios ON
+		(MunicipioEO.llave = GisMunicipios.llave)
+	</sql>
+	
+	
+	
+	
+	<sql id="querySimple">
+		SELECT
+			SeccionEO.pkey SeccionEO_id,
+			SeccionEO.id_seccion SeccionEO_idSeccion,
+			SeccionEO.llave SeccionEO_llave,
+			EntidadEO.id_entidad EntidadEO_id,
+			EntidadEO.entidad EntidadEO_nombre,
+			DFederalEO.pkey DFederalEO_id,
+			DFederalEO.id_dFederal DFederalEO_idDFederal,
+			DFederalEO.dfederal DFederalEO_nombre,
+			DFederalEO.llave DFederalEO_llave,
+			DLocalEO.pkey DLocalEO_id,
+			DLocalEO.id_dlocal DLocalEO_idDLocal,
+			DLocalEO.dlocal DLocalEO_nombre,
+			DLocalEO.llave DLocalEO_llave,
+			MunicipioEO.pkey MunicipioEO_id,
+			MunicipioEO.id_municipio MunicipioEO_idMunicipio,
+			MunicipioEO.municipio MunicipioEO_nombre,
+			MunicipioEO.llave MunicipioEO_llave,
+			TipoSeccionEO.id_tipo_seccion TipoSeccionEO_id,
+			TipoSeccionEO.tipo_seccion TipoSeccionEO_nombre
+		FROM catalogos.secciones SeccionEO
+		JOIN catalogos.entidades EntidadEO on (SeccionEO.id_entidad = EntidadEO.id_entidad)
+		LEFT JOIN catalogos.dfederales DFederalEO on (SeccionEO.id_entidad = DFederalEO.id_entidad and SeccionEO.id_dfederal = DFederalEO.id_dfederal)
+		LEFT JOIN catalogos.dlocales DLocalEO on (SeccionEO.id_entidad = DLocalEO.id_entidad and SeccionEO.id_dlocal = DLocalEO.id_dlocal)
+		LEFT JOIN catalogos.municipios MunicipioEO on (SeccionEO.id_entidad = MunicipioEO.id_entidad and SeccionEO.id_municipio = MunicipioEO.id_municipio)
+		LEFT JOIN catalogos.tipos_secciones TipoSeccionEO on (SeccionEO.id_tipo_seccion = TipoSeccionEO.id_tipo_seccion)
+		left JOIN gis.secciones GisSecciones ON (GisSecciones.llave = SeccionEO.llave)
+		left JOIN gis.entidades GisEntidades ON (EntidadEO.id_entidad = GisEntidades.id_entidad)
+		left JOIN gis.dfederales GisDFederales ON (DFederalEO.llave = GisDFederales.llave)
+		left JOIN gis.municipios GisMunicipios ON (MunicipioEO.llave = GisMunicipios.llave)
+	</sql>
+	
+	<sql id="queryGroup">
+		group by SeccionEO.pkey ,
+		SeccionEO.id_seccion,
+		SeccionEO.llave,
+		EntidadEO.id_entidad,
+		EntidadEO.entidad,
+		DFederalEO.pkey ,
+		DFederalEO.id_dFederal,
+		DFederalEO.dfederal ,
+		DFederalEO.llave ,
+		DLocalEO.pkey ,
+		DLocalEO.id_dlocal ,
+		DLocalEO.dlocal ,
+		DLocalEO.llave ,
+		MunicipioEO.pkey,
+		MunicipioEO.id_municipio,
+		MunicipioEO.municipio ,
+		MunicipioEO.llave ,
+		TipoSeccionEO.id_tipo_seccion,
+		TipoSeccionEO.tipo_seccion
+	</sql>
+	
+
+	<select id="porIdEntidad" resultMap="seccionSimple" parameterType="Integer">
+		<include refid="querySimple"/>
+		 WHERE SeccionEO.id_entidad = #{value}  
+		 <include refid="queryGroup"/>
+		 ORDER BY SeccionEO.id_seccion
+	</select>
+	
+	<select id="listadoSimple" resultMap="seccion" parameterType="MunicipioEO">
+		<include refid="query"/>
+		 WHERE SeccionEO.id_entidad = #{entidad.id} AND SeccionEO.id_municipio = #{idMunicipio}  
+		 <include refid="queryGroup"/>
+		 ORDER BY SeccionEO.id_seccion
+	</select>
+	
+	<select id="listadoSimple2" resultMap="seccionSimple" parameterType="MunicipioEO">
+		<include refid="querySimple"/>
+		 WHERE SeccionEO.id_entidad = #{entidad.id} AND SeccionEO.id_municipio = #{idMunicipio}  
+		 <include refid="queryGroup"/>
+		 ORDER BY SeccionEO.id_seccion
+	</select>
+	
+	<select id="listado" resultMap="seccion" parameterType="EntidadEO">
+		<include refid="query" />
+		<where>
+			<if test="id != null">
+				SeccionEO.id_entidad = #{id}
+			</if>
+		</where>
+		<include refid="queryGroup" />
+		ORDER BY SeccionEO.id_seccion
+	</select>
+
+	<select id="listadoPorEntidades" resultMap="seccion"
+		parameterType="list">
+		<include refid="query" />
+		<where>
+			<if test="list != null">
+				SeccionEO.id_entidad in
+				<foreach collection="list" open="(" separator="," close=")"
+					item="item" index="index">
+					${item.id}
+				</foreach>
+			</if>
+		</where>
+		<include refid="queryGroup"></include>
+		ORDER BY SeccionEO.id_entidad, SeccionEO.id_seccion
+	</select>
+	
+	<select id="buscarPorLlave" parameterType="String" resultMap="seccion">
+		<include refid="query"/>
+		WHERE SeccionEO.llave = #{value}
+		<include refid="queryGroup"></include>
+	</select>
+	<!-- Selecciona seccion por entidad, dtto. fed, dtto loc, y mpio -->
+
+
+	<select id="listadoPorEDFDLM" resultMap="seccion" parameterType="hashmap">
+		<include refid="query" />
+		<where>
+			<choose>
+				<when test="municipios != null or dLocales != null or dFederales != null">
+					<if test="municipios != null">
+						MunicipioEO.llave in
+						<foreach collection="municipios" open="(" separator=","
+							close=")" item="item" index="index">
+							#{item.llave}
+						</foreach>
+					</if>
+					<if test="dLocales != null">
+						and DLocalEO.llave in
+						<foreach collection="dLocales" open="(" separator=","
+							close=")" item="item" index="index">
+							#{item.llave}
+						</foreach>
+					</if>
+					<if test="dFederales != null">
+						and DFederalEO.llave in
+						<foreach collection="dFederales" open="(" separator=","
+							close=")" item="item" index="index">
+							#{item.llave}
+						</foreach>
+					</if>
+				</when>
+				<otherwise>
+					SeccionEO.pkey is null
+				</otherwise>
+			</choose>
+		</where>
+		<include refid="queryGroup" />
+		ORDER BY SeccionEO.id_entidad, SeccionEO.id_seccion
+	</select>
+	
+	<select id="seccionInLlaves" parameterType="String" resultMap="seccion">
+		<include refid="query"/>
+		<where>
+			SeccionEO.llave IN (${value})
+		</where>
+		<include refid="queryGroup"/>
+	</select>
+	
+	<select id="porLlave" parameterType="String" resultMap="seccion">
+		<include refid="query" />
+		WHERE SeccionEO.llave = #{value}
+		<include refid="queryGroup" />
+	</select>
+	
+	<sql id="querySencillo">
+		SELECT 
+		SeccionEO.pkey SeccionEO_id, 
+		SeccionEO.id_entidad EntidadEO_id, 
+		SeccionEO.id_dfederal DFederalEO_idDFederal, 
+		SeccionEO.id_dlocal DLocalEO_idDLocal, 
+		SeccionEO.id_municipio MunicipioEO_id, 
+		SeccionEO.id_seccion SeccionEO_idSeccion, 
+       	SeccionEO.llave SeccionEO_llave, 
+       	SeccionEO.id_tipo_seccion
+       	FROM catalogos.secciones SeccionEO
+	
+	</sql>
+	
+	<select id="porMunicipio"  parameterType="hashmap" resultMap="seccion">
+		<include refid="querySencillo" />
+		 where SeccionEO.id_entidad=#{entidad} and SeccionEO.id_municipio=#{municipio}
+		 ORDER BY SeccionEO.id_seccion
+	</select>
+
+	
+	<select id="buscarPorLlaveSimple" parameterType="String" resultMap="seccion">
+		<include refid="querySencillo"/>
+		WHERE SeccionEO.llave_seccion = #{value}
+		<include refid="queryGroup"></include>
+	</select>
+</mapper>

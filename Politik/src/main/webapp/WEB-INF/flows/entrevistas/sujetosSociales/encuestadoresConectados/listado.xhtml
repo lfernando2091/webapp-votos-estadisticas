@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Entrevistadores Conectados">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Grupo :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloProgramas.seleccionado}" style="width:300px">
+										<p:ajax event="itemSelect" onsuccess="actualizar()" />
+					            		<f:selectItems value="${modeloProgramas.listado}" var="fila" itemLabel="${fila.nombre2}" itemValue="${fila}" />		
+									</p:selectOneMenu>
+							</p:column>
+						</p:panelGrid>
+						<p:panel id="gridEncuestas">
+							<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}"
+									selectionMode="single" paginator="true" rows="15" id="tablaConectados" paginatorPosition="bottom">
+									<p:column headerText="Nick"   filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.usuario.nick}">
+										<p:outputLabel value="${fila.usuario.nick}"/>
+									</p:column>
+									<p:column headerText="NOMBRE"  filterable="true" filterMatchMode="contains" filterStyle="width:90%;"
+										 filterBy="${fila.usuario.nombre}" >
+										<p:outputLabel value="${fila.usuario.nombre}"/>
+									</p:column>
+									<p:column headerText="Municipio Abby-PH"  filterable="true" filterMatchMode="contains" filterStyle="width:90%;"
+										 filterBy="${fila.municipioProspera}" rendered="${modeloProgramas.seleccionado=='PROSPERA'}">
+										<p:outputLabel value="${fila.municipioProspera}"/>
+									</p:column>
+									<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tablaConectados" fileName="ResultadosConectados"/>
+										</h:commandLink>
+									</f:facet>
+							</p:dataTable>
+						</p:panel>
+					</p:panel>	
+					
+					<p:remoteCommand name="actualizar" action="actualizar" update="gridEncuestas"/>
+					
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

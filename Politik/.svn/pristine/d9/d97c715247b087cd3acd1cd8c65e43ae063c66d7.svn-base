@@ -1,0 +1,87 @@
+package com.saganet.politik.database_dm.sincronizacion;
+
+import java.io.Serializable;
+
+public class UsuarioEO implements Serializable {
+	private static final long serialVersionUID = -1285913591803067849L;
+	private Integer id;
+	private String usuario;
+	private String password;
+	private String nombre;
+	private String primerApellido;
+	private String segundoApellido;
+	private Integer supervisor;
+	private Integer borrado;
+	private Integer empresa_id;
+	private Integer admin;
+	
+	
+	@Override
+	public String toString() {
+		return "UsuariosEO [id=" + id + ", usuario=" + usuario + ", password=" + password + ", nombre=" + nombre
+				+ ", primerApellido=" + primerApellido + ", segundoApellido=" + segundoApellido + ", supervisor="
+				+ supervisor + ", borrado=" + borrado + ", empresa_id=" + empresa_id + ", admin=" + admin + "]";
+	}
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getUsuario() {
+		return usuario;
+	}
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getNombre() {
+		return nombre;
+	}
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	public String getPrimerApellido() {
+		return primerApellido;
+	}
+	public void setPrimerApellido(String primerApellido) {
+		this.primerApellido = primerApellido;
+	}
+	public String getSegundoApellido() {
+		return segundoApellido;
+	}
+	public void setSegundoApellido(String segundoApellido) {
+		this.segundoApellido = segundoApellido;
+	}
+	public Integer getSupervisor() {
+		return supervisor;
+	}
+	public void setSupervisor(Integer supervisor) {
+		this.supervisor = supervisor;
+	}
+	public Integer getBorrado() {
+		return borrado;
+	}
+	public void setBorrado(Integer borrado) {
+		this.borrado = borrado;
+	}
+	public Integer getEmpresa_id() {
+		return empresa_id;
+	}
+	public void setEmpresa_id(Integer empresa_id) {
+		this.empresa_id = empresa_id;
+	}
+	public Integer getAdmin() {
+		return admin;
+	}
+	public void setAdmin(Integer admin) {
+		this.admin = admin;
+	}
+	
+	
+}

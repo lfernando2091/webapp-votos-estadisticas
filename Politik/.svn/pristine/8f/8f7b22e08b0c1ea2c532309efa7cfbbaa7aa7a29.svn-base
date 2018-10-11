@@ -1,0 +1,35 @@
+package com.saganet.politik.components.administracion;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("UsuariosC")
+public class UsuariosC {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	public Modelo<UsuarioEO> modelo(){
+		
+		Modelo<UsuarioEO> modelo;
+		List<UsuarioEO> listado;
+		
+		listado = sqlSession.selectList("administracion.usuarios.listado");
+		
+		modelo = new Modelo<>();
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+	}
+	
+}

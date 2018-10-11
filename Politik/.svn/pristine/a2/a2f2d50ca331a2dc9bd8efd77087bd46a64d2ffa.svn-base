@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<secured attributes="ROLE_EVENTOS"/>
+	
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="EventosSocialesC.tablaEventosSociales(flowScope.evento)" result="viewScope.tabla"/>
+		</on-entry>
+		<transition on="agregar" to="agregar">
+			<evaluate expression="EventosSocialesC.crearEventoSocial()" result="flowScope.evento"/>
+		</transition>
+		<transition on="eliminar" to="fin">
+			<evaluate expression="EventosSocialesC.eliminarEventoSocial(viewScope.tabla.seleccionado)"/>
+		</transition>
+	</view-state>
+	
+	<view-state id="agregar">
+		<on-entry>
+			<evaluate expression="EventosSocialesC.listadoEstatus()" result="viewScope.listadoEstatus"/>
+			<evaluate expression="EventosSocialesC.listadoTipo()" result="viewScope.listadoTipo"/>
+			<evaluate expression="EventosSocialesC.listadoNiveles()" result="viewScope.listadoNiveles"/>	
+			<evaluate expression="CatalogosEntidadesC.modelo()" result="viewScope.entidades"/>	
+			<evaluate expression="EventosSocialesC.tablaGeozonas()" result="viewScope.geozonas"/>	
+			<set name="viewScope.banderaMun" value="false"/>
+			<evaluate expression="EventosSocialesC.crearModeloParticiones(viewScope.geozonas.seleccionado.particiones)" result="viewScope.modeloParticiones"/>
+		</on-entry>
+		<transition on="guardar" to="listado">
+			<evaluate expression="EventosSocialesC.nuevoEventoSocial(flowScope.evento,viewScope.banderaMun,viewScope.geozonas.seleccionado)" result="flowScope.evento"/>
+		</transition>
+		<transition on="actualizarBandera">
+			<set name="viewScope.banderaMun" value="false"/>
+		</transition>
+		<transition on="crearModeloParticiones">
+			<evaluate expression="EventosSocialesC.crearModeloParticiones(viewScope.geozonas.seleccionado.particiones)" result="viewScope.modeloParticiones"/>
+		</transition>
+		<transition on="subNivelGeozona">
+			<evaluate expression="EventosSocialesC.territoriosSubnivel(viewScope.geozonas.seleccionado,viewScope.modeloParticiones.seleccionMultiple)" result="viewScope.subGeozona"/>
+		</transition>
+		<transition on="actualizarNivel">
+			<evaluate expression="EventosSocialesC.nivelTerritorio(flowScope.evento.nivel ,viewScope.entidades.seleccionMultiple)" result="viewScope.territorioNivel"/>
+		</transition>
+		<transition on="cancelar" to="fin"/>
+	</view-state>
+	
+	<end-state id="fin"/>
+</flow>

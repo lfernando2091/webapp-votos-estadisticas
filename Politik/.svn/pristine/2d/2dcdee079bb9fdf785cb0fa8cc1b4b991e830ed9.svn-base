@@ -1,0 +1,74 @@
+package com.saganet.politik.database.log;
+
+import java.io.Serializable;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("BitacoraEO")
+public class BitacoraEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 2784120952080532030L;
+	
+	private Integer id;
+	private String tipoAccion;
+	private String involucrado;
+	private String descripcion;
+	private String fecha;
+	private String nick;
+
+	@Override
+	public String toString() {
+		return "BitacoraEO [id=" + id + ", tipoAccion=" + tipoAccion + ", involucrado=" + involucrado + ", descripcion="
+				+ descripcion + ", fecha=" + fecha + ", nick=" + nick + "]";
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getTipoAccion() {
+		return tipoAccion;
+	}
+
+	public void setTipoAccion(String tipoAccion) {
+		this.tipoAccion = tipoAccion;
+	}
+
+	public String getInvolucrado() {
+		return involucrado;
+	}
+
+	public void setInvolucrado(String involucrado) {
+		this.involucrado = involucrado;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public String getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(String fecha) {
+		this.fecha = fecha;
+	}
+
+	public String getNick() {
+		return nick;
+	}
+
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+	
+}

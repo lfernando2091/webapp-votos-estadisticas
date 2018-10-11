@@ -1,0 +1,689 @@
+package com.saganet.politik.components.estructuras;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.primefaces.model.DualListModel;
+import org.primefaces.model.diagram.Connection;
+import org.primefaces.model.diagram.Element;
+import org.primefaces.model.diagram.endpoint.EndPoint;
+import org.primefaces.model.diagram.endpoint.EndPointList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.binding.message.MessageBuilder;
+import org.springframework.binding.message.MessageContext;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+import org.springframework.webflow.execution.RequestContextHolder;
+
+import com.saganet.politik.components.catalogos.CamposTablaC;
+import com.saganet.politik.components.catalogos.TablasC;
+import com.saganet.politik.database.catalogos.CampoTablaEO;
+import com.saganet.politik.database.catalogos.DFederalEO;
+import com.saganet.politik.database.catalogos.DLocalEO;
+import com.saganet.politik.database.catalogos.DependenciaEO;
+import com.saganet.politik.database.catalogos.EleccionEO;
+import com.saganet.politik.database.catalogos.EntidadEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.catalogos.TablaEO;
+import com.saganet.politik.database.estructuras.EstructuraEO;
+import com.saganet.politik.database.estructuras.FiguraEO;
+import com.saganet.politik.database.estructuras.NodoEO;
+import com.saganet.politik.database.mdm.TablaPersonaEO;
+import com.saganet.politik.dominios.AmbitosDO;
+import com.saganet.politik.dominios.FiguraAtributosDO;
+import com.saganet.politik.dominios.TiposCampoDO;
+import com.saganet.politik.modelos.JavaBeanT;
+import com.saganet.politik.modelos.Modelo;
+import com.saganet.politik.modelos.catalogos.DFederalesT;
+import com.saganet.politik.modelos.catalogos.DLocalesT;
+import com.saganet.politik.modelos.catalogos.EntidadesT;
+import com.saganet.politik.modelos.catalogos.MunicipiosT;
+import com.saganet.politik.utilidades.diagram.DiagramModelPolitik;
+
+@Component("EstructurasEstructurasC")
+public class EstructurasC {
+	private static final Logger logger = LoggerFactory.getLogger(EstructurasC.class);
+
+	@Autowired
+	SqlSession sqlSession;
+	
+	@Autowired
+	TablasC tablasC;
+	
+	@Autowired
+	CamposTablaC camposTablaC;
+
+	public List<EstructuraEO> listado(List<Integer> ids) {
+		List<EstructuraEO> listado;
+
+		listado = sqlSession.selectList("estructuras.estructuras.listadoPorIds", ids);
+
+		for(EstructuraEO estructura : listado){
+			cargarDiagrama(estructura);
+		}
+		
+		return listado;
+	}
+	
+	public List<EstructuraEO> listado(List<Integer> ids, boolean cargarDiagrama) {
+		if(cargarDiagrama)
+			return listado(ids);
+		
+		List<EstructuraEO> listado;
+
+		listado = sqlSession.selectList("estructuras.estructuras.listadoPorIds", ids);
+
+		return listado;
+	}
+	
+	public EstructuraEO obtenerPorId(Integer idEstructura){
+		EstructuraEO estructura;
+		
+		estructura = sqlSession.selectOne("estructuras.estructuras.porId", idEstructura);
+		
+		return estructura;
+	}
+
+	public Modelo<EstructuraEO> modelo() {
+		Modelo<EstructuraEO> modelo;
+		List<EstructuraEO> listado;
+
+		modelo = new Modelo<>();
+		listado = sqlSession.selectList("estructuras.estructuras.listado");
+		
+		for(EstructuraEO estructura : listado){
+			cargarDiagrama(estructura);
+		}
+
+		modelo.setListado(listado);
+		if (!listado.isEmpty()) {
+			modelo.setSeleccionado(listado.get(0));
+		}
+		logger.debug("Se obtiene listado de EstructuraEO: {}", listado);
+
+		return modelo;
+	}
+	
+	public Modelo<EstructuraEO> modelo(AmbitosDO ambito, DependenciaEO dependencia, EleccionEO eleccion, boolean cargarDiagrama){
+		Modelo<EstructuraEO> modelo;
+		List<EstructuraEO> listado;
+		FiguraEO figura;
+		List<FiguraAtributosDO> atributos;
+		
+		modelo = new Modelo<>();
+		listado = null;
+		
+		//Procesar Listado de Estructuras
+		switch(ambito){
+		case ELECCION:
+			listado = sqlSession.selectList("estructuras.estructuras.porEleccion", eleccion);
+			for(EstructuraEO estructura : listado){
+				for(NodoEO nodo : estructura.getNodos()){
+					figura = nodo.getFigura();
+					atributos = sqlSession.selectList("estructuras.figuras.listadoAtributos", figura);
+					figura.setAtributos(atributos);
+				}
+			}
+			break;
+		case DEPENDENCIA:
+		case DEPENDENCIAS:
+		case GENERAL:
+			listado = sqlSession.selectList("estructuras.estructuras.listadoPorAmbito", ambito);
+			break;
+		}
+		
+		modelo.setListado(listado);
+		
+		if(cargarDiagrama){
+			for (EstructuraEO estructura : listado) {
+				cargarDiagrama(estructura);
+			}
+		}
+		
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+	}
+	
+	public void cargarDiagrama(EstructuraEO estructura){
+		ByteArrayInputStream bais;
+		ObjectInputStream ois;
+		byte[] diagramaBytes;
+		
+		diagramaBytes = sqlSession.selectOne("estructuras.estructuras.buscarModelo", estructura);
+		try {
+			bais = new ByteArrayInputStream(diagramaBytes);
+			ois = new ObjectInputStream(bais);
+			estructura.setModelo((DiagramModelPolitik) ois.readObject());
+			ois.close();
+			bais.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public EstructuraEO nuevo() {
+		EstructuraEO estructura;
+
+		estructura = new EstructuraEO();
+
+		return estructura;
+	}
+	
+	public Modelo<EstructuraEO> crearModelo(List<EstructuraEO> listado, boolean cargarDiagrama){
+		Modelo<EstructuraEO> modelo;
+		
+		modelo = new Modelo<>();
+		
+		if(listado == null){
+			modelo.setListado(new ArrayList<EstructuraEO>());
+			return modelo;
+		}
+		
+		if(cargarDiagrama)
+			for(EstructuraEO estructura : listado)
+				cargarDiagrama(estructura);
+		
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+	}
+	
+	public Modelo<EstructuraEO> crearModeloDual(AmbitosDO ambito, List<EstructuraEO> estructurasQuitar){
+		Modelo<EstructuraEO> modelo;
+		List<EstructuraEO> listado;
+		DualListModel<EstructuraEO> modeloDual;
+		HashMap<String, Object> parametros;
+		
+		modelo = new Modelo<>();
+		parametros = new HashMap<>();
+		
+		parametros.put("ambito", ambito);
+		parametros.put("estructuras", estructurasQuitar);
+		
+		if(estructurasQuitar == null || estructurasQuitar.isEmpty())
+			listado = sqlSession.selectList("estructuras.estructuras.listadoPorAmbito", ambito);
+		else
+			listado = sqlSession.selectList("estructuras.estructuras.listadoPorAmbitoEstructurasQuitar", parametros);
+		
+		if(listado == null){
+			modelo.setListado(new ArrayList<EstructuraEO>());
+			return modelo;
+		}
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		modeloDual = new DualListModel<>(listado, new ArrayList<EstructuraEO>());
+		modelo.setModeloDual(modeloDual);
+		
+		return modelo;
+	}
+	
+	public AmbitosDO ambitoElectoral(){
+		return AmbitosDO.ELECCION;
+	}
+	
+	public String insertar(EstructuraEO estructura, DiagramModelPolitik diagrama) {
+		MessageContext messageContext;
+		List<Element> elementos;
+		List<Connection> conexiones;
+		List<EndPoint> endPoints;
+		List<FiguraEO> rutas;
+		List<NodoEO> nodos;
+		List<Connection> conexionesRaiz;
+		Element raiz, fin;
+		FiguraEO figuraRaiz, figuraFin;
+		String padre;
+		StringBuilder hijo;
+		boolean duplicado, buscarPadre;
+		int idHijo;
+		ByteArrayOutputStream baos;
+		ObjectOutputStream oos;
+		byte[] diagramaBytes;
+
+		messageContext = RequestContextHolder.getRequestContext().getMessageContext();
+
+		figuraRaiz = new FiguraEO();
+		figuraRaiz.setId(-1);
+
+		figuraFin = new FiguraEO();
+		figuraFin.setId(-2);
+
+		nodos = new ArrayList<>();
+
+		elementos = diagrama.getElements();
+		conexiones = diagrama.getConnections();
+
+		// Validar Diagrama
+		// Mas de dos elementos
+		if (elementos.size() == 2) {
+			messageContext.addMessage(
+					new MessageBuilder().error().source("diagrama").defaultText("No se agregaron Figuras").build());
+			return "error";
+		}
+		logger.debug("Elementos: {}", elementos.size());
+
+		// Raiz existe
+		raiz = diagrama.buscarElementoPorJavaBean(figuraRaiz);
+		if (raiz == null) {
+			messageContext.addMessage(
+					new MessageBuilder().error().source("diagrama").defaultText("Raíz no localizada").build());
+			return "error";
+		}
+
+		// Fin existe
+		fin = diagrama.buscarElementoPorJavaBean(figuraFin);
+		if (fin == null) {
+			messageContext.addMessage(
+					new MessageBuilder().error().source("diagrama").defaultText("Final no localizado").build());
+			return "error";
+		}
+
+		// Conexiones
+		if (conexiones.isEmpty()) {
+			messageContext.addMessage(new MessageBuilder().error().source("diagrama")
+					.defaultText("No se establecieron conexiones").build());
+			return "error";
+		}
+		logger.debug("Conexiones: {}", conexiones.size());
+
+		// Listado de EndPoint
+		endPoints = new EndPointList();
+		for (Element el : elementos)
+			for (EndPoint ep : el.getEndPoints())
+				endPoints.add(ep);
+
+		// Todos los EndPoint deben estar conectados
+		for (Connection con : conexiones) {
+			endPoints.remove(con.getSource());
+			endPoints.remove(con.getTarget());
+		}
+
+		if (!endPoints.isEmpty()) {
+			messageContext.addMessage(new MessageBuilder().error().source("diagrama")
+					.defaultText("Todos los Elementos deben estar conectados").build());
+			return "error";
+		}
+
+		// Recorrer el diagrama
+
+		// Encontrar conexion raiz
+
+		conexionesRaiz = new ArrayList<>();
+		for (Connection con : conexiones) {
+			if (raiz.getEndPoints().get(0).equals(con.getSource()))
+				conexionesRaiz.add(con);
+		}
+		// logger.debug("conexionRaiz: {}", conexionRaiz);
+
+		for (Connection cRaiz : conexionesRaiz) {
+			logger.debug("Rutas: {}", generarRuta(cRaiz, diagrama));
+			rutas = generarRuta(cRaiz, diagrama);
+
+			padre = new String("");
+			buscarPadre = false;
+			for (FiguraEO figura : rutas) {
+				// Verificar si es final
+				if (figura.getId().equals(-2)) {
+					buscarPadre = true;
+					continue;
+				}
+
+				if (buscarPadre) {
+					for (NodoEO nodo : nodos) {
+						if (nodo.getFigura().equals(figura)) {
+							padre = nodo.getNodo();
+						}
+					}
+				}
+
+				if (buscarPadre) {
+					buscarPadre = false;
+					continue;
+				}
+
+				// Verificar que el hijo no este duplicado
+				hijo = new StringBuilder("");
+				idHijo = 1;
+				// logger.debug("Padre - Hijo: {} - {}", padre, hijo);
+				// logger.debug("Padre length: {}", padre.length());
+				if (padre.length() == 0) {
+					hijo.append(idHijo);
+				} else {
+					hijo.append(padre);
+					hijo.append(".");
+					hijo.append(idHijo);
+				}
+				// logger.debug("Padre - Hijo (2): {} - {}", padre, hijo);
+
+				duplicado = true;
+				while (duplicado) {
+					duplicado = false;
+					// logger.debug("Buscar Hijo Duplicado: {}", hijo);
+					for (NodoEO nodo : nodos) {
+						// logger.debug("Nodo: {}", nodo.getNodo());
+						if (nodo.getNodo().equals(hijo.toString())) {
+							// logger.debug("Nodo Duplicado - Hijo: {}", hijo);
+							// logger.debug("Nodo Duplicado - LastIndex: {} -
+							// Lenght: {}", hijo.lastIndexOf("."),
+							// hijo.length());
+							idHijo++;
+							hijo.delete(hijo.lastIndexOf(".") + 1, hijo.length());
+							hijo.append(idHijo);
+							duplicado = true;
+						}
+					}
+				}
+				padre = hijo.toString();
+
+				// logger.debug("Padre - Hijo (Final): {} - {}", padre, hijo);
+				nodos.add(new NodoEO(figura, hijo.toString()));
+			}
+
+		}
+		
+		//Fijar Elementos en Diagrama
+		for(Element el : elementos){
+			el.setDraggable(false);
+		}
+		
+		//Fijar Conexiones en Diagrama
+		for(Connection con : conexiones){
+			con.setDetachable(false);
+		}
+
+		// Serializar el Diagrama
+		diagramaBytes = null;
+		try {
+			baos = new ByteArrayOutputStream();
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(diagrama);
+			oos.close();
+			diagramaBytes = baos.toByteArray();
+			baos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		logger.debug("Nodos creados: {}", nodos);
+		HashMap<String, Object> parametros;
+		parametros = new HashMap<>();
+		parametros.put("estructura", estructura);
+		parametros.put("modelo", diagramaBytes);
+		logger.debug("Estructura a Insertar: {}", estructura);
+		sqlSession.insert("estructuras.estructuras.insertar", parametros);
+		parametros.put("nodos", nodos);
+		sqlSession.insert("estructuras.nodos.insertar", parametros);
+		
+		//Crear Tabla en esquema Warehouse
+		TablaEO tabla;
+		List<CampoTablaEO> campos;
+		
+		tabla = new TablaEO();
+		campos = new ArrayList<>();
+		
+		tabla.setTabla("estructura_" + estructura.getId());
+		tabla.setDescripcion(estructura.getNombre());
+		tabla.setParticionada(false);
+		
+		campos.add(camposTablaC.crearCampo("id_persona", TiposCampoDO.INTEGER));
+		campos.add(camposTablaC.crearCampo("id_entidad_nacimiento", TiposCampoDO.INTEGER));
+		campos.add(camposTablaC.crearCampo("llave", TiposCampoDO.TEXT));
+		campos.add(camposTablaC.crearCampo("id_nodo", TiposCampoDO.INTEGER));
+		campos.add(camposTablaC.crearCampo("id_persona_padre", TiposCampoDO.INTEGER));
+		campos.add(camposTablaC.crearCampo("id_entidad_nacimiento_padre", TiposCampoDO.INTEGER));
+		
+		switch(estructura.getAmbito()){
+		case DEPENDENCIA:
+			break;
+		case ELECCION:
+			campos.add(camposTablaC.crearCampo("id_eleccion", TiposCampoDO.INTEGER));
+			break;
+		case GENERAL:
+			break;
+		case DEPENDENCIAS:
+			campos.add(camposTablaC.crearCampo("id_dependencia", TiposCampoDO.INTEGER));
+			campos.add(camposTablaC.crearCampo("cargo", TiposCampoDO.TEXT));
+			campos.add(camposTablaC.crearCampo("fecha_inicio", TiposCampoDO.DATE));
+			campos.add(camposTablaC.crearCampo("fecha_termino", TiposCampoDO.DATE));
+			campos.add(camposTablaC.crearCampo("vigente", TiposCampoDO.BOOLEAN));
+			break;
+		}
+						
+		tablasC.insertar(tabla, campos);
+		
+		//Agregar la Tabla a la Estructura
+		estructura.setTabla(tabla);
+		sqlSession.update("estructuras.estructuras.actualizarTabla", estructura);
+		
+		//Generar indices
+		parametros = new HashMap<>();
+		parametros.put("tabla", tabla.getTabla());
+		
+		parametros.put("nombre", tabla.getTabla() + "_ix_" + "id_persona");
+		parametros.put("campo", "id_persona");
+		sqlSession.update("catalogos.tablas.indiceEntero", parametros);
+		
+		parametros.put("nombre", tabla.getTabla() + "_ix_" + "id_entidad_nacimiento");
+		parametros.put("campo", "id_entidad_nacimiento");
+		sqlSession.update("catalogos.tablas.indiceEntero", parametros);
+		
+		parametros.put("nombre", tabla.getTabla() + "_ix_" + "id_persona_padre");
+		parametros.put("campo", "id_persona_padre");
+		sqlSession.update("catalogos.tablas.indiceEntero", parametros);
+		
+		parametros.put("nombre", tabla.getTabla() + "_ix_" + "id_entidad_nacimiento_padre");
+		parametros.put("campo", "id_entidad_nacimiento_padre");
+		sqlSession.update("catalogos.tablas.indiceEntero", parametros);
+		
+		switch(estructura.getAmbito()){
+		case DEPENDENCIA:
+			break;
+		case DEPENDENCIAS:
+			parametros.put("nombre", tabla.getTabla() + "_ix_" + "id_dependencia");
+			parametros.put("campo", "id_dependencia");
+			sqlSession.update("catalogos.tablas.indiceEntero", parametros);
+			break;
+		case ELECCION:
+			parametros.put("nombre", tabla.getTabla() + "_ix_" + "id_eleccion");
+			parametros.put("campo", "id_eleccion");
+			sqlSession.update("catalogos.tablas.indiceEntero", parametros);
+			break;
+		case GENERAL:
+			break;
+		}
+		
+		//Crear Tabla de Atributos para la Estructura
+		tabla.setTabla("estructura_" + estructura.getId() + "_atributos");
+		tabla.setDescripcion(estructura.getNombre() + " - Atributos");
+		tabla.setParticionada(false);
+		
+		campos = new ArrayList<>();
+		campos.add(camposTablaC.crearCampo("id_politik_padre", TiposCampoDO.INTEGER));
+		campos.add(camposTablaC.crearCampo("tipo_atributo", TiposCampoDO.TEXT));
+		campos.add(camposTablaC.crearCampo("dato01_text", TiposCampoDO.TEXT));
+		campos.add(camposTablaC.crearCampo("dato02_text", TiposCampoDO.TEXT));
+		campos.add(camposTablaC.crearCampo("dato03_text", TiposCampoDO.TEXT));
+		campos.add(camposTablaC.crearCampo("dato04_text", TiposCampoDO.TEXT));
+		campos.add(camposTablaC.crearCampo("dato05_text", TiposCampoDO.TEXT));
+		campos.add(camposTablaC.crearCampo("dato01_int", TiposCampoDO.INTEGER));
+		campos.add(camposTablaC.crearCampo("dato02_int", TiposCampoDO.INTEGER));
+		campos.add(camposTablaC.crearCampo("dato03_int", TiposCampoDO.INTEGER));
+		campos.add(camposTablaC.crearCampo("dato04_int", TiposCampoDO.INTEGER));
+		campos.add(camposTablaC.crearCampo("dato05_int", TiposCampoDO.INTEGER));
+		
+		parametros = new HashMap<>();
+		parametros.put("tabla", tabla);
+		parametros.put("campos", campos);
+		sqlSession.update("catalogos.tablas.crearTabla", parametros);
+		
+		parametros = new HashMap<>();
+		parametros.put("nombre", tabla.getTabla() + "_ix_" + "id_politik_padre");
+		parametros.put("tabla", tabla.getTabla());
+		parametros.put("campo", "id_politik_padre");
+		sqlSession.update("catalogos.tablas.indiceEntero", parametros);
+		
+		parametros = new HashMap<>();
+		parametros.put("tabla", tabla.getTabla());
+		parametros.put("nombre", tabla.getTabla() + "_fk_estructura_" + estructura.getId());
+		parametros.put("campo", "id_politik_padre");
+		parametros.put("tablaRef", "estructura_" + estructura.getId());
+		parametros.put("campoRef", "id_politik");
+		sqlSession.update("catalogos.tablas.fk", parametros);
+
+		return "success";
+	}
+
+	private List<FiguraEO> generarRuta(Connection conexion, DiagramModelPolitik diagrama) {
+		List<FiguraEO> ruta;
+		EndPoint endPointSource, endPointTarget;
+		Element elementoSource, elementoTarget;
+		FiguraEO figuraSource, figuraTarget;
+
+		ruta = new ArrayList<>();
+
+		endPointSource = conexion.getSource();
+		endPointTarget = conexion.getTarget();
+		elementoSource = diagrama.buscarElementoPorEndPoint(endPointSource);
+		elementoTarget = diagrama.buscarElementoPorEndPoint(endPointTarget);
+		figuraSource = (FiguraEO) elementoSource.getData();
+		figuraTarget = (FiguraEO) elementoTarget.getData();
+
+		if (!figuraSource.getId().equals(-1))
+			ruta.add(figuraSource);
+
+		if (figuraTarget.getId().equals(-2))
+			ruta.add(figuraTarget);
+
+		// Buscar conexion target
+		for (Connection con : diagrama.getConnections()) {
+			if (!conexion.equals(con)) {
+				for (EndPoint ep : elementoTarget.getEndPoints()) {
+					if (ep.equals(con.getSource())) {
+						ruta.addAll(generarRuta(con, diagrama));
+					}
+				}
+			}
+		}
+		return ruta;
+	}
+	
+	public boolean necesitaLlaves(EstructuraEO estructura) {
+		boolean flag;
+
+		switch (estructura.getNivel()) {
+		case DFEDERAL:
+		case DLOCAL:
+		case ENTIDAD:
+		case LOCALIDAD:
+		case MANZANA:
+		case MUNICIPIO:
+		case SECCION:
+			flag = true;
+			break;
+		case NACIONAL:
+		default:
+			flag = false;
+			break;
+		}
+
+		return flag;
+	}
+
+	public boolean necesitaElecciones(EstructuraEO estructura) {
+		boolean flag;
+
+		switch (estructura.getAmbito()) {
+		case ELECCION:
+			flag = true;
+			break;
+		case GENERAL:
+		default:
+			flag = false;
+			break;
+		}
+
+		return flag;
+	}
+
+	public List<String> listadoTerritorios(RequestContext context) {
+		HashMap<String, Object> viewScope, flowScope;
+		EstructuraEO estructura;
+		EntidadesT listadoEntidades;
+		DFederalesT listadoDFederales;
+		DLocalesT listadoDLocales;
+		MunicipiosT listadoMunicipios;
+		List<EntidadEO> entidades;
+		List<DFederalEO> dFederales;
+		List<DLocalEO> dLocales;
+		List<MunicipioEO> municipios;
+		List<String> llaves;
+
+		viewScope = (HashMap<String, Object>) context.getViewScope().asMap();
+		flowScope = (HashMap<String, Object>) context.getFlowScope().asMap();
+
+		estructura = (EstructuraEO) flowScope.get("estructura");
+
+		listadoEntidades = (EntidadesT) viewScope.get("listadoEntidades");
+		entidades = listadoEntidades.getSeleccionMultiple();
+
+		listadoDFederales = (DFederalesT) viewScope.get("listadoDFederales");
+		dFederales = listadoDFederales.getSeleccionMultiple();
+
+		listadoDLocales = (DLocalesT) viewScope.get("listadoDLocales");
+		dLocales = listadoDLocales.getSeleccionMultiple();
+
+		listadoMunicipios = (MunicipiosT) viewScope.get("listadoMunicipios");
+		municipios = listadoMunicipios.getSeleccionMultiple();
+
+		llaves = new ArrayList<String>();
+
+		switch (estructura.getNivel()) {
+		case DFEDERAL:
+			for (DFederalEO fila : dFederales) {
+				llaves.add(fila.getLlave());
+			}
+			break;
+		case DLOCAL:
+			for (DLocalEO fila : dLocales) {
+				llaves.add(fila.getLlave());
+			}
+			break;
+		case ENTIDAD:
+			for (EntidadEO fila : entidades) {
+				llaves.add(Integer.toString(fila.getId()));
+			}
+			break;
+		case MUNICIPIO:
+			for (MunicipioEO fila : municipios) {
+				llaves.add(fila.getLlave());
+			}
+			break;
+		default:
+			break;
+		}
+
+		return llaves;
+	}
+	
+}

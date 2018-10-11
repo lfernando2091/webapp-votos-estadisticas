@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Captura" url="/app/estructuras/captura" />
+					</p:breadCrumb>
+					
+					<p:panel header="Captura de Estructura">
+						<p:panelGrid columns="2" id="panelFiltros">
+							<p:outputLabel value="Ámbito" />
+							<p:selectOneMenu value="${modeloAmbitos.seleccionado}" converter="ObjectConverter" style="width: 150px;">
+								<p:ajax event="itemSelect" onstart="actualizarCombos();" />
+								<f:selectItems value="${modeloAmbitos.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Elección" rendered="${modeloAmbitos.seleccionado == 'ELECCION'}" />
+							<p:selectOneMenu id="comboElecciones"
+								value="${modeloElecciones.seleccionado}"
+								converter="ObjectConverter" style="width: 300px;"
+								rendered="${modeloAmbitos.seleccionado == 'ELECCION'}">
+								<p:ajax event="itemSelect" onstart="actualizarCombos();" />
+								<f:selectItems value="${modeloElecciones.listado}" var="fila"
+									itemLabel="${fila.descripcion}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Estructura" />
+							<p:selectOneMenu id="comboEstructuras" value="${modeloEstructuras.seleccionado}" converter="ObjectConverter" style="width: 200px;">
+								<f:selectItems value="${modeloEstructuras.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton id="botonSiguiente" value="Siguiente" action="iniciarCaptura" disabled="${modeloEstructuras.seleccionado == null}" />
+						</f:facet>
+					</p:panel>
+					
+					<p:remoteCommand name="actualizarCombos" action="actualizarCombos" update="#{p:component('panelFiltros')} #{p:component('botonSiguiente')}" />
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

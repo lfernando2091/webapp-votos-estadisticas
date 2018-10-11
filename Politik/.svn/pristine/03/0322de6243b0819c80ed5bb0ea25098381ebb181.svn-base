@@ -1,0 +1,61 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Variables">
+						<p:panelGrid columns="2">		
+							<p:outputLabel value="Campos "/>
+							<p:selectOneMenu value="${listadoVariables.seleccionado}" converter="ObjectConverter" style="width:250px">
+								<f:selectItems value="${listadoVariables.listado}" var="fila" itemLabel="${fila.importacion.campo.nombre}" itemValue="${fila}" />
+								<p:ajax event="itemSelect" oncomplete="guardarValor()" />
+							</p:selectOneMenu>	
+						</p:panelGrid>
+						<p:separator/>
+						<p:panelGrid columns="2" id="pgfrmVariables">
+	            				<p:outputLabel value="Descripción" />
+	            					<p:inputText value="${nuevo.descripcion}" size="50" />
+	            				<p:outputLabel value="Campo" />
+	            					<p:inputText value="${nuevo.campo}" />
+	            				<p:outputLabel value="Tipo de Campo" />
+		            				<p:selectOneMenu value="${nuevo.tipo}" style="width: 100px;">
+		            					<f:selectItems value="${listadoTiposCampo}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+		            				</p:selectOneMenu>
+	            				<p:outputLabel value="Valor Predeterminado" />
+	            					<p:inputText value="${nuevo.valorDefault}" />
+	            				<p:outputLabel value="Propagar a" />
+	            				<p:panelGrid columns="4" id="panelPropagar">
+	            					<p:outputLabel value="Entidad" />
+	            						<p:inputSwitch value="${nuevo.entidad}" onLabel="Si" offLabel="No" disabled="${nuevo.nivelCalculo == 'ENTIDAD'}" />
+	            					<p:outputLabel value="Distrito Federal" />
+	            						<p:inputSwitch value="${nuevo.dfederal}" onLabel="Si" offLabel="No" disabled="${nuevo.nivelCalculo != 'SECCION' and nuevo.nivelCalculo != 'MANZANA'}" />
+	            					<p:outputLabel value="Distrito Local" />
+	            						<p:inputSwitch value="${nuevo.dlocal}" onLabel="Si" offLabel="No" disabled="${nuevo.nivelCalculo != 'SECCION' and nuevo.nivelCalculo != 'MANZANA'}" />
+	            					<p:outputLabel value="Municipio" />
+	            						<p:inputSwitch value="${nuevo.municipio}" onLabel="Si" offLabel="No" disabled="${nuevo.nivelCalculo != 'SECCION' and nuevo.nivelCalculo != 'LOCALIDAD' and nuevo.nivelCalculo != 'MANZANA'}" />
+	            					<p:outputLabel value="Sección" />
+	            						<p:inputSwitch value="${nuevo.seccion}" onLabel="Si" offLabel="No" disabled="${nuevo.nivelCalculo != 'MANZANA'}" />
+	            					<p:outputLabel value="Localidad" />
+	            						<p:inputSwitch value="${nuevo.localidad}" onLabel="Si" offLabel="No" disabled="${nuevo.nivelCalculo != 'MANZANA'}" />
+	            				</p:panelGrid>
+	            			</p:panelGrid>
+	            			<f:facet name="footer">
+	            				<p:commandButton action="guardar" value="Finalizar" />
+	            				<p:commandButton action="cancelar" value="Cancelar" immediate="true"/>
+	            			</f:facet>
+						</p:panel>
+						<p:remoteCommand action="guardarValor" name="guardarValor" update="@form"/>
+						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

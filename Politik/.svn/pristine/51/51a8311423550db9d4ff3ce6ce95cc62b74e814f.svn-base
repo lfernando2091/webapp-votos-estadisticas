@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="warehouse.fotos">
+	<cache />
+
+	<select id="fotoAsBytes" parameterType="hashmap" resultType="_byte[]">
+		SELECT foto
+		FROM warehouse.fotos
+		WHERE id_persona = #{idPersona} AND id_entidad_nacimiento = #{idEntidadNacimiento}
+	</select>
+	
+	<select id="fotoEscaladaAsBytes" parameterType="hashmap" resultType="_byte[]">
+		SELECT foto_escalada
+		FROM warehouse.fotos
+		WHERE id_persona = #{idPersona} AND id_entidad_nacimiento = #{idEntidadNacimiento}
+	</select>
+	
+	<insert id="insertar" parameterType="hashmap">
+		INSERT INTO warehouse.fotos(id_persona, id_entidad_nacimiento, foto, foto_escalada)
+    	VALUES (#{persona.id}, #{persona.entidadNacimiento.id}, #{foto}, #{fotoEscalada})
+	</insert>
+	
+	<update id="actualizar" parameterType="hashmap">
+		UPDATE warehouse.fotos
+   		SET foto = #{foto}, foto_escalada = #{fotoEscalada}
+ 		WHERE id_persona = #{persona.id} AND id_entidad_nacimiento = #{persona.entidadNacimiento.id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.admin.encuestas">
+	<cache />
+	
+	<resultMap type="EncuestaEO" id="encuesta">
+	
+		<id column="EncuestaEO_id" property="id" javaType="Integer" />
+		<result column="EncuestaEO_descripcion" property="descripcion" javaType="String"/>
+		<result column="EncuestaEO_nick" property="nick" javaType="String"/>
+		<result column="EncuestaEO_fecha" property="fecha" javaType="String"/>
+		
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			pkey										EncuestaEO_id,
+			descripcion									EncuestaEO_descripcion,
+			nick										EncuestaEO_nick,
+			to_char(fecha, 'YYYY-MM-DD HH12:MI:SS')		EncuestaEO_fecha
+  		FROM encuestas.encuestas
+	</sql>
+	
+	<select id="listado" resultMap="encuesta">
+		<include refid="query" />
+		ORDER BY pkey asc
+	</select>
+	
+	<insert id="insertar" parameterType="EncuestaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('encuestas.encuestas_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas.encuestas(pkey, descripcion, nick)
+    	VALUES (#{id}, #{descripcion}, #{nick});
+	</insert>
+
+</mapper>

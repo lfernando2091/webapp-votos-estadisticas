@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.geozonas">
+	<cache />
+	
+	<resultMap type="GeozonaEO" id="geozona">
+		<id column="GeozonaEO_id" property="id" javaType="Integer"/>
+		<result column="GeozonaEO_nombre" property="nombre" javaType="String"/>
+		<result column="GeozonaEO_observaciones" property="observaciones" javaType="String"/>
+		<result column="GeozonaEO_nivel" property="nivel" javaType="com.saganet.politik.dominios.NivelesDO"/>
+		<collection property="particiones" resultMap="geozonaParticion" />
+	</resultMap>
+	
+	<resultMap type="GeozonaParticionEO" id="geozonaParticion">
+		<id column="GeozonaParticionEO_id" property="id" javaType="Integer"/>
+		<result column="GeozonaParticionEO_idParticion" property="idParticion" javaType="Integer"/>
+		<result column="GeozonaParticionEO_nombre" property="nombre" javaType="String"/>
+		<result column="GeozonaParticionEO_llave" property="llave" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			GeozonaEO.id_geozona 				GeozonaEO_id,
+			GeozonaEO.geozona 					GeozonaEO_nombre,
+			GeozonaEO.nivel 					GeozonaEO_nivel,
+			GeozonaEO.observaciones 			GeozonaEO_observaciones,
+			GeozonaParticionEO.pkey 			GeozonaParticionEO_id,
+			GeozonaParticionEO.id_particion 	GeozonaParticionEO_idParticion,
+			GeozonaParticionEO.particion 		GeozonaParticionEO_nombre,
+			GeozonaParticionEO.llave 			GeozonaParticionEO_llave
+		FROM catalogos.geozonas GeozonaEO
+		JOIN catalogos.geozonas_particiones GeozonaParticionEO ON (GeozonaEO.id_geozona = GeozonaParticionEO.id_geozona)
+	</sql>
+	
+	<select id="listadoEvento" resultMap="geozonaParticion" parameterType="EventoSocialEO">
+		SELECT
+			GeozonaParticionEO.pkey 			GeozonaParticionEO_id,
+			GeozonaParticionEO.id_particion 	GeozonaParticionEO_idParticion,
+			GeozonaParticionEO.particion 		GeozonaParticionEO_nombre,
+			GeozonaParticionEO.llave 			GeozonaParticionEO_llave
+		FROM catalogos.geozonas_particiones GeozonaParticionEO 
+		JOIN eventos_sociales.territorios_evento EventoSocialEO ON (GeozonaParticionEO.llave = EventoSocialEO.llave)
+		WHERE EventoSocialEO.id_evento_social=#{id}
+		ORDER BY GeozonaParticionEO.pkey 
+	</select>
+	
+	
+	<select id="listado" resultMap="geozona">
+		<include refid="query" />
+		ORDER BY GeozonaEO.nivel, GeozonaEO.geozona
+	</select>
+	
+	<select id="porId" resultMap="geozona">
+		<include refid="query" />
+		WHERE GeozonaEO.id_geozona = #{value}
+	</select>
+	
+	<select id="listadoPorUsuario" parameterType="UsuarioEO" resultMap="geozona">
+		<include refid="query" />
+		<where>
+			GeozonaEO.id_geozona in (
+				SELECT UsuariosLlaves.llave::integer
+				FROM administracion.usuarios_llaves UsuariosLlaves
+				WHERE nick = #{nick}
+			)
+		</where>
+	</select>
+	
+	<insert id="insertarGeozona" parameterType="GeozonaEO">
+		<selectKey keyProperty="id" order="BEFORE" resultType="Integer">
+			SELECT nextval('catalogos.geozonas_id_geozona_seq'::regclass)
+		</selectKey>
+		INSERT INTO catalogos.geozonas(id_geozona, geozona, nivel, observaciones)
+    	VALUES (#{id}, #{nombre}, #{nivel}, #{observaciones})
+	</insert>
+
+	<insert id="insertarGeozonaParticion" parameterType="hashmap">
+		<selectKey keyProperty="particion.id" order="BEFORE" resultType="Integer">
+			SELECT nextval('catalogos.geozonas_particiones_pkey_seq'::regclass)
+		</selectKey>
+		INSERT INTO catalogos.geozonas_particiones(pkey, id_geozona, id_particion, particion, llave)
+    	VALUES (#{particion.id}, #{geozona.id}, #{particion.idParticion}, #{particion.nombre}, '${geozona.id}-${particion.idParticion}')
+	</insert>
+	
+	<insert id="insertarGeozonaParticionLlaves" parameterType="hashmap">
+		INSERT INTO catalogos.geozonas_llaves(id_geozona, llave, id_geozona_particion)
+    	VALUES 
+    	<foreach collection="territorios" item="territorio" separator="," close=";">
+    		(#{geozona.id}, #{territorio.llave}, #{particion.id})
+    	</foreach>
+	</insert>
+</mapper>

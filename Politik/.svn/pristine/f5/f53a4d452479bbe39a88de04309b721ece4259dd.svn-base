@@ -1,0 +1,154 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Detalle del Programa">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Dependencia: " />
+							<p:outputLabel value="${programa.dependencia.dependencia}" />
+							<p:outputLabel value="Programa: " />
+							<p:outputLabel value="${programa.programa}" />
+							<p:outputLabel value="Ejercicio: " />
+							<p:outputLabel
+								value="${ejercicio.ejercicio} (${ejercicio.fechaInicio}  - ${ejercicio.fechaTermino})" />
+						</p:panelGrid>
+					</p:panel>
+					<p:spacer height="10px" />
+
+					<p:panelGrid columns="1">
+
+						<p:panel header="Tipos de Inversión">
+							<p:dataTable value="${modeloProgramasFuentes.listado}" var="fila"
+								rowKey="${fila.id}"
+								selection="${modeloProgramasFuentes.seleccionado}"
+								selectionMode="single" rows="10" paginator="true"
+								paginatorAlwaysVisible="false" paginatorPosition="bottom"
+								id="dtlProgramasFuentes">
+								<p:column headerText="Tipo de Inversión">
+${fila.tipoInversion}
+</p:column>
+								<p:column headerText="Monto">
+$ ${fila.monto}
+</p:column>
+								<p:column headerText="Observaciones">
+${fila.observaciones}
+</p:column>
+								<p:column headerText="Fuente de Financiamiento">
+${fila.fuenteFinanciamiento}
+</p:column>
+							
+							</p:dataTable>
+							<p:spacer height="10px"/>
+							<p:outputLabel value="Total: "/>
+							<p:outputLabel value="${totalFuentes}"/>
+							<p:spacer height="10px"/>
+							<f:facet name="footer">
+<!-- 								<p:commandButton value="Agregar" type="button" -->
+<!-- 									icon="fa fa-plus-circle" action="crearNuevo" -->
+<!-- 									onclick="PF('dlgAgregarTipo').show();" onsuccess="crearNuevo" /> -->
+									
+									<p:commandLink action="crearNuevo" title="Agregar Nuevo Tipo de Financiamiento" onclick="PF('dlgAgregarTipo').show();" onsuccess="crearNuevo">
+					                  <p:graphicImage value="/resources/botones/AGREGAR.png"/>
+									</p:commandLink>
+									
+<!-- 								<p:commandButton -->
+<!-- 									rendered="${modeloProgramasFuentes.seleccionado!=null?true:false}" -->
+<!-- 									value="Siguiente" immediate="true" -->
+<!-- 									icon="fa fa-long-arrow-right" action="agregarTerritorios" /> -->
+									
+									<p:commandLink immediate="true" title="Agregar Territorios" rendered="${modeloProgramasFuentes.seleccionado!=null?true:false}" action="agregarTerritorios">
+									 <p:graphicImage value="/resources/botones/SIGUIENTE.png"/>
+									</p:commandLink>
+
+
+<!-- 								<p:commandButton -->
+<!-- 									rendered="${modeloProgramasFuentes.seleccionado!=null?true:false}" -->
+<!-- 									value="Eliminar" action="eliminar" immediate="true" -->
+<!-- 									update="@form" icon="fa fa-minus-circle"> -->
+<!-- 									<p:confirm header="Confirmación" -->
+<!-- 										message="¿Esta seguro que desea eliminar el tipo de inversión?" -->
+<!-- 										icon="ui-icon-alert" /> -->
+<!-- 								</p:commandButton> -->
+
+								<p:commandLink rendered="${modeloProgramasFuentes.seleccionado!=null?true:false}"
+									title="Eliminar" action="eliminar" immediate="true"
+									update="@form">
+									<p:confirm header="Confirmación"
+										message="¿Esta seguro que desea eliminar el tipo de inversión?" 
+										icon="ui-icon-alert" />
+								 <p:graphicImage value="/resources/botones/ELIMINAR.png"/>
+								</p:commandLink>
+								
+
+								<p:confirmDialog global="true" showEffect="fade"
+									hideEffect="fade">
+									<p:commandButton value="Si" type="button"
+										styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+									<p:commandButton value="No" type="button"
+										styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+								</p:confirmDialog>
+							</f:facet>
+						</p:panel>
+
+					</p:panelGrid>
+
+
+					<p:dialog widgetVar="dlgAgregarTipo" modal="true"
+						onShow="crearNuevo" header="Captura Fuente">
+						<p:messages autoUpdate="true" />
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Tipo de Financiamiento:" />
+							<p:selectOneMenu value="${programaFuente.tipoInversion}">
+								<f:selectItems value="${tiposInversion}" var="${fila}"
+									itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Monto: " />
+							<p:inputText value="${programaFuente.monto}" required="true"
+								requiredMessage="Monto: es requerido" />
+							<p:outputLabel value="Observaciones: " />
+							<p:inputText value="${programaFuente.observaciones}" />
+							<p:outputLabel value="Fuente Financiamiento: " />
+							<p:inputText value="${programaFuente.fuenteFinanciamiento}" />
+
+						</p:panelGrid>
+						<f:facet name="footer">
+
+<!-- 							<p:commandButton value="Guardar" action="guardar" -->
+<!-- 								icon="fa fa-save" update="dtlProgramasFuentes" /> -->
+								
+							<p:commandLink title="Guardar" action="guardar" update="dtlProgramasFuentes">
+							 <p:graphicImage value="/resources/botones/GUARDAR.png"/>
+							</p:commandLink>
+								
+<!-- 							<p:commandButton value="Cancelar" icon="fa fa-close" -->
+<!-- 								type="buttom" onclick="PF('dlgAgregarTipo').hide();" /> -->
+								
+								
+								<p:commandLink immediate="true" title="Cancelar" type="buttom" onclick="PF('dlgAgregarTipo').hide();">
+							 <p:graphicImage value="/resources/botones/CANCELAR.png"/>
+							</p:commandLink>
+						</f:facet>
+					</p:dialog>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+
+					<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

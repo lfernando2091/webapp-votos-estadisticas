@@ -1,0 +1,170 @@
+package com.saganet.politik.components.encuestas.admin;
+
+import java.util.HashMap;
+import java.util.List;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.encuestas.admin.CampaniaEO;
+import com.saganet.politik.database.encuestas.admin.EncuestaEO;
+import com.saganet.politik.database.encuestas.admin.ReglaEncuestaEO;
+import com.saganet.politik.dominios.TiposReglasDO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("ReglasEncuestasC")
+public class ReglasEncuestasC {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	@Autowired
+	CampaniasC campaniaC;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ReglasEncuestasC.class);
+	
+	public Modelo<ReglaEncuestaEO> modelo(EncuestaEO encuesta) {
+		
+		Modelo<ReglaEncuestaEO> modelo;
+		List<ReglaEncuestaEO> listado;
+		
+		modelo = new Modelo<>();
+		listado = sqlSession.selectList("encuestas.admin.reglasEncuestas.listado", encuesta);
+		
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+		
+	}
+	
+	public ReglaEncuestaEO nuevo(EncuestaEO encuesta){
+		ReglaEncuestaEO nuevo = new ReglaEncuestaEO();
+		nuevo.setIdEncuesta(encuesta.getId());
+		nuevo.setNick("admin");
+		return nuevo;
+	}
+	
+	public void insertar(ReglaEncuestaEO nuevo){
+		nuevo.setScript(crearScriptForRegla(nuevo.getRegla(), nuevo.getAplica(), nuevo.getNoAplica(), nuevo.getTipo()).toString());
+		sqlSession.insert("encuestas.admin.reglasEncuestas.insertar", nuevo);
+	}
+	
+	public String crearScriptForRegla(String regla, String aplica, String noAplica, String tipo){
+		
+		StringBuilder script = new StringBuilder();
+		
+		if(tipo.equals("Combinada")){
+			script.append("case when ");
+			script.append(regla.replaceAll("Pregunta", ""));
+			script.append(" then ");
+			script.append("'");
+			script.append(aplica);
+			script.append("'");
+			if(noAplica != null){
+				script.append(" else ");
+				script.append("'");
+				script.append(noAplica);
+				script.append("'");
+			}
+			script.append(" end resultado");
+		}else if(tipo.equals("Simple")){
+			script.append(regla);
+		}
+		
+		
+		//Limpiamos script de inyecciones
+		String scriptLimpio  = script.toString().replaceAll("--", "");
+		scriptLimpio  = scriptLimpio.replaceAll(";", "");
+		scriptLimpio  = scriptLimpio.replaceAll("DROP", "");
+		scriptLimpio  = scriptLimpio.replaceAll("drop", "");
+		scriptLimpio  = scriptLimpio.replaceAll("Drop", "");
+		scriptLimpio  = scriptLimpio.replaceAll("INSERT", "");
+		scriptLimpio  = scriptLimpio.replaceAll("insert", "");
+		scriptLimpio  = scriptLimpio.replaceAll("Insert", "");
+		scriptLimpio  = scriptLimpio.replaceAll("Table", "");
+		scriptLimpio  = scriptLimpio.replaceAll("table", "");
+		scriptLimpio  = scriptLimpio.replaceAll("Table", "");
+		scriptLimpio  = scriptLimpio.replaceAll("TRUNCATE", "");
+		scriptLimpio  = scriptLimpio.replaceAll("Truncate", "");
+		scriptLimpio  = scriptLimpio.replaceAll("truncate", "");
+		scriptLimpio  = scriptLimpio.replaceAll("Create", "");
+		scriptLimpio  = scriptLimpio.replaceAll("create", "");
+		scriptLimpio  = scriptLimpio.replaceAll("CREATE", "");
+		
+		return scriptLimpio;
+		
+	}
+	
+	public TiposReglasDO[] listadoTiposReglas(){
+		return TiposReglasDO.values();
+	}
+	
+	public Integer validarScript(EncuestaEO encuesta, ReglaEncuestaEO nuevo){
+		
+		String script = crearScriptForRegla(nuevo.getRegla(), nuevo.getAplica(), nuevo.getNoAplica(), nuevo.getTipo()).toString();
+		
+		CampaniaEO campania = new CampaniaEO();
+		
+		campania = campaniaC.modelo(encuesta).getListado().get(0);
+		
+		String tablaResultados = "e_"+campania.getId();
+		
+		logger.debug("Tabla de resultados: {}", tablaResultados);
+		
+		StringBuilder scriptPrueba = new StringBuilder();
+		
+		if(nuevo.getTipo().equals("Combinada")){
+			
+			scriptPrueba.append("select ");
+			scriptPrueba.append(script);
+			scriptPrueba.append(" from ");
+			scriptPrueba.append("encuestas_resultados."+tablaResultados);
+			
+		}else if(nuevo.getTipo().equals("Simple")){
+			
+			scriptPrueba.append("select ");
+			scriptPrueba.append(script);
+			scriptPrueba.append(" from ");
+			scriptPrueba.append("encuestas_resultados."+tablaResultados);
+			scriptPrueba.append(" group by ");
+			scriptPrueba.append(script);
+			
+		}
+		
+		logger.debug("scriptPruebaOJO: {}", scriptPrueba);
+		
+		try {
+			List<HashMap<String, Object>> lista;
+			lista = sqlSession.selectList("encuestas.admin.reglasEncuestas.validarScript",scriptPrueba);
+			logger.debug("Lista: {}",lista);
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Condición Exitosa!", "Condición Correcta"));
+			return 1;
+		} catch (Exception e) {
+			// TODO: handle exception
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Verifique su condición.", "Error!"));
+			return 0;
+		}
+		
+	}
+	
+	public String validarTipoRegla(ReglaEncuestaEO regla){
+		if(regla.getTipo().equals("Combinada")){
+			return "Para este tipo de regla usted debe capturar la condición.";
+		}else if(regla.getTipo().equals("Simple")){
+			return"Usted debe capturar únicamente el campo por el cual se va a realizar la agrupación.";
+		}else{
+			return null;
+		}
+	}
+	
+}

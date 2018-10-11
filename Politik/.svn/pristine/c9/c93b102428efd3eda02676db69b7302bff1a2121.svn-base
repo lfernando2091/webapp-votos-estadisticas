@@ -1,0 +1,71 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+	<h:outputStylesheet name="/resources/spark-layout/css/custom.css"
+		library="css" />
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+<p:focus for="txtNuevaRespuesta"/>
+					<p:panel header="Datos de la encuesta">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Encuesta: " />
+							<p:outputLabel
+								value="${modeloEncuestaSeleccionada.id} - ${modeloEncuestaSeleccionada.descripcion}" />
+							<p:outputLabel value="Pregunta: " />
+							<p:outputLabel
+								value="${modeloPreguntaSeleccionada.consecutivoPregunta} - ${modeloPreguntaSeleccionada.pregunta} " />
+						</p:panelGrid>
+					</p:panel>
+					<p:separator />
+
+<p:panelGrid styleClass="topAlign">
+<p:row styleClass="topAlign">
+<p:column>
+					<p:panel header="Nueva Respuesta Cerrada">
+
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Respuesta: " />
+							<p:inputText id="txtNuevaRespuesta" value="${nuevaRespuestaCerradaI.respuesta}"
+								required="true" requiredMessage="Requerido: Respuesta Cerrada" />
+						</p:panelGrid>
+
+						<f:facet name="footer">
+							<p:messages autoUpdate="true" />
+							<p:commandButton value="Guardar" icon="fa fa-save"
+								action="insertarRespuestaCerrada" partialSubmit="true" />
+							<p:commandButton action="cancelar" icon="fa fa-level-up"
+								value="Cancelar" immediate="true" />
+						</f:facet>
+					</p:panel>
+					</p:column>
+					<p:column>
+					<p:panel header="Listado de preguntas cerradas">
+<p:dataTable value="${modeloRespuestasCerradas.listado}" var="li">
+<p:column headerText="Respuesta">
+${li.respuesta}
+</p:column>
+</p:dataTable>
+						
+					</p:panel>
+					</p:column>
+					</p:row>
+					
+					</p:panelGrid>
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+							
+						}
+					</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

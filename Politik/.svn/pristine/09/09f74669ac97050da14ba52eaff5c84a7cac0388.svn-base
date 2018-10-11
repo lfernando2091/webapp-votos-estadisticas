@@ -1,0 +1,19 @@
+package com.saganet.politik.utilidades;
+
+import java.io.File;
+
+public class FilePolitik extends File{
+	private static final long serialVersionUID = 3844260706739978433L;
+   private String extencion;
+	public FilePolitik(File file) {
+		super(file, "");
+	}
+	public String getExtencion() {
+		return extencion;
+	}
+	public void setExtencion(String extencion) {
+		this.extencion = extencion;
+	}
+	
+	
+}

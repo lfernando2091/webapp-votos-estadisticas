@@ -1,0 +1,207 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+
+					<p:toolbar>
+						<f:facet name="left">
+							<p:commandLink action="agregarEncuesta">
+									<p:graphicImage value="/resources/botones/NUEVA ENCUESTA.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton icon="fa fa-plus-circle" value="Encuesta" -->
+<!-- 								action="agregarEncuesta" title="Crear Nueva Encuesta" /> -->
+							<p:separator />
+						</f:facet>
+					</p:toolbar>
+					<p:spacer height="10" />
+					<p:panelGrid>
+						<p:row styleClass="topAlign">
+							<p:column>
+								<p:panel header="Encuestas">
+									<p:dataTable value="${modeloEncuestas.listado}" var="fila"
+										rowKey="${fila.id}"
+										selection="${modeloEncuestas.seleccionado}"
+										selectionMode="single" paginator="true" rows="15"
+										paginatorAlwaysVisible="false" paginatorPosition="bottom"
+										reflow="true">
+										<p:ajax event="rowSelect" onstart="comandollenarCampanias()" />
+										<p:column headerText="ID" width="7%">
+									${fila.id}
+								</p:column>
+										<p:column headerText="Descripcion">
+									${fila.descripcion}
+								</p:column>
+										<p:column headerText="Preguntas" width="15%">
+								${fila.preguntas.size()}
+								</p:column>
+										<p:column headerText="Reglas" width="11%">
+								${fila.reglasEncuestas.size()}
+								</p:column>
+
+									</p:dataTable>
+									<f:facet name="footer">
+										<p:commandLink  id="cmdPE" action="preguntasEncuesta" rendered="${modeloEncuestas.listado.isEmpty()?'false':'true'}">
+												<p:graphicImage value="/resources/botones/PREGUNTAS.png" />
+										</p:commandLink>
+										<p:commandLink  id="cmdCrearCampania" action="crearCampania" rendered="${modeloEncuestas.listado.isEmpty()?'false':'true'}">
+												<p:graphicImage value="/resources/botones/CAMPANIA.png" />
+										</p:commandLink>
+										<p:commandLink  id="cmdReglas" action="listadoReglas" rendered="${modeloEncuestas.listado.isEmpty()?'false':'true'}">
+												<p:graphicImage value="/resources/botones/REGLAS.png" />
+										</p:commandLink>
+<!-- 										<p:commandButton id="cmdPE" value="Preguntas" -->
+<!-- 											action="preguntasEncuesta" icon="fa fa-question-circle" -->
+<!-- 											title="Preguntas de la Encuesta" /> -->
+
+<!-- 										<p:commandButton id="cmdCrearCampania" value="Campaña" -->
+<!-- 											action="crearCampania" icon="fa fa-plus-circle" -->
+<!-- 											title="Crear Nueva Campania" /> -->
+
+<!-- 										<p:commandButton id="cmdReglas" value="Reglas" -->
+<!-- 											action="listadoReglas" icon="fa fa-tasks" -->
+<!-- 											title="Listado de Reglas" /> -->
+
+									</f:facet>
+								</p:panel>
+							</p:column>
+							<p:column>
+								<p:panelGrid>
+									<p:row>
+										<p:column>
+											<p:panel header="Campañas"
+												rendered="${modeloCampanias.seleccionado==null or fila.preguntas.size()==0?false:true}">
+												<p:dataTable value="${modeloCampanias.listado}" var="fila"
+													rowKey="${fila.id}" selectionMode="single"
+													selection="${modeloCampanias.seleccionado}"
+													paginator="true" rows="15" paginatorAlwaysVisible="false"
+													reflow="true" paginatorPosition="bottom">
+													<p:ajax event="rowSelect" onstart="comandollenarVueltas()" />
+													<p:column headerText="ID" width="10%">
+								${fila.id}
+								</p:column>
+													<p:column headerText="Nombre de la Campaña">
+								${fila.nombre}
+								</p:column>
+													<p:column headerText="Contactos" width="15%">
+									${fila.universoContactos}
+								</p:column>
+													<p:column headerText="Encuestados" width="17%"
+														style="align:center">
+									${fila.avanceContactos}
+								</p:column>
+												</p:dataTable>
+												<f:facet name="footer">
+													<p:commandLink action="actualizarResultados" rendered="${modeloCampanias.seleccionado==null or fila.preguntas.size()==0?false:true}">
+															<p:graphicImage value="/resources/botones/ACTUALIZAR.png" />
+													</p:commandLink>
+													<p:commandLink rendered="${modeloCampanias.seleccionado==null or fila.preguntas.size()==0?false:true}"
+														action="estadisticas"
+														onclick="window.open('#{request.contextPath}/app/estadisticaEncuesta.saga','excelReport');">
+															<p:graphicImage value="/resources/botones/ESTADISTICAS.png" />
+													</p:commandLink>
+													<p:commandLink action="liberarContactos">
+															<p:confirm header="Aviso" message="Usted liberará registros, desea continuar?" icon="ui-icon-alert" />
+															<p:graphicImage value="/resources/botones/LIBERAR.png" />
+													</p:commandLink>
+													<p:commandLink action="avanceEncuesta">
+															<p:graphicImage value="/resources/botones/AVANCE.png" />
+													</p:commandLink>
+													<p:commandLink action="usuarios">
+															<p:graphicImage value="/resources/botones/USUARIOS.png" />
+													</p:commandLink>
+<!-- 													<p:commandButton value="Actualizar" -->
+<!-- 														rendered="${modeloCampanias.seleccionado==null or fila.preguntas.size()==0?false:true}" -->
+<!-- 														icon="fa fa-refresh" action="actualizarResultados" -->
+<!-- 														title="Actualizar Resultados para Estadisticas" /> -->
+<!-- 													<p:commandButton value="Estadisticas" -->
+<!-- 														icon="fa fa-bar-chart" -->
+<!-- 														rendered="${modeloCampanias.seleccionado==null or fila.preguntas.size()==0?false:true}" -->
+<!-- 														action="estadisticas" -->
+<!-- 														onclick="window.open('#{request.contextPath}/app/estadisticaEncuesta.saga','excelReport');" -->
+<!-- 														 title="Consultar Estadisticas" /> -->
+<!-- 													<p:commandButton value="Liberar" icon="fa fa-square-o" -->
+<!-- 														action="liberarContactos" ajax="false" -->
+<!-- 														title="Liberar Contactos" > -->
+<!-- 														<p:confirm header="Aviso" -->
+<!-- 														message="Usted liberará registros, desea continuar?" -->
+<!-- 														icon="ui-icon-alert" /> -->
+<!-- 														</p:commandButton> -->
+<!-- 													<p:commandButton value="Avance" icon="fa fa-sliders" -->
+<!-- 														action="avanceEncuesta" ajax="false" -->
+<!-- 														title="Consultar Avance" /> -->
+<!-- 														<p:commandButton  value="Usuarios" icon="fa fa-users" action="usuarios" title="Listado de usuarios asignados a la campania" /> -->
+												</f:facet>
+											</p:panel>
+										</p:column>
+									</p:row>
+
+									<p:row>
+										<p:column>
+											<p:spacer height="10" />
+											<p:panel header="Vueltas Capañas">
+												<p:dataTable value="${listadoVueltas}" var="vueltas" reflow="true">
+													<p:column headerText="Vuelta">${vueltas.vuelta==0?'NO CONTACTADO':vueltas.vuelta}</p:column>
+													<p:column headerText="Encuestados">${vueltas.encuestados}</p:column>
+													<p:column headerText="No Encuestados">${vueltas.no_contactados}</p:column>
+													<p:column headerText="Fecha Corte">${vueltas.fecha}</p:column>
+												</p:dataTable>
+												<p:commandLink action="crearNuevaVuelta" update="@form" rendered="${conteoContactados==modeloCampanias.seleccionado.universoContactos?true:false}">
+														<p:graphicImage value="/resources/botones/VUELTA.png" />
+												</p:commandLink>
+<!-- 												<p:commandButton action="crearNuevaVuelta" value="Vuelta - ${conteoContactados}" -->
+<!-- 													icon="fa fa-plus-circle" update="@form" rendered="${conteoContactados==modeloCampanias.seleccionado.universoContactos?true:false}"> -->
+<!-- 												</p:commandButton> -->
+
+
+												<p:confirmDialog global="true" showEffect="fade"
+													hideEffect="fade">
+														<p:commandLink  styleClass="ui-confirmdialog-yes">
+																<p:graphicImage value="/resources/botones/SI.png" />
+														</p:commandLink>
+													 	<p:commandLink  styleClass="ui-confirmdialog-no">
+																<p:graphicImage value="/resources/botones/NO.png" />
+														</p:commandLink>
+<!-- 													<p:commandButton value="Si" type="button" -->
+<!-- 														styleClass="ui-confirmdialog-yes" icon="ui-icon-check" /> -->
+<!-- 													<p:commandButton value="No" type="button" -->
+<!-- 														styleClass="ui-confirmdialog-no" icon="ui-icon-close" /> -->
+												</p:confirmDialog>
+											</p:panel>
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+					<p:remoteCommand name="comandollenarCampanias"
+						action="campaniasEncuesta" partialSubmit="true" update="@form" />
+					<p:remoteCommand name="comandollenarVueltas"
+						action="listadoVueltas" partialSubmit="true" update="@form" />
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+							
+						}
+						
+						.ui-panelgrid td, .ui-panelgrid tr
+{
+    border-style: none !important
+}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

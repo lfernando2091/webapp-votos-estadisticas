@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	<secured attributes="ROLE_CATALOGO_PROGRAMAS" />
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="ProgramasC.modelo()" result="viewScope.modeloProgramas" />
+			<evaluate
+				expression="ProgramasEjerciciosC.modelo(viewScope.modeloProgramas.seleccionado)"
+				result="viewScope.modeloEjercicios" />
+		</on-entry>
+
+		<transition on="agregar" to="agregarEditar">
+			<evaluate expression="ProgramasC.nuevo()" result="requestScope.programa" />
+		</transition>
+		
+		<transition on="agregarSubnivel" to="agregarEditar">
+			<evaluate expression="ProgramasC.nuevoSubnivel(viewScope.modeloProgramas.seleccionado)" result="requestScope.programa" />
+			
+		</transition>
+
+		<transition on="editar" to="agregarEditar">
+			<set name="requestScope.programa" value="viewScope.modeloProgramas.seleccionado" />
+		</transition>
+		<transition on="agregarEjercicio" to="agregarEjercicio">
+			<set name="requestScope.programa" value="viewScope.modeloProgramas.seleccionado" />
+		</transition>
+		<transition on="llenarEjercicios">
+			<evaluate
+				expression="ProgramasEjerciciosC.modelo(viewScope.modeloProgramas.seleccionado)"
+				result="viewScope.modeloEjercicios" />
+		</transition>
+
+		<transition on="crearEjercicio" to="agregarEjercicio">
+			<set name="requestScope.programa" value="viewScope.modeloProgramas.seleccionado" />
+		</transition>
+
+		<transition on="detalle" to="detalle">
+			<set name="requestScope.programa" value="viewScope.modeloProgramas.seleccionado" />
+			<set name="requestScope.ejercicio" value="viewScope.modeloEjercicios.seleccionado" />
+		</transition>
+
+		<transition on="eliminar" to="listado">
+			<evaluate
+				expression="ProgramasC.eliminarPrograma(viewScope.modeloProgramas.seleccionado)" />
+		</transition>
+
+	</view-state>
+
+	<view-state id="agregarEditar">
+		<on-entry>
+			<set name="viewScope.programa" value="requestScope.programa" />
+			<evaluate expression="ProgramasC.modelo()" result="viewScope.modeloProgramasCombo" />
+			<evaluate expression="DependenciasC.modelo()" result="viewScope.modeloDependencias" />
+			<evaluate expression="ProgramaPoblacionObjetivoC.nuevoModelo()" result="viewScope.modeloPoblacionObjetivo"/>
+			<set name="viewScope.idDependencia" value="0" />
+			<set name="viewScope.idProgramaPadre" value="0"/>
+		</on-entry>
+
+		<transition on="guardar" to="agregarEjercicio">
+			<evaluate
+				expression="ProgramasC.guardar(viewScope.programa,viewScope.idDependencia)"
+				result="viewScope.programa" />
+			<set name="requestScope.programa" value="viewScope.programa" />
+		</transition>
+
+
+		<transition on="cancelar" to="fin" />
+		
+		<transition on="nuevoPoblacion">
+		<evaluate expression="ProgramaPoblacionObjetivoC.nuevo()" result="viewScope.poblacionObjetivo"/>
+		</transition>
+		
+	</view-state>
+
+	<view-state id="agregarEjercicio">
+		<on-entry>
+			<set name="viewScope.programa" value="requestScope.programa" />
+			<evaluate expression="ProgramasEjerciciosC.nuevo(viewScope.programa)"
+				result="viewScope.ejercicio" />
+				
+			<evaluate expression="ProgramasEjerciciosC.listadoTiposEjerciciosFiscales()" result="viewScope.ejerciciosFiscales"/>	
+		</on-entry>
+		<transition on="guardar" to="agregarFuentes">
+			<evaluate expression="ProgramasEjerciciosC.guardar(viewScope.ejercicio)"
+				result="viewScope.ejercicio" />
+			<set name="requestScope.programa" value="viewScope.programa" />
+			<set name="requestScope.ejercicio" value="viewScope.ejercicio" />
+
+		</transition>
+		<transition on="cancelar" to="fin" />
+	</view-state>
+
+	<view-state id="agregarFuentes">
+		<on-entry>
+			<set name="viewScope.programa" value="requestScope.programa" />
+			<set name="viewScope.ejercicio" value="requestScope.ejercicio" />
+
+			<evaluate expression="ProgramasEjerciciosFuentesC.modelo(viewScope.ejercicio)"
+				result="viewScope.modeloProgramasFuentes" />
+			<evaluate expression="ProgramasEjerciciosFuentesC.nuevo(viewScope.ejercicio)"
+				result="viewScope.programaFuente" />
+			<set name="viewScope.nuevaFuente" value="1" />
+			<evaluate expression="ProgramasEjerciciosFuentesC.listadoTiposInversion()"
+				result="viewScope.tiposInversion" />
+			<evaluate
+				expression="ProgramasEjerciciosFuentesC.totalMonto(viewScope.modeloProgramasFuentes.listado)"
+				result="viewScope.totalFuentes" />
+		</on-entry>
+		<transition on="crearNuevo">
+			<evaluate expression="ProgramasEjerciciosFuentesC.nuevo(viewScope.ejercicio)"
+				result="viewScope.programaFuente" />
+			<evaluate expression="ProgramasEjerciciosFuentesC.listadoTiposInversion()"
+				result="viewScope.tiposInversion" />
+			<set name="viewScope.nuevaFuente" value="2" />
+
+		</transition>
+		<transition on="guardar" to="agregarFuentes">
+			<evaluate
+				expression="ProgramasEjerciciosFuentesC.guardar(viewScope.programaFuente)" />
+			<set name="requestScope.programa" value="viewScope.programa" />
+			<set name="requestScope.ejercicio" value="viewScope.ejercicio" />
+		</transition>
+		<transition on="agregarTerritorios" to="agregarTerritorios">
+			<set name="requestScope.programa" value="viewScope.programa" />
+			<set name="requestScope.ejercicio" value="viewScope.ejercicio" />
+		</transition>
+		<transition on="eliminar" to="agregarFuentes">
+			<evaluate
+				expression="ProgramasEjerciciosFuentesC.eliminar(modeloProgramasFuentes.seleccionado)" />
+			<set name="requestScope.programa" value="viewScope.programa" />
+			<set name="requestScope.ejercicio" value="viewScope.ejercicio" />
+		</transition>
+		<transition on="cancelar" to="fin" />
+	</view-state>
+
+	<view-state id="agregarTerritorios">
+		<on-entry>
+			<set name="viewScope.programa" value="requestScope.programa" />
+			<set name="viewScope.ejercicio" value="requestScope.ejercicio" />
+			<evaluate
+				expression="DependenciasC.getModeloTerritorios(viewScope.programa.dependencia)"
+				result="viewScope.modeloTerritorios" />
+		</on-entry>
+		<transition on="guardar" to="detalle">
+			<evaluate
+				expression="ProgramasEjerciciosC.guardarTerritorios( viewScope.modeloTerritorios.seleccionMultiple, viewScope.ejercicio)" />
+			<set name="requestScope.programa" value="viewScope.programa" />
+			<set name="requestScope.ejercicio" value="viewScope.ejercicio" />
+		</transition>
+		<transition on="cancelar" to="fin" />
+	</view-state>
+
+	<view-state id="detalle">
+		<on-entry>
+			<set name="viewScope.programa" value="requestScope.programa" />
+			<set name="viewScope.ejercicio" value="requestScope.ejercicio" />
+			<evaluate
+				expression="DependenciasC.getModeloTerritorios(viewScope.programa.dependencia)"
+				result="viewScope.modeloTerritorios" />
+			<evaluate expression="ProgramasEjerciciosFuentesC.modelo(viewScope.ejercicio)"
+				result="viewScope.modeloProgramasFuentes" />
+			<evaluate
+				expression="ProgramasEjerciciosC.getProgramaEjercicioCompleto(viewScope.ejercicio, viewScope.programa.dependencia)"
+				result="viewScope.ejercicio" />
+				
+				<evaluate
+				expression="ProgramasEjerciciosFuentesC.totalMonto(viewScope.modeloProgramasFuentes.listado)"
+				result="viewScope.totalFuentes" />
+		</on-entry>
+		<transition on="eliminarEjercicio" to="listado">
+			<evaluate
+				expression="ProgramasEjerciciosC.eliminarEjercicio(viewScope.ejercicio)" />
+		</transition>
+		<transition on="cancelar" to="fin" />
+	</view-state>
+
+	<end-state id="fin"></end-state>
+</flow>

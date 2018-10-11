@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estadisticas.logs">
+	<cache />
+	
+	<resultMap type="VariableLogEO" id="log">
+		<id column="VariableLogEO_id" property="id" javaType="Integer"/>
+		<result column="VariableLogEO_idVariable" property="idVariable" javaType="Integer"/>
+		<result column="VariableLogEO_descripcion" property="descripcion" javaType="String"/>
+		<result column="VariableLogEO_fecha" property="fecha" javaType="java.sql.Timestamp" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<select id="listadoPorVariable" resultMap="log" parameterType="VariableEO">
+		SELECT 
+			VariableLogEO.id_log		VariableLogEO_id,
+			VariableLogEO.id_variable	VariableLogEO_idVariable,
+			VariableLogEO.descripcion	VariableLogEO_descripcion,
+			VariableLogEO.fecha			VariableLogEO_fecha
+		FROM estadisticas.z_logs VariableLogEO
+		WHERE VariableLogEO.id_variable = #{id}
+		ORDER BY VariableLogEO.fecha desc
+	</select>
+	
+	<insert id="insertar" parameterType="VariableLogEO">
+		INSERT INTO estadisticas.z_logs(id_variable, descripcion)
+		VALUES(#{idVariable}, #{descripcion})
+	</insert>
+</mapper>

@@ -1,0 +1,111 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:growl autoUpdate="true" life="4000" showDetail="true" />
+					
+					<p:panel header="Lugar">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Municipio :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="#{municipios.seleccionado}" converter="ObjectConverter" style="width:300px" filter="true" filterMatchMode="contains">
+										<p:ajax event="itemSelect" oncomplete="actualizarSeccion()"/>
+										<f:selectItems value="#{municipios.listado}" var="fila" itemLabel="#{fila.idMunicipio}- #{fila.nombre}" itemValue="#{fila}"/>
+									</p:selectOneMenu>								
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Sección :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="#{nuevo.seccion}" converter="ObjectConverter" style="width:300px" filter="true" filterMatchMode="startsWith">
+										<f:selectItems value="#{secciones.listado}" var="fila" itemLabel="#{fila.idSeccion}" itemValue="#{fila}"/>
+									</p:selectOneMenu>								
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Casilla :"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="#{nuevo.casilla}" onkeyup="this.value=this.value.toUpperCase();"/>							
+							</p:column>
+						</p:panelGrid>
+				    </p:panel>
+					<p:panel header="Nueva Incidencia">
+						
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nombre Quién Reporta:"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="#{nuevo.nombre}" style="width:500px" onkeyup="this.value=this.value.toUpperCase();"/>							
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Telefono Quién Reporta:"/>
+							</p:column>
+							<p:column>
+									<p:inputText value="#{nuevo.telefono}" style="width:500px" onkeyup="this.value=this.value.toUpperCase();"/>							
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Tipo :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="#{nuevo.tipo}" converter="ObjectConverter" style="width:500px" filter="true" filterMatchMode="contains">
+										<f:selectItems value="#{tipos.listado}" var="fila" itemLabel="#{fila.descripcion}" itemValue="#{fila}"/>
+									</p:selectOneMenu>								
+							</p:column>
+							
+							<p:column>
+								<p:outputLabel value="Observaciones :"/>
+							</p:column>
+							<p:column>
+									<p:inputTextarea value="#{nuevo.observaciones}" rows="15" cols="60" onkeyup="this.value=this.value.toUpperCase();"/>							
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Fecha :"/>
+							</p:column>
+							<p:column>
+							 		<p:calendar value="#{nuevo.fechaDate}" pattern="dd/MM/yyyy HH:mm" locale="es"/>							
+							</p:column>
+							
+							<p:column>
+								<p:outputLabel value="Prioridad :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="#{nuevo.prioridad}" converter="ObjectConverter" style="width:500px">
+										<f:selectItems value="#{prioridades.listado}" var="fila" itemLabel="#{fila.nombre}" itemValue="#{fila}"/>
+									</p:selectOneMenu>								
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Estatus :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="#{nuevo.estatus}" converter="ObjectConverter" style="width:500px">
+										<f:selectItems value="#{estatus.listado}" var="fila" itemLabel="#{fila.nombre}" itemValue="#{fila}"/>
+									</p:selectOneMenu>								
+							</p:column>
+						</p:panelGrid>	
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="guardar"/>
+							<p:commandButton value="Cancelar" action="cancelar" immediate="true"/>
+						</f:facet>
+					</p:panel>	
+					
+					
+					<p:remoteCommand name="actualizarSeccion" action="actualizarSeccion" update="@form"/>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Reportes" url="/app/estructuras/reportes" />
+					</p:breadCrumb>
+					
+					<p:panel header="Reportes de Estructuras">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Reporte" />
+							<p:selectOneMenu value="${modeloReportes.seleccionado}" style="width: 200px;">
+								<f:selectItems value="${modeloReportes.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<f:facet name="footer">
+								<p:commandButton value="Siguiente" action="verReporte" />
+							</f:facet>
+						</p:panelGrid>
+					</p:panel>
+            		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

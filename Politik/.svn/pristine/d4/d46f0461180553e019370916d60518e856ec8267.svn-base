@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Filtros">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Tipo Estructura:"/>
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${modeloEstructuras.seleccionado}" converter="ObjectConverter" style="width:300px">
+									<p:ajax event="itemSelect" oncomplete="actualizar()"/>
+									<f:selectItems value="${modeloEstructuras.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}"/>
+								</p:selectOneMenu>
+							</p:column>		
+							<p:column>
+								<p:outputLabel value="Región:"/>
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${modeloRegiones.seleccionado}" converter="ObjectConverter" style="width:300px">
+									<p:ajax event="itemSelect" oncomplete="actualizar()"/>
+									<f:selectItems value="${modeloRegiones.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}"/>
+								</p:selectOneMenu>
+							</p:column>	
+							<p:column rendered="${modeloEstructuras.seleccionado!='COORDINADOR_REGIONAL'}">
+								<p:outputLabel value="Municipio:"/>
+							</p:column>
+							<p:column rendered="${modeloEstructuras.seleccionado!='COORDINADOR_REGIONAL'}">
+								<p:selectOneMenu value="${modeloMunicipios.seleccionado}" converter="ObjectConverter" style="width:300px" >
+									<p:ajax event="itemSelect" oncomplete="actualizarMunicipios()"/>
+									<f:selectItems value="${modeloMunicipios.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}"/>
+								</p:selectOneMenu>
+							</p:column>				
+						</p:panelGrid>
+					</p:panel>
+					<p:panel header="Listado de Estructuras">
+						<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}"
+							selectionMode="single" paginator="true" rows="15" paginatorPosition="bottom">
+							<p:column headerText="Region" width="200">
+								<p:outputLabel value="${fila.region.nombre}"/>							
+							</p:column>
+							<p:column headerText="Municipio" width="200" rendered="${modeloEstructuras.seleccionado!='COORDINADOR_REGIONAL'}">
+								<p:outputLabel value="${fila.municipio.nombre}"/>							
+							</p:column>
+							<p:column headerText="Persona" width="500" rendered="${modeloEstructuras.seleccionado!='VISITADOR'}">
+								<p:outputLabel value="${fila.persona.nombre}"/>							
+							</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregar" rendered="${modeloEstructuras.seleccionado!='VISITADOR'}"/>
+							<p:commandButton value="Eliminar" action="eliminar" rendered="${modeloEstructuras.seleccionado!='VISITADOR'}">
+								<p:confirm header="Confirmación" message="¿Esta seguro de eliminar?" icon="ui-icon-alert" />
+							</p:commandButton>
+						</f:facet>
+					</p:panel>
+					
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+								<p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+								<p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+					
+					<p:remoteCommand action="actualizarMunicipios" name="actualizarMunicipios" update="@form"/>
+					<p:remoteCommand action="actualizar" name="actualizar" update="@form"/>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

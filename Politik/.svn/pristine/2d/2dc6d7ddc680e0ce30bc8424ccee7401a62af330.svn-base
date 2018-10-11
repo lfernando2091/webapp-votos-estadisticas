@@ -1,0 +1,5 @@
+@charset "UTF-8";
+
+.boton_buscar{
+	background-image: url('/politik/resources/imagenes/botones/aceptar.png') !important;
+}

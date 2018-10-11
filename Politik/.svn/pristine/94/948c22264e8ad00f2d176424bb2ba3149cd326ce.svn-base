@@ -1,0 +1,90 @@
+package com.saganet.politik.components.encuestas.sujetosSociales;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.UsuarioEO;
+//import com.saganet.politik.database.encuestas.edomex2017.EncuestaProsperaEO;
+import com.saganet.politik.database.encuestas.sujetosSociales.EncuestaEO;
+import com.saganet.politik.database.encuestas.sujetosSociales.EntrevistadoEO;
+import com.saganet.politik.database.mdm.PersonaEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("sujetosSocialesCapturaC")
+public class CapturaC {
+	@Autowired
+	SqlSession sqlSession;
+	private static final Logger logger = LoggerFactory.getLogger(CapturaC.class);
+
+	public String buscarId(RequestContext context, Integer id) {
+		HashMap<String, Object> flowScope;
+		EntrevistadoEO entrevistado;
+		EncuestaEO encuesta;
+		List<UsuarioEO> listado;
+		encuesta = new EncuestaEO();
+		listado = new ArrayList<>();
+		flowScope = (HashMap<String, Object>) context.getFlowScope().asMap();
+		entrevistado = sqlSession.selectOne("encuestas.sujetosSociales.entrevistado.buscarId", id);
+		if(entrevistado!=null){
+			
+			//buscamos si esta contestado
+			logger.debug("Encuesta: {}",entrevistado);
+			encuesta = sqlSession.selectOne("encuestas.sujetosSociales.captura.buscarPorId", entrevistado);
+			logger.debug("Encuesta: {}",entrevistado);
+			if(encuesta==null){
+				encuesta.setNick(getUsuario().getNick());
+				encuesta.setIdContacto(entrevistado.getIdInterno().toString());
+			}else{
+				
+				encuesta.setNickActualizacion(getUsuario().getNick());
+				encuesta.setVersionCaptura(encuesta.getVersionCaptura() + 1);
+			}
+			listado.add(getUsuario());
+			flowScope.put("entrevistado", entrevistado);
+			flowScope.put("encuesta", encuesta);
+			flowScope.put("modeloEncuestadores", new Modelo<>(listado));
+			logger.debug("encuesta: {}", encuesta);
+			logger.debug("entrevistado: {}", entrevistado);
+			return "success";
+		}else{
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "No se encontró información", "Contact admin."));
+			return "error";
+		}
+		
+	}
+
+	
+	
+	public void guardar(EncuestaEO encuesta) {
+		logger.debug("Encuesta guardar: {}", encuesta);
+		sqlSession.insert("encuestas.sujetosSociales.captura.insertar", encuesta);
+		sqlSession.update("encuestas.sujetosSociales.captura.actualizarEstatus", encuesta);
+	}
+
+
+	public void actualizar(EncuestaEO encuesta) {
+		logger.debug("encuesta: {}", encuesta);
+		sqlSession.update("encuestas.sujetosSociales.captura.actualizarEncuesta", encuesta);
+		sqlSession.update("encuestas.sujetosSociales.captura.actualizarEstatus", encuesta);
+	}
+
+
+	
+
+	public UsuarioEO getUsuario() {
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+
+}

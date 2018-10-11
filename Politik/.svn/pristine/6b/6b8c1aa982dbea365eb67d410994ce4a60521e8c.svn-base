@@ -1,0 +1,26 @@
+package com.saganet.politik.dominios_dm;
+
+public enum CatPersonajeDO {
+
+	ALFONSO_NAVARRETE_PRIDA("Alfonso Navarrete Prida"),
+	ALEJANDRO_ENCINAS_RODRIGUEZ("Alejandro Encinas Rodríguez"),
+	ERNESTO_NEMER_ALVAREZ("Ernesto Nemer Álvarez"),
+	JOSEFINA_VAZQUEZ_MOTA("Josefina Vazquez Mota"),
+	JOSE_MANZUR_QUIROGA("José Manzur Quiroga"),
+	YEIDCKOL_POLEVNSKY("Yeidckol Polevnsky"),
+	LUIS_VIDEGARAY("Luis Videgaray"),
+	ALGREDO_DEL_MAZO_MAZA("Alfredo del Mazo Maza"),
+	ANA_LILIA_HERRERA_ANZALDO("Ana Lilia Herrera Anzaldo"),
+	CAROLINA_MONROY_DEL_MAZO("Carolina Monroy del Mazo");
+	
+	private final String nombre;
+	
+	
+	private CatPersonajeDO(String nombre){
+		this.nombre = nombre;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+}

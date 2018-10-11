@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="diaD.reportes.metasMovilizadosCompleto">
+<resultMap type="DiaDReportesMetasMovilizadosCompletoEO" id="metaMovilizado">
+<id column="id" property="id"  javaType="Integer"/>
+<result column="id_region" property="idRegion" javaType="Integer"/>
+<result column="nombre_region" property="region" javaType="String"/>
+<result column="id_municipio" property="idMunicipio" javaType="Integer"/>
+<result column="nombre_municipio" property="municipio" javaType="String"/>
+<result column="seccion" property="seccion" javaType="Integer"/>
+
+
+<result column="meta_rowan" property="metaRowan" javaType="Integer"/>
+<result column="avance_rowan" property="avanceRowan" javaType="Integer"/>
+<result column="porcentaje_rowan" property="porcentajeRowan" javaType="String"/>
+
+<result column="meta_fitz" property="metaFitz" javaType="Integer"/>
+<result column="avance_fitz" property="avanceFitz" javaType="Integer"/>
+<result column="porcentaje_fitz" property="porcentajeFitz" javaType="String"/>
+
+<result column="meta_abby" property="metaAbby" javaType="Integer"/>
+<result column="avance_abby" property="avanceAbby" javaType="Integer"/>
+<result column="porcentaje_abby" property="porcentajeAbby" javaType="String"/>
+</resultMap>
+
+<select id="listado" parameterType="hashmap" resultMap="metaMovilizado">
+
+select
+<if test="nivel=='general'">
+
+</if>
+<if test="nivel=='estatal'">
+region_edomex_2017 id_region,nombre_region,
+</if>
+<if test="nivel=='region'">
+region_edomex_2017 id_region,nombre_region,municipio id_municipio,nombre_municipio,
+</if>
+<if test="nivel=='municipio'">
+region_edomex_2017 id_region,nombre_region,municipio id_municipio,nombre_municipio,seccion,
+</if>
+<if test="nivel=='seccion'">
+region_edomex_2017 id_region,nombre_region,municipio id_municipio,nombre_municipio,seccion,
+</if>
+coalesce(sum(meta_rowan),null,0) meta_rowan,
+coalesce(sum(avance_rowan),null,0) avance_rowan,
+case when sum(avance_rowan)=0 then '0%' else round((sum(avance_rowan)/sum(meta_rowan))*100,2)||'%' end porcentaje_rowan,
+coalesce(sum(meta_fitz),null,0) meta_fitz,
+coalesce(sum(avance_fitz),null,0) avance_fitz,
+case when sum(avance_fitz)=0 then '0%' else round((sum(avance_fitz)/sum(meta_fitz))*100,2)||'%' end porcentaje_fitz,
+coalesce(sum(meta_abby),null,0) meta_abby,
+coalesce(sum(avance_abby),null,0)  avance_abby,
+case when sum(avance_abby)=0 then '0%' else round((sum(avance_abby)/sum(meta_abby))*100,2)||'%' end porcentaje_abby
+
+
+from
+(
+
+				select 
+				region_edomex_2017,nombre_region,municipio,nombre_municipio,a.seccion,
+				case when grupo_movilizacion='Rowan-JAL' then 1 else 0 end meta_rowan,
+				case when grupo_movilizacion='Fitz-HP' then 1 else 0 end meta_fitz,
+				case when grupo_movilizacion='Abby-PH' then 1 else 0 end meta_abby,
+				max(avance_insus) avance_rowan,
+				max(avance_liconsa) avance_fitz,
+				max(avance_prospera) avance_abby
+				from dia_d.movilizables a	
+                                left join 
+					(
+						select programa,seccion, case when programa='INSUS' then count(programa) else 0 end avance_insus,case when programa='LICONSA' then count(programa) else 0 end avance_liconsa,case when programa='PROSPERA' then count(programa) else 0 end avance_prospera
+						from dia_d.movilizados group by programa,seccion 
+					) c on (a.seccion=c.seccion and a.grupo_movilizacion = case when c.programa ='INSUS' then 'Rowan-JAL' when c.programa='LICONSA' then 'Fitz-HP' else 'Abby-PH' end)
+				group by grupo_movilizacion,programa,region_edomex_2017,nombre_region,municipio,nombre_municipio,a.seccion
+)t
+<if test="nivel=='estatal'">
+group by region_edomex_2017,nombre_region
+order by region_edomex_2017
+</if>
+<if test="nivel=='region'">
+ where region_edomex_2017=#{region.seleccionado.idParticion}
+group by region_edomex_2017,nombre_region,municipio,nombre_municipio
+order by region_edomex_2017,nombre_region,municipio,nombre_municipio
+</if>
+<if test="nivel=='municipio'">
+ where municipio=#{municipio.seleccionado.idMunicipio}
+group by region_edomex_2017,nombre_region,municipio,nombre_municipio,seccion
+order by region_edomex_2017,nombre_region,municipio,nombre_municipio,seccion
+</if>
+<if test="nivel=='seccion'">
+		 where t.seccion=#{seccion.seleccionado.idSeccion}
+		 group by region_edomex_2017,nombre_region,municipio,nombre_municipio,seccion
+		 order by region_edomex_2017,nombre_region,municipio,nombre_municipio,seccion
+		</if>
+</select>
+</mapper>

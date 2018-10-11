@@ -1,0 +1,71 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Seccional" id="panelSeccional">
+						<p:panelGrid columns="2">
+							<p:column><p:outputLabel value="Nombre:"/></p:column>
+							<p:column><p:inputText value="${seccional.nombre}" required="true" requiredMessage="Nombre: requerido" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Primer Apellido:" /></p:column>
+							<p:column><p:inputText value="${seccional.primerApellido}" required="true" requiredMessage="Nombre: requerido" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Segundo Apellido:"  /></p:column>
+							<p:column><p:inputText value="${seccional.segundoApellido}" required="true" requiredMessage="Nombre: requerido" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Fecha Nacimiento:"  /></p:column>
+							<p:column>
+								<p:calendar value="${seccional.fechaNacimiento}" mode="popup" converter="DateConverter" pattern="dd/MM/yyyy" style="width: 300px"  layout="grid" columns="1"/>
+<!-- 								<p:inputText value="${seccional.fechaNacimiento}" required="true" requiredMessage="Nombre: requerido" style="width: 300px"  layout="grid" columns="1"/> -->
+							</p:column>
+							<p:column><p:outputLabel value="Genero:"/></p:column>
+							<p:column>
+								<p:selectOneMenu value="${seccional.genero}" converter="ObjectConverter" style="width: 300px"  layout="grid" columns="1">
+									<f:selectItems value="${modeloGeneros.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}"/>
+								</p:selectOneMenu>
+							</p:column>
+							<p:column><p:outputLabel value="Calle:"/></p:column>
+							<p:column><p:inputText value="${seccional.calle}" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Numero Interior:"/></p:column>
+							<p:column><p:inputText value="${seccional.numeroInterior}" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Numero Exterior:"/></p:column>
+							<p:column><p:inputText value="${seccional.numeroExterior}" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Colonia:"/></p:column>
+							<p:column><p:inputText value="${seccional.colonia}" style="width: 300px"  layout="grid" columns="1"/></p:column>
+							<p:column><p:outputLabel value="Codigo Postal:"/></p:column>
+							<p:column>
+								<p:inputText value="${seccional.codigoPostal}" style="width: 300px"  layout="grid" columns="1">
+									<f:validateLength minimum="5" maximum="5" />
+								</p:inputText>
+							</p:column>
+							<p:column><p:outputLabel value="Municipio:"/></p:column>
+							<p:column>
+								<p:selectOneMenu value="${modelo.municipios.seleccionado}" converter="ObjectConverter" style="width: 300px"  layout="grid" columns="1"
+								filter="true" filterMatchMode="contains">
+									<p:ajax event="itemSelect" onstart="actualizarTerritorios();" />
+									<f:selectItems value="${modelo.municipios.listado}" var="fila" itemLabel="${fila.idMunicipio}: ${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+							<p:column><p:outputLabel value="Seccion:"/></p:column>
+							<p:column>
+								<p:selectOneMenu value="${modelo.secciones.seleccionado}" converter="ObjectConverter" style="width: 300px"  layout="grid" columns="1"
+								filter="true" filterMatchMode="contains">
+									<f:selectItems value="${modelo.secciones.listado}" var="fila" itemLabel="${fila.idSeccion}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+						</p:panelGrid>
+						<p:panelGrid columns="3" >
+							<p:column ><p:commandButton value="Guardar" action="guardar" /></p:column>
+							<p:column ><p:commandButton value="Regresar" action="fin" immediate="true" icon="fa fa-caret-left"/></p:column>
+						</p:panelGrid>
+					</p:panel>
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

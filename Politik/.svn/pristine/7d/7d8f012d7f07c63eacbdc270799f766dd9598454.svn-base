@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Elecciones" url="/app/catalogos/elecciones" />
+					</p:breadCrumb>
+					<p:panel header="Listado de Elecciones">
+						<p:dataTable value="${tablaElecciones.listado}" var="fila"
+							rowKey="${fila.id}" selection="${tablaElecciones.seleccionado}"
+							selectionMode="single" paginator="true" rows="15" paginatorPosition="bottom">
+							<p:column headerText="Ejercicio" width="50">${fila.ejercicio}</p:column>
+							<p:column headerText="Representante">${fila.representante.nombre}</p:column>
+							<p:column headerText="Descripción" width="200">${fila.descripcion}</p:column>
+							<p:column headerText="Tipo" width="85">${fila.tipo.nombre}</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregar" />
+							<p:commandButton value="Detalle" action="detalle" />
+						</f:facet>
+					</p:panel>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

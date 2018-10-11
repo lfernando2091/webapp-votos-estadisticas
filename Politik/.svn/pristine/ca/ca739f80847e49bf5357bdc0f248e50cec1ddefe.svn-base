@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+	<p:panelGrid columns="4">
+		<f:facet name="header">Claves</f:facet>
+		<p:outputLabel value="Clave de Elector" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['cve_elector']}" />
+		<p:outputLabel value="Folio Nacional" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['folio_nacional']}" />
+		<p:outputLabel value="En Lista Nominal" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['en_lista_nominal']}" />
+		<p:outputLabel value="Num. Emisión" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['num_emision_credencial']}" />
+		<p:outputLabel value="Fecha de Inscripción" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['fecha_inscripcion_padron']}" />
+	</p:panelGrid>
+	<p:separator />
+	<p:panelGrid columns="4">
+		<f:facet name="header">Datos Personales</f:facet>
+		<p:outputLabel value="Apellido Paterno" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['apellido_paterno']}" />
+		<p:outputLabel value="Apellido Materno" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['apellido_materno']}" />
+		<p:outputLabel value="Nombre" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['nombre']}" />
+		<p:outputLabel value="Sexo" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['sexo']}" />
+		<p:outputLabel value="Fecha de Nacimiento" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['fecha_nacimiento']}" />
+		<p:outputLabel value="lugar de Nacimiento" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['lugar_nacimiento']}" />
+		<p:outputLabel value="Ocupación" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['ocupacion']}" />
+	</p:panelGrid>
+	<p:separator />
+	<p:panelGrid columns="6">
+		<f:facet name="header">Domicilio</f:facet>
+		<p:outputLabel value="Calle" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['calle']}" />
+		<p:outputLabel value="Num. Exterior" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['num_exterior']}" />
+		<p:outputLabel value="Num. Interior" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['num_interior']}" />
+		<p:outputLabel value="Colonia" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['colonia']}" />
+		<p:outputLabel value="Código Postal" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['codigo_postal']}" />
+		<p:outputLabel value="Tiempo de Residencia" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['tiempo_residencia']}" />
+		<p:outputLabel value="Descripción Georeferencia" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['descripcion_georeferencia']}" />
+	</p:panelGrid>
+	<p:separator />
+	<p:panelGrid columns="6">
+		<f:facet name="header">Geografía Electoral</f:facet>
+		<p:outputLabel value="Entidad" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['entidad']}" />
+		<p:outputLabel value="Distrito" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['distrito']}" />
+		<p:outputLabel value="Municipio" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['municipio']}" />
+		<p:outputLabel value="Sección" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['seccion']}" />
+		<p:outputLabel value="Localidad" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['localidad']}" />
+		<p:outputLabel value="Manzana" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['manzana']}" />
+		<p:outputLabel value="Casilla" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['casilla']}" />
+		<p:outputLabel value="Num. de Pag." style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['num_pag']}" />
+		<p:outputLabel value="Consecutivo" style="font-weight: bold !important;" />
+		<p:outputLabel value="${persona.modeloTablas.seleccionado.datos['consecutivo_def']}" />
+	</p:panelGrid>
+</ui:composition>

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+<<<<<<< .mine
+Built-By: User
+Build-Jdk: 1.8.0_40
+=======
+Built-By: saga
+Build-Jdk: 1.8.0_91
+>>>>>>> .r841
+Created-By: Maven Integration for Eclipse
+

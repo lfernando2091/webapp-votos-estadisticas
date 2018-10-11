@@ -1,0 +1,122 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:focus />
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Elecciones" action="cancelar" immediate="true" />
+						<p:menuitem value="Agregar Elección" action="regresar"
+							immediate="true" />
+						<p:menuitem value="Asignar Territorios" />
+					</p:breadCrumb>
+					<p:panel header="Asignar Territorios">
+						<p:panelGrid columns="2">
+							<f:facet name="header">Elección</f:facet>
+							<p:outputLabel value="Ejercicio" />
+							<p:outputLabel value="${eleccion.ejercicio}" />
+							<p:outputLabel value="Tipo" />
+							<p:outputLabel value="${eleccion.tipo.nombre}" />
+							<p:outputLabel value="Representante" />
+							<p:outputLabel value="${eleccion.representante.nombre}" />
+							<p:outputLabel value="Fecha de Jornada" />
+							<p:outputLabel value="${eleccion.fechaJornada}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</p:outputLabel>
+							<p:outputLabel value="Descripción" />
+							<p:outputLabel value="${eleccion.descripcion}" />
+						</p:panelGrid>
+						<p:panelGrid columns="2">
+							<f:facet name="header">Territorios</f:facet>
+
+							<p:outputLabel value="Entidad" />
+							<p:selectCheckboxMenu
+								value="${listadoEntidades.seleccionMultiple}"
+								converter="ObjectConverter" label="Entidades"
+								style="width: 215px;" filter="true" filterMatchMode="contains">
+								<p:ajax event="change" onstart="actualizarCombos();" />
+								<p:ajax event="toggleSelect" onstart="actualizarCombos();" />
+								<f:selectItems value="${listadoEntidades.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+
+							<p:outputLabel value="Distrito Federal" />
+							<p:selectCheckboxMenu id="comboDFederales"
+								label="Dttos. Federales"
+								value="${listadoDFederales.seleccionMultiple}"
+								converter="ObjectConverter" filter="true"
+								filterMatchMode="contains"
+								disabled="${eleccion.representante.nivel != 'DFEDERAL'}">
+								<f:selectItems value="${listadoDFederales.listado}" var="fila"
+									itemLabel="${fila.entidad.nombre}: ${fila.idDFederal} - ${fila.nombre}"
+									itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+
+							<p:outputLabel value="Distrito Local" />
+							<p:selectCheckboxMenu id="comboDLocales" label="Dttos. Locales"
+								value="${listadoDLocales.seleccionMultiple}"
+								converter="ObjectConverter" filter="true"
+								filterMatchMode="contains"
+								disabled="${eleccion.representante.nivel != 'DLOCAL'}">
+								<f:selectItems value="${listadoDLocales.listado}" var="fila"
+									itemLabel="${fila.entidad.nombre}: ${fila.idDLocal} - ${fila.nombre}"
+									itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+
+							<p:outputLabel value="Municipio" />
+							<p:selectCheckboxMenu id="comboMunicipios" label="Municipios"
+								value="${listadoMunicipios.seleccionMultiple}"
+								converter="ObjectConverter" filter="true"
+								filterMatchMode="contains"
+								disabled="${eleccion.representante.nivel != 'MUNICIPIO'}">
+								<f:selectItems value="${listadoMunicipios.listado}" var="fila"
+									itemLabel="${fila.entidad.nombre}: ${fila.idMunicipio} - ${fila.nombre}"
+									itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandLink action="guardar">
+									<p:graphicImage value="/resources/botones/GUARDAR.png" />
+							</p:commandLink>
+							<p:commandLink action="cancelar" immediate="true">
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Guardar" action="guardar" /> -->
+<!-- 							<p:commandButton value="Cancelar" action="cancelar" -->
+<!-- 								immediate="true" /> -->
+						</f:facet>
+					</p:panel>
+
+					<p:remoteCommand id="remoteActualizarCombos"
+						name="actualizarCombos" action="actualizarCombos"
+						update="comboDFederales, comboDLocales, comboMunicipios"
+						onstart="PF('dialogoActualizarCombos').show()"
+						oncomplete="PF('dialogoActualizarCombos').hide()" />
+
+					<p:dialog widgetVar="dialogoActualizarCombos"
+						header="Actualizando Resultados" closeOnEscape="false"
+						closable="false" modal="true" appendTo="@(body)">
+						<p:panelGrid columns="1">
+							<p:outputLabel value="Se están cargando los resultados." />
+							<p:outputLabel
+								value="Esta operación puede tardar, por favor espere." />
+							<p:outputLabel
+								value="No refresque la página ni oprima el botón atrás del explorador." />
+						</p:panelGrid>
+					</p:dialog>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

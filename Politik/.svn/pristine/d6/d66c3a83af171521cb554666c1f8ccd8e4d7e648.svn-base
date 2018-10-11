@@ -1,0 +1,52 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Figuras" url="/app/estructuras/figuras" />
+						<p:menuitem
+							value="${figura.id == null ? 'Agregar' : 'Editar'} Figura" />
+					</p:breadCrumb>
+					<p:panel
+						header="${figura.id == null ? 'Agregar' : 'Editar'} Figura">
+						<p:focus />
+						<p:panelGrid id="panelFigura" columns="2">
+							<p:outputLabel value="Nivel" />
+							<p:selectOneMenu value="${figura.nivel}"
+								converter="ObjectConverter" style="width: 150px;">
+								<p:ajax event="itemSelect" update="panelFigura" />
+								<f:selectItems value="${modeloNiveles.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Geozona" rendered="${figura.nivel == 'GEOZONA'}" />
+							<p:selectOneMenu value="${figura.geozona}"
+								converter="ObjectConverter" style="width: 300px;" rendered="${figura.nivel == 'GEOZONA'}">
+								<f:selectItems value="${modeloGeozonas.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Nombre" />
+							<p:inputText value="${figura.nombre}" size="40" />
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" action="guardar" />
+								<p:commandButton value="Cancelar" action="cancelar" immediate="true" />
+							</f:facet>
+						</p:panelGrid>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

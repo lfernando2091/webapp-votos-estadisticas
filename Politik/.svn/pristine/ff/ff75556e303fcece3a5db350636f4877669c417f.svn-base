@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="estadisticas.estadisticasPorDia">
+	
+	<select id="listado" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		extract(month from c.fecha)::text||'-'||extract(day from c.fecha)::text dia,
+		--extract(day from c.fecha)::INTEGER dia,
+		coalesce(count(en.*),0) total_encuestas,
+		coalesce(sum(case WHEN en.codigo_resultado is null then 0
+		when (en.codigo_resultado = 1 or (en.codigo_resultado = 8 and en.tiene_ine is not null)) then 1 else 0 end),0) con_resp,
+		coalesce(sum(case WHEN en.codigo_resultado is null then 0
+		when (en.codigo_resultado in (2,3,4,5,6,7,9) or (en.codigo_resultado = 8 and en.tiene_ine is null)) then 1 else 0 end),0)sin_resp
+		FROM calendario c
+		left join (SELECT * FROM encuesta e JOIN usuario us on (e.usuario_id = us.id)) en on (en.creada = c.fecha)
+		<if test="fechaInicio.equals(fechaFin)">
+			where to_char(c.fecha, 'yyyy-mm-dd') = to_char(DATE '${fechaInicio}', 'yyyy-mm-dd')
+		</if>
+		<if test="!fechaInicio.equals(fechaFin)">
+			where to_char(c.fecha, 'yyyy-mm-dd') &gt;= to_char(DATE '${fechaInicio}', 'yyyy-mm-dd') and to_char(c.fecha, 'yyyy-mm-dd') &lt;= to_char(DATE '${fechaFin}', 'yyyy-mm-dd')
+		</if>
+<!-- 		where to_char(c.fecha, 'yyyy-mm-dd') &gt;= to_char(DATE '2016-10-01', 'yyyy-mm-dd') and to_char(c.fecha, 'yyyy-mm-dd') &lt;= to_char(DATE '2016-11-04', 'yyyy-mm-dd') -->
+		<if test="region!=null">
+			and (en.region = #{region} or en.region is null)
+		</if>
+		<if test="municipio!=null">
+			<if test="municipio.equals('No Asignado')">
+				and (en.municipio is null)
+			</if>
+			<if test="!municipio.equals('No Asignado')">
+				and (en.municipio = #{municipio})
+			</if>			
+		</if>
+		<if test="zona!=null">
+			and (en.zona = #{zona} or en.zona is null)
+		</if>
+		<if test="seccion!=null">
+			and (en.seccion = #{seccion} or en.seccion is null)
+		</if>
+		group by c.fecha
+		order by c.fecha asc
+	</select>
+	
+	<select id="listadoMunicipios" parameterType="hashmap" resultType="String">
+		select case when municipio is null then 'No Asignado' else municipio::text end municipio from usuario
+		<if test="region != 0">
+			where region = #{region}
+		</if>
+		<if test="municipio != null">
+			and municipio = #{municipio}
+		</if>
+		<if test="zona!=null">
+			and zona = ${zona}
+		</if>
+		group by municipio
+		order by municipio
+	</select>
+	
+	<select id="listadoZonas" parameterType="hashmap" resultType="Integer">
+		select zona from usuario
+		where region = #{region}
+		<if test="tipoFiltro==4 or nivelUsuario==2">
+			and municipio = #{municipio}
+		</if>
+		<if test="zona!=null">
+			and zona = #{zona}
+		</if>
+		group by zona
+		order by zona
+	</select>
+	
+	<select id="listadoSecciones" parameterType="hashmap" resultType="Integer">
+		select seccion::INTEGER from usuario
+		where region = #{region} and municipio = #{municipio} and zona = #{zona}
+		group by seccion
+		order by seccion
+	</select>
+	
+</mapper>

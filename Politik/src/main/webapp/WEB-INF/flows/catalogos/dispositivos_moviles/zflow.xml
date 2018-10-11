@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+<secured attributes="ROLE_DISPOSITIVOS_MOVILES"/>
+	<view-state id="listado">
+	<on-entry>
+	<evaluate expression="DispositivosMovilesC.modelo()" result="viewScope.modelo"/>
+	</on-entry>
+	<transition on="agregar" to="agregar">
+	<set name="requestScope.nuevo" value="DispositivosMovilesC.nuevo()"/>
+	</transition>
+	<transition on="editar" to="agregar">
+	<set name="requestScope.nuevo" value="viewScope.modelo.seleccionado"/>
+	</transition>
+	</view-state>
+
+<view-state id="agregar">
+<on-entry>
+<set name="viewScope.nuevo" value="requestScope.nuevo"/>
+<evaluate expression="DispositivosMovilesC.modelosDispositivo()" result="viewScope.listadoModelo"/>
+<evaluate expression="DispositivosMovilesC.estatusDispositivo()" result="viewScope.listadoEstatus"/>
+<evaluate expression="DispositivosMovilesC.validacionDispositivo(viewScope.nuevo)" result="viewScope.validacion"/>
+<evaluate expression="DispositivosMovilesC.listadoPrecarga()" result="viewScope.listadoPrecarga"></evaluate>
+</on-entry>
+
+<transition on="guardar" to="agregar">
+<evaluate expression="DispositivosMovilesC.guardar(viewScope.nuevo)"/>
+<set name="requestScope.nuevo" value="DispositivosMovilesC.nuevo()"/>
+</transition>
+<transition on="validaDispositivo">
+<evaluate expression="DispositivosMovilesC.validacionDispositivo(viewScope.nuevo)" result="viewScope.validacion"/>
+</transition>
+<transition on="actualizar" to="listado">
+<evaluate expression="DispositivosMovilesC.actualizar(viewScope.nuevo)"/>
+</transition>
+
+<transition on="cancelar" to="listado"/>
+</view-state>
+</flow>

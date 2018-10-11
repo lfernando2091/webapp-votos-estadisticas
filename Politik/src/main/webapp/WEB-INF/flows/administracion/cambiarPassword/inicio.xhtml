@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:focus />
+            		<p:panel header="Cambiar Contraseña">
+            			<p:messages autoUpdate="true" />
+            			<p:panelGrid columns="2">
+            				<p:outputLabel value="Actual" />
+            				<p:password value="${actual}" size="20" />
+            				<p:outputLabel value="Password" />
+							<p:password id="passwordNuevo1" value="${nueva}"
+								match="#{p:component('passwordNuevo2')}" weakLabel="Debil"
+								goodLabel="Aceptable" strongLabel="Fuerte" size="20"
+								feedback="true" validatorMessage="Los Password no coinciden" />
+							<p:outputLabel value="Confirmar Password" />
+							<p:password id="passwordNuevo2" value="${nueva}"
+								size="20" />
+            			</p:panelGrid>
+            			<f:facet name="footer">
+            				<p:commandLink action="actualizar">
+									<p:graphicImage value="/resources/botones/ACTUALIZAR.png" />
+							</p:commandLink>
+            			</f:facet>
+            		</p:panel>
+            		
+            		<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="diaD.reportes.metasMovilizadores">
+<resultMap type="DiaDReportesMetasMovilizadoresEO" id="metaMovilizador">
+<id column="id" property="id"  javaType="Integer"/>
+<result column="id_region" property="idRegion" javaType="Integer"/>
+<result column="nombre_region" property="region" javaType="String"/>
+<result column="id_municipio" property="idMunicipio" javaType="Integer"/>
+<result column="nombre_municipio" property="municipio" javaType="String"/>
+<result column="seccion" property="seccion" javaType="Integer"/>
+<result column="meta" property="meta" javaType="Integer"/>
+<result column="capturados" property="capturados" javaType="Integer"/>
+<result column="porcentaje" property="porcentaje" javaType="String"/>
+</resultMap>
+
+<select id="listado" parameterType="hashmap" resultMap="metaMovilizador">
+SELECT
+		region_edomex_2017 id_region,
+		nombre_region nombre_region,
+		<if test="nivel=='seccion' or nivel=='municipio'">
+			municipio id_municipio
+			,nombre_municipio nombre_municipio,
+		</if>
+		<if test="nivel=='seccion'">
+			seccion ,
+		</if>
+		grupo_movilizacion,
+		sum(meta) meta,
+		sum(capturados) capturados,
+		case when sum(capturados)=0 then '0%' else
+		(sum(capturados)/sum(meta))*100||'%' end porcentaje
+		FROM dia_d.movilizadores_meta
+		where grupo_movilizacion=#{programa.nombre2}
+		group by grupo_movilizacion,
+		region_edomex_2017,
+		nombre_region
+		<if test="nivel=='seccion' or nivel=='municipio'">
+			,municipio
+			,nombre_municipio
+		</if>
+		<if test="nivel=='seccion'">
+			,seccion
+		</if>
+		order by grupo_movilizacion,
+		region_edomex_2017,
+		nombre_region
+		<if test="nivel=='seccion' or nivel=='municipio'">
+			,municipio
+			,nombre_municipio
+		</if>
+		<if test="nivel=='seccion'">
+			,seccion
+		</if>
+</select>
+</mapper>

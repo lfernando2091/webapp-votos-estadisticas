@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.camposTabla">
+	<cache />
+	
+	<resultMap type="CampoTablaEO" id="campoTabla">
+		<id column="CampoTablaEO_id" property="id" javaType="Integer"/>
+		<result column="CampoTablaEO_nombre" property="nombre" javaType="String"/>
+		<result column="CampoTablaEO_tipo" property="tipo" javaType="com.saganet.politik.dominios.TiposCampoDO" />
+	</resultMap>
+	
+	<select id="listado" resultMap="campoTabla" parameterType="hashmap">
+		SELECT 
+			CampoTablaEO.ordinal_position 	CampoTablaEO_id, 
+			CampoTablaEO.column_name 		CampoTablaEO_nombre, 
+			upper(CampoTablaEO.data_type) 			CampoTablaEO_tipo
+  		FROM information_schema.columns CampoTablaEO
+  		<where>
+  			CampoTablaEO.table_schema = #{esquema} AND CampoTablaEO.table_name = #{tabla}
+  			<if test="tipo != null">
+  				AND CampoTablaEO.data_type = #{tipo}
+  			</if>
+  		</where>
+	</select>
+	
+	<update id="agregarCampo" parameterType="hashmap">
+		ALTER TABLE ${esquemaVariable}.${tabla}
+  		ADD COLUMN ${campo} ${tipo} 
+  		<if test="valorDefault != null">
+  			NOT NULL DEFAULT ${valorDefault}
+  		</if>
+	</update>
+	
+	<update id="actualizarVariable" parameterType="hashmap">
+		UPDATE ${esquemaVariable}.${tabla} a
+		SET ${campo} = resultado
+		FROM (
+			SELECT 
+				<foreach collection="camposConsulta" separator="," item="item" index="key">
+					${item}
+				</foreach>
+			, ${operador} resultado
+			FROM ${esquemaConsulta}.${tablaConsulta}
+			<if test="campoParticion != null">
+				<where>
+					${campoParticion} = ${valorParticion}
+					<if test="condicion != null">
+						AND ${condicion}
+					</if>
+				</where>
+			</if>
+			<foreach collection="camposConsulta" open="GROUP BY" separator="," item="item" index="key">
+				${item}
+			</foreach>
+		) t
+			<foreach collection="camposConsulta" open="WHERE" separator="and" item="item" index="key">
+				a.${key} = t.${item}
+			</foreach> 	
+	</update>
+	
+	
+	
+	
+	<update id="actualizarVariable2" parameterType="hashmap">
+		UPDATE ${esquemaVariable}.${tabla} a
+		SET ${campo} = resultado
+		FROM (
+			SELECT  
+			<foreach collection="camposConsulta" separator="," item="item" index="key">
+				${item}
+			</foreach> , ${operador} resultado
+			FROM ${esquemaConsulta}.${tablaConsulta}
+			<foreach collection="camposConsulta" open="GROUP BY" separator="," item="item" index="key">
+				${item}
+			</foreach>, ${operador}
+		) t
+			<foreach collection="camposConsulta" open="WHERE" separator="and" item="item" index="key">
+				a.${key} = t.${item}
+			</foreach> 	
+	</update>
+	
+	<update id="propagarVariable" parameterType="hashmap">
+		UPDATE ${esquemaVariable}.${tablaPropagacion} a
+		SET ${campo} = resultado
+		FROM (
+			SELECT
+				<foreach collection="camposPropagacion" separator="," item="item">
+					${item}
+				</foreach>
+			, sum(${campo}) resultado
+			FROM ${esquemaVariable}.${tablaOrigen}
+			<foreach collection="camposPropagacion" open="GROUP BY" separator="," item="item">
+				${item}
+			</foreach>
+		) t
+		<foreach collection="camposPropagacion" open="WHERE" separator="and" item="item">
+			a.${item} = t.${item}
+		</foreach>
+	</update>
+</mapper>

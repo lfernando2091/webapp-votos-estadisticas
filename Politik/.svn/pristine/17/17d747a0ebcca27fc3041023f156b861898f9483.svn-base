@@ -1,0 +1,49 @@
+package com.saganet.politik.database.estructuras;
+
+import java.io.Serializable;
+
+import com.saganet.politik.dominios.FiguraAtributosDO;
+import com.saganet.politik.modelos.JavaBeanT;
+
+public class FiguraAtributoEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 4292563589047384094L;
+
+	private Integer id;
+	private Integer idPolitikPadre;
+	private FiguraAtributosDO atributo;
+
+	// Atributo: Programa de Promocion
+	private ProgramaPromocionEO programaPromocion;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getIdPolitikPadre() {
+		return idPolitikPadre;
+	}
+
+	public void setIdPolitikPadre(Integer idPolitikPadre) {
+		this.idPolitikPadre = idPolitikPadre;
+	}
+
+	public FiguraAtributosDO getAtributo() {
+		return atributo;
+	}
+
+	public void setAtributo(FiguraAtributosDO atributo) {
+		this.atributo = atributo;
+	}
+
+	public ProgramaPromocionEO getProgramaPromocion() {
+		return programaPromocion;
+	}
+
+	public void setProgramaPromocion(ProgramaPromocionEO programaPromocion) {
+		this.programaPromocion = programaPromocion;
+	}
+}

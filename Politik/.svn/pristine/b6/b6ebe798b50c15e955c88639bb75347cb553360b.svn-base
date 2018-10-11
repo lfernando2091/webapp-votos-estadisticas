@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+							<p:menuitem value="root" url="/app/" />
+							<p:menuitem value="Catalogos" />
+							<p:menuitem value="Elecciones" action="cancelar" immediate="true"/>
+							<p:menuitem value="Agregar Elección" />
+					</p:breadCrumb>
+					<p:focus />
+					<p:panel header="Agregar Elección">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Ejercicio" />
+							<p:inputMask mask="9999" value="${eleccion.ejercicio}" placeholder="año" maxlength="4" size="5"/>
+							<p:outputLabel value="Tipo" />
+							<p:selectOneMenu value="${eleccion.tipo}">
+								<f:selectItems value="${modeloTiposEleccion.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Representante" />
+							<p:selectOneMenu value="${eleccion.representante}">
+								<f:selectItems value="${modeloTiposRepresentante.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Fecha de Jornada" />
+							<p:calendar value="${eleccion.fechaJornada}" converter="DateConverter" pattern="dd/MM/yyyy" />
+							<p:outputLabel value="Descripción" />
+							<p:inputText value="${eleccion.descripcion}" size="50" />
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="siguiente" />
+							<p:commandButton value="Cancelar" action="cancelar" immediate="true" />
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

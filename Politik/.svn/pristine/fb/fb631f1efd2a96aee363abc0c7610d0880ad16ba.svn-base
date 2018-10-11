@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventos.calendarioEventos">
+	<cache />
+
+	<resultMap type="CalendarioEventoSocialEO" id="calendarioEventoSocial">
+		<result column="CalendarioEventoSocialEO_fecha" property="fecha" javaType="java.sql.Date" />
+		<result column="CalendarioEventoSocialEO_n_eventos" property="conteo" javaType="Integer" />
+		
+	</resultMap>
+
+	<sql id="query">
+		SELECT 
+			to_date(to_char(CalendarioEventoSocialEO.fecha,'DD/MM/YYYY'), 'DD/MM/YYYY') 	CalendarioEventoSocialEO_fecha ,		
+			count(CalendarioEventoSocialEO.*) 												CalendarioEventoSocialEO_n_eventos
+		FROM eventos_sociales.eventos_sociales CalendarioEventoSocialEO
+		GROUP BY to_date(to_char(fecha,'DD/MM/YYYY'), 'DD/MM/YYYY')
+
+	</sql>
+	
+	<select id="listado" resultMap="calendarioEventoSocial">
+		<include refid="query"/>
+	</select>
+</mapper>

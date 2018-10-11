@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.dependenciasLlaves">
+	<cache />
+	
+	<select id="listado" parameterType="Integer" resultType="String">
+		SELECT string_agg(''''||llave||'''', ',') llave
+		FROM catalogos.dependencias_llaves
+		WHERE id_dependencia = #{value}
+	</select>
+	
+	
+</mapper>

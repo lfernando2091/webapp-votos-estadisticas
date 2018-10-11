@@ -1,0 +1,58 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Geozonas" action="cancelar" />
+						<p:menuitem value="Detalle de Geozona" />
+					</p:breadCrumb>
+					
+            		<p:panel header="Detalle de Geozona: ${detalle.nombre}">
+            			<p:panelGrid columns="2">
+							<p:outputLabel value="Nombre" />
+							<p:outputLabel value="${detalle.nombre}" />
+							<p:outputLabel value="Nivel de Agrupación" />
+							<p:outputLabel value="${detalle.nivel.nombre}" />
+							<p:outputLabel value="Observaciones" />
+							<p:outputLabel value="${detalle.observaciones}" />
+						</p:panelGrid>
+						<p:separator />
+						<p:panelGrid columns="2" columnClasses="topAlign, topAlign">
+							<p:dataTable value="${modeloParticiones.listado}" var="fila" rowKey="${fila.id}" selection="${modeloParticiones.seleccionado}" selectionMode="single">
+								<f:facet name="header">Particiones</f:facet>
+								<p:column headerText="ID" width="20">${fila.idParticion}</p:column>
+								<p:column headerText="Nombre">${fila.nombre}</p:column>
+								<p:ajax event="rowSelect" update="#{p:component('tablaParticionesTerritorios')}" />
+							</p:dataTable>
+							<p:dataTable id="tablaParticionesTerritorios" value="${modeloParticiones.seleccionado.territorios}" var="fila">
+								<f:facet name="header">Territorios</f:facet>
+								<p:column headerText="Llave" width="50">${fila.llave}</p:column>
+								<p:column headerText="Nombre">${fila.nombre}</p:column>
+							</p:dataTable>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Regresar" action="regresar" />
+						</f:facet>
+            		</p:panel>
+            		
+            		<h:outputStylesheet>
+            			.topAlign{
+            				vertical-align: top;
+            			}
+            		</h:outputStylesheet>
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

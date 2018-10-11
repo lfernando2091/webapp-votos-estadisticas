@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="filtro">
+		<on-entry>
+			<evaluate expression="CatalogoSeccionalC.modelo()" result="flowScope.modeloSeccionales" />
+			<set name="viewScope.NomPatMat" value="''"/>
+		</on-entry>
+		<transition on="movilizadores" to="movilizadores"/>
+	</view-state>
+
+<view-state id="movilizadores">
+<on-entry>
+<evaluate expression="diaDMovilicadoresC.modeloMovilizador(flowScope.modeloSeccionales.seleccionado.seccion)" result="flowScope.modeloMovilizadores"/>
+</on-entry>
+<transition on="salir" to="fin"/>
+
+</view-state>
+
+<end-state id="fin"/>
+</flow>

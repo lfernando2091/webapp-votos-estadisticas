@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ol4jsf-proxy>
+	<use-environment id="politik" />
+
+	<environment id="politik">
+		<description>GeoServer Politik</description>
+		<resources>
+			<resource name="wms">
+				<url>https://cgf.mx/geoserver/politik/wms</url>
+				<authentication>
+					<username>admin</username>
+					<password>Pablito08</password>
+				</authentication>
+			</resource>
+		</resources>
+	</environment>
+</ol4jsf-proxy>

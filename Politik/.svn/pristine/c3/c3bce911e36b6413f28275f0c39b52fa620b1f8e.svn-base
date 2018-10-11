@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.programas">
+	<cache />
+	
+	<resultMap type="ProgramaEO" id="programa">
+		<id column="ProgramaEO_id" property="id" javaType="Integer" />
+		
+		<result column="ProgramaEO_programa" property="programa" javaType="String" />
+		<result column="ProgramaEO_descripcion" property="descripcion" javaType="String" />
+		<result column="ProgramaEO_observaciones" property="observaciones" javaType="String" />
+		<result column="ProgramaEO_estrategia" property="estrategia" javaType="Integer" />
+		
+		<association column="ProgramaEO_idProgramaPadre" property="programaPadre" select="catalogos.programas.programaById" />
+		<association column="ProgramaEO_idDependencia" property="dependencia" select="catalogos.dependencias.dependenciaById" />
+		
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+		ProgramaEO.pkey						ProgramaEO_id, 
+		ProgramaEO.id_dependencia			ProgramaEO_idDependencia, 
+		ProgramaEO.id_programa_padre		ProgramaEO_idProgramaPadre,
+		ProgramaEO.programa					ProgramaEO_programa,
+		ProgramaEO.descripcion				ProgramaEO_descripcion,
+		ProgramaEO.observaciones			ProgramaEO_observaciones,
+		ProgramaEO.estrategia				ProgramaEO_estrategia
+  		FROM catalogos.programas ProgramaEO
+	</sql>
+	
+	<select id="listado" resultMap="programa">
+		<include refid="query"/>
+		ORDER BY ProgramaEO.id_programa_padre, ProgramaEO.pkey
+	</select>
+	
+	<select id="programaById" parameterType="Integer" resultMap="programa">
+		<include refid="query"/>
+		WHERE ProgramaEO.pkey = #{VALUE}
+	</select>
+	
+	<insert id="insertar" parameterType="ProgramaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT NEXTVAL('catalogos.programas_pkey_seq')
+		</selectKey>
+		INSERT INTO catalogos.programas(pkey, id_dependencia, id_programa_padre, programa, descripcion, observaciones, estrategia)
+    	VALUES (#{id}, #{dependencia.id}, #{programaPadre.id}, #{programa}, #{descripcion}, #{observaciones}, #{estrategia})
+	</insert>	
+	
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="diaD.reportes.metasJornada">
+	
+	<select id="seccionesPorMunicipio" parameterType="MunicipioEO" resultType="hashmap">
+		SELECT a.entidad, a.region, a.nombre_region, a.municipio, a.nombre_municipio, a.seccion, SUM(a.meta) meta,
+			SUM(case when b.registro_jornada then 1 else 0 end) registrados,
+			SUM(case when not b.registro_jornada then 1 else 0 end) no_registrados
+		FROM (
+			select a.entidad, a.region, a.nombre_region, a.municipio, a.nombre_municipio, a.seccion, sum(a.meta) meta
+			from dia_d.jornada_avance_seccion a
+			group by a.entidad, a.region, a.nombre_region, a.municipio, a.nombre_municipio, a.seccion
+		) a
+		LEFT JOIN dia_d.movilizados b USING(seccion)
+		WHERE a.municipio = #{idMunicipio}
+		GROUP BY a.entidad, a.region, a.nombre_region, a.municipio, a.nombre_municipio, a.seccion
+		ORDER BY a.seccion
+	</select>
+
+</mapper>

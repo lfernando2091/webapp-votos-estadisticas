@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:messages autoUpdate="true"/>
+				<p:panel header="Registro Encuestadores">
+				<p:panelGrid columns="1" style="width: 300px" styleClass="panelNoBorder">
+				<p:outputLabel value="Nombre" />
+				<p:inputText value="${nombre}" required="true" requiredMessage="Nombre: requerido" style="width: 400px" maxlength="100" />
+				<p:outputLabel value="Primer Apellido"/>
+					<p:inputText value="${primer_apellido}" required="true" requiredMessage="Primer Apellido: requerido" style="width: 400px" maxlength="100"/>
+				<p:outputLabel value="Segundo Apellido"/>
+					<p:inputText value="${segundo_apellido}" style="width: 400px" maxlength="100" />
+				<p:outputLabel value="Email"/>
+					<p:inputText value="${email}" required="true" requiredMessage="Email: requerido" style="width: 400px" maxlength="100" validatorMessage="Email: error de captura">
+					<f:validateRegex
+		pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+					</p:inputText>
+				<p:outputLabel value="Teléfono Celular"/>
+					<p:inputText value="${movil}" required="true" requiredMessage="Teléfono: requerido" validatorMessage="Celular: número invalido" style="width: 400px" maxlength="10" >
+					<f:validateRegex pattern="^[+]?[0-9]+$" />
+					</p:inputText>
+				<p:outputLabel value="Municipio"/>
+				<p:selectOneMenu value="${municipio}" filter="true" filterMatchMode="contains" converter="ObjectConverter" required="true" requiredMessage="Municipio: es requerido" style="width: 400px">
+				<f:selectItems value="${modeloMunicipios.listado}" var="m" itemLabel="${m.idMunicipio} - ${m.nombre}" itemValue="${m.idMunicipio}"/>
+				</p:selectOneMenu>
+				<p:outputLabel value="Código"/>
+					<p:inputText value="${codigo}" required="true" requiredMessage="Código: Requerido" style="width: 400px" maxlength="8"/>
+				</p:panelGrid>
+				<f:facet name="footer">
+				<p:commandButton value="Registrar" action="registrar" icon="fa fa-save"/>
+				<p:commandButton value="Limpiar" action="fin" immediate="true" icon="fa fa-caret-left"/>
+				</f:facet>
+				</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				<h:outputStylesheet>
+				.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+border: hidden;
+border-color: white;
+}
+				</h:outputStylesheet>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

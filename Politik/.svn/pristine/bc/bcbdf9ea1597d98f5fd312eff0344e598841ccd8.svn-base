@@ -1,0 +1,199 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="head">
+		<script type="text/javascript"
+			src="https://maps.google.com/maps/api/js?key=AIzaSyCv60kiiu8HUPsm7SIm8dFUmVzpigHUCAs" />
+	</ui:define>
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:panel header="Avance de Movilización">
+            			<div class="ui-grid ui-grid-responsive">
+            				<div class="ui-grid-row">
+            					<div class="ui-grid-col-12">
+            						<p:panelGrid style="margin: 0 auto;">
+            							<p:row styleClass="topAlign">
+            								<p:column>
+            									<p:chart type="metergauge" model="${mapa.medidorGeneral}" style="width:310px;height:220px;" />
+            								</p:column>
+            								<p:column>
+												<p:panelGrid>
+													<p:row>
+														<p:column>Meta</p:column>
+														<p:column>
+															<p:outputLabel value="${mapa.general.meta}">
+																<f:convertNumber integerOnly="true" />
+															</p:outputLabel>
+														</p:column>
+													</p:row>
+													<p:row>
+														<p:column>Avance</p:column>
+														<p:column>
+															<p:outputLabel value="${mapa.general.registrados}">
+																<f:convertNumber integerOnly="true" />
+															</p:outputLabel>
+														</p:column>
+													</p:row>
+													<p:row>
+														<p:column colspan="2">
+															<p:progressBar
+																value="${(mapa.general.meta)==0?0:(mapa.general.registrados / (mapa.general.meta)*100)}"
+																labelTemplate="${(mapa.general.meta)==0?0:(mapa.general.registrados / (mapa.general.meta)*100).intValue()} %"
+																displayOnly="true" />
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:column>
+            							</p:row>
+            						</p:panelGrid>
+            					</div>
+            				</div>
+            				<p:separator />
+            				<div class="ui-grid-row">
+            					<div class="ui-grid-col-4">
+            						<p:panelGrid style="margin: 0 auto;">
+            							<p:row styleClass="topAlign">
+            								<p:column>
+            									<p:chart type="metergauge" model="${mapa.medidorRowan}" style="width:310px;height:220px;" />
+            								</p:column>
+            								<p:column>
+												<p:panelGrid>
+													<p:row>
+														<p:column>Meta</p:column>
+														<p:column>
+															<p:outputLabel value="${mapa.rowan.meta}">
+																<f:convertNumber integerOnly="true" />
+															</p:outputLabel>
+														</p:column>
+													</p:row>
+													<p:row>
+														<p:column>Avance</p:column>
+														<p:column>
+															<p:outputLabel value="${mapa.rowan.registrados}">
+																<f:convertNumber integerOnly="true" />
+															</p:outputLabel>
+														</p:column>
+													</p:row>
+													<p:row>
+														<p:column colspan="2">
+															<p:progressBar
+																value="${(mapa.rowan.meta)==0?0:(mapa.rowan.registrados / (mapa.rowan.meta)*100)}"
+																labelTemplate="${(mapa.rowan.meta)==0?0:(mapa.rowan.registrados / (mapa.rowan.meta)*100).intValue()} %"
+																displayOnly="true" />
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:column>
+            							</p:row>
+            						</p:panelGrid>
+            					</div>
+            					<div class="ui-grid-col-4">
+            						<p:panelGrid style="margin: 0 auto;">
+            							<p:row styleClass="topAlign">
+            								<p:column>
+            									<p:chart type="metergauge" model="${mapa.medidorAbby}" style="width:310px;height:220px;" />
+            								</p:column>
+            								<p:column>
+												<p:panelGrid>
+													<p:row>
+														<p:column>Meta</p:column>
+														<p:column>
+															<p:outputLabel value="${mapa.abby.meta}">
+																<f:convertNumber integerOnly="true" />
+															</p:outputLabel>
+														</p:column>
+													</p:row>
+													<p:row>
+														<p:column>Avance</p:column>
+														<p:column>
+															<p:outputLabel value="${mapa.abby.registrados}">
+																<f:convertNumber integerOnly="true" />
+															</p:outputLabel>
+														</p:column>
+													</p:row>
+													<p:row>
+														<p:column colspan="2">
+															<p:progressBar
+																value="${(mapa.abby.meta)==0?0:(mapa.abby.registrados / (mapa.abby.meta)*100)}"
+																labelTemplate="${(mapa.abby.meta)==0?0:(mapa.abby.registrados / (mapa.abby.meta)*100).intValue()} %"
+																displayOnly="true" />
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:column>
+            							</p:row>
+            						</p:panelGrid>
+            					</div>
+            					<div class="ui-grid-col-4">
+            						<p:panelGrid style="margin: 0 auto;">
+            							<p:row styleClass="topAlign">
+            								<p:column>
+            									<p:chart type="metergauge" model="${mapa.medidorFitz}" style="width:310px;height:220px;" />
+            								</p:column>
+            								<p:column>
+												<p:panelGrid>
+													<p:row>
+														<p:column>Meta</p:column>
+														<p:column>
+															<p:outputLabel value="${mapa.fitz.meta}">
+																<f:convertNumber integerOnly="true" />
+															</p:outputLabel>
+														</p:column>
+													</p:row>
+													<p:row>
+														<p:column>Avance</p:column>
+														<p:column>
+															<p:outputLabel value="${mapa.fitz.registrados}">
+																<f:convertNumber integerOnly="true" />
+															</p:outputLabel>
+														</p:column>
+													</p:row>
+													<p:row>
+														<p:column colspan="2">
+															<p:progressBar
+																value="${(mapa.fitz.meta)==0?0:(mapa.fitz.registrados / (mapa.fitz.meta)*100)}"
+																labelTemplate="${(mapa.fitz.meta)==0?0:(mapa.fitz.registrados / (mapa.fitz.meta)*100).intValue()} %"
+																displayOnly="true" />
+														</p:column>
+													</p:row>
+												</p:panelGrid>
+											</p:column>
+            							</p:row>
+            						</p:panelGrid>
+            					</div>
+            				</div>
+            			</div>
+            		</p:panel>
+            		<p:separator />
+
+					<div class="ui-grid-col-4">
+						<p:gmap model="${mapa.modeloMapa}" fitBounds="true"
+							disableDefaultUI="true" disableDoubleClickZoom="true"
+							type="terrain" style="width:450px; height:450px;" />
+					</div>
+					<div class="ui-grid-col-8">
+						<p:chart type="line" model="${mapa.grafica}" />
+					</div>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+            	</h:form>
+            </div>
+        </div>
+        
+        <h:outputStylesheet>
+        	.topAlign{
+        		vertical-align: top;
+        	}
+        </h:outputStylesheet>
+        
+    </ui:define>
+
+</ui:composition>

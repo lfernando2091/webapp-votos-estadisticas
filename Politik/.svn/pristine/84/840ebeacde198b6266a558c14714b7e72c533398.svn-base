@@ -1,0 +1,820 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+
+					<p:tabView>
+						
+						
+						
+						<p:tab title="Concentrado Usuarios" rendered="${nivelUsuario == 0 or nivelUsuario == 1 ?'true':'false'}">
+							<p:panel header="Estadísticas Concentrado Usuarios">
+								<h:panelGrid columns="2">
+									<p:outputLabel value="Fecha Inicio: " />
+									<p:calendar value="${fInicioConcentrado1}" pattern="dd/MM/yyyy" mask="true" />
+									<p:outputLabel value="Fecha Fin: " />
+									<p:calendar value="${fFinConcentrado1}" pattern="dd/MM/yyyy" mask="true" />
+									<p:commandButton value="Buscar por fecha" action="actualizarConcentrado1" update="@form"/>
+									<p:commandButton value="Global" action="reiniciarConcentrado1" update="@form"/>
+								</h:panelGrid>
+								<p:dataTable
+									id="dtc1" 
+									var="li"
+									value="${concentrado1}" sortBy="${li.get('reporte')}">
+									<p:column headerText="Región" >
+										<h:outputText value="${li.get('region')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Usuarios Registrados" style="text-align:right">
+										<h:outputText value="${li.get('usuarios_registrados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Con 10 ó más Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('mas_de_10')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Con 10 ó más Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('por_mas_de_10')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Con menos de 10 Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('menos_de_10')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Con menos de 10 Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('por_menos_de_10')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Total" style="text-align:right">
+										<h:outputText value="${li.get('total_uconectados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Encuestas Con Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('con_resp')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Encuestas Con Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('por_con_resp')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Encuestas Sin Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('sin_resp')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Encuestas Sin Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('por_sin_resp')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Total de Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('total_enc_sincronizadas')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Encuestas Esperadas" style="text-align:right">
+										<h:outputText value="${li.get('de_usuarios_conectados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:summaryRow>
+										<p:column colspan="1" >
+											<h:outputText  value="Totales: " />
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_usuarios_registrados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_mas_de_10')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_menos_de_10')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_total_uconectados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_con_resp')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_sin_resp')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_total_enc_sincronizadas')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado1Totales.get('total_de_usuarios_conectados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+									</p:summaryRow>
+									
+								</p:dataTable>
+								
+							</p:panel>
+						</p:tab>
+						
+						<p:tab title="Concentrado Municipios Usuarios" rendered="${nivelUsuario != 3 ?'true':'false'}">
+							<h:panelGrid columns="2">
+								<p:outputLabel value="Región: "   rendered="${nivelUsuario != 2 ?'true':'false'}"/>
+								<p:selectOneMenu value="${regionC2}" rendered="${nivelUsuario != 2 ?'true':'false'}">
+									<f:selectItems var="r" value="${regiones}"
+										itemLabel="${r.nombre}" itemValue="${r.id}" />
+									<!-- 										<p:ajax event="valueChange" onstart="buscarUsuariosPorRegion()" update="dtUR"/> -->
+									<!-- 									<p:ajax event="valueChange" /> -->
+								</p:selectOneMenu>
+								<p:outputLabel value="Fecha Inicio: " />
+									<p:calendar value="${fInicioConcentrado2}" pattern="dd/MM/yyyy" mask="true" />
+									<p:outputLabel value="Fecha Fin: " />
+									<p:calendar value="${fFinConcentrado2}" pattern="dd/MM/yyyy" mask="true" />
+									<p:commandButton value="Buscar por fecha" action="reiniciaConcentrado2" update="dtc1m"/>
+									<p:commandButton value="Global"
+									action="actualizarConcentrado2PorRegion" update="dtc1m" />
+								</h:panelGrid>
+							<p:dataTable
+									id="dtc1m" 
+									var="li"
+									value="${concentrado2Municipios}" sortBy="${li.get('reporte')}">
+									<p:column headerText="Región">
+										<h:outputText value="${li.get('region')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Municipio">
+										<h:outputText value="${li.get('municipio')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Usuarios Registrados" style="text-align:right">
+										<h:outputText value="${li.get('usuarios_registrados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Con 10 ó más Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('mas_de_10')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Con 10 ó más Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('por_mas_de_10')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Con menos de 10 Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('menos_de_10')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Con menos de 10 Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('por_menos_de_10')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Total" style="text-align:right">
+										<h:outputText value="${li.get('total_uconectados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Encuestas Con Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('con_resp')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Encuestas Con Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('por_con_resp')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Encuestas Sin Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('sin_resp')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Encuestas Sin Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('por_sin_resp')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Total de Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('total_enc_sincronizadas')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Encuestas Esperadas" style="text-align:right">
+										<h:outputText value="${li.get('de_usuarios_conectados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:summaryRow>
+										<p:column colspan="2" >
+											<h:outputText  value="Totales: " />
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado2Totales.get('total_usuarios_registrados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado2Totales.get('total_mas_de_10')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado2Totales.get('total_menos_de_10')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado2Totales.get('total_total_uconectados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado2Totales.get('total_con_resp')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado2Totales.get('total_sin_resp')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado2Totales.get('total_total_enc_sincronizadas')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado2Totales.get('total_de_usuarios_conectados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+									</p:summaryRow>
+									
+								</p:dataTable>
+						</p:tab>
+						
+						
+						
+						
+						<p:tab title="Concentrado Zonas Usuarios"  rendered="${nivelUsuario != 2 ?'true':'false'}">
+							<h:panelGrid columns="2">
+								<p:outputLabel value="Región: "  rendered="${nivelUsuario != 3 ?'true':'false'}"/>
+								<p:selectOneMenu value="${regionC3}"  rendered="${nivelUsuario != 3 ?'true':'false'}">
+									<f:selectItems var="r" value="${regiones}"
+										itemLabel="${r.nombre}" itemValue="${r.id}" />
+									<!-- 										<p:ajax event="valueChange" onstart="buscarUsuariosPorRegion()" update="dtUR"/> -->
+									<!-- 									<p:ajax event="valueChange" /> -->
+								</p:selectOneMenu>
+								<p:outputLabel value="Fecha Inicio: " />
+								<p:calendar value="${fInicioConcentrado3}" pattern="dd/MM/yyyy"
+									mask="true" />
+								<p:outputLabel value="Fecha Fin: " />
+								<p:calendar value="${fFinConcentrado3}" pattern="dd/MM/yyyy"
+									mask="true" />
+								<p:commandButton value="Buscar por fecha"
+									action="reiniciaConcentrado3" update="dtc3z" />
+								<p:commandButton value="Global"
+									action="actualizarConcentrado3Zonas" update="dtc3z" />
+							</h:panelGrid>
+							<p:dataTable
+									id="dtc3z" 
+									var="li"
+									value="${concentrado3Zonas}" sortBy="${li.get('reporte')}">
+									<p:column headerText="Región">
+										<h:outputText value="${li.get('region')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Zona">
+										<h:outputText value="${li.get('zona')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Usuarios Registrados" style="text-align:right">
+										<h:outputText value="${li.get('usuarios_registrados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Con 10 ó más Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('mas_de_10')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Con 10 ó más Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('por_mas_de_10')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Con menos de 10 Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('menos_de_10')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Con menos de 10 Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('por_menos_de_10')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Total" style="text-align:right">
+										<h:outputText value="${li.get('total_uconectados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Encuestas Con Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('con_resp')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Encuestas Con Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('por_con_resp')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Encuestas Sin Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('sin_resp')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Encuestas Sin Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('por_sin_resp')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Total de Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('total_enc_sincronizadas')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Encuestas Esperadas" style="text-align:right">
+										<h:outputText value="${li.get('de_usuarios_conectados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									
+									<p:summaryRow>
+										<p:column colspan="2" >
+											<h:outputText  value="Totales: " />
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado3Totales.get('total_usuarios_registrados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado3Totales.get('total_mas_de_10')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado3Totales.get('total_menos_de_10')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado3Totales.get('total_total_uconectados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado3Totales.get('total_con_resp')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado3Totales.get('total_sin_resp')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado3Totales.get('total_total_enc_sincronizadas')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado3Totales.get('total_de_usuarios_conectados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+									</p:summaryRow>
+									
+									
+								</p:dataTable>
+						</p:tab>
+						
+						
+						
+						<p:tab title="Concentrado Secciones Usuarios">
+							<h:panelGrid columns="2">
+								<p:outputLabel value="Región: " rendered="${nivelUsuario != 3 and  nivelUsuario !=2 ?'true':'false'}"/>
+								<p:selectOneMenu value="${regionC4}" rendered="${nivelUsuario != 3 and  nivelUsuario !=2?'true':'false'}">
+									<f:selectItems var="r" value="${regiones}"
+										itemLabel="${r.nombre}" itemValue="${r.id}" />
+									<!-- 										<p:ajax event="valueChange" onstart="buscarUsuariosPorRegion()" update="dtUR"/> -->
+									<!-- 									<p:ajax event="valueChange" /> -->
+								</p:selectOneMenu>
+								<p:outputLabel value="Fecha Inicio: " />
+								<p:calendar value="${fInicioConcentrado4}" pattern="dd/MM/yyyy"
+									mask="true" />
+								<p:outputLabel value="Fecha Fin: " />
+								<p:calendar value="${fFinConcentrado4}" pattern="dd/MM/yyyy"
+									mask="true" />
+								<p:commandButton value="Buscar por fecha"
+									action="reiniciaConcentrado4" update="dtc4S" />
+								<p:commandButton value="Global"
+									action="actualizarConcentrado4Secciones" update="dtc4S" />
+							</h:panelGrid>
+							<p:dataTable
+									id="dtc4S" scrollable="true" scrollHeight="350"
+									var="li"
+									value="${concentrado4Secciones}" sortBy="${li.get('reporte')}">
+									<p:column headerText="Región">
+										<h:outputText value="${li.get('region')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Municipio">
+										<h:outputText value="${li.get('municipio')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Zona">
+										<h:outputText value="${li.get('zona')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="seccion">
+										<h:outputText value="${li.get('seccion')}">
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Usuarios Registrados" style="text-align:right">
+										<h:outputText value="${li.get('usuarios_registrados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Con 10 ó más Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('mas_de_10')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Con 10 ó más Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('por_mas_de_10')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Con menos de 10 Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('menos_de_10')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Con menos de 10 Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('por_menos_de_10')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Total" style="text-align:right">
+										<h:outputText value="${li.get('total_uconectados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Encuestas Con Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('con_resp')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Encuestas Con Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('por_con_resp')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Encuestas Sin Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('sin_resp')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="% Encuestas Sin Respuesta" style="text-align:right">
+										<h:outputText value="${li.get('por_sin_resp')} %" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="Total de Encuestas" style="text-align:right">
+										<h:outputText value="${li.get('total_enc_sincronizadas')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Encuestas Esperadas" style="text-align:right">
+										<h:outputText value="${li.get('de_usuarios_conectados')}" >
+											<f:convertNumber maxFractionDigits="3" />
+										</h:outputText>
+									</p:column>
+									
+									
+									
+									
+									<p:summaryRow>
+										<p:column colspan="4" >
+											<h:outputText  value="Totales: " />
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado4Totales.get('total_usuarios_registrados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado4Totales.get('total_mas_de_10')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado4Totales.get('total_menos_de_10')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado4Totales.get('total_total_uconectados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado4Totales.get('total_con_resp')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado4Totales.get('total_sin_resp')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value=""/>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado4Totales.get('total_total_enc_sincronizadas')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+										<p:column colspan="1" style="text-align:right">
+											<h:outputText  value="${concentrado4Totales.get('total_de_usuarios_conectados')}">
+												<f:convertNumber maxFractionDigits="3" />
+											</h:outputText>
+										</p:column>
+									</p:summaryRow>
+									
+									
+									
+									
+								</p:dataTable>
+						</p:tab>
+						
+						
+						
+
+						<p:tab title="Usuarios">
+							<p:panel header="Estadísticas por usuarios">
+								<h:panelGrid columns="9">
+									<p:outputLabel value="Región: " />
+									<p:selectOneMenu id="sorg" value="${region}">
+										<f:selectItems var="r" value="${regiones}"
+											itemLabel="${r.nombre}" itemValue="${r.id}" />
+<!-- 										<p:ajax event="valueChange" onstart="buscarUsuariosPorRegion()" update="dtUR"/> -->
+<!-- 									<p:ajax event="valueChange" /> -->
+									</p:selectOneMenu>
+									<p:outputLabel value="Usuario: " />
+									<p:inputText value="${usuario}"/>
+									<p:outputLabel value="Nombre: " />
+									<p:inputText value="${nombre}"/>
+									<p:outputLabel value="IMEI: " />
+									<p:inputText value="${imei}"/>
+									<p:commandButton value="Actualizar" action="buscarUsuariosPorRegion" update="dtUR" />
+								</h:panelGrid>
+								<p:dataTable id="dtUR" var="li" value="${listadoPorUsuarioRegion}"
+											 rows="20" paginator="true">
+									
+									<p:column headerText="Región" width="50">
+										<h:outputText value="${li.get('region')}" />
+									</p:column>
+									<p:column headerText="Usuario" width="150" >
+										<h:outputText value="${li.get('usuario')}" />
+									</p:column>
+									<p:column headerText="Nombre">
+										<h:outputText
+											value="${li.get('nombre')} ${li.get('primerapellido')} ${li.get('segundoapellido')}" />
+									</p:column>
+									<p:column headerText="IMEI" width="150" filterable="true"
+										filterBy="${li.get('imei')}"
+										filterMatchMode="contains" >
+										<h:outputText
+											value="${li.get('imei')}" />
+									</p:column>
+									<p:column headerText="Encuestas" width="80" sortable="true"
+										sortBy="${li.get('num')}">
+										<h:outputText value="${li.get('num')}" />
+									</p:column>
+								</p:dataTable>
+								
+<!-- 								<p:remoteCommand name="buscarUsuariosPorRegion" -->
+<!-- 									action="buscarUsuariosPorRegion" update="dtUR" /> -->
+
+								<f:facet name="footer">
+									<h:commandLink>
+										<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+										<p:dataExporter type="xls" target="dtUR" fileName="usuarios" />
+									</h:commandLink>
+								</f:facet>
+								
+							</p:panel>
+							
+						</p:tab>
+						
+						
+						<p:tab title="Regiones">
+						
+							<p:panel header="Estadísticas por Regiones">
+								<h:panelGrid columns="3">
+									<p:commandButton value="Actualizar" action="actualizarRegiones" update="@form"/>
+								</h:panelGrid>
+								<p:dataTable
+									id="dtRG" 
+									var="li"
+									value="${listadoPorRegiones}" >
+									<p:column headerText="Región">
+										<h:outputText value="${li.get('region')}" />
+									</p:column>
+									
+									<p:column headerText="Zona" rendered="${nivelUsuario == 3 ?'true':'false'}">
+										<h:outputText value="${zona}" />
+									</p:column>
+									
+									<p:column headerText="Municipio" rendered="${nivelUsuario == 2 ?'true':'false'}">
+										<h:outputText value="${municipio}" />
+									</p:column>
+									
+									<p:column headerText="Encuestas" sortable="true" sortBy="${li.get('num')}">
+										<h:outputText value="${li.get('num')}" />
+									</p:column>
+									<f:facet name="footer">
+										<p:outputLabel value="Total Encuestas: "/>
+										<p:outputLabel value="${totalEncuestas}"/>
+									</f:facet>
+								</p:dataTable>
+								
+								<f:facet name="footer">
+									<h:commandLink>
+										<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+										<p:dataExporter type="xls" target="dtRG" fileName="fechas" />
+									</h:commandLink>
+								</f:facet>
+							</p:panel>
+						
+						</p:tab>
+						
+<!-- 						<p:tab title="Preguntas"> -->
+<!-- 							<p:panel header="Estadísticas por Preguntas"> -->
+							
+<!-- 								<p:panelGrid columns="2"> -->
+									
+<!-- 									<p:chart type="pie" model="${pg1}" style="width:400px;height:300px" /> -->
+									
+<!-- 									<p:chart type="pie" model="${pg3}" style="width:400px;height:300px" /> -->
+									
+<!-- 									<p:chart type="pie" model="${pg4}" style="width:400px;height:300px" /> -->
+									
+<!-- 									<p:chart type="pie" model="${pg5}" style="width:400px;height:300px" /> -->
+									
+<!-- 									<p:chart type="pie" model="${pg6}" style="width:400px;height:300px" /> -->
+									
+<!-- 									<p:chart type="bar" model="${pg7}" style="height:300px"/> -->
+									
+<!-- 								</p:panelGrid> -->
+							
+<!-- 							</p:panel> -->
+<!-- 						</p:tab> -->
+					</p:tabView>
+					
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

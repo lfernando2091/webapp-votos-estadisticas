@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.tablasParticiones">
+	<cache />
+	
+	<resultMap type="TablaParticionEO" id="tablaParticion">
+		<id column="TablaParticionEO_id" property="id" javaType="Integer"/>
+		<result column="TablaParticionEO_idTabla" property="idTabla" javaType="Integer"/>
+		<result column="TablaParticionEO_idParticion" property="idParticion" javaType="Integer"/>
+		<result column="TablaEO_particion" property="particion" javaType="String"/>
+	</resultMap>
+	
+	
+</mapper>

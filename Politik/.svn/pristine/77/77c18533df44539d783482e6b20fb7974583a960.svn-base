@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="diaD.incidencias">
+	<resultMap type="DiaDIncidenciasEO" id="incidencias">
+		<id          	 column="Incidencias_id"         			property="id" 						javaType="Integer" />
+		<result          column="Incidencias_nombre"      			property="nombre"					javaType="String"/>
+		<result          column="Incidencias_telefono"      		property="telefono"					javaType="String"/>
+		<result          column="Incidencias_casilla"      			property="casilla"					javaType="String"/>
+		<result          column="Incidencias_observaciones"      	property="observaciones"			javaType="String"/>		
+		<result          column="Incidencias_fecha"      			property="fecha"					javaType="java.sql.Timestamp"/>			
+		<result          column="Incidencias_prioridad"      		property="prioridad"				javaType="com.saganet.politik.dominios.IncidenciasPrioridadDO"/>
+		<result          column="Incidencias_estatus"      			property="estatus"					javaType="com.saganet.politik.dominios.IncidenciasEstatusDO"/>		
+		<association     column="Incidencias_tipo"      			property="tipo"						select="diaD.tiposIncidencias.buscarID"/>
+		<association     column="Incidencias_nick"         			property="usuario"     				select="administracion.usuarios.porNick"/>
+		<association     column="Incidencias_llave_seccion"         property="seccion"     				select="catalogos.secciones.buscarPorLlave"/>
+	</resultMap>
+
+	<sql id="query">
+		SELECT 
+			Incidencias.pkey						Incidencias_id, 
+			Incidencias.nombre_reporta				Incidencias_nombre, 
+			Incidencias.telefono_reporta			Incidencias_telefono, 
+			Incidencias.llave_seccion				Incidencias_llave_seccion, 
+			Incidencias.casilla						Incidencias_casilla,  
+			Incidencias.prioridad					Incidencias_prioridad, 
+			Incidencias.estatus						Incidencias_estatus, 
+			Incidencias.observaciones				Incidencias_observaciones, 
+			Incidencias.fecha						Incidencias_fecha, 
+			Incidencias.nick						Incidencias_nick,
+			Incidencias.id_tipo_incidencia			Incidencias_tipo
+		FROM dia_d.incidencias 						Incidencias
+	</sql>
+	
+	<sql id="OrderBy">
+		ORDER BY Incidencias.estatus, Incidencias.prioridad, Incidencias.fecha, Incidencias.llave_seccion, Incidencias.casilla, Incidencias.observaciones
+	</sql>
+	
+	<select id="listado" resultMap="incidencias" parameterType="SeccionEO">
+		<include refid="query"/>
+		<where>
+			Incidencias.llave_seccion=#{llave}
+		</where>
+		<include refid="OrderBy"/>
+	</select>
+	
+	<update id="actualizar" parameterType="DiaDIncidenciasEO">
+		UPDATE dia_d.incidencias
+		   SET estatus=#{estatus}
+		 WHERE pkey=#{id}
+	</update>
+	
+	<insert id="insertar">
+		INSERT INTO dia_d.incidencias(nombre_reporta, telefono_reporta, llave_seccion, casilla, 
+									  prioridad, estatus, observaciones, fecha, nick, id_tipo_incidencia)
+	    VALUES (#{nombre},#{telefono},#{seccion.llave},#{casilla},#{prioridad},#{estatus},#{observaciones},#{fecha},#{usuario.nick},#{tipo.id})
+	</insert>
+</mapper>

@@ -1,0 +1,132 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ps="http://primefaces.org/spark"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<h:form enctype="multipart/form-data">
+		<ps:menu>
+
+			<p:submenu label="Catalogos" icon="fa fa-book">
+				<sec:authorize ifAllGranted="ROLE_CATALOGOS_GEOGRAFICOS">
+					<p:submenu label="Geográfico" icon="fa fa-map-marker">
+						<p:menuitem value="Entidades Federativas"
+							url="/app/catalogos/entidades" />
+						<p:menuitem value="Distritos Federales"
+							url="/app/catalogos/dFederales" />
+						<p:menuitem value="Distritos Locales"
+							url="/app/catalogos/dLocales" />
+						<p:menuitem value="Municipios" url="/app/catalogos/municipios" />
+						<p:menuitem value="Secciones" url="/app/catalogos/secciones" />
+						<p:menuitem value="Geozonas" url="/app/catalogos/geozonas" />
+					</p:submenu>
+				</sec:authorize>
+				<sec:authorize ifAllGranted="ROLE_CATALOGOS">
+					<p:menuitem value="Tipos de Clave" url="/app/catalogos/tiposClave" />
+					<p:menuitem value="Tablas Warehouse" url="/app/catalogos/tablas" />
+					<p:menuitem value="Partidos Políticos"
+						url="/app/catalogos/partidos" />
+					<p:menuitem value="Elecciones" url="/app/catalogos/elecciones" />
+				</sec:authorize>
+				<sec:authorize ifAllGranted="ROLE_CATALOGOS_DEP_PROG">
+					<p:menuitem value="Dependencias" url="/app/catalogos/dependencias"/>
+					<p:menuitem value="Programas" url="/app/catalogos/programas"/>
+				</sec:authorize>
+			</p:submenu>
+
+			<sec:authorize ifAllGranted="ROLE_MDM">
+				<p:separator />
+				<p:submenu label="MDM" icon="fa fa-users">
+					<p:menuitem value="Perfiles" url="/app/mdm/perfiles" />
+				</p:submenu>
+			</sec:authorize>
+
+			<sec:authorize ifAllGranted="ROLE_CRONOGRAMA">
+				<p:separator />
+				<p:submenu label="Cronograma" icon="fa fa-clock-o">
+					<p:menuitem value="Timeline" url="/app/cronograma/timeline" />
+				</p:submenu>
+			</sec:authorize>
+
+			<sec:authorize ifAllGranted="ROLE_ESTRUCTURAS">
+				<p:separator />
+				<p:submenu label="Estructuras" icon="fa fa-sitemap">
+					<p:menuitem value="Figuras" url="/app/estructuras/figuras" />
+					<p:menuitem value="Estructuras" url="/app/estructuras/estructuras" />
+					<p:menuitem value="Captura" url="/app/estructuras/captura" rendered="#{sec:areAllGranted('ROLE_ESTRUCTURAS_CAPTURA')}" />
+					<p:menuitem value="Reportes" url="/app/estructuras/reportes" rendered="#{sec:areAllGranted('ROLE_ESTRUCTURAS_REPORTES')}" />
+					<p:menuitem value="Programas de Promoción" url="/app/estructuras/programasPromocion" rendered="#{sec:areAllGranted('ROLE_DEVELOPER')}" />
+					<p:menuitem value="Legislaturas" url="/app/estructuras/legislaturas" rendered="#{sec:areAllGranted('ROLE_DEVELOPER')}" />
+				</p:submenu>
+			</sec:authorize>
+
+			<sec:authorize ifAllGranted="ROLE_BIBLIOTECA">
+				<p:separator />
+				<p:submenu label="Biblioteca" icon="fa fa-folder-o">
+					<p:menuitem value="Archivos" url="/app/biblioteca" />
+				</p:submenu>
+			</sec:authorize>
+
+			<sec:authorize ifAllGranted="ROLE_ENCUESTAS">
+				<p:separator />
+				<p:submenu label="Encuestas" icon="fa fa-bars">
+					<p:menuitem value="Administración" url="/app/encuestas/admin"
+						icon="fa fa-wrench" />
+					<p:menuitem value="Captura" url="/app/encuestas/captura"
+						icon="fa fa-phone" />
+				</p:submenu>
+			</sec:authorize>
+
+			<sec:authorize ifAllGranted="ROLE_IMPORTACIONES">
+				<p:separator />
+				<p:submenu label="Importaciones" icon="fa fa-folder-o">
+					<p:menuitem value="Archivos" url="/app/importaciones" />
+				</p:submenu>
+			</sec:authorize>
+
+			<sec:authorize ifAllGranted="ROLE_ESTADISTICAS">
+				<p:separator />
+				<p:submenu label="Estadísticas" icon="fa fa-line-chart">
+					<p:menuitem value="Reportes" url="/app/estadisticas/reportes" />
+					<p:menuitem value="Variables" url="/app/estadisticas/variables" />
+				</p:submenu>
+			</sec:authorize>
+			
+			<sec:authorize ifAllGranted="ROLE_EVENTOS">
+				<p:separator />
+				<p:submenu label="Eventos" icon="fa fa-clock-o">
+					<p:menuitem value="Calendario" url="/app/eventos/calendario" />
+					<sec:authorize ifAllGranted="ROLE_DEVELOPER">
+					<p:menuitem value="Mapa" url="/app/eventos/mapa" />
+					</sec:authorize>
+					<p:menuitem value="Programar" url="/app/eventos" />
+					<p:menuitem value="Eventos Realizados" url="/app/eventos/realizados" />
+					<sec:authorize ifAllGranted="ROLE_EVENTOS_REPORTE">
+					<p:menuitem value="Reporte Eventos" url="/app/eventos/reporte" />
+					</sec:authorize>
+				</p:submenu>
+			</sec:authorize>
+			
+			
+			<sec:authorize ifAllGranted="ROLE_DEVELOPER">
+			<p:separator/>
+			<p:submenu label="Match">
+			<p:menuitem value="Listado" url="/app/match"/>
+			</p:submenu>
+			</sec:authorize>
+			
+            <sec:authorize ifAllGranted="ROLE_DISPOSITIVOS_MOVILES">
+            <p:separator/>
+			<p:submenu label="Dispositivos Moviles">
+			<p:menuitem value="Listado" url="/app/catalogos/dispositivos_moviles"/>
+			<p:menuitem value="Catalogo Comunicaciones" url="/app/sincronizacion_dm/catalogos/comunicacion"/>
+			<p:menuitem value="Encuestas" url="/app/sincronizacion_dm/encuestas"/>
+			<p:menuitem value="Usuarios" url="/app/sincronizacion_dm/usuarios"/>
+			</p:submenu>
+            </sec:authorize>
+		</ps:menu>
+	</h:form>
+
+</ui:composition>

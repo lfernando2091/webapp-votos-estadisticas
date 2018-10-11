@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Estructuras" action="cancelar" immediate="true" />
+						<p:menuitem value="${estructura.id == null ? 'Agregar' : 'Editar'} Estructura" action="regresar" immediate="true" />
+						<p:menuitem value="Asignar Elecciones" />
+					</p:breadCrumb>
+            		<p:panel header="Asignar Elecciones">
+            			<p:panelGrid columns="2">
+							<f:facet name="header">Estructura</f:facet>
+							<p:outputLabel value="Nivel" />
+							<p:outputLabel value="${estructura.nivel.nombre}" />
+							<p:outputLabel value="Ámbito" />
+							<p:outputLabel value="${estructura.ambito.nombre}" />
+							<p:outputLabel value="Nombre" />
+							<p:outputLabel value="${estructura.nombre}" />
+							<p:outputLabel value="Observaciones" />
+							<p:outputLabel value="${estructura.observaciones}" />
+						</p:panelGrid>
+						<p:separator />
+						<p:pickList value="${modeloElecciones.modeloDual}" var="e"
+							itemLabel="${e.descripcion != '' ? e.descripcion : (e.representante.nombre.concat(' ').concat(e.ejercicio)) }" itemValue="${e}"
+							converter="ObjectConverter" showSourceFilter="true" showTargetControls="true">
+							<f:facet name="sourceCaption">Disponibles</f:facet>
+							<f:facet name="targetCaption">Incluidas</f:facet>
+						</p:pickList>
+						<f:facet name="footer">
+							<p:commandButton value="Siguiente" action="siguiente" />
+							<p:commandButton value="Regresar" action="regresar" immediate="true" />
+							<p:commandButton value="Cancelar" action="cancelar" immediate="true" />
+						</f:facet>
+            		</p:panel>
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,75 @@
+package com.saganet.politik.components.diaD;
+
+import java.util.HashMap;
+import java.util.List;
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.components.catalogos.EntidadesC;
+import com.saganet.politik.components.catalogos.MunicipiosC;
+import com.saganet.politik.components.catalogos.SeccionesC;
+import com.saganet.politik.database.catalogos.EntidadEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.catalogos.SeccionEO;
+import com.saganet.politik.database.diaD.SeccionalEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("CatalogoSeccionalC")
+public class SeccionalC {
+	private static final Logger logger = LoggerFactory.getLogger(SeccionalC.class);
+
+	@Autowired SqlSession sqlSession;
+	@Autowired EntidadesC entidadesC;
+	@Autowired MunicipiosC municipiosC;
+	@Autowired SeccionesC seccionesC;
+	public Modelo<SeccionalEO> modelo(){
+		Modelo<SeccionalEO> modelo;
+		List<SeccionalEO> listado;
+		listado = sqlSession.selectList("diaD.seccional.listado");
+		modelo = new Modelo<>(listado);
+		logger.debug("Modelo: {}",modelo.getListado());
+		return modelo;
+	}
+	
+	public Modelo<SeccionalEO> modelo(SeccionalEO obj) {
+		Modelo<SeccionalEO> nuevoModelo;
+		List<SeccionalEO> listado;		
+		listado=sqlSession.selectList("diaD.seccional.listado");
+		nuevoModelo=new Modelo<>(listado);
+		logger.debug("Listado {}", nuevoModelo);
+		if (obj!=null) nuevoModelo.setSeleccionado(obj);
+		return nuevoModelo;
+	}
+	
+	public HashMap<String, Object> entidad() {
+		HashMap<String, Object> modelos;
+		Modelo<MunicipioEO> modeloMunicipios;
+		Modelo<SeccionEO> modeloSecciones;
+		modelos = new HashMap<>();
+		Modelo<EntidadEO> modeloEntidades = new Modelo<>();	
+		modeloEntidades = entidadesC.modelo();
+		modelos.put("entidades", modeloEntidades);
+		modeloMunicipios = municipiosC.modelo(modeloEntidades.getSeleccionado());
+		modelos.put("municipios", modeloMunicipios);
+		modeloSecciones = seccionesC.modelo(modeloEntidades.getSeleccionado());
+		modelos.put("secciones", modeloSecciones);
+		return modelos;
+	}
+	
+	public SeccionalEO nuevo() {
+		return new SeccionalEO();
+	}
+	
+	public SeccionalEO guardar(SeccionalEO obj) {
+		if(obj.getId()==null)sqlSession.insert("diaD.seccional.insertar",obj);
+		else sqlSession.update("diaD.seccional.actualizar",obj);
+		return obj;
+	}
+	
+	public void actualizarTerritorios(){
+		logger.debug("nuevo valor");
+	}
+}

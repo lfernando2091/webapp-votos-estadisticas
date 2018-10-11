@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="PREP REPORTE">
+						<p:panelGrid>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="--------"/>
+								</p:column>
+								<p:column>
+									<p:graphicImage url="/resources/candidatos/josefina.jpg" width="150px" height="200px"/>
+								</p:column>
+								<p:column>
+									<p:graphicImage url="/resources/candidatos/alfredo.jpg" width="150px" height="200px"/>
+								</p:column>
+								<p:column>
+									<p:graphicImage url="/resources/candidatos/juan.jpg" width="150px" height="200px"/>
+								</p:column>
+								<p:column>
+									<p:graphicImage url="/resources/candidatos/oscar.jpg" width="150px" height="200px"/>
+								</p:column>
+								<p:column>
+									<p:graphicImage url="/resources/candidatos/delfina.jpg" width="150px" height="200px"/>
+								</p:column>
+								<p:column>
+									<p:graphicImage url="/resources/candidatos/independiente.jpg" width="150px" height="200px"/>
+								</p:column>
+								<p:column>
+									<p:outputLabel value=""/>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column colspan="8">
+									<p:chart type="bar" model="${chart}"  shadow="true" barPadding="60"  responsive="true"/>	
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

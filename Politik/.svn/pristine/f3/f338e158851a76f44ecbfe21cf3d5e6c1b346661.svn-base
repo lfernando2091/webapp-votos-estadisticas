@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="head">
+		<script type="text/javascript"
+			src="https://maps.google.com/maps/api/js?key=AIzaSyCv60kiiu8HUPsm7SIm8dFUmVzpigHUCAs" />
+	</ui:define>
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panelGrid columns="2" columnClasses="column, column2">
+						<p:panel header="PREP Cartográfico">
+							<p:dataTable id="tablaDatos" value="${modelo.listado}" var="fila" paginator="true" rows="15" 
+										 paginatorAlwaysVisible="true" paginatorPosition="bottom">
+									<p:column headerText="Municipio">
+										<p:outputLabel value="#{fila.municipio.idMunicipio} - #{fila.municipio.nombre}"/>
+									</p:column>
+									<p:column headerText="Ganador">
+										<p:outputLabel value="#{(fila.independiente+fila.morena+fila.pan+fila.prd+fila.pri+fila.pt)!=0?fila.ganador.nombre:'POR DEFINIR'}"/>
+									</p:column>
+									<p:column headerText="PAN" style="text-align:right">
+										<p:outputLabel value="#{fila.panF}"/>
+									</p:column>
+									<p:column headerText="PRI" style="text-align:right">
+										<p:outputLabel value="#{fila.priF}"/>
+									</p:column>
+									<p:column headerText="PRD" style="text-align:right">
+										<p:outputLabel value="#{fila.prdF}"/>
+									</p:column>
+									<p:column headerText="PT" style="text-align:right">
+										<p:outputLabel value="#{fila.ptF}"/>
+									</p:column>
+									<p:column headerText="MORENA" style="text-align:right">
+										<p:outputLabel value="#{fila.morenaF}"/>
+									</p:column>
+									<p:column headerText="IDNEPENDEINTE" style="text-align:right">
+										<p:outputLabel value="#{fila.independienteF}"/>
+									</p:column>
+							</p:dataTable>
+						</p:panel>
+						<p:panel id="panelMapa" header="Mapa" style="width: 510px;">
+							<p:gmap widgetVar="mapaWV" model="${modeloMapa}" fitBounds="true" type="terrain" style="width:${width}px; height:${height}px;" />
+						</p:panel>
+					</p:panelGrid>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.column{
+						vertical-align: top;
+					}
+					.column2{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

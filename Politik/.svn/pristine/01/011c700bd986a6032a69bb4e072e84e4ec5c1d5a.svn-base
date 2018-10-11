@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+	<h:outputStylesheet name="/resources/spark-layout/css/custom.css"
+		library="css" />
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:messages autoUpdate="true"/>
+				<p:panel header="Datos de la encuesta">
+				<p:panelGrid columns="2">
+				<p:outputLabel value="Encuesta: "/>
+				<p:outputLabel value="${modeloEncuestaSeleccionada.id} - ${modeloEncuestaSeleccionada.descripcion}"/>
+				</p:panelGrid>
+				</p:panel>
+				<p:separator/>
+				
+				<p:panel header="Datos de la nueva pregunta">
+				<p:panelGrid columns="2">
+				<p:outputLabel value="Tipo Pregunta"/>
+				<p:selectOneMenu>
+				
+				</p:selectOneMenu>
+				</p:panelGrid>
+				
+				</p:panel>
+				
+					</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

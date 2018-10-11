@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructuras.figuras">
+	<cache />
+	
+	<resultMap type="FiguraEO" id="figura">
+		<id column="FiguraEO_id" property="id" javaType="Integer"/>
+		<result column="FiguraEO_nivel" property="nivel" javaType="com.saganet.politik.dominios.NivelesDO"/>
+		<result column="FiguraEO_nombre" property="nombre" javaType="String"/>
+		<result column="FiguraEO_idGeozona" property="idGeozona" javaType="Integer"/>
+		<result column="FiguraEO_jerarquico" property="jerarquico" javaType="Boolean"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			FiguraEO.id_figura 			FiguraEO_id, 
+			FiguraEO.nivel 				FiguraEO_nivel, 
+			FiguraEO.figura 			FiguraEO_nombre,
+			FiguraEO.id_geozona			FiguraEO_idGeozona,
+			FiguraEO.jerarquico			FiguraEO_jerarquico
+  		FROM estructuras.figuras FiguraEO
+	</sql>
+	
+	<sql id="orderBy">
+		ORDER BY FiguraEO.nivel, FiguraEO.figura
+	</sql>
+	
+	<select id="listado" resultMap="figura">
+		<include refid="query" />
+		<include refid="orderBy" />
+	</select>
+	
+	<select id="listadoAtributos" parameterType="FiguraEO" resultType="com.saganet.politik.dominios.FiguraAtributosDO">
+		SELECT 
+			FigurasAtributos.atributo 	FigurasAtributos_atributo
+		FROM estructuras.figuras_atributos FigurasAtributos
+		WHERE FigurasAtributos.id_figura = #{id}
+	</select>
+
+	<insert id="insertar" parameterType="FiguraEO">
+		INSERT INTO estructuras.figuras(nivel, figura, id_geozona, jerarquico)
+    	VALUES (#{nivel}, #{nombre}, #{geozona.id}, #{jerarquico})
+	</insert>
+	
+	<insert id="insertarAtributos" parameterType="FiguraEO">
+		<if test="!atributos.isEmpty()">
+			INSERT INTO estructuras.figuras_atributos(id_figura, atributo)
+			VALUES
+			<foreach collection="atributos" item="item" separator=",">
+				(#{id}, #{item})
+			</foreach> 
+		</if>
+	</insert>
+	
+	<update id="actualizar" parameterType="FiguraEO">
+		UPDATE estructuras.figuras
+   		SET nivel = #{nivel}, figura = #{nombre}, id_geozona = #{geozona.id}, jerarquico = #{jerarquico}
+ 		WHERE id_figura = #{id}
+	</update>
+	
+	<delete id="eliminarAtributos" parameterType="FiguraEO">
+		DELETE FROM estructuras.figuras_atributos
+ 		WHERE id_figura = #{id}
+	</delete>
+	
+</mapper>

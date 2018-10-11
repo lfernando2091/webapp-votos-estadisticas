@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="diaD.reportes.metasJornada">
+	
+	<select id="general" resultType="hashmap">
+		select 'EdoMex' entidad, 
+		sum(case when registro_jornada = true then 1 else 0 end) registrados,
+		sum(case when registro_jornada = false then 1 else 0 end) no_registrados
+		from (
+			select folio, registro_jornada
+			from dia_d.movilizados a
+			join encuestas_edomex.encuesta_edomex b on (a.folio = b.id_interno)
+			<where>
+				<if test="grupo != 'Todos'">
+					grupo_movilizacion = #{grupo}
+				</if>
+			</where>
+			group by folio, registro_jornada
+		) a1
+	</select>
+	
+	<select id="estatal" resultType="hashmap">
+		select region, nombre_region,
+		sum(case when registro_jornada = true then 1 else 0 end) registrados,
+		sum(case when registro_jornada = false then 1 else 0 end) no_registrados
+		from (
+			select region_edomex_2017 region, nombre_region, folio, registro_jornada
+			from dia_d.movilizados a
+			join encuestas_edomex.encuesta_edomex b on (a.folio = b.id_interno)
+			<where>
+				<if test="grupo != 'Todos'">
+					grupo_movilizacion = #{grupo}
+				</if>
+			</where>
+			group by region_edomex_2017, nombre_region, folio, registro_jornada
+		) a1
+		group by region, nombre_region
+		order by region, nombre_region
+	</select>
+	
+	<select id="region" resultType="hashmap">
+		select municipio, nombre_municipio,
+		sum(case when registro_jornada = true then 1 else 0 end) registrados,
+		sum(case when registro_jornada = false then 1 else 0 end) no_registrados
+		from (
+			select municipio, nombre_municipio, folio, registro_jornada
+			from dia_d.movilizados a
+			join encuestas_edomex.encuesta_edomex b on (a.folio = b.id_interno)
+			<where>
+				region_edomex_2017 = #{idRegion}
+				<if test="grupo != 'Todos'">
+					AND grupo_movilizacion = #{grupo}
+				</if>
+			</where>
+			group by municipio, nombre_municipio, folio, registro_jornada
+		) a1
+		group by municipio, nombre_municipio
+		order by municipio, nombre_municipio
+	</select>
+	
+	<select id="municipio" resultType="hashmap">
+		select seccion, 
+		sum(case when registro_jornada = true then 1 else 0 end) registrados,
+		sum(case when registro_jornada = false then 1 else 0 end) no_registrados
+		from (
+			select b.seccion, folio, registro_jornada
+			from dia_d.movilizados a
+			join encuestas_edomex.encuesta_edomex b on (a.folio = b.id_interno)
+			<where>
+				municipio = #{idMunicipio}
+				<if test="grupo != 'Todos'">
+					AND grupo_movilizacion = #{grupo}
+				</if>
+			</where>
+		) a1
+		group by seccion
+		order by seccion
+	</select>
+	
+	<select id="seccion" resultType="hashmap">
+		select  
+		sum(case when registro_jornada = true then 1 else 0 end) registrados,
+		sum(case when registro_jornada = false then 1 else 0 end) no_registrados
+		from (
+			select folio, registro_jornada
+			from dia_d.movilizados a
+			join encuestas_edomex.encuesta_edomex b on (a.folio = b.id_interno)
+			<where>
+				b.seccion = #{idSeccion}
+				<if test="grupo != 'Todos'">
+					AND grupo_movilizacion = #{grupo}
+				</if>
+			</where>
+			group by folio, registro_jornada
+		) a1
+	</select>
+	
+</mapper>

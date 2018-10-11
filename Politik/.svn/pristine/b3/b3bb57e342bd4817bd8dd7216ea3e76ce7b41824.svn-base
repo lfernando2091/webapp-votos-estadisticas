@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+<p:panel header="Agregar Programa">
+<p:panelGrid columns="2">
+<p:outputLabel value="Dependencia: "/>
+<p:selectOneMenu value="${modeloDependencias.seleccionado}" filter="true" filterMatchMode="contains" converter="ObjectConverter">
+<f:selectItems value="${modeloDependencias.listado}" var="fila" itemLabel="${fila}" itemValue="${fila}" />
+</p:selectOneMenu>
+<p:outputLabel value="Nombre del Programa:"/>
+<p:inputTextarea value="${programa.programa}"></p:inputTextarea>
+<p:outputLabel value="Descripción: "/>
+<p:inputTextarea value="${programa.descripcion}"></p:inputTextarea>
+<p:outputLabel value="Observaciones: "/>
+<p:inputTextarea value="${programa.observaciones}"></p:inputTextarea>
+<p:outputLabel value="Programa Padre:  "/>
+<p:selectOneMenu value="${programa.progamaPadre}" filter="true" filterMatchMode="contains" converter="ObjectConverter">
+<f:selectItems value="${modeloProgramasCombo.listado}" var="fi" itemValue="${fi}" itemLabel="${fi.programa}"/>
+</p:selectOneMenu>
+<p:outputLabel value="Es estrategia?"/>
+ <p:selectOneButton value="#{programa.estrategia}">
+            <f:selectItem itemLabel="NO" itemValue="0" />
+            <f:selectItem itemLabel="SI" itemValue="1" />
+           
+        </p:selectOneButton>
+</p:panelGrid>
+<p:commandButton icon="fa fa-save" value="Guardar" title="Guardar nuevo programa" action="guardar"/>
+<p:commandButton icon="fa fa-close" value="Cancel" title="Cancelar nuevo" action="cancelar"/>
+</p:panel>
+
+<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

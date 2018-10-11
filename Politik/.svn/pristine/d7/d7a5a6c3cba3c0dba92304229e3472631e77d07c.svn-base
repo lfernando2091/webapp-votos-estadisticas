@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="diaD.movilizador">
+	<resultMap type="MovilizadorEO" id="movilizador">
+		<id 			column="MovilizadorEO_pkey" 						property="id" 				javaType="Integer" />
+		<result 		column="MovilizadorEO_idRegion" 					property="idRegion"			javaType="Integer"/>
+		<result  		column="MovilizadorEO_idMunicipio"					property="idMunicipio" 		javaType="Integer"/>
+		<result  		column="MovilizadorEO_nombre"						property="nombre" 			javaType="String"/>
+		<result  		column="MovilizadorEO_primerApellido"				property="primerApellido" 	javaType="String"/>
+		<result  		column="MovilizadorEO_segundoApellido"				property="segundoApellido" 	javaType="String"/>
+		<result  		column="MovilizadorEO_telefono"						property="telefono" 		javaType="String"/>
+		<result  		column="MovilizadorEO_email"						property="email" 			javaType="String"/>
+		<result  		column="MovilizadorEO_nick"							property="nick" 			javaType="String"/>
+		<result  		column="MovilizadorEO_pw"							property="pw" 				javaType="String"/>
+		<result  		column="MovilizadorEO_tipo"							property="tipo" 			javaType="String"/>
+		<result 		column="MovilizadorEO_fecha_nacimiento" 			property="fechaNacimiento"	javaType="String" />
+		<result 	    column="MovilizadorEO_genero" 						property="genero"			javaType="String" />
+		<result 		column="MovilizadorEO_programa" 					property="programa"			javaType="com.saganet.politik.dominios.ProgramasEdoMexDO"/>
+	</resultMap>
+	
+
+	<sql id="query">
+		SELECT pkey, id_region, id_municipio, nombre, primer_apellido, segundo_apellido, 
+       fecha_nacimiento, genero, telefono, email, programa, nick, pw, tipo
+ 		 FROM dia_d.movilizadores
+	</sql>
+	
+	
+	<select id="buscarPorId" parameterType="Integer"  resultMap="movilizador">
+	<include refid="query" />
+		WHERE pkey = #{value}
+	</select>
+	
+	
+	
+</mapper>

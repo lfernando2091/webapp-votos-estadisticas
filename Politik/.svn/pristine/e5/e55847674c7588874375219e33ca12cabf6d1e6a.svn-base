@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2017-04-28T09:51:00 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Reporte_Entrevistas_Por_Dia" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="792" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isIgnorePagination="true" uuid="df013db5-f76e-44d3-b0df-bcbc46d93160">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="POLITIK.xml"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<style name="Title" fontName="Times New Roman" fontSize="50" isBold="true"/>
+	<style name="SubTitle" forecolor="#736343" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<style name="Row" mode="Opaque" backcolor="#FFFFFF">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style backcolor="#ACE0AE"/>
+		</conditionalStyle>
+	</style>
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#087511">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="Dataset1" uuid="02a2a20c-0165-4656-a63c-5e51c21172e2">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="POLITIK.xml"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT  tipo, 
+        insus,  porcentaje_insus , 
+  	liconsa,  porcentaje_liconsa , 
+  	prospera, porcentaje_prospera , 
+  	 total
+  FROM
+  (
+	SELECT 2 id_tipo, 'Registrados'  tipo,
+		SUM(CASE WHEN programa='INSUS' THEN 1 ELSE 0 END) insus, 
+		ROUND((SUM(CASE WHEN programa='INSUS' THEN 1 ELSE 0 END)::NUMERIC/(SELECT SUM(encuestadores_insus)::NUMERIC FROM encuestas_edomex.e_edomex_regiones)*100),2)::TEXT||'%' porcentaje_insus,
+		
+		SUM(CASE WHEN programa='LICONSA' THEN 1 ELSE 0 END) liconsa,
+		ROUND((SUM(CASE WHEN programa='LICONSA' THEN 1 ELSE 0 END)::NUMERIC/(SELECT SUM(encuestadores_liconsa)::NUMERIC FROM encuestas_edomex.e_edomex_regiones)*100),2)::TEXT||'%' porcentaje_liconsa,
+		 
+		SUM(CASE WHEN programa='PROSPERA' THEN 1 ELSE 0 END) prospera, 
+		ROUND((SUM(CASE WHEN programa='PROSPERA' THEN 1 ELSE 0 END)::NUMERIC/(SELECT SUM(encuestadores_prospera)::NUMERIC FROM encuestas_edomex.e_edomex_regiones)*100),2)::TEXT||'%' porcentaje_prospera, 
+		
+		COUNT(programa) total
+	FROM estructuras_edomex.visitadores
+	UNION
+	SELECT  1 id_tipo, 'Meta' tipo,
+	
+		SUM(encuestadores_insus) insus,
+		ROUND(SUM(encuestadores_insus)::NUMERIC/SUM(encuestadores_insus+encuestadores_liconsa+encuestadores_prospera)::NUMERIC*100,2)::TEXT||'%' porcentaje_insus , 
+		
+		SUM(encuestadores_liconsa) liconsa,
+		ROUND(SUM(encuestadores_liconsa)::NUMERIC/SUM(encuestadores_insus+encuestadores_liconsa+encuestadores_prospera)::NUMERIC*100,2)::TEXT||'%' porcentaje_liconsa , 
+		
+		SUM(encuestadores_prospera) prospera,
+		ROUND(SUM(encuestadores_prospera)::NUMERIC/SUM(encuestadores_insus+encuestadores_liconsa+encuestadores_prospera)::NUMERIC*100,2)::TEXT||'%' porcentaje_prospera , 
+		
+		SUM(encuestadores_insus+encuestadores_liconsa+encuestadores_prospera) total
+	FROM encuestas_edomex.e_edomex_regiones
+	UNION
+	SELECT 3 id_tipo, 'Con Entrevistas'  tipo,
+		COUNT(DISTINCT(CASE WHEN programa='INSUS' THEN a.pkey ELSE null END)) insus, 
+		ROUND(COUNT(DISTINCT(CASE WHEN programa='INSUS' THEN a.pkey ELSE null END))::NUMERIC/(SELECT  SUM(CASE WHEN programa='INSUS' THEN 1 ELSE 0 END) FROM estructuras_edomex.visitadores)::NUMERIC*100,2)::TEXT||'%' porcentaje_insus,
+		
+		COUNT(DISTINCT(CASE WHEN programa='LICONSA' THEN a.pkey ELSE null END)) liconsa, 
+		ROUND(COUNT(DISTINCT(CASE WHEN programa='LICONSA' THEN a.pkey ELSE null END))::NUMERIC/(SELECT  SUM(CASE WHEN programa='LICONSA' THEN 1 ELSE 0 END) FROM estructuras_edomex.visitadores)::NUMERIC*100,2)::TEXT||'%' porcentaje_liconsa,
+		
+		COUNT(DISTINCT(CASE WHEN programa='PROSPERA' THEN a.pkey ELSE null END)) prospera,
+		ROUND(COUNT(DISTINCT(CASE WHEN programa='PROSPERA' THEN a.pkey ELSE null END))::NUMERIC/(SELECT  SUM(CASE WHEN programa='PROSPERA' THEN 1 ELSE 0 END) FROM estructuras_edomex.visitadores)::NUMERIC*100,2)::TEXT||'%' porcentaje_prospera,
+		
+		COUNT(DISTINCT(a.pkey)) total
+	 FROM encuestas_edomex.e_edomex b 
+	 JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+	 UNION
+	 SELECT 4 id_tipo, 'Total de Entrevistas'  tipo,
+		SUM(CASE WHEN programa='INSUS' THEN visitadas ELSE 0 END) insus, 
+			'',
+		SUM(CASE WHEN programa='LICONSA' THEN visitadas ELSE 0 END) liconsa, 
+			'',
+		SUM(CASE WHEN programa='PROSPERA' THEN visitadas ELSE 0 END)prospera,
+			'',
+		SUM(visitadas) total
+	  FROM encuestas_edomex.reporte_respuestas_entidad
+	  WHERE estatus=(TO_CHAR(now(),'DD/MM/YYYY'))
+	  UNION
+	  SELECT 5 id_tipo, 'Promedio de Entrevistas'  tipo,
+		ROUND((SELECT SUM(CASE WHEN programa='INSUS' THEN visitadas ELSE 0 END) FROM encuestas_edomex.reporte_respuestas_entidad WHERE estatus=(TO_CHAR(now(),'DD/MM/YYYY')))/COUNT(DISTINCT(CASE WHEN programa='INSUS' THEN a.pkey ELSE null END)),0) insus, 
+		'',
+		ROUND((SELECT SUM(CASE WHEN programa='LICONSA' THEN visitadas ELSE 0 END) FROM encuestas_edomex.reporte_respuestas_entidad WHERE estatus=(TO_CHAR(now(),'DD/MM/YYYY')))/COUNT(DISTINCT(CASE WHEN programa='LICONSA' THEN a.pkey ELSE null END)),0) liconsa, 
+		'',
+		ROUND((SELECT SUM(CASE WHEN programa='PROSPERA' THEN visitadas ELSE 0 END) FROM encuestas_edomex.reporte_respuestas_entidad WHERE estatus=(TO_CHAR(now(),'DD/MM/YYYY')))/COUNT(DISTINCT(CASE WHEN programa='PROSPERA' THEN a.pkey ELSE null END)),0) prospera,
+		'',
+		ROUND((SELECT SUM(visitadas) FROM encuestas_edomex.reporte_respuestas_entidad WHERE estatus=(TO_CHAR(now(),'DD/MM/YYYY')))/COUNT(DISTINCT(a.pkey)),0) total
+	  FROM encuestas_edomex.e_edomex b 
+	  JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+
+
+   ) t
+ORDER BY id_tipo]]>
+		</queryString>
+		<field name="tipo" class="java.lang.String"/>
+		<field name="insus" class="java.math.BigDecimal"/>
+		<field name="porcentaje_insus" class="java.lang.String"/>
+		<field name="liconsa" class="java.math.BigDecimal"/>
+		<field name="porcentaje_liconsa" class="java.lang.String"/>
+		<field name="prospera" class="java.math.BigDecimal"/>
+		<field name="porcentaje_prospera" class="java.lang.String"/>
+		<field name="total" class="java.math.BigDecimal"/>
+	</subDataset>
+	<subDataset name="Dataset2" uuid="0560d383-0fc1-418e-ba53-1063f1cfad37">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="POLITIK.xml"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT conteo, count 
+FROM (
+	SELECT 1 id, '1-9' conteo, COUNT(CASE WHEN total>=1 AND total<=9 THEN t.pkey ELSE null END)
+	FROM (
+		 SELECT a.pkey , COUNT(b.pkey) total
+		  FROM encuestas_edomex.e_edomex b 
+		  JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+		  WHERE a.programa in ('INSUS','PROSPERA', 'LICONSA')
+		  GROUP BY a.pkey
+	  ) t
+	UNION
+	SELECT 2 id, '10-19' conteo, COUNT(CASE WHEN total>=10 AND total<=19 THEN t.pkey ELSE null END)
+	FROM (
+		 SELECT a.pkey , COUNT(b.pkey) total
+		  FROM encuestas_edomex.e_edomex b 
+		  JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+		  WHERE a.programa in ('INSUS','PROSPERA', 'LICONSA')
+		  GROUP BY a.pkey
+	  ) t
+	UNION
+	SELECT 3 id, '20-29' conteo, COUNT(CASE WHEN total>=20 AND total<=29 THEN t.pkey ELSE null END)
+	FROM (
+		 SELECT a.pkey , COUNT(b.pkey) total
+		  FROM encuestas_edomex.e_edomex b 
+		  JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+		  WHERE a.programa in ('INSUS','PROSPERA', 'LICONSA')
+		  GROUP BY a.pkey
+	  ) t
+	UNION
+	SELECT 4 id, '30-39' conteo, COUNT(CASE WHEN total>=30 AND total<=39 THEN t.pkey ELSE null END)
+	FROM (
+		 SELECT a.pkey , COUNT(b.pkey) total
+		  FROM encuestas_edomex.e_edomex b 
+		  JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+		  WHERE a.programa in ('INSUS','PROSPERA', 'LICONSA')
+		  GROUP BY a.pkey
+	  ) t
+	UNION
+	SELECT 5 id, '40-49' conteo, COUNT(CASE WHEN total>=40 AND total<=49 THEN t.pkey ELSE null END)
+	FROM (
+		 SELECT a.pkey , COUNT(b.pkey) total
+		  FROM encuestas_edomex.e_edomex b 
+		  JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+		  WHERE a.programa in ('INSUS','PROSPERA', 'LICONSA')
+		  GROUP BY a.pkey
+	  ) t
+	UNION
+	SELECT 6 id, '50-59' conteo, COUNT(CASE WHEN total>=50 AND total<=59 THEN t.pkey ELSE null END)
+	FROM (
+		 SELECT a.pkey , COUNT(b.pkey) total
+		  FROM encuestas_edomex.e_edomex b 
+		  JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+		  WHERE a.programa in ('INSUS','PROSPERA', 'LICONSA')
+		  GROUP BY a.pkey
+	  ) t
+	UNION
+	SELECT 7 id, '60-69' conteo, COUNT(CASE WHEN total>=60 AND total<=69 THEN t.pkey ELSE null END)
+	FROM (
+		 SELECT a.pkey , COUNT(b.pkey) total
+		  FROM encuestas_edomex.e_edomex b 
+		  JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+		  WHERE a.programa in ('INSUS','PROSPERA', 'LICONSA')
+		  GROUP BY a.pkey
+	  ) t
+	UNION
+	SELECT 8 id, '70-79' conteo, COUNT(CASE WHEN total>=70 AND total<=79 THEN t.pkey ELSE null END)
+	FROM (
+		 SELECT a.pkey , COUNT(b.pkey) total
+		  FROM encuestas_edomex.e_edomex b 
+		  JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+		  WHERE a.programa in ('INSUS','PROSPERA', 'LICONSA')
+		  GROUP BY a.pkey
+	  ) t
+	UNION
+	SELECT 9 id, '80-89' conteo, COUNT(CASE WHEN total>=80 AND total<=89 THEN t.pkey ELSE null END)
+	FROM (
+		 SELECT a.pkey , COUNT(b.pkey) total
+		  FROM encuestas_edomex.e_edomex b 
+		  JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+		  WHERE a.programa in ('INSUS','PROSPERA', 'LICONSA')
+		  GROUP BY a.pkey
+	  ) t
+	UNION
+	SELECT 10 id, '90-99' conteo, COUNT(CASE WHEN total>=90 AND total<=99 THEN t.pkey ELSE null END)
+	FROM (
+		 SELECT a.pkey , COUNT(b.pkey) total
+		  FROM encuestas_edomex.e_edomex b 
+		  JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+		  WHERE a.programa in ('INSUS','PROSPERA', 'LICONSA')
+		  GROUP BY a.pkey
+	  ) t
+	UNION
+	SELECT 11 id, '100 y más' conteo, COUNT(CASE WHEN total>=100 THEN t.pkey ELSE null END)
+	FROM (
+		 SELECT a.pkey , COUNT(b.pkey) total
+		  FROM encuestas_edomex.e_edomex b 
+		  JOIN estructuras_edomex.visitadores a ON (a.nick=b.nick)
+		  WHERE a.programa in ('INSUS','PROSPERA', 'LICONSA')
+		  GROUP BY a.pkey
+	  ) t
+) t 
+ORDER BY id]]>
+		</queryString>
+		<field name="conteo" class="java.lang.String"/>
+		<field name="count" class="java.lang.Long"/>
+	</subDataset>
+	<queryString>
+		<![CDATA[SELECT to_CHAR(now(),'DD')::INTEGER dia]]>
+	</queryString>
+	<field name="dia" class="java.lang.Integer"/>
+	<variable name="dia1" class="java.lang.Integer" calculation="Variance">
+		<variableExpression><![CDATA[$F{dia}]]></variableExpression>
+	</variable>
+	<group name="Group2">
+		<groupExpression><![CDATA[(int)($V{REPORT_COUNT}/5)]]></groupExpression>
+	</group>
+	<detail>
+		<band height="612" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="792" height="612" uuid="b4be1445-7f27-4cea-a794-a422f3996df3"/>
+				<imageExpression><![CDATA["E:\\Politik\\FuentesReportes\\imagenes\\fondo carta.jpg"]]></imageExpression>
+			</image>
+			<componentElement>
+				<reportElement x="22" y="280" width="200" height="20" uuid="0d76e7ed-b83e-4e94-a01b-4ecf41069e32">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 1_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 1_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Dataset2" uuid="293c9abf-e1dc-42c0-8ba8-7ddee5e6f29a">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="100" uuid="b6eccf02-5c40-4519-b3b5-d61f00b5d44c">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<jr:detailCell style="Table 1_TD" height="25">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField>
+								<reportElement x="0" y="0" width="100" height="25" forecolor="#115C17" backcolor="#8FC995" uuid="9fb6a781-52d5-41de-aca7-a9d4da35fe88"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{conteo}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="100" uuid="d7a5a9c6-de37-4f9c-8fc2-605d941063d3">
+						<jr:detailCell style="Table 1_TD" height="25">
+							<textField>
+								<reportElement x="0" y="0" width="100" height="25" forecolor="#115C17" backcolor="#8FC995" uuid="1f0e3e5f-8180-4144-83c7-21c3df9c732d"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font isBold="true"/>
+									<paragraph rightIndent="7"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{count}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<staticText>
+				<reportElement style="Title" x="20" y="210" width="770" height="56" forecolor="#D92421" uuid="cb859298-5b64-4d47-b203-9dcb07088297"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="31"/>
+				</textElement>
+				<text><![CDATA[Entrevistas Levantados Por Promotor]]></text>
+			</staticText>
+			<lineChart>
+				<chart isShowLegend="false" evaluationTime="Report">
+					<reportElement mode="Opaque" x="248" y="280" width="521" height="280" backcolor="#26A63B" uuid="d630c3b6-be1a-464f-aced-3f41fc8c2360"/>
+					<chartTitle position="Top"/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="Dataset2" uuid="f89e19d9-d725-4baf-8c98-cdca982dd9ba"/>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA["NOMBRE"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{conteo}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{count}]]></valueExpression>
+						<labelExpression><![CDATA[$F{conteo}.toString()]]></labelExpression>
+					</categorySeries>
+				</categoryDataset>
+				<linePlot>
+					<plot backgroundAlpha="1.0" foregroundAlpha="1.0" labelRotation="0.0">
+						<seriesColor seriesOrder="0" color="#FFFFFF"/>
+					</plot>
+					<categoryAxisFormat labelRotation="0.0">
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</valueAxisFormat>
+				</linePlot>
+			</lineChart>
+			<componentElement>
+				<reportElement x="20" y="60" width="750" height="50" uuid="ce12a623-7006-4005-a339-624c0f9a67d9">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Dataset1" uuid="92016ee2-b301-4ca6-960f-1162d3ed3b02">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="170" uuid="23cf9ce6-aa31-4d85-9cdc-a672df6ef50c">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="170" height="30" uuid="24af7ce8-0b4c-4d01-b21e-c8708ae55845"/>
+								<text><![CDATA[]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="170" height="20" uuid="df3ac894-fc93-4208-9fdc-d7844f31bf2f"/>
+								<textElement verticalAlignment="Middle">
+									<paragraph leftIndent="7"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="100" uuid="42d9314a-5334-427d-b1fb-66e5bf188ce0">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="100" height="30" forecolor="#FFFFFF" uuid="9de1f5e5-2c22-4d6d-95aa-9abce91d65c7"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="14" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Fitz-HP]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="100" height="20" uuid="9c86f3e2-b312-4a3d-842c-b54b5b00ac4b"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{insus}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="60" uuid="9b232296-c0ae-4412-b768-4db94f47b34b">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<jr:columnHeader style="Table_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField pattern="#,##0.##%">
+								<reportElement x="0" y="0" width="60" height="20" uuid="78a6884b-1a12-4448-9613-86004756cda4"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{porcentaje_insus}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="100" uuid="a91a34b9-8e0a-43e4-b6be-56034b296302">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="100" height="30" forecolor="#FFFFFF" uuid="cbb754ea-255b-4987-ab8c-f60cb23b81d5"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="14" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Abby-PH]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="100" height="20" uuid="f05e95d9-63c0-4f66-8d0c-12191b8cb54d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{prospera}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="60" uuid="e81dbd83-37b7-4dfe-801f-f99656b594ab">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<jr:columnHeader style="Table_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField pattern="#,##0.##%">
+								<reportElement x="0" y="0" width="60" height="20" uuid="3197945a-64d5-48cd-96a3-0b5c6cb6dbad"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{porcentaje_liconsa}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="100" uuid="0f0cfc75-44ce-4414-84c2-a884de06ef98">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
+						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="100" height="30" forecolor="#FFFFFF" uuid="cee859b2-d56f-4ae4-afb4-7db79cfdf600"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="14" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Rowan-JAL]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="100" height="20" uuid="e08de303-6d90-45ed-9ca0-7bc3fbca352a"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{liconsa}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="60" uuid="4ce273a4-d6f3-4026-9a67-a8e40d5c86bc">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column7"/>
+						<jr:columnHeader style="Table_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField pattern="#,##0.##%">
+								<reportElement x="0" y="0" width="60" height="20" uuid="eea20da8-0c86-4388-beba-3049a2b1ed77"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{porcentaje_prospera}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="100" uuid="608e1c7d-f206-4a84-a741-858e0ec779de">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column8"/>
+						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="100" height="30" forecolor="#FFFFFF" uuid="d8ba8e34-f028-4fb3-9807-91b9957f1f7f"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="14" isBold="true"/>
+								</textElement>
+								<text><![CDATA[TOTAL]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="100" height="20" uuid="21d636f4-e786-4102-a6cd-ba1044985c8d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<staticText>
+				<reportElement style="Title" x="20" y="5" width="313" height="56" forecolor="#D92421" uuid="bc1ce1da-8232-46ea-be55-cec4abb986dd"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="40"/>
+				</textElement>
+				<text><![CDATA[Promotores]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>

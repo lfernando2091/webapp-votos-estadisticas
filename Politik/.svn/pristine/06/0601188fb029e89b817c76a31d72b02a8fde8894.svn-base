@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="sincronizacion.encuesta">
+	<cache/>
+	<resultMap type="EncuestaEO" id="encuesta">
+		<id column="EncuestaEO_id" property="id" javaType="Integer"/>
+		<result column="EncuestaEO_mpio_id" property="idMunicipio" javaType="Integer"/>
+		<result column="EncuestaEO_tiene_ine" property="tieneIne" javaType="com.saganet.politik.dominios_dm.CatSNDO"/>
+		<result column="EncuestaEO_problema_pais" property="problemaPais" javaType="String"/>
+		<result column="EncuestaEO_problema_estado" property="problemaEstado" javaType="String"/>	
+		<result column="EncuestaEO_problema_mpio" property="problemaMunicipio" javaType="String"/>	
+		<result column="EncuestaEO_actual_economico" property="actualEconomico" javaType="com.saganet.politik.dominios_dm.CatMPINNDO"/>
+		<result column="EncuestaEO_actual_politico" property="actualPolitico" javaType="com.saganet.politik.dominios_dm.CatMPINNDO"/>
+		<result column="EncuestaEO_actual_economico" property="futuroEconomico" javaType="com.saganet.politik.dominios_dm.CatMPINNDO"/>
+		<result column="EncuestaEO_actual_economico" property="futuroPolitico" javaType="com.saganet.politik.dominios_dm.CatMPINNDO"/>	
+		<result column="EncuestaEO_gob_estatal_dif_pri" property="gobEstatalDifPRI" javaType="com.saganet.politik.dominios_dm.CatSNNCDO"/>
+		<result column="EncuestaEO_no_votaria_por" property="noVotariaPor" javaType="com.saganet.politik.dominios_dm.CatPartidoDO"/>
+		<result column="EncuestaEO_votaria_por_estatal" property="votariaPorEstatal" javaType="com.saganet.politik.dominios_dm.CatPartidoDO"/>
+		<result column="EncuestaEO_voto_pri_pan_estatal" property="votoPriPanEstatal" javaType="com.saganet.politik.dominios_dm.CatPriPanDO"/>
+		<result column="EncuestaEO_voto_pri_prd_estatal" property="votoPriPrdEstatal" javaType="com.saganet.politik.dominios_dm.CatPriPrdDO"/>
+		<result column="EncuestaEO_benef_programa_social" property="beneficiarioProgramaSocial" javaType="com.saganet.politik.dominios_dm.CatSNNCDO"/>
+		<result column="EncuestaEO_calif_epn" property="calificacionEpn" javaType="com.saganet.politik.dominios_dm.CatMapnDO"/>
+		<result column="EncuestaEO_calif_epn" property="calificacionGobEpn" javaType="com.saganet.politik.dominios_dm.CatMapnDO"/>
+		<result column="EncuestaEO_calif_gob_epn" property="calificacionGobEpn" javaType="com.saganet.politik.dominios_dm.CatMapnDO"/>
+		<result column="EncuestaEO_calif_ingreso_fam_epn" property="calificacionIngresoFamiliarEpn" javaType="com.saganet.politik.dominios_dm.CatMapnDO"/>
+		<result column="EncuestaEO_otros_apoyos" property="otrosApoyos" javaType="String"/>	
+		<result column="EncuestaEO_recibir_info_prog" property="recibirInformacionProgramas" javaType="com.saganet.politik.dominios_dm.CatSNNCDO"/>
+		<result column="EncuestaEO_tel" property="telefono" javaType="String"/>	
+		<result column="EncuestaEO_email" property="email" javaType="String"/>	
+		<result column="EncuestaEO_calif_num_presidente" property="calificacionNumPresidente" javaType="Integer"/>	
+		<result column="EncuestaEO_calif_num_gobernador" property="calificacionNumGobernador" javaType="Integer"/>	
+		<result column="EncuestaEO_calif_num_pres_municip" property="calificacionNumPresidenteMun" javaType="Integer"/>	
+		<result column="EncuestaEO_imei" property="imei" javaType="String"/>	
+		
+		<result column="EncuestaEO_creada" property="fechaCreacion" javaType="java.sql.Timestamp"/>
+		<result column="EncuestaEO_actualizada" property="fechaActualizacion" javaType="java.sql.Timestamp"/>		
+		
+		
+		<association column="EncuestaEO_encuestado_id" property="precarga" select="sincronizacion.precarga.buscarPorIdSinUsuario"/>
+		<association column="EncuestaEO_medios" property="medios" select="listadoMediosPorEncuesta"/>
+		<association column="EncuestaEO_medioComunicacion" property="medioComunicacion" select="listadoMediosComunicacionPorEncuesta"/>
+		<association column="EncuestaEO_partidoIdentifica" property="partidoIdentifica" select="listadoPartidosPorEncuesta"/>
+		
+		<association column="EncuestaEO_conocePersonaje" property="conocePersonaje" select="listadoConocePersonajePorEncuesta"/>
+		<association column="EncuestaEO_opinionPersonaje" property="opinionPersonaje" select="listadoOpinionPersonajePorEncuesta"/>
+		
+		<association column="EncuestaEO_usuario_id" property="usuario" select="sincronizacion.usuario.buscarPorId"/>
+	</resultMap>
+	
+	
+	<resultMap type="OpinionPersonajeEO" id="opinionPersonaje">
+		<id column="OpinionPersonajeEO_id" property="id" javaType="Integer"/>
+		<result column="OpinionPersonajeEO_personaje" property="personaje" javaType="com.saganet.politik.dominios_dm.CatPersonajeDO"/>
+		<result column="OpinionPersonajeEO_respuesta" property="respuesta" javaType="com.saganet.politik.dominios_dm.CatMbrmDO"/>
+	</resultMap>
+	
+	<resultMap type="ConocePersonajeEO" id="conocePersonaje">
+		<id column="ConocePersonajeEO_id" property="id" javaType="Integer"/>
+		<result column="ConocePersonajeEO_personaje" property="personaje" javaType="com.saganet.politik.dominios_dm.CatPersonajeDO"/>
+		<result column="ConocePersonajeEO_respuesta" property="respuesta" javaType="com.saganet.politik.dominios_dm.CatSNNCDO"/>
+	</resultMap>
+	
+	<sql id="query"> 		
+  		SELECT 
+  			EncuestaEO.id  							EncuestaEO_id, 
+  			EncuestaEO.mpio_id 						EncuestaEO_mpio_id, 
+  			EncuestaEO.encuestado_id::integer 		EncuestaEO_encuestado_id, 
+  			EncuestaEO.tiene_ine-1 					EncuestaEO_tiene_ine, 
+  			EncuestaEO.problema_pais 				EncuestaEO_problema_pais, 
+  			EncuestaEO.problema_estado 				EncuestaEO_problema_estado, 
+  			EncuestaEO.problema_mpio 				EncuestaEO_problema_mpio, 
+  			EncuestaEO.actual_economico-1 			EncuestaEO_actual_economico, 
+  			EncuestaEO.actual_politico-1 			EncuestaEO_actual_politico,
+  			EncuestaEO.futuro_economico-1 			EncuestaEO_futuro_economico, 
+  			EncuestaEO.futuro_politico-1 			EncuestaEO_futuro_politico,
+  			EncuestaEO.id 							EncuestaEO_medios, 
+  			EncuestaEO.id							EncuestaEO_medioComunicacion, 
+  			EncuestaEO.id 							EncuestaEO_partidoIdentifica, 
+  			EncuestaEO.gob_estatal_dif_pri-1 		EncuestaEO_gob_estatal_dif_pri, 
+  			EncuestaEO.no_votaria_por-1				EncuestaEO_no_votaria_por, 
+  			EncuestaEO.votaria_por_estatal-1		EncuestaEO_votaria_por_estatal, 
+  			EncuestaEO.voto_pri_pan_estatal-1		EncuestaEO_voto_pri_pan_estatal, 
+  			EncuestaEO.voto_pri_prd_estatal-1		EncuestaEO_voto_pri_prd_estatal, 
+  			EncuestaEO.benef_programa_social-1		EncuestaEO_benef_programa_social, 
+  			EncuestaEO.calif_epn-1					EncuestaEO_calif_epn, 
+  			EncuestaEO.calif_gob_epn-1				EncuestaEO_calif_gob_epn, 
+  			EncuestaEO.calif_ingreso_fam_epn-1		EncuestaEO_calif_ingreso_fam_epn, 
+  			EncuestaEO.otros_apoyos 				EncuestaEO_otros_apoyos, 
+  			EncuestaEO.recibir_info_prog-1			EncuestaEO_recibir_info_prog, 
+  			EncuestaEO.tel							EncuestaEO_tel, 
+  			EncuestaEO.email						EncuestaEO_email, 
+  			EncuestaEO.calif_num_presidente			EncuestaEO_calif_num_presidente, 
+  			EncuestaEO.calif_num_gobernador			EncuestaEO_calif_num_gobernador, 
+  			EncuestaEO.calif_num_pres_municip		EncuestaEO_calif_num_pres_municip, 
+  			EncuestaEO.id							EncuestaEO_conocePersonaje, 
+  			EncuestaEO.id							EncuestaEO_opinionPersonaje,
+  			EncuestaEO.usuario_id					EncuestaEO_usuario_id,
+  			EncuestaEO.imei							EncuestaEO_imei, 
+  			EncuestaEO.creada						EncuestaEO_creada, 
+  			EncuestaEO.actualizada					EncuestaEO_actualizada
+ 		 FROM encuesta 						EncuestaEO
+	</sql>
+	
+	<select id="listadoConocePersonajePorEncuesta" resultMap="conocePersonaje" parameterType="Integer">
+		SELECT  
+			ConocePersonajeEO.id								ConocePersonajeEO_id,
+			ConocePersonajeEO.personaje_id-1					ConocePersonajeEO_personaje,
+			ConocePersonajeEO.snnc_id-1							ConocePersonajeEO_respuesta
+  		FROM conocepersonaje									ConocePersonajeEO
+  		WHERE ConocePersonajeEO.encuesta_id=#{value}
+	</select>
+	
+	<select id="listadoOpinionPersonajePorEncuesta" resultMap="opinionPersonaje" parameterType="Integer">
+		SELECT  
+			OpinionPersonajeEO.id								OpinionPersonajeEO_id,
+			OpinionPersonajeEO.personaje_id-1					OpinionPersonajeEO_personaje,
+			OpinionPersonajeEO.mbrm_id-1						OpinionPersonajeEO_respuesta
+  		FROM opinionpersonaje									OpinionPersonajeEO
+  		WHERE OpinionPersonajeEO.encuesta_id=#{value}
+	</select>
+	
+	<select id="listadoPartidosPorEncuesta" resultType="com.saganet.politik.dominios_dm.CatPartidoDO" parameterType="Integer">
+		SELECT  
+			CatPartidoDO.partido_id-1						CatPartidoDO_partido
+  		FROM simpatizapartido								CatPartidoDO
+  		WHERE CatPartidoDO.encuesta_id=#{value}
+	</select>
+	
+	
+	<select id="listadoMediosComunicacionPorEncuesta" resultType="com.saganet.politik.dominios_dm.CatComunicacionDO" parameterType="Integer">
+		SELECT  
+			CatComunicacionDO.comunicacion_id-1			CatComunicacionDO_comunicacion
+  		FROM comunicacion								CatComunicacionDO
+  		WHERE CatComunicacionDO.encuesta_id=#{value}
+	</select>
+	
+	
+	<select id="listadoMediosPorEncuesta" resultType="com.saganet.politik.dominios_dm.CatMedioDO" parameterType="Integer">
+		SELECT  
+			MediosDO.medio_id-1			MediosDO_medio
+  		FROM medios						MediosDO
+  		WHERE MediosDO.encuesta_id=#{value}
+	</select>
+	
+	<select id="listado" resultMap="encuesta">
+		<include refid="query"/>
+	</select>
+
+</mapper>

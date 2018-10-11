@@ -1,0 +1,127 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form title="Movilizador" >
+					<p:messages autoUpdate="true"/>
+					<p:panel id="datospersonales" header="${persona.id == null ? 'Agregar ' : 'Editar '}  datos Personales del Movilizador ">
+					* Datos requeridos
+					    <p:focus context="datospersonales"/>
+						<p:panelGrid columns="2" >
+							<p:outputLabel value="Nombre *" />
+								<p:inputText id="nombre" value="${persona.nombre}"  required="true" requiredMessage="Nombre Requerido" />	
+
+							<p:outputLabel value="Primer Apellido *" />
+								<p:inputText value="${persona.primerApellido}" required="true" requiredMessage="Primer Apellido Requerido"  />		
+							<p:outputLabel value="Segundo Apellido" />	
+								<p:inputText value="${persona.segundoApellido}"   />
+							<p:outputLabel value="Fecha de Nacimiento" />
+								<p:inputMask id="date" value="${persona.fechaNacimiento}" mask="99/99/9999"/>
+							<p:outputLabel value="Genero *"  />  
+								<p:selectOneRadio  value="${persona.genero}"  style="width:150px;"  required="true" requiredMessage="Genero Requerido">
+									<f:selectItems value="${listadoGenero.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}"  />
+								</p:selectOneRadio>
+								<p:outputLabel value="Clave Elector" />
+								<p:inputText value="${persona.claveElector}"   />
+							<p:outputLabel value="Grupo Movilización" />
+							<p:selectOneMenu  value="${persona.programa}"   style="width:150px;"  >
+								<f:selectItems value="${listadoPrograma.listado}" var="fila" itemLabel="${fila.nombre2}" itemValue="${fila}" />
+							</p:selectOneMenu>	
+						</p:panelGrid>
+					</p:panel>
+					
+
+					<p:panel id="panelCombos" header="Ubicación">
+					   <p:panelGrid columns="2">
+					    	<p:outputLabel value="Region " style="width:150px;"/>
+							<p:selectOneMenu id="comboRegiNvo" value="${persona.region}"  converter="ObjectConverter" style="width:250px;"  filter="true" filterMatchMode="startsWith">
+								<p:ajax onstart="mpioActualizar();" event="itemSelect" />
+								<f:selectItems value="${listadoRegiones.listado}" var="fila" itemLabel="${fila.nombre}"  itemValue="${fila}"  />													
+							</p:selectOneMenu>
+
+							<p:outputLabel value="Municipio"  style="width:150px;"/>
+							<p:selectOneMenu id="comboMpioNvo" value="${persona.municipio}"  converter="ObjectConverter"  style="width:250px;"  filter="true" filterMatchMode="startsWith">
+								<p:ajax onstart="seccActualizar();" event="itemSelect" />
+								<f:selectItems value="${listadoMunicipios.listado}" var="fila" itemLabel="${fila.nombre}"  itemValue="${fila}" />							
+							</p:selectOneMenu>							
+							
+							<p:outputLabel value="Seccion"  style="width:150px;"/>
+							<p:selectOneMenu id="comboSeccNvo" value="${persona.seccion}" style="width:250px;" converter="ObjectConverter"  filter="true" filterMatchMode="startsWith" >
+								<f:selectItems value="${listadoSeccion.listado}" var="fila" itemLabel="${fila.idSeccion}" itemValue="${fila}"/>							
+							</p:selectOneMenu>
+							
+							<p:outputLabel value="Calle" />
+								<p:inputText value="${persona.calle}"   />
+							<p:outputLabel value=" Num. interior" />
+								<p:inputText value="${persona.numeroInterior}"   />
+							<p:outputLabel value=" Num. Exterior" />
+								<p:inputText value="${persona.numeroExterior}"  />
+							<p:outputLabel value="Colonia" />
+								<p:inputText value="${persona.colonia}"   />
+							<p:outputLabel value="CP" />
+								<p:inputText value="${persona.cp}" validatorMessage="CP: debe ser un número valido">
+									<f:validateRegex pattern="^[+]?[0-9]+$" />
+									<f:validateLength minimum="5" maximum="5" />
+								</p:inputText>
+						</p:panelGrid>			
+									
+					</p:panel>
+
+						
+					<p:panel id="datosCaptura" header="Datos de comunicación">
+						<p:panelGrid columns="2" >								
+							<p:outputLabel value="Teléfono" />
+								<p:inputText value="${persona.telefono}"   />
+							<p:outputLabel value="Celular" />
+								<p:inputText value="${persona.celular}"   	/>
+							<p:outputLabel value="Correo Electronico" 		/>
+								<p:inputText value="${persona.email}"   />
+						</p:panelGrid>
+						
+						<p:separator />	
+						
+						<f:facet name="footer">
+								
+								<p:commandLink action="insertarNuevoRegistro"  >
+										<p:graphicImage value="/resources/botones/AGREGAR.png" rendered="${persona.id eq null}" />
+								</p:commandLink>
+								<p:commandLink action="actualizarRegistro"  >
+										<p:graphicImage value="/resources/botones/ACTUALIZAR.png" rendered="${persona.id!=null}"  />
+								</p:commandLink>
+								
+								<p:commandLink action="cancelar" immediate="true">
+										<p:graphicImage value="/resources/botones/CANCELAR.png" />
+								</p:commandLink>
+						</f:facet>	
+							
+							
+												
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandLink  styleClass="ui-confirmdialog-yes">
+									<p:graphicImage value="/resources/botones/SI.png" />
+							</p:commandLink>
+						 	<p:commandLink  styleClass="ui-confirmdialog-no">
+									<p:graphicImage value="/resources/botones/NO.png" />
+							</p:commandLink>
+					</p:confirmDialog>	
+							
+					</p:panel>	
+
+					
+
+					<p:remoteCommand name="mpioActualizar" 	action="actualizacionMunicipios" 	update="comboMpioNvo, comboSeccNvo"  />  
+					<p:remoteCommand name="seccActualizar" 	action="actualizacionSecciones" 	update="comboSeccNvo" />  
+					
+		
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,48 @@
+package com.saganet.politik.components.diaD;
+
+import java.util.List;
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import com.saganet.politik.database.diaD.SeccionalEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("CatalogoSeccionalC")
+public class SeccionalC {
+	private static final Logger logger = LoggerFactory.getLogger(SeccionalC.class);
+
+	@Autowired
+	SqlSession sqlSession;
+	
+	public Modelo<SeccionalEO> modelo(){
+		Modelo<SeccionalEO> modelo;
+		List<SeccionalEO> listado;
+		listado = sqlSession.selectList("diaD.seccional.listado");
+		modelo = new Modelo<>(listado);
+		logger.debug("Modelo: {}",modelo.getListado());
+		return modelo;
+	}
+	
+	public Modelo<SeccionalEO> modelo(SeccionalEO obj) {
+		Modelo<SeccionalEO> nuevoModelo;
+		List<SeccionalEO> listado;
+		listado=sqlSession.selectList("diaD.seccional.listado");
+		nuevoModelo=new Modelo<>(listado);
+		logger.debug("Listado {}", nuevoModelo);
+		if (obj!=null) {
+			nuevoModelo.setSeleccionado(obj);
+		}
+		return nuevoModelo;
+	}
+	
+	public SeccionalEO nuevo() {
+		return new SeccionalEO();
+	}
+	
+	public SeccionalEO guardar(SeccionalEO obj) {
+			sqlSession.insert("diaD.seccional.insertar",obj);
+		return obj;
+	}
+}

@@ -1,0 +1,258 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Resultados Entrevistas">
+						<p:panelGrid columns="2" id="gridFiltros">
+							<p:column>
+								<p:outputLabel value="Nivel :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloNiveles.seleccionado}" style="width:350px">
+										<p:ajax event="itemSelect"  update="gridFiltros" />
+					            		<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+									</p:selectOneMenu>
+							</p:column>
+							<p:column  rendered="${modeloNiveles.seleccionado!='ESTATAL'}">
+								<p:outputLabel value="Region " style="width:150px;"/>
+							</p:column>
+							<p:column rendered="${modeloNiveles.seleccionado!='ESTATAL'}">
+								<p:selectOneMenu value="${listadoRegiones.seleccionado}"  converter="ObjectConverter" style="width:350px;" filter="true" filterMatchMode="startsWith" >
+									<p:ajax onstart="mpioActualizar();" event="itemSelect"/>
+									<f:selectItems value="${listadoRegiones.listado}" var="fila" itemLabel="${fila.nombre}"  itemValue="${fila}"  />													
+								</p:selectOneMenu>
+							</p:column>
+							<p:column rendered="${modeloNiveles.seleccionado=='MUNICIPIO'}">
+								<p:outputLabel value="Municipio"  style="width:150px;"/>
+							</p:column>
+							<p:column rendered="${modeloNiveles.seleccionado=='MUNICIPIO'}">
+								<p:selectOneMenu id="comboMpio" value="${listadoMunicipios.seleccionado}"  converter="ObjectConverter"  style="width:350px;"  filter="true" filterMatchMode="startsWith">
+									<f:selectItems value="${listadoMunicipios.listado}" var="fila" itemLabel="${fila.nombre}"  itemValue="${fila}" />							
+								</p:selectOneMenu>	
+							</p:column>	
+							<p:column>
+								<p:outputLabel value="Pregunta"  style="width:150px;"/>
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${pregunta}" style="width:350px;" filter="true" filterMatchMode="startsWith">
+									<f:selectItem itemLabel="A FAVOR - 1. ¿Va a ir a Votar?" itemValue="1"/>	
+									<f:selectItem itemLabel="A FAVOR - 2. ¿Conoce la ubicación de la Casilla donde votará?" itemValue="2"/>	
+									<f:selectItem itemLabel="A FAVOR - 3. ¿En qué horario prefiere ir a votar?" itemValue="3"/>		
+									<f:selectItem itemLabel="A FAVOR - 4. ¿Le gustaría ser Movilizador?" itemValue="4"/>			
+									<f:selectItem itemLabel="A FAVOR - 5. No Localizado" itemValue="9"/>		
+									<f:selectItem itemLabel="INDECISOS - 1. ¿Piensa ir a votar este 4 de Marzo?" itemValue="5"/>	
+									<f:selectItem itemLabel="INDECISOS - 2. ¿Conoce usted a Alfredo del Mazo?" itemValue="6"/>		
+									<f:selectItem itemLabel="INDECISOS - 3. ¿Por que Candidato Votará?" itemValue="7"/>		
+									<f:selectItem itemLabel="INDECISOS - 4. Le gustaría ser Movilizador" itemValue="8"/>		
+									<f:selectItem itemLabel="INDECISOS - 5. No Localizado" itemValue="9"/>						
+								</p:selectOneMenu>	
+							</p:column>	
+							<p:column>
+								<p:commandButton value="Consultar" action="actualizar" update="gridEncuestas, gridFiltros"/>
+							</p:column>		
+						</p:panelGrid>
+						<p:separator/>
+						<p:panel id="gridEncuestas">
+							<p:dataTable value="${modelo.listado}" var="fila" paginator="true" rows="15" paginatorPosition="bottom" summary="true" id="tablaResultados">
+									<p:column headerText="Region"  width="200"  filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.get('nombre_region')}">
+										<p:outputLabel value="${fila.get('nombre_region')}"/>
+									</p:column>
+									<p:column headerText="Municipio"  width="200" rendered="${modeloNiveles.seleccionado!='ESTATAL'}"  filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.get('municipio')} ${fila.get('nombre_municipio')}">
+										<p:outputLabel value="${fila.get('municipio')} ${fila.get('nombre_municipio')}"/>
+									</p:column>
+									<p:column headerText="Seccion"  width="200" rendered="${modeloNiveles.seleccionado=='MUNICIPIO'}"  filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.get('seccion')}">
+										<p:outputLabel value="${fila.get('seccion')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									
+									<p:column headerText="SI"  width="50" rendered="${pregunta!=9 and pregunta!=3 and pregunta!=7}">
+										<p:outputLabel value="${fila.get('si')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="NO"  width="50" rendered="${pregunta!=9 and pregunta!=3 and pregunta!=7}">
+										<p:outputLabel value="${fila.get('r_no')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="NS-NC"  width="50" rendered="${pregunta!=9 and pregunta!=3 and pregunta!=7}">
+										<p:outputLabel value="${fila.get('ns_nc')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									
+									<p:column headerText="PRIMER CORTE"  width="80" rendered="${pregunta==3}">
+										<p:outputLabel value="${fila.get('_3_primer_corte')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="SEGUNDO CORTE"  width="80" rendered="${pregunta==3}">
+										<p:outputLabel value="${fila.get('_3_segundo_corte')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="TERCER CORTE"  width="80" rendered="${pregunta==3}">
+										<p:outputLabel value="${fila.get('_3_tercer_corte')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									
+									<p:column headerText="ALFREDO DEL MAZO MAZA"  width="80" rendered="${pregunta==7}">
+										<p:outputLabel value="${fila.get('_7_alfredo')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="JOSEFINA VAZQUEZ MOTA"  width="80" rendered="${pregunta==7}">
+										<p:outputLabel value="${fila.get('_7_josefina')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="DELFINA GOMEZ ALVAREZ"  width="80" rendered="${pregunta==7}">
+										<p:outputLabel value="${fila.get('_7_delfina')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="OSCAR GONZALEZ YANEZ"  width="80" rendered="${pregunta==7}">
+										<p:outputLabel value="${fila.get('_7_oscar')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="JUAN ZEPEDA HERNANDEZ"  width="80" rendered="${pregunta==7}">
+										<p:outputLabel value="${fila.get('_7_juan')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="ISIDRO PASTOR MEDRANO"  width="80" rendered="${pregunta==7}">
+										<p:outputLabel value="${fila.get('_7_isidro')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="OTRO"  width="80" rendered="${pregunta==7}">
+										<p:outputLabel value="${fila.get('_7_otro')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="NS NC"  width="80" rendered="${pregunta==7}">
+										<p:outputLabel value="${fila.get('_7_ns_nc')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>
+									
+									
+									
+									<p:column headerText="FINADO"  width="80" rendered="${pregunta==9}">
+										<p:outputLabel value="${fila.get('_9_finado')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>									
+									<p:column headerText="MENOR_DE_EDAD"  width="80" rendered="${pregunta==9}">
+										<p:outputLabel value="${fila.get('_9_menor')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>							
+									<p:column headerText="NO_VIVE_AHI"  width="80" rendered="${pregunta==9}">
+										<p:outputLabel value="${fila.get('_9_no_vive')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>							
+									<p:column headerText="NO_QUISIERON_CONTESTAR"  width="150" rendered="${pregunta==9}">
+										<p:outputLabel value="${fila.get('_9_no_quisieron')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>							
+									<p:column headerText="NO_HUBO_QUIEN_CONTESTARA"  width="150" rendered="${pregunta==9}">
+										<p:outputLabel value="${fila.get('_9_no_hubo')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>							
+									<p:column headerText="NO_LOCALIZADO"  width="80" rendered="${pregunta==9}">
+										<p:outputLabel value="${fila.get('_9_no_localizado')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>							
+									<p:column headerText="DOMICILIO_NO_ENCONTRADO"  width="150" rendered="${pregunta==9}">
+										<p:outputLabel value="${fila.get('_9_domicilio')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>							
+									<p:column headerText="OTRO"  width="80" rendered="${pregunta==9}">
+										<p:outputLabel value="${fila.get('_9_otro')}">
+									      	<f:convertNumber pattern="###,###"/>
+									    </p:outputLabel>
+									</p:column>		
+									<p:columnGroup type="footer">
+										 <p:row>
+								            <p:column colspan="${modeloNiveles.seleccionado=='ESTATAL'?1:modeloNiveles.seleccionado=='REGION'?2:3}" style="text-align:right" footerText="Total:" />
+											<p:column footerText="${filaTotal.get('si')}"  style="text-align:right" rendered="${pregunta!=9 and pregunta!=3 and pregunta!=7}"/>
+											<p:column footerText="${filaTotal.get('r_no')}"  style="text-align:right" rendered="${pregunta!=9 and pregunta!=3 and pregunta!=7}"/>
+											<p:column footerText="${filaTotal.get('ns_nc')}"  style="text-align:right" rendered="${pregunta!=9 and pregunta!=3 and pregunta!=7}"/>
+											
+											<p:column footerText="${filaTotal.get('_3_primer_corte')}"  style="text-align:right" rendered="${pregunta==3}"/>
+											<p:column footerText="${filaTotal.get('_3_segundo_corte')}"  style="text-align:right" rendered="${pregunta==3}"/>
+											<p:column footerText="${filaTotal.get('_3_tercer_corte')}"  style="text-align:right" rendered="${pregunta==3}"/>
+											
+											
+											<p:column footerText="${filaTotal.get('_7_alfredo')}"  style="text-align:right" rendered="${pregunta==7}"/>
+											<p:column footerText="${filaTotal.get('_7_josefina')}"  style="text-align:right" rendered="${pregunta==7}"/>
+											<p:column footerText="${filaTotal.get('_7_delfina')}"  style="text-align:right" rendered="${pregunta==7}"/>
+											<p:column footerText="${filaTotal.get('_7_oscar')}"  style="text-align:right" rendered="${pregunta==7}"/>
+											<p:column footerText="${filaTotal.get('_7_isidro')}"  style="text-align:right" rendered="${pregunta==7}"/>
+											<p:column footerText="${filaTotal.get('_7_otro')}"  style="text-align:right" rendered="${pregunta==7}"/>
+											<p:column footerText="${filaTotal.get('_7_ns_nc')}"  style="text-align:right" rendered="${pregunta==7}"/>
+										
+											<p:column footerText="${filaTotal.get('_9_finado')}"  style="text-align:right" rendered="${pregunta==9}"/>
+											<p:column footerText="${filaTotal.get('_9_menor')}"  style="text-align:right" rendered="${pregunta==9}"/>
+											<p:column footerText="${filaTotal.get('_9_no_vive')}"  style="text-align:right" rendered="${pregunta==9}"/>
+											<p:column footerText="${filaTotal.get('_9_no_quisieron')}"  style="text-align:right" rendered="${pregunta==9}"/>
+											<p:column footerText="${filaTotal.get('_9_no_hubo')}"  style="text-align:right" rendered="${pregunta==9}"/>
+											<p:column footerText="${filaTotal.get('_9_no_localizado')}"  style="text-align:right" rendered="${pregunta==9}"/>
+											<p:column footerText="${filaTotal.get('_9_domicilio')}"  style="text-align:right" rendered="${pregunta==9}"/>
+											<p:column footerText="${filaTotal.get('_9_otro')}"  style="text-align:right" rendered="${pregunta==9}"/>
+										</p:row>
+							        </p:columnGroup>
+									<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tablaResultados" fileName="ResultadosPorPregunta"/>
+										</h:commandLink>
+									</f:facet>	
+							</p:dataTable>
+						</p:panel>
+					</p:panel>	
+					
+					<p:remoteCommand name="mpioActualizar" 	action="actualizaComboMpios" update="gridFiltros" /> 
+					
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+							.column{
+								background: #3ac162;
+								align: center;
+							}
+							.outlabel{
+								color: white;
+    							font-weight: bold;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

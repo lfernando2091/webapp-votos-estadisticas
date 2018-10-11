@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.edomex2017.captura">
+
+	<resultMap type="Edomex2017EncuestaEO" id="encuestaEdomex2017">
+		<id column="Edomex2017EncuestaEO_id" property="id" javaType="Integer" />
+		<result column="Edomex2017EncuestaEO_idInterno" property="idInterno"
+			javaType="Integer" />
+		<result column="Edomex2017EncuestaEO_1" property="r1"
+			javaType="com.saganet.politik.dominios.MuchoRegularNadaDO" />
+		<result column="Edomex2017EncuestaEO_2" property="r2"
+			javaType="com.saganet.politik.dominios.MuchoRegularNadaDO" />
+		<result column="Edomex2017EncuestaEO_3" property="r3"
+			javaType="com.saganet.politik.dominios.MuchoRegularNadaDO" />
+		<result column="Edomex2017EncuestaEO_4" property="r4"
+			javaType="com.saganet.politik.dominios.BuenaRegularNadaDO" />
+		<result column="Edomex2017EncuestaEO_5" property="r5"
+			javaType="com.saganet.politik.dominios.SiNoDO" />
+		<result column="Edomex2017EncuestaEO_nick" property="nick"
+			javaType="String" />
+		<result column="Edomex2017EncuestaEO_fecha" property="fecha"
+			javaType="java.sql.Timestamp" />
+			
+			<result column="Edomex2017EncuestaEO_estatus" property="resultado" javaType="com.saganet.politik.dominios.ResultadoEncuestaEdomexDO"/>
+			<result column="Edomex2017EncuestaEO_email" property="email" javaType="String"/>
+			<result column="Edomex2017EncuestaEO_telefono" property="telefono" javaType="String"/>
+			<result column="Edomex2017EncuestaEO_adultos" property="adultos" javaType="String"/>
+			<result column="Edomex2017EncuestaEO_nombreManual" property="nombreManual" javaType="String"/>
+			<result column="Edomex2017EncuestaEO_primerManual" property="primerManual" javaType="String"/>
+			<result column="Edomex2017EncuestaEO_segundoManual" property="segundoManual" javaType="String"/>
+			<result column="Edomex2017EncuestaEO_direccionManual" property="direccionManual" javaType="String"/>
+			<association column="Edomex2017EncuestaEO_encuestador" property="encuestador" select="encuestas.supervisor.encuestador.buscarPorNickTres"/>
+	</resultMap>
+	<resultMap type="Edomex2017EncuestaProsperaEO" id="encuestaEdomex2017Prospera">
+		<id column="Edomex2017EncuestaEO_id" property="id" javaType="Integer" />
+		<result column="Edomex2017EncuestaEO_idInterno" property="idInterno"
+			javaType="Integer" />
+		<result column="Edomex2017EncuestaEO_1" property="r1"
+			javaType="com.saganet.politik.dominios.GobiernosDO" />
+		<result column="Edomex2017EncuestaEO_2" property="r2"
+			javaType="com.saganet.politik.dominios.SiNoDO" />
+		<result column="Edomex2017EncuestaEO_3" property="r3"
+			javaType="com.saganet.politik.dominios.BuenaRegularMaloDO" />
+		<result column="Edomex2017EncuestaEO_4" property="r4"
+			javaType="com.saganet.politik.dominios.BuenaRegularMaloNoReciboDO" />
+		<result column="Edomex2017EncuestaEO_5" property="r5"
+			javaType="com.saganet.politik.dominios.SiNoDO" />
+		<result column="Edomex2017EncuestaEO_nick" property="nick"
+			javaType="String" />
+		<result column="Edomex2017EncuestaEO_fecha" property="fecha"
+			javaType="java.sql.Timestamp" />
+			<result column="Edomex2017EncuestaEO_estatus" property="resultado" javaType="com.saganet.politik.dominios.ResultadoEncuestaEdomexDO"/>
+	</resultMap>
+	<sql id="query">
+		SELECT entidad, region_edomex_2017, nombre_region, municipio,
+		nombre_municipio,
+		localidad, nombre_localidad, seccion, manzana, id_interno, clave_elector,
+		apellido_paterno, apellido_materno, nombre, fecha_nacimiento,
+		lugar_nacimiento, sexo, ocupacion, calle, num_exterior, num_interior,
+		colonia, codigo_postal, programa_todo, programa_general, estatus
+		FROM encuestas.encuesta_edomex
+
+	</sql>
+	<select id="buscarPorId" parameterType="hashmap" resultType="hashmap">
+		<include refid="query" />
+		where id_interno = #{idInterno}
+		<if test="tipo=='ENCUESTADOR'">
+			and programa_general = #{programa} and municipio = #{municipio}
+		</if>
+		<if test="tipo=='SUPERVISOR'">
+			and programa_general = #{programa}
+		</if>
+		<if test="tipo=='CALL_CENTER'">
+			and programa_general = #{programa}
+		</if>
+		<if test="tipo=='CAPTURISTA'">
+			and programa_general = #{programa}
+		</if>
+	</select>
+	<insert id="insertar" parameterType="Edomex2017EncuestaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('encuestas_resultados.e_edomex_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas_resultados.e_edomex(
+		pkey, id_contacto, _1, _2, _3, _4,_5, estatus, nick, encuestador,email, telefono, adultos,nombre_manual, primer_manual, segundo_manual, direccion_manual)
+		VALUES (#{id}, #{idInterno}, #{r1}, #{r2}, #{r3}, #{r4},#{r5}, #{resultado},
+		#{nick},'${encuestador.nombre} ${encuestador.primerApellido} ${encuestador.segundoApellido}',#{email},#{telefono},#{adultos},#{nombreManual},#{primerManual},#{segundoManual},#{direccionManual})
+
+	</insert>
+	<insert id="insertarProspera" parameterType="Edomex2017EncuestaProsperaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('encuestas_resultados.e_edomex_prospera_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas_resultados.e_edomex_prospera(
+		pkey, id_contacto, _1, _2, _3, _4,_5, estatus, nick, encuestador, email, telefono, adultos, nombre_manual, primer_manual, segundo_manual, direccion_manual)
+		VALUES (#{id}, #{idInterno}, #{r1}, #{r2}, #{r3}, #{r4},#{r5}, #{resultado},
+		#{nick},'${encuestador.nombre} ${encuestador.primerApellido} ${encuestador.segundoApellido}',#{email},#{telefono},#{adultos},#{nombreManual},#{primerManual},#{segundoManual},#{direccionManual})
+
+	</insert>
+	<update id="actualizarEstatus" parameterType="Edomex2017EncuestaEO">
+		update encuestas.encuesta_edomex set estatus = #{resultado} where id_interno
+		= #{idInterno}
+	</update>
+	<update id="actualizarEstatusProspera" parameterType="Edomex2017EncuestaProsperaEO">
+		update encuestas.encuesta_edomex set estatus = #{resultado} where id_interno
+		= #{idInterno}
+	</update>
+	<select id="buscarEncuesta" parameterType="String" resultMap="encuestaEdomex2017">
+		SELECT Edomex2017EncuestaEO.pkey Edomex2017EncuestaEO_id,
+		Edomex2017EncuestaEO.id_contacto Edomex2017EncuestaEO_idInterno,
+		Edomex2017EncuestaEO._1 Edomex2017EncuestaEO_1,
+		Edomex2017EncuestaEO._2 Edomex2017EncuestaEO_2,
+		Edomex2017EncuestaEO._3 Edomex2017EncuestaEO_3,
+		Edomex2017EncuestaEO._4 Edomex2017EncuestaEO_4,
+		Edomex2017EncuestaEO._5 Edomex2017EncuestaEO_5,
+		Edomex2017EncuestaEO.estatus Edomex2017EncuestaEO_estatus,
+		Edomex2017EncuestaEO.nick Edomex2017EncuestaEO_nick,
+			Edomex2017EncuestaEO.encuestador Edomex2017EncuestaEO_encuestador,
+		Edomex2017EncuestaEO.fecha Edomex2017EncuestaEO_fecha,
+		Edomex2017EncuestaEO.email Edomex2017EncuestaEO_email,
+		Edomex2017EncuestaEO.telefono Edomex2017EncuestaEO_telefono,
+		Edomex2017EncuestaEO.adultos Edomex2017EncuestaEO_adultos,
+		Edomex2017EncuestaEO.nombre_manual Edomex2017EncuestaEO_nombreManual,
+		Edomex2017EncuestaEO.primer_manual Edomex2017EncuestaEO_primerManual,
+		Edomex2017EncuestaEO.segundo_manual Edomex2017EncuestaEO_segundoManual,
+		Edomex2017EncuestaEO.direccion_manual Edomex2017EncuestaEO_direccionManual
+		FROM encuestas_resultados.e_edomex Edomex2017EncuestaEO
+		where id_contacto = #{value}
+
+	</select>
+	<select id="buscarEncuestaProspera" parameterType="String" resultMap="encuestaEdomex2017Prospera">
+		SELECT Edomex2017EncuestaEO.pkey Edomex2017EncuestaEO_id,
+		Edomex2017EncuestaEO.id_contacto Edomex2017EncuestaEO_idInterno,
+		Edomex2017EncuestaEO._1 Edomex2017EncuestaEO_1,
+		Edomex2017EncuestaEO._2 Edomex2017EncuestaEO_2,
+		Edomex2017EncuestaEO._3 Edomex2017EncuestaEO_3,
+		Edomex2017EncuestaEO._4 Edomex2017EncuestaEO_4,
+		Edomex2017EncuestaEO._5 Edomex2017EncuestaEO_5,
+		Edomex2017EncuestaEO.estatus Edomex2017EncuestaEO_estatus,
+		Edomex2017EncuestaEO.encuestador Edomex2017EncuestaEO_encuestador,
+		Edomex2017EncuestaEO.nick Edomex2017EncuestaEO_nick,
+		Edomex2017EncuestaEO.fecha Edomex2017EncuestaEO_fecha
+		FROM encuestas_resultados.e_edomex_prospera Edomex2017EncuestaEO
+		where id_contacto = #{value}
+
+	</select>
+	<update id="actualizarEncuesta" parameterType="Edomex2017EncuestaEO">
+		UPDATE encuestas_resultados.e_edomex
+		SET _1=#{r1}, _2=#{r2}, _3=#{r3}, _4=#{r4}, _5=#{r5}, estatus = #{resultado},encuestador='${encuestador.nombre} ${encuestador.primerApellido} ${encuestador.segundoApellido}' , email=#{email}, telefono=#{telefono}, adultos=#{adultos},
+		nombre_manual = #{nombreManual}, primer_manual = #{primerManual}, segundo_manual = #{segundoManual}, direccion_manual = #{direccionManual}
+		WHERE pkey = #{id};
+
+	</update>
+	<update id="actualizarEncuestaProspera" parameterType="Edomex2017EncuestaProsperaEO">
+		UPDATE encuestas_resultados.e_edomex_prospera
+		SET _1=#{r1}, _2=#{r2}, _3=#{r3}, _4=#{r4}, _5=#{r5}, estatus = #{resultado} 
+		WHERE pkey = #{id};
+
+	</update>
+</mapper>

@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form >
+				
+					<p:panel header="Seccional">
+							<p:dataTable  value="${modelo.listado}" var="fila" rowKey="${fila.id}"
+							 selectionMode="single" selection="${modelo.seleccionado}" paginator="true" 
+							 paginatorPosition="bottom" rows="10" paginatorAlwaysVisible="false">
+								 <p:column headerText="Sección">
+								 	<p:outputLabel value="${fila.seccion.municipio.nombre} - ${fila.seccion.idSeccion}"/>
+								 </p:column>	
+								 <p:column headerText="Nombre">
+								 	<p:outputLabel value="${fila.nombre} ${fila.primerApellido} ${fila.segundoApellido}"/>
+								 </p:column>	
+								
+								 <p:column headerText="Fecha Nacimiento">
+								 	<p:outputLabel value="${fila.fechaNacimiento}"/>
+								 </p:column>	
+								 <p:column headerText="Genero">
+								 	<p:outputLabel value="${modelo.seleccionado.genero.nombre}"/>
+								 </p:column>	
+								 <p:column headerText="Dirección">
+								 	<p:outputLabel value="${fila.calle} ${fila.numeroInterior} ${fila.numeroExterior} Col. ${fila.colonia} ${fila.codigoPostal}"/>
+								 </p:column>	
+								 		
+							</p:dataTable>			
+							<f:facet name="footer">
+								<p:commandButton value="Agregar" action="agregar"/>
+								<p:commandButton value="Editar" action="editar" rendered="false"/>
+							</f:facet>
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+					</p:panel>		
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

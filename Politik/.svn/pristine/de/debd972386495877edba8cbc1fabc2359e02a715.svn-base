@@ -1,0 +1,298 @@
+package com.saganet.politik.components.catalogos;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.apache.poi.ss.formula.functions.T;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.catalogos.DFederalEO;
+import com.saganet.politik.database.catalogos.DLocalEO;
+import com.saganet.politik.database.catalogos.DependenciaEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.catalogos.SeccionEO;
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.dominios.NivelesDependenciasDO;
+import com.saganet.politik.modelos.JavaBeanT;
+import com.saganet.politik.modelos.Modelo;
+import com.saganet.politik.database.catalogos.EntidadEO;
+
+@Component("DependenciasC")
+public class DependenciasC {
+
+	@Autowired
+	SqlSession sqlSession;
+	
+	private static final Logger logger = LoggerFactory.getLogger(DependenciasC.class);
+
+	public Modelo<DependenciaEO> modelo(){
+		Modelo<DependenciaEO> modelo;
+		List<DependenciaEO> listado;
+		
+		listado = new ArrayList<>();
+		
+		listado = sqlSession.selectList("catalogos.dependencias.listado");
+		
+		modelo = new Modelo<>();
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			logger.debug("ListadoDependecias: {}", listado);
+			modelo.setSeleccionado(listado.get(0));
+			modelo.getSeleccionado().setTerritorios(consultaTerritorios(modelo.getSeleccionado()));
+		}
+		
+		logger.debug("ModeloDependecias: {}", modelo);
+		
+		return modelo;
+	}
+	
+	public DependenciaEO getDependenciaCompleta(DependenciaEO dependencia){
+		// Se_asignan_los_territorios_a_las_dependencias
+		dependencia.setTerritorios(consultaTerritorios(dependencia));
+		logger.debug("Dependencia - Territorios: {}", dependencia.getTerritorios());
+		
+		return dependencia;
+	}
+	
+	public DependenciaEO nuevo(){
+		return new DependenciaEO();
+	}
+	
+	public DependenciaEO nuevoSubnivel(DependenciaEO dependencia){
+		logger.debug("Dependencia recibida: {}", dependencia);
+		DependenciaEO nuevo = new DependenciaEO();
+		nuevo.setDependenciaPadre(dependencia);
+		return nuevo;
+	}
+	
+	public void guardar(DependenciaEO nuevaDependencia, List<JavaBeanT> seleccionMultiple){
+		
+		logger.debug("Nueva Dependencia recibida: {}", nuevaDependencia);
+		
+		//Asignamos_siguiente_pkey
+		nuevaDependencia.setId((Integer) sqlSession.selectOne("catalogos.dependencias.idNextDependencia"));
+		
+		logger.debug("Nueva Secciones Recibida: {}", seleccionMultiple);
+		
+		Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		nuevaDependencia.setNick(usuario.getUsuario().getNick());
+		
+		sqlSession.insert("catalogos.dependencias.insertar", nuevaDependencia);
+		
+		logger.debug("La Dependecia se guardo correctamente!: {}", nuevaDependencia);
+		
+		//Guardamos_las_llaves_de_la_dependencia(_Territorios)
+		if(!seleccionMultiple.isEmpty()){
+			//Insertamos_las_nueva_bateria_de_dependencias_de_la_seleccion_multiple
+			for(JavaBeanT javaBeanT : seleccionMultiple){
+				logger.debug("Objeto JavaBeanT: {}", javaBeanT);
+				HashMap<String, Object> params;
+				params = new HashMap<>();
+				
+				switch (nuevaDependencia.getNivelGeografico()) {
+				case "Entidad":
+					
+					EntidadEO entidad;
+					entidad = (EntidadEO) javaBeanT;
+					params.put("idDependencia", nuevaDependencia.getId());
+					params.put("llave", entidad.getId());
+					params.put("nick", usuario.getUsuario().getNick());
+					
+					break;
+					
+				case "Distrito Federal":
+					
+					DFederalEO dfederal;
+					dfederal = (DFederalEO) javaBeanT;
+					params.put("idDependencia", nuevaDependencia.getId());
+					params.put("llave", dfederal.getLlave());
+					params.put("nick", usuario.getUsuario().getNick());
+					
+					break;
+					
+				case "Distrito Local":
+					
+					DLocalEO dlocal;
+					dlocal = (DLocalEO) javaBeanT;
+					params.put("idDependencia", nuevaDependencia.getId());
+					params.put("llave", dlocal.getLlave());
+					params.put("nick", usuario.getUsuario().getNick());
+					
+					break;
+					
+				case "Municipio":
+					logger.debug("Entro en municipio");
+					MunicipioEO municipio;
+					municipio = (MunicipioEO) javaBeanT;
+					params.put("idDependencia", nuevaDependencia.getId());
+					params.put("llave", municipio.getLlave());
+					params.put("nick", usuario.getUsuario().getNick());
+					
+					break;
+					
+				case "Sección":
+					logger.debug("Entro en seccion");
+					SeccionEO seccion;
+					seccion = (SeccionEO) javaBeanT;
+					params.put("idDependencia", nuevaDependencia.getId());
+					params.put("llave", seccion.getLlave());
+					params.put("nick", usuario.getUsuario().getNick());
+					
+					logger.debug("Seccion a guardar: {}", seccion);
+					
+					break;
+
+				default:
+					break;
+				}
+				
+				logger.debug("Parametros Insertar Llave: {}", params);
+				
+				if(!params.isEmpty())
+				sqlSession.insert("catalogos.dependenciasLlaves.insertar", params);
+				
+			}
+		}
+		
+		
+	}
+	
+	public void actualizar(DependenciaEO dependencia, List<T> seleccionMultiple){
+		logger.debug("Dependencia Recibida: {}", dependencia);
+		
+		sqlSession.update("catalogos.dependencias.actualizar", dependencia);
+		
+		logger.debug("La dependencia fue actualizada correctamente!");
+		
+		//Actualizamos_dependencias_llaves,_si_no_esta_vacia
+		
+//		if(!seleccionMultiple.isEmpty()){
+//			//Eliminamos_llaves_actuales_en_dependencias_llaves
+//			sqlSession.delete("catalogos.dependenciasLlaves.eliminar", dependencia.getId());
+//			logger.debug("Las llaves de la dependencia se eliminaron correctamente");
+//			
+//			//Insertamos_las_nueva_bateria_de_dependencias_de_la_seleccion_multiple
+//			for(T t : seleccionMultiple){
+//				
+//			}
+//		}
+		
+	}
+	
+	public NivelesDependenciasDO[] nivelesDependencias(){
+		logger.debug("Se genera listado de Niveles Dependencias");
+		return NivelesDependenciasDO.values();
+	}
+	
+	public NivelesDO[] niveles(){
+		logger.debug("Se genera listado de Niveles");
+		NivelesDO[] niveles = new NivelesDO[6];
+		niveles[0]=NivelesDO.NACIONAL;
+		niveles[1]=NivelesDO.ENTIDAD;
+		niveles[2]=NivelesDO.MUNICIPIO;
+		niveles[3]=NivelesDO.DFEDERAL;
+		niveles[4]=NivelesDO.DLOCAL;
+		niveles[5]=NivelesDO.SECCION;
+		
+		return niveles;
+		
+	}
+	
+	public List<JavaBeanT> consultaTerritorios(DependenciaEO dependencia){
+		
+		List<JavaBeanT> territorios;
+		String llaves = "";
+		
+		territorios = new ArrayList<>();
+		
+		try{
+			llaves = sqlSession.selectOne("catalogos.dependenciasLlaves.listadoStr", dependencia.getId());
+		}catch(Exception e){
+			logger.debug("No hay dependencias");
+		}
+		
+		logger.debug("LLaves: {}", llaves);
+		
+		if(llaves!=null){
+			switch (dependencia.getNivelGeografico()) {
+			
+			case "Entidad":
+				territorios = sqlSession.selectList("catalogos.entidades.entidadInId",llaves);
+				return territorios;
+			case "Distrito Federal":
+				territorios = sqlSession.selectList("catalogos.dFederales.dfederalInLlaves", llaves);
+				return territorios;
+			case "Distrito Local":
+				territorios = sqlSession.selectList("catalogos.dLocales.dlocalInLlaves", llaves);
+				return territorios;
+			case "Municipio":
+				territorios = sqlSession.selectList("catalogos.municipios.municipioInLlaves", llaves);
+				return territorios;
+			case "Sección":
+				territorios = sqlSession.selectList("catalogos.secciones.seccionInLlaves", llaves);
+				return territorios;
+			default:
+				return territorios;
+			}
+		}else{
+			return territorios;
+		}
+		
+		
+	}
+	
+	public Modelo<JavaBeanT> nuevoModelo(){
+		Modelo<JavaBeanT> modelo;
+		modelo = new Modelo<>();
+		return modelo;
+	}
+	
+	public Modelo<JavaBeanT> getModeloTerritorios(DependenciaEO dependencia){
+		Modelo<JavaBeanT> modelo;
+		modelo = new Modelo<>();
+		
+		//Consultamos_los_territorios
+		dependencia.setTerritorios(consultaTerritorios(dependencia));
+		//Lo_Pasamos_al_nuevo_modelo
+		modelo.setListado(dependencia.getTerritorios());
+		
+		if(!dependencia.getTerritorios().isEmpty()){
+			modelo.setSeleccionado(dependencia.getTerritorios().get(0));
+			modelo.setSeleccionMultiple(modelo.getListado());
+		}
+		
+		return modelo;
+	}
+	
+	public void inhabilitarDependencia(DependenciaEO dependencia){
+		logger.debug("Dependencia recibida para hinabiltar: {}", dependencia);
+		HashMap<String, Object> params;
+		params = new HashMap<>();
+		params.put("idDependencia", dependencia.getId());
+		params.put("estatus", 0);
+		Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		params.put("nickActualizacion", usuario.getUsuario().getNick());
+		
+		sqlSession.update("catalogos.dependencias.estatusDependenciaChange", params);
+		logger.debug("Se actualizaron los siguientes parametros: {}", params);
+	}
+	
+	public void quitarDependenciaDeModelo(Modelo<DependenciaEO> modelo, DependenciaEO dependencia){
+		if (!modelo.getListado().isEmpty()) {
+			modelo.getListado().remove(dependencia);
+			if (!modelo.getListado().isEmpty()) {
+				modelo.setSeleccionado(modelo.getListado().get(0));
+			} else {
+				modelo.setSeleccionado(null);
+			}
+		}
+	}
+}

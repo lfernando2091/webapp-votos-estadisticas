@@ -1,0 +1,240 @@
+package com.saganet.politik.components.catalogos;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.primefaces.model.DualListModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.binding.message.MessageBuilder;
+import org.springframework.binding.message.MessageContext;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+import org.springframework.webflow.execution.RequestContextHolder;
+
+import com.saganet.politik.components.estructuras.EstructurasC;
+import com.saganet.politik.database.catalogos.DFederalEO;
+import com.saganet.politik.database.catalogos.DLocalEO;
+import com.saganet.politik.database.catalogos.EleccionEO;
+import com.saganet.politik.database.catalogos.EntidadEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.catalogos.PartidoEO;
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.modelos.JavaBeanT;
+import com.saganet.politik.modelos.Modelo;
+import com.saganet.politik.modelos.catalogos.DFederalesT;
+import com.saganet.politik.modelos.catalogos.DLocalesT;
+import com.saganet.politik.modelos.catalogos.EntidadesT;
+import com.saganet.politik.modelos.catalogos.MunicipiosT;
+import com.saganet.politik.modelos.catalogos.PartidosT;
+
+@Component("CatalogosEleccionesC")
+public class EleccionesC {
+	private static final Logger logger = LoggerFactory.getLogger(EleccionesC.class);
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	@Autowired
+	EstructurasC estructurasC;
+	
+	public Modelo<EleccionEO> tabla(){
+		Modelo<EleccionEO> tabla;
+		List<EleccionEO> listado;
+		List<JavaBeanT> territorios;
+		List<Integer> idsEstructura;
+		
+		tabla = new Modelo<EleccionEO>();
+		listado = sqlSession.selectList("catalogos.elecciones.listado");
+		
+		//Generar Territorios y Estructuras
+		for(EleccionEO eleccion : listado){
+			territorios = new ArrayList<JavaBeanT>();
+			
+			switch(eleccion.getRepresentante().getNivel()){
+			case DFEDERAL:
+				territorios = sqlSession.selectList("catalogos.dFederales.listadoPorEleccionLlave", eleccion);
+				break;
+			case DLOCAL:
+				territorios = sqlSession.selectList("catalogos.dLocales.listadoPorEleccionLlave", eleccion);
+				break;
+			case ENTIDAD:
+				territorios = sqlSession.selectList("catalogos.entidades.listadoPorEleccionLlave", eleccion);
+				break;
+			case MUNICIPIO:
+				territorios = sqlSession.selectList("catalogos.municipios.listadoPorEleccionLlave", eleccion);
+				break;
+			default:
+				break;
+			}
+			eleccion.setTerritorios(territorios);
+			
+			idsEstructura = sqlSession.selectList("catalogos.elecciones.listadoIdsEstructura", eleccion);
+			if(!idsEstructura.isEmpty()){
+				logger.debug("EleccionEO: {} - idsEstructura: {}", eleccion, idsEstructura);
+				eleccion.setEstructuras(estructurasC.listado(idsEstructura));
+			}
+			
+		}
+		
+		tabla.setListado(listado);
+		if(!listado.isEmpty()){
+			tabla.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado de Elecciones: {}", listado);
+		return tabla;
+	}
+	
+	public EleccionEO nuevo(){
+		return new EleccionEO();
+	}
+	
+	public void insertar(EleccionEO eleccion){
+		MessageContext messageContext;
+		
+		messageContext = RequestContextHolder.getRequestContext().getMessageContext();
+		sqlSession.insert("catalogos.elecciones.insertar", eleccion);
+
+		logger.debug("Se insertar eleccion: {}", eleccion);
+		messageContext.addMessage(new MessageBuilder().info().defaultText("Elección Agregada").build());
+	}
+	
+	public boolean necesitaLlaves(EleccionEO eleccion){
+		if(eleccion.getRepresentante().getNivel() == NivelesDO.NACIONAL)
+			return false;
+		else
+			return true;
+	}
+	
+	public List<String> listadoTerritorios(RequestContext context){
+		HashMap<String, Object> viewScope, flowScope;
+		EleccionEO eleccion;
+		EntidadesT listadoEntidades;
+		DFederalesT listadoDFederales;
+		DLocalesT listadoDLocales;
+		MunicipiosT listadoMunicipios;
+		List<EntidadEO> entidades;
+		List<DFederalEO> dFederales;
+		List<DLocalEO> dLocales;
+		List<MunicipioEO> municipios;
+		List<String> llaves;
+		
+		viewScope = (HashMap<String, Object>) context.getViewScope().asMap();
+		flowScope = (HashMap<String, Object>) context.getFlowScope().asMap();
+		
+		eleccion = (EleccionEO) flowScope.get("eleccion");
+		
+		listadoEntidades = (EntidadesT) viewScope.get("listadoEntidades");
+		entidades = listadoEntidades.getSeleccionMultiple();
+		
+		listadoDFederales = (DFederalesT) viewScope.get("listadoDFederales");
+		dFederales = listadoDFederales.getSeleccionMultiple();
+		
+		listadoDLocales = (DLocalesT) viewScope.get("listadoDLocales");
+		dLocales = listadoDLocales.getSeleccionMultiple();
+		
+		listadoMunicipios = (MunicipiosT) viewScope.get("listadoMunicipios");
+		municipios = listadoMunicipios.getSeleccionMultiple();
+		
+		llaves = new ArrayList<String>();
+		
+		switch(eleccion.getRepresentante().getNivel()){
+		case DFEDERAL:
+			for(DFederalEO fila : dFederales){
+				llaves.add(fila.getLlave());
+			}
+			break;
+		case DLOCAL:
+			for(DLocalEO fila : dLocales){
+				llaves.add(fila.getLlave());
+			}
+			break;
+		case ENTIDAD:
+			for(EntidadEO fila : entidades){
+				llaves.add(Integer.toString(fila.getId()));
+			}
+			break;
+		case MUNICIPIO:
+			for(MunicipioEO fila : municipios){
+				llaves.add(fila.getLlave());
+			}
+			break;
+		default:
+			break;
+		}
+		
+		return llaves;
+	}
+	
+	public void insertarTerritorios(EleccionEO eleccion, List<String> llaves){
+		MessageContext messageContext;
+		HashMap<String, Object> parametros;
+		
+		messageContext = RequestContextHolder.getRequestContext().getMessageContext();
+		parametros = new HashMap<String, Object>();
+		
+		parametros.put("eleccion", eleccion);
+		parametros.put("llaves", llaves);
+		sqlSession.insert("catalogos.elecciones.insertarTerritorios", parametros);
+		
+		messageContext.addMessage(new MessageBuilder().info().defaultText("Territorios Agregados").build());
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void insertarPartidos(RequestContext context){
+		MessageContext messageContext;
+		HashMap<String, Object> viewScope, flowScope;
+		List<String> llaves;
+		PartidosT tablaPartidos;
+		List<PartidoEO> partidos;
+		EleccionEO eleccion;
+		HashMap<String, Object> parametros;
+		
+		messageContext = RequestContextHolder.getRequestContext().getMessageContext();
+		
+		viewScope = (HashMap<String, Object>) context.getViewScope().asMap();
+		flowScope = (HashMap<String, Object>) context.getFlowScope().asMap();
+		
+		eleccion = (EleccionEO) flowScope.get("eleccion");
+		llaves = (List<String>) viewScope.get("listadoTerritorios");
+		tablaPartidos = (PartidosT) viewScope.get("tablaPartidos");
+		partidos = tablaPartidos.getModeloDual().getTarget();
+		parametros = new HashMap<String, Object>();
+		
+		insertar(eleccion);
+		
+		if(!eleccion.getRepresentante().getNivel().equals(NivelesDO.NACIONAL))
+			insertarTerritorios(eleccion, llaves);
+
+		parametros.put("eleccion", eleccion);
+		parametros.put("partidos", partidos);
+		
+		sqlSession.insert("catalogos.elecciones.insertarPartidos", parametros);
+		
+		messageContext.addMessage(new MessageBuilder().info().defaultText("Partidos Agregados").build());
+	}
+	
+	public Modelo<EleccionEO> tablaModeloDual(){
+		logger.debug("Ingresando");
+		Modelo<EleccionEO> tabla;
+		DualListModel<EleccionEO> modelo;
+		List<EleccionEO> source, target;
+		
+		tabla = new Modelo<>();
+		
+		target = new ArrayList<EleccionEO>();
+		
+		source = sqlSession.selectList("catalogos.elecciones.listado");
+		
+		modelo = new DualListModel<EleccionEO>(source, target);
+		
+		tabla.setModeloDual(modelo);
+		
+		logger.debug("Se genera Modelo Dual");
+		return tabla;
+	}
+}

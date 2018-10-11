@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	
+	<input name="flag" type="java.lang.Boolean"/>
+	<view-state id="historial">
+	
+		<on-entry>
+			<evaluate expression="ImportacionC.tablaHistorico()" result="viewScope.historicos" />
+		</on-entry>
+		<transition on="log" to="logs">
+			<set name="requestScope.importacion" value="viewScope.historicos.seleccionado"></set>
+		</transition>
+		<transition on="nuevaImportacion" to="listadoArchivos"/>
+		<transition on="siguiente" to="end">
+			<set name="requestScope.tablaSeleccionada" value="viewScope.historicos.seleccionado"></set>
+		</transition>
+	</view-state>
+	
+	<view-state id="logs">
+		<on-entry>
+			<set name="viewScope.importacion" value="requestScope.importacion"/>
+			<evaluate expression="ImportacionC.tablaLog(viewScope.importacion)" result="viewScope.tabla"/>
+		</on-entry>
+		<transition on="cancelar" to="historial"/>
+	</view-state>
+
+	<subflow-state id="listadoArchivos" subflow="biblioteca">
+		<input name="flag" value="true"/>
+		<transition on="fin" to="validadCSV">
+			<set name="flowScope.archivo" value="conversationScope.archivo" />
+		</transition>
+	</subflow-state>
+
+	<action-state id="validadCSV">
+		<evaluate expression="ImportacionC.validarCSV(flowScope.archivo)" />
+		<transition on="true" to="importaciones"/>
+		<transition on="false" to="noCompatible"/>
+	</action-state>
+	
+	<view-state id="noCompatible">
+		<transition on="regresar" to="historial"/>
+	</view-state>
+	
+	<view-state id="importaciones">
+		<on-entry>
+			<set name="flowScope.crearTabla" value="true"/>
+			<set name="flowScope.delimitador" value="null"/>
+			<set name="flowScope.quote" value="null"/>
+			<evaluate expression="ImportacionC.listadoDelimitadores()" result="viewScope.listadoDelimitadores"/>
+			<evaluate expression="ImportacionC.listadoQuote()" result="viewScope.listadoQuote"/>			
+		</on-entry>
+		<transition on="siguiente" to="tipoImportacion"/>
+		<transition on="cancelar" to="historial"/>
+	</view-state>
+	
+	<action-state id="tipoImportacion">
+		<evaluate expression="ImportacionC.tipoImportacion(flowScope.crearTabla)" />
+		<transition on="true" to="crear_tabla">
+			<evaluate expression="ImportacionC.obtenerMapeo(flowScope.archivo, flowScope.delimitador, flowScope.quote)" result="flowScope.mapeo"/>
+		</transition>
+		<transition on="false" to="llenar_tabla">
+			<evaluate expression="ImportacionC.obtenerMapeo(flowScope.archivo, flowScope.delimitador, flowScope.quote)" result="flowScope.mapeo"/>
+		</transition>
+	</action-state>
+	
+	<view-state id="llenar_tabla">
+		<on-entry>
+			<set name="flowScope.truncarTabla" value="false"/>
+			<set name="viewScope.registrosTabla" value="0" type="java.lang.Integer"/>
+			<evaluate expression="CatalogosTablasC.tabla()" result="viewScope.tablas"/>
+			<evaluate expression="ImportacionC.limpiarNombreTabla(flowScope.mapeo)" result="flowScope.mapeo" />
+			<evaluate expression="CatalogosCamposTablaC.tablaVacia()" result="viewScope.camposTabla"/>
+		</on-entry>
+		<transition on="actualizarObjeto">
+			<evaluate expression="ImportacionC.registrosTablas(viewScope.tablas.seleccionado, null)" result="viewScope.registrosTabla" />
+			<evaluate expression="ImportacionC.importacionTablas(flowScope.mapeo,null,viewScope.tablas.seleccionado)" result="flowScope.mapeo" />
+			<evaluate expression="CatalogosCamposTablaC.tablaSinTipo(viewScope.tablas.seleccionado)" result="viewScope.camposTabla"/>
+		</transition>
+		<transition on="actualizarParticion">
+			<evaluate expression="ImportacionC.registrosTablas(viewScope.tablas.seleccionado, flowScope.mapeo.tablaParticionSeleccionada)" result="viewScope.registrosTabla" />
+			<evaluate expression="ImportacionC.importacionTablas(flowScope.mapeo,flowScope.mapeo.tablaParticionSeleccionada,viewScope.tablas.seleccionado)" result="flowScope.mapeo" />
+		</transition>
+		<transition on="guardar" to="historial">
+			<evaluate expression="ImportacionC.importacionTExistente(flowScope.mapeo,flowScope.truncarTabla)"/>
+		</transition>
+		<transition on="cancelar" to="historial"/>
+	</view-state>
+	
+	<view-state id="crear_tabla">
+		<on-entry>
+			<evaluate expression="ImportacionC.listadoTiposCampo()" result="viewScope.listadoTiposCampo" />
+		</on-entry>
+		<transition on="guardar" to="historial">
+			<evaluate expression="ImportacionC.importacion(flowScope.mapeo)"/>
+		</transition>
+		<transition on="cancelar" to="historial"/>
+	</view-state>
+	
+	<end-state id="end">
+		<on-entry>
+			<set name="conversationScope.tablaSeleccionada" value="requestScope.tablaSeleccionada"/>
+		</on-entry>
+	 </end-state>
+</flow>

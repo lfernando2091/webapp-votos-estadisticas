@@ -1,0 +1,110 @@
+package com.saganet.politik.database.encuestas.admin;
+
+import java.io.Serializable;
+import java.util.List;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("PreguntaEO")
+public class PreguntaEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 6405470386030745523L;
+	
+	private Integer id;
+	private Integer idEncuesta;
+	private String tipoPregunta;
+	private Integer inputArea;
+	private Integer consecutivoPregunta;
+	private String pregunta;
+	private String respuesta;
+	private String nick;
+	private String fecha;
+	
+	private List<RespuestaCerradaEO> respuestasCerradas;
+	
+	@Override
+	public String toString() {
+		return "PreguntaEO [id=" + id + ", idEncuesta=" + idEncuesta + ", tipoPregunta=" + tipoPregunta + ", inputArea="
+				+ inputArea + ", consecutivoPregunta=" + consecutivoPregunta + ", pregunta=" + pregunta + ", respuesta="
+				+ respuesta + ", nick=" + nick + ", fecha=" + fecha + ", respuestasCerradas=" + respuestasCerradas
+				+ "]";
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public Integer getIdEncuesta() {
+		return idEncuesta;
+	}
+
+	public void setIdEncuesta(Integer idEncuesta) {
+		this.idEncuesta = idEncuesta;
+	}
+
+	public String getTipoPregunta() {
+		return tipoPregunta;
+	}
+
+	public void setTipoPregunta(String tipoPregunta) {
+		this.tipoPregunta = tipoPregunta;
+	}
+
+	public Integer getInputArea() {
+		return inputArea;
+	}
+
+	public void setInputArea(Integer inputArea) {
+		this.inputArea = inputArea;
+	}
+
+	public Integer getConsecutivoPregunta() {
+		return consecutivoPregunta;
+	}
+
+	public void setConsecutivoPregunta(Integer consecutivoPregunta) {
+		this.consecutivoPregunta = consecutivoPregunta;
+	}
+
+	public String getPregunta() {
+		return pregunta;
+	}
+
+	public void setPregunta(String pregunta) {
+		this.pregunta = pregunta;
+	}
+
+	public String getRespuesta() {
+		return respuesta;
+	}
+
+	public void setRespuesta(String respuesta) {
+		this.respuesta = respuesta;
+	}
+
+	public String getNick() {
+		return nick;
+	}
+
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+
+	public String getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(String fecha) {
+		this.fecha = fecha;
+	}
+
+	public List<RespuestaCerradaEO> getRespuestasCerradas() {
+		return respuestasCerradas;
+	}
+
+	public void setRespuestasCerradas(List<RespuestaCerradaEO> respuestasCerradas) {
+		this.respuestasCerradas = respuestasCerradas;
+	}
+
+}

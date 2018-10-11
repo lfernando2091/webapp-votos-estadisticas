@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="administracion.usuarios">
+	<cache />
+	
+	<resultMap type="UsuarioEO" id="usuario">
+		<id column="UsuarioEO_id" property="id" javaType="Integer"/>
+		<result column="UsuarioEO_nick" property="nick" javaType="String"/>
+		<result column="UsuarioEO_nombre" property="nombre" javaType="String"/>
+		<result column="UsuarioEO_pw" property="pw" javaType="String"/>
+		<result column="UsuarioEO_habilitado" property="habilitado" javaType="Boolean"/>
+		<result column="UsuarioEO_nivel" property="nivel" javaType="com.saganet.politik.dominios.NivelesDO"/>
+		<result column="UsuarioEO_ultimoAcceso" property="ultimoAcceso" javaType="java.sql.Timestamp"/>
+		<result column="UsuarioEO_mail"  property="mail" javaType="String"/>
+		<association property="roles" resultMap="administracion.roles.rol" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT
+			UsuarioEO.pkey 				UsuarioEO_id, 
+			UsuarioEO.nick 				UsuarioEO_nick, 
+			UsuarioEO.nombre 			UsuarioEO_nombre,
+			UsuarioEO.pw 				UsuarioEO_pw,
+			UsuarioEO.nivel				UsuarioEO_nivel,
+			UsuarioEO.ultimo_acceso 	UsuarioEO_ultimoAcceso,
+			UsuarioEO.mail				UsuarioEO_mail,
+			UsuarioEO.habilitado 		UsuarioEO_habilitado,
+			RolEO.pkey 					RolEO_id, 
+			RolEO.rol 					RolEO_rol,
+			RolEO.descripcion 			RolEO_descripcion 
+  		FROM administracion.usuarios UsuarioEO
+  		JOIN administracion.autorizaciones adminAutorizaciones ON (UsuarioEO.nick = adminAutorizaciones.nick)
+  		JOIN administracion.roles RolEO ON (adminAutorizaciones.rol = RolEO.rol)
+	</sql>
+	
+	<select id="listado" resultMap="usuario">
+		<include refid="query" />
+		ORDER BY UsuarioEO.nick
+	</select>
+	
+	<select id="porNick" resultMap="usuario">
+		<include refid="query" />
+		WHERE UsuarioEO.nick = #{nick}
+	</select>
+	
+	<select id="comprobarPassword" resultType="Boolean" parameterType="hashmap">
+		SELECT pw = crypt(#{actual}, pw) respuesta
+		FROM administracion.usuarios
+		WHERE nick = #{usuario.nick}
+	</select>
+	
+	<insert id="insertar" parameterType="UsuarioEO">
+		<selectKey keyProperty="id" order="BEFORE" resultType="Integer">
+			SELECT nextval('administracion.usuarios_pkey_seq'::regclass)
+		</selectKey>
+		INSERT INTO administracion.usuarios(nick, pw, habilitado, nombre, pkey, nivel, mail)
+    	VALUES (#{nick}, crypt(#{pw}, gen_salt('bf', 8)), #{habilitado}, #{nombre}, #{id}, #{nivel}, #{mail} );
+	</insert>
+	
+	<insert id="insertarTerritorios" parameterType="UsuarioEO">
+		<if test="nivel.name() != 'NACIONAL'">
+			INSERT INTO administracion.usuarios_llaves(nick, llave)
+	        VALUES
+	        <foreach collection="territorios" item="item" separator="," close=";">
+				(#{nick}, #{item.llave})
+			</foreach>		
+		</if>
+	</insert>
+	
+	<insert id="insertarDependencias" parameterType="UsuarioEO">
+		<if test="!dependencias.isEmpty()">
+			INSERT INTO administracion.usuarios_dependencias(nick, id_dependencia)
+			VALUES
+			<foreach collection="dependencias" item="item" separator="," close=";">
+				(#{nick}, #{item.id})
+			</foreach>
+		</if>
+	</insert>
+	
+	<insert id="insertarDependenciaUsuario" parameterType="hashmap">
+		INSERT INTO administracion.usuarios_dependencias(nick, id_dependencia)
+			VALUES (#{nick}, #{idDependencia})
+	</insert>
+	
+	<update id="actualizar" parameterType="UsuarioEO">
+		UPDATE administracion.usuarios
+		SET 
+		<if test="pw != ''">
+			pw = crypt(#{pw}, gen_salt('bf', 8)),
+		</if>
+			habilitado = #{habilitado}, 
+			nombre = #{nombre},
+			nivel = #{nivel},
+			mail = #{mail}
+   		WHERE nick = #{nick}
+	</update>
+	
+	<update id="cambiarPassword" parameterType="hashmap">
+		UPDATE administracion.usuarios
+		SET pw = crypt(#{nueva}, gen_salt('bf', 8))
+		WHERE nick = #{usuario.nick}
+	</update>
+	
+	<update id="actualizarUltimoAcceso" parameterType="UsuarioEO">
+		<selectKey keyProperty="ultimoAcceso" resultType="java.sql.Timestamp" order="BEFORE">
+			SELECT now()::timestamp
+		</selectKey>
+		UPDATE administracion.usuarios
+		SET ultimo_acceso = #{ultimoAcceso}
+		WHERE nick = #{nick}
+	</update>
+	
+	<delete id="eliminarTerritoriosPorUsuario" parameterType="UsuarioEO">
+		DELETE FROM administracion.usuarios_llaves
+		WHERE nick = #{nick}
+	</delete>
+	
+	<delete id="eliminarDependenciasPorUsuario" parameterType="UsuarioEO">
+		DELETE FROM administracion.usuarios_dependencias
+		WHERE nick = #{nick}
+	</delete>
+</mapper>

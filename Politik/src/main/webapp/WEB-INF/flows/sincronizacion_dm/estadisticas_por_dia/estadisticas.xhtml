@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+
+					<p:panel header="Estadísticas por días.">
+						<h:panelGrid id="pg" columns="2">
+							
+							<p:outputLabel value="Tipo Busqueda: "/>
+							<p:selectOneMenu id="bus" value="${tipoFiltro}" style="min-width:150px;">
+								<p:ajax event="change" onstart="actualizaZonas()" update="pg"/>
+								<f:selectItems var="tf" value="${listadoTiposFiltro}" itemLabel="${tf.get('nombre')}" itemValue="${tf.get('id')}"/>
+							</p:selectOneMenu>
+							
+							<p:outputLabel value="Region:" rendered="${tipoFiltro==1 or tipoFiltro==2 or tipoFiltro==3 or tipoFiltro==4}"/>
+							<p:selectOneMenu id="reg" value="${region}" rendered="${tipoFiltro==1 or tipoFiltro==2 or tipoFiltro==3 or tipoFiltro==4}" style="min-width:150px;">
+								<p:ajax event="change" onstart="actualizaMunicipios()"/>
+								<p:ajax event="change" onstart="actualizaZonas()"/>
+								<f:selectItems var="itR" value="${listadoRegiones}" itemLabel="${itR.nombre}" itemValue="${itR.id}"/>
+							</p:selectOneMenu>
+							
+							<p:outputLabel value="Municipio:" for="mun" rendered="${tipoFiltro==2 or tipoFiltro==4}"/>
+							<p:selectOneMenu id="mun" value="${municipio}" rendered="${tipoFiltro==2 or tipoFiltro==4}" style="min-width:150px;">
+								<f:selectItems var="itM" value="${listadoMunicipios}" itemLabel="${itM}" itemValue="${itM}" />
+								<p:ajax event="change" onstart="actualizaZonas()"/>
+							</p:selectOneMenu>
+							
+							<p:outputLabel value="Zona:" for="zon" rendered="${tipoFiltro==3 or tipoFiltro==4}" />
+							<p:selectOneMenu id="zon" value="${zona}" rendered="${tipoFiltro==3 or tipoFiltro==4}" style="min-width:150px;">
+								<f:selectItems var="itZ" value="${listadoZonas}" itemLabel="${itZ}" itemValue="${itZ}" />
+								<p:ajax event="change" onstart="actualizaSecciones()"/>
+<!-- 								<p:ajax event="change"/> -->
+							</p:selectOneMenu>
+							
+							<p:outputLabel value="Sección:" for="sec" rendered="${tipoFiltro==4}" />
+							<p:selectOneMenu id="sec" value="${seccion}" rendered="${tipoFiltro==4}" style="min-width:150px;">
+								<p:ajax event="change"/>
+								<f:selectItem itemLabel="Seleccione..." itemValue="0" />
+								<f:selectItems var="itS" value="${listadoSecciones}" itemLabel="${itS}" itemValue="${itS}" />
+							</p:selectOneMenu>
+							
+							<p:outputLabel value="Fecha Inicio: " />
+							<p:calendar value="${fechaInicio}" pattern="dd/MM/yyyy" mask="true">
+								<p:ajax event="dateSelect" />
+							</p:calendar>
+							<p:outputLabel value="Fecha Fin: "/>
+							<p:calendar value="${fechaFin}" pattern="dd/MM/yyyy" mask="true" >
+								<p:ajax event="dateSelect" />
+							</p:calendar>
+							
+							<p:commandButton value="Actualizar" action="actualizarGrafica" update="grp" immediate="true"/>
+							
+							<p:remoteCommand name="actualizaMunicipios" action="actualizaMunicipios" update="mun, zon" immediate="true"/>
+							<p:remoteCommand name="actualizaZonas" action="actualizaZonas" update="zon, sec" immediate="true"/>
+							<p:remoteCommand name="actualizaSecciones" action="actualizaSecciones" update="sec" immediate="true"/>
+							
+						</h:panelGrid>
+						
+						<p:chart id="grp" type="line" model="${listado}" style="height:600px; width: 100%;"/>
+						
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

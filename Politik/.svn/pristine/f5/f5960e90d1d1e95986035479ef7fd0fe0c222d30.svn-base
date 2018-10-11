@@ -1,0 +1,95 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Respuestas Region">
+						<p:panel id="gridEncuestas">
+							<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}" summary="true"
+									selectionMode="single" paginator="true" rows="15" id="tablaResultados" paginatorPosition="bottom">
+									<p:column headerText="Region"  width="200" filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.nombre}">
+										<p:outputLabel value="${fila.nombre}"/>
+									</p:column>
+									<p:column headerText="Exitoso"  width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.exitoso}"/>
+									</p:column>
+									<p:column headerText="No Permite Minutos" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.noPermitioMinutos}"/>
+									         </p:column>
+									<p:column headerText="Número Invalido" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.numeroInvalido}"/>
+									         </p:column>
+									<p:column headerText="Número no Existe" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.numeroNoExiste}"/>
+									         </p:column>
+									<p:column headerText="Número Ocupado" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.numeroOcupado}"/>
+									         </p:column>
+									<p:column headerText="Número ha Cambiado" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.numeroHaCambiado}"/>
+									         </p:column>
+									<p:column headerText="Número Fuera de Servicio" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.numeroFueraServicio}"/>
+									         </p:column>
+									<p:column headerText="Número Equivocado" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.numeroEquivocado}"/>
+									         </p:column>
+									<p:column headerText="No Está Apoyando" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.noEstaApoyando}"/>
+									         </p:column>
+									<p:column headerText="Persona No Encontrada" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.personaNoEncontrada}"/>
+									         </p:column>
+									<p:column headerText="Pendiente Total" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.pendienteTotal}"/>
+									         </p:column>
+									<p:column headerText="Pendiente" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.pendiente}"/>
+									         </p:column>
+									<p:column headerText="Total" width="150" style="text-align:right">
+									          <p:outputLabel value="${fila.total}"/>
+									         </p:column>
+									
+									
+									<p:columnGroup type="footer">
+										 <p:row>
+								            <p:column style="text-align:right" footerText="Total:" />
+								            <p:column footerText="${filaTotal.exitoso}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.noPermitioMinutos}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.numeroInvalido}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.numeroNoExiste}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.numeroOcupado}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.numeroHaCambiado}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.numeroFueraServicio}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.numeroEquivocado}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.noEstaApoyando}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.personaNoEncontrada}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.pendienteTotal}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.pendiente}"  style="text-align:right"/> 
+											<p:column footerText="${filaTotal.total}"  style="text-align:right"/> 
+										</p:row>
+							        </p:columnGroup>
+									<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tablaResultados" fileName="RespuestasRegiones"/>
+										</h:commandLink>
+									</f:facet>
+							</p:dataTable>
+						</p:panel>
+					</p:panel>	
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

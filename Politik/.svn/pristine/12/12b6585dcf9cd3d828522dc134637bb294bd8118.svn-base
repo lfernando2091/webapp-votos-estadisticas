@@ -1,0 +1,88 @@
+package com.saganet.politik.database.encuestas.edomex2017.callCenter;
+
+import java.io.Serializable;
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("Edomex2017CallcenterCapturistaEO")
+public class CapturistaEO extends JavaBeanT implements Serializable {
+	
+	private static final long serialVersionUID = -6147451553202869253L;
+	private Integer id;
+	private String nombre;
+	private String primerApellido;
+	private String segundoApellido;
+	private String email;
+	private String movil;
+	private UsuarioEO usuario;
+	private EncargadoEO encargado;
+	@Override
+	public String toString() {
+		return "CapturistaEO [id=" + id + ", nombre=" + nombre + ", primerApellido=" + primerApellido
+				+ ", segundoApellido=" + segundoApellido + ", email=" + email + ", movil=" + movil + ", usuario="
+				+ encargado + "]";
+	}
+	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getNombre() {
+		return nombre;
+	}
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	public String getPrimerApellido() {
+		return primerApellido;
+	}
+	public void setPrimerApellido(String primerApellido) {
+		this.primerApellido = primerApellido;
+	}
+	public String getSegundoApellido() {
+		return segundoApellido;
+	}
+	public void setSegundoApellido(String segundoApellido) {
+		this.segundoApellido = segundoApellido;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getMovil() {
+		return movil;
+	}
+	public void setMovil(String movil) {
+		this.movil = movil;
+	}
+
+	public EncargadoEO getEncargado() {
+		return encargado;
+	}
+
+	public void setEncargado(EncargadoEO encargado) {
+		this.encargado = encargado;
+	}
+
+	public UsuarioEO getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(UsuarioEO usuario) {
+		this.usuario = usuario;
+	}
+
+
+	
+	
+	
+	
+
+	
+}

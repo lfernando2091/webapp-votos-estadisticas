@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.edomex2017.respuestasRegiones">
+	
+	<resultMap type="RespuestasRegionesEO" id="respuestasRegiones">
+		<id 		column="id" 							property="id" 				javaType="Integer"/>
+		<result 	column="nombre" 						property="nombre"  			javaType="String"/> 
+		
+		<result 	column="p_1_si" 						property="p1Si"  			javaType="Integer"/>
+		<result 	column="p_1_no" 						property="p1NO"  			javaType="Integer"/>
+		<result 	column="p_1_ns_nc" 						property="p1NS"  			javaType="Integer"/>
+		
+		<result 	column="p_2_JOSEFINA_VAZQUEZ_MOTA" 		property="p2Josefina"   	javaType="Integer"/>
+		<result 	column="p_2_ALFREDO_DEL_MAZO_MAZA" 		property="p2Alfredo"  		javaType="Integer"/>
+		<result 	column="p_2_JUAN_ZEPEDA_HERNANDEZ" 		property="p2Juan"  			javaType="Integer"/>
+		<result 	column="p_2_DELFINA_GOMEZ_ALVAREZ" 		property="p2Delfina"    	javaType="Integer"/>
+		<result 	column="p_2_OSCAR_GONZALEZ_YANEZ" 		property="p2Oscar"  		javaType="Integer"/>
+		<result 	column="p_2_ISIDRO_PASTOR_MEDRANO" 		property="p2Isidro"  		javaType="Integer"/>
+	    <result 	column="p_2_ns_nc" 						property="p2nsNc"   		javaType="Integer"/>
+		
+		<result 	column="p_3_si" 						property="p3Si"  			javaType="Integer"/>
+		<result 	column="p_3_no" 						property="p3NO"  			javaType="Integer"/>
+		<result 	column="p_3_ns_nc" 						property="p3NS"  			javaType="Integer"/>	
+
+			
+		<result 	column="p_4_sabe_fecha" 				property="p4sabe"  			javaType="Integer"/>
+		<result 	column="p_4_no_sabe_fecha" 				property="p4noSabe"  		javaType="Integer"/>
+
+		<result 	column="p_5_PAN" 						property="p5pan"   			javaType="Integer"/>
+		<result 	column="p_5_PRI" 						property="p5pri"   			javaType="Integer"/>
+		<result 	column="p_5_PRD" 						property="p5prd"   			javaType="Integer"/>
+		<result 	column="p_5_PT" 						property="p5pt"   			javaType="Integer"/>
+		<result 	column="p_5_PVEM" 						property="p5pvem"   		javaType="Integer"/>
+		<result 	column="p_5_PES" 						property="p5pes"   			javaType="Integer"/>
+		<result 	column="p_5_MORENA" 				 	property="p5morena"   		javaType="Integer"/>
+		<result 	column="p_5_INDEPENDIENTE"  			property="p5independiente"  javaType="Integer"/>
+		<result 	column="p_5_NO" 						property="p5no"   			javaType="Integer"/>
+		<result 	column="p_5_NS_NC" 						property="p5nsNc"   		javaType="Integer"/>
+	
+		<result 	column="p_6_si" 						property="p6Si"  			javaType="Integer"/>
+		<result 	column="p_6_no" 						property="p6NO"  			javaType="Integer"/>
+		<result 	column="p_6_ns_nc" 						property="p6NS"  			javaType="Integer"/>	
+	
+		<result 	column="p_7_PAN" 						property="p7pan"   			javaType="Integer"/>
+		<result 	column="p_7_PRI" 						property="p7pri"   			javaType="Integer"/>
+		<result 	column="p_7_PRD" 						property="p7prd"   			javaType="Integer"/>
+		<result 	column="p_7_PT" 						property="p7pt"   			javaType="Integer"/>
+		<result 	column="p_7_PVEM" 						property="p7pvem"   		javaType="Integer"/>
+		<result 	column="p_7_PES" 						property="p7pes"   			javaType="Integer"/>
+		<result 	column="p_7_MORENA"  					property="p7morena"   		javaType="Integer"/>
+		<result 	column="p_7_INDEPENDIENTE"  			property="p7independiente"  javaType="Integer"/>
+		<result 	column="p_7_NO" 						property="p7no"   			javaType="Integer"/>
+		<result 	column="p_7_NS_NC" 						property="p7nsNc"   		javaType="Integer"/>
+	
+		<result 	column="p_8_PAN" 						property="p8pan"   			javaType="Integer"/>
+		<result 	column="p_8_PRI" 						property="p8pri"   			javaType="Integer"/>
+		<result 	column="p_8_PRD" 						property="p8prd"   			javaType="Integer"/>
+		<result 	column="p_8_PT" 						property="p8pt"   			javaType="Integer"/>
+		<result 	column="p_8_PVEM" 						property="p8pvem"   		javaType="Integer"/>
+		<result 	column="p_8_PES" 						property="p8pes"   			javaType="Integer"/>
+		<result 	column="p_8_MORENA"  					property="p8morena"   		javaType="Integer"/>
+		<result 	column="p_8_INDEPENDIENTE"  			property="p8independiente"  javaType="Integer"/>
+		<result 	column="p_8_NO" 						property="p8no"   			javaType="Integer"/>
+		<result 	column="p_8_NS_NC" 						property="p8nsNc"   		javaType="Integer"/>
+		
+		<result 	column="p_9_JOSEFINA_VAZQUEZ_MOTA" 		property="p9Josefina"   	javaType="Integer"/>
+		<result 	column="p_9_ALFREDO_DEL_MAZO_MAZA" 		property="p9Alfredo"  		javaType="Integer"/>
+		<result 	column="p_9_JUAN_ZEPEDA_HERNANDEZ" 		property="p9Juan"  			javaType="Integer"/>
+		<result 	column="p_9_DELFINA_GOMEZ_ALVAREZ" 		property="p9Delfina"    	javaType="Integer"/>
+		<result 	column="p_9_OSCAR_GONZALEZ_YANEZ" 		property="p9Oscar"  		javaType="Integer"/>
+		<result 	column="p_9_ISIDRO_PASTOR_MEDRANO" 		property="p9Isidro"  		javaType="Integer"/>
+		<result 	column="p_9_NS_NC" 						property="p9nsNc"   		javaType="Integer"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT
+			b.region_edomex_2017 id,
+			b.nombre_region nombre,
+		    sum(case when a.p_1  = 'SI' then 1 else 0 end) p_1_si,
+		    sum(case when a.p_1 = 'NO' then 1 else 0 end) p_1_no,
+			sum(case when a.p_1 = 'NS_NC' then 1 else 0 end) p_1_ns_nc,		
+			sum(case when a.p_2  = 'JOSEFINA_VAZQUEZ_MOTA' then 1 else 0 end) p_2_JOSEFINA_VAZQUEZ_MOTA,
+			sum(case when a.p_2  = 'ALFREDO_DEL_MAZO_MAZA' then 1 else 0 end) p_2_ALFREDO_DEL_MAZO_MAZA,
+			sum(case when a.p_2  = 'JUAN_ZEPEDA_HERNANDEZ' then 1 else 0 end) p_2_JUAN_ZEPEDA_HERNANDEZ,
+			sum(case when a.p_2  = 'DELFINA_GOMEZ_ALVAREZ' then 1 else 0 end) p_2_DELFINA_GOMEZ_ALVAREZ,
+			sum(case when a.p_2  = 'OSCAR_GONZALEZ_YANEZ' then 1 else 0 end) p_2_OSCAR_GONZALEZ_YANEZ,
+			sum(case when a.p_2  = 'ISIDRO_PASTOR_MEDRANO' then 1 else 0 end) p_2_ISIDRO_PASTOR_MEDRANO,
+			sum(case when a.p_2  = 'NS_NC' then 1 else 0 end) p_2_ns_nc,		
+			sum(case when a.p_3  = 'SI' then 1 else 0 end) p_3_si,
+		    sum(case when a.p_3 = 'NO' then 1 else 0 end) p_3_no,
+			sum(case when a.p_3 = 'NS_NC' then 1 else 0 end) p_3_ns_nc,
+			sum(case when a.p_4 = '04/06/2017' then 1 else 0 end) p_4_sabe_fecha,
+			sum(case when a.p_4 != '04/06/2017' then 1 else 0 end) p_4_no_sabe_fecha,
+			sum(case when a.p_5  = 'PAN' then 1 else 0 end) p_5_PAN,
+			sum(case when a.p_5  = 'PRI' then 1 else 0 end) p_5_PRI,
+			sum(case when a.p_5  = 'PRD' then 1 else 0 end) p_5_PRD,	
+			sum(case when a.p_5  = 'PT' then 1 else 0 end) p_5_PT,	
+			sum(case when a.p_5  = 'PVEM' then 1 else 0 end) p_5_PVEM,	
+			sum(case when a.p_5  = 'PES' then 1 else 0 end) p_5_PES,
+			sum(case when a.p_5  = 'MORENA' then 1 else 0 end) p_5_MORENA,	
+			sum(case when a.p_5  = 'INDEPENDIENTE' then 1 else 0 end) p_5_INDEPENDIENTE,
+			sum(case when a.p_5  = 'NO' then 1 else 0 end) p_5_NO,	
+			sum(case when a.p_5  = 'NS_NC' then 1 else 0 end) p_5_NS_NC,
+			sum(case when a.p_6  = 'SI' then 1 else 0 end) p_6_si,
+		    sum(case when a.p_6 = 'NO' then 1 else 0 end) p_6_no,
+			sum(case when a.p_6 = 'NS_NC' then 1 else 0 end) p_6_ns_nc,	
+			sum(case when a.p_7  = 'PAN' then 1 else 0 end) p_7_PAN,
+			sum(case when a.p_7  = 'PRI' then 1 else 0 end) p_7_PRI,
+			sum(case when a.p_7  = 'PRD' then 1 else 0 end) p_7_PRD,	
+			sum(case when a.p_7  = 'PT' then 1 else 0 end) p_7_PT,	
+			sum(case when a.p_7  = 'PVEM' then 1 else 0 end) p_7_PVEM,	
+			sum(case when a.p_7  = 'PES' then 1 else 0 end) p_7_PES,
+			sum(case when a.p_7  = 'MORENA' then 1 else 0 end) p_7_MORENA,	
+			sum(case when a.p_7  = 'INDEPENDIENTE' then 1 else 0 end) p_7_INDEPENDIENTE,
+			sum(case when a.p_7  = 'NO' then 1 else 0 end) p_7_NO,	
+			sum(case when a.p_7  = 'NS_NC' then 1 else 0 end) p_7_NS_NC,
+			sum(case when a.p_8  = 'PAN' then 1 else 0 end) p_8_PAN,
+			sum(case when a.p_8  = 'PRI' then 1 else 0 end) p_8_PRI,
+			sum(case when a.p_8  = 'PRD' then 1 else 0 end) p_8_PRD,	
+			sum(case when a.p_8  = 'PT' then 1 else 0 end) p_8_PT,	
+			sum(case when a.p_8  = 'PVEM' then 1 else 0 end) p_8_PVEM,	
+			sum(case when a.p_8  = 'PES' then 1 else 0 end) p_8_PES,
+			sum(case when a.p_8  = 'MORENA' then 1 else 0 end) p_8_MORENA,	
+			sum(case when a.p_8  = 'INDEPENDIENTE' then 1 else 0 end) p_8_INDEPENDIENTE,
+			sum(case when a.p_8  = 'NO' then 1 else 0 end) p_8_NO,	
+			sum(case when a.p_8  = 'NS_NC' then 1 else 0 end) p_8_NS_NC,	
+			sum(case when a.p_9  = 'JOSEFINA_VAZQUEZ_MOTA' then 1 else 0 end) p_9_JOSEFINA_VAZQUEZ_MOTA,
+			sum(case when a.p_9  = 'ALFREDO_DEL_MAZO_MAZA' then 1 else 0 end) p_9_ALFREDO_DEL_MAZO_MAZA,
+			sum(case when a.p_9  = 'JUAN_ZEPEDA_HERNANDEZ' then 1 else 0 end) p_9_JUAN_ZEPEDA_HERNANDEZ,
+			sum(case when a.p_9  = 'DELFINA_GOMEZ_ALVAREZ' then 1 else 0 end) p_9_DELFINA_GOMEZ_ALVAREZ,
+			sum(case when a.p_9  = 'OSCAR_GONZALEZ_YANEZ' then 1 else 0 end) p_9_OSCAR_GONZALEZ_YANEZ,
+			sum(case when a.p_9  = 'ISIDRO_PASTOR_MEDRANO' then 1 else 0 end) p_9_ISIDRO_PASTOR_MEDRANO,
+			sum(case when a.p_9  = 'NS_NC' then 1 else 0 end) p_9_ns_nc
+		  FROM encuestas_edomex.cuestionario_entrevistados a
+		join encuestas_edomex.encuesta_edomex b ON (b.id_interno=a.id_entrevistado)
+		GROUP BY b.region_edomex_2017, b.nombre_region 
+		ORDER BY  b.region_edomex_2017, b.nombre_region 
+	</sql>
+	
+	<select id="listado" resultMap="respuestasRegiones">
+		<include refid="query"/>	
+	</select>
+
+
+</mapper>

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.municipios">
+<!-- 	<cache /> -->
+	
+	<resultMap type="MunicipioEO" id="municipio">
+		<id column="MunicipioEO_id" property="id" javaType="Integer"/>
+		<result column="MunicipioEO_idMunicipio" property="idMunicipio" javaType="Integer"/>
+		<result column="MunicipioEO_nombre" property="nombre" javaType="String"/>
+		<result column="MunicipioEO_llave" property="llave" javaType="String"/>
+		<association property="geoData" resultMap="gis.geoData.geoData" columnPrefix="MunicipioEO_" />
+		<association property="entidad" resultMap="catalogos.entidades.entidad" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			MunicipioEO.pkey 						MunicipioEO_id,
+			MunicipioEO.id_municipio				MunicipioEO_idMunicipio,
+			MunicipioEO.municipio					MunicipioEO_nombre,
+			MunicipioEO.llave 						MunicipioEO_llave,
+			st_xmin(ST_Extent(GisMunicipios.geom)) 	MunicipioEO_GeoDataEO_xMin,
+			st_ymin(ST_Extent(GisMunicipios.geom)) 	MunicipioEO_GeoDataEO_yMin,
+			st_xmax(ST_Extent(GisMunicipios.geom)) 	MunicipioEO_GeoDataEO_xMax,
+			st_ymax(ST_Extent(GisMunicipios.geom)) 	MunicipioEO_GeoDataEO_yMax,
+			EntidadEO.id_entidad 					EntidadEO_id,
+			EntidadEO.entidad 						EntidadEO_nombre,
+			st_xmin(ST_Extent(GisEntidades.geom)) 	EntidadEO_GeoDataEO_xMin,
+			st_ymin(ST_Extent(GisEntidades.geom)) 	EntidadEO_GeoDataEO_yMin,
+			st_xmax(ST_Extent(GisEntidades.geom)) 	EntidadEO_GeoDataEO_xMax,
+			st_ymax(ST_Extent(GisEntidades.geom)) 	EntidadEO_GeoDataEO_yMax
+		FROM catalogos.municipios MunicipioEO
+		JOIN catalogos.entidades EntidadEO on (MunicipioEO.id_entidad = EntidadEO.id_entidad)
+		JOIN gis.entidades GisEntidades ON (EntidadEO.id_entidad = GisEntidades.id_entidad)
+		JOIN gis.municipios GisMunicipios ON (MunicipioEO.llave = GisMunicipios.llave)
+	</sql>
+	
+	<sql id="queryGroup">
+		GROUP BY MunicipioEO.pkey, MunicipioEO.id_municipio, MunicipioEO.municipio, MunicipioEO.llave, EntidadEO.id_entidad, EntidadEO.entidad
+	</sql>
+	
+	<select id="listadoEvento" resultMap="municipio" parameterType="EventoSocialEO">
+		<include refid="query" />
+		JOIN eventos_sociales.territorios_evento EventoSocialEO ON (MunicipioEO.llave = EventoSocialEO.llave)
+		WHERE EventoSocialEO.id_evento_social=#{id}
+		<include refid="queryGroup" />
+		ORDER BY MunicipioEO.id_municipio
+	</select>
+	
+	
+	<select id="listado" resultMap="municipio" parameterType="EntidadEO">
+		<include refid="query" />
+		<where>
+			<if test="id != null">
+				MunicipioEO.id_entidad = #{id}
+			</if>
+		</where>
+		<include refid="queryGroup" />
+		ORDER BY MunicipioEO.id_municipio
+	</select>
+	<select id="listadoLlave" resultMap="municipio" parameterType="Integer">
+		<include refid="query" />
+		<where>
+				MunicipioEO.id_entidad = ${value}
+		</where>
+		<include refid="queryGroup" />
+		ORDER BY MunicipioEO.id_municipio
+	</select>
+	<select id="buscarPorLlave" parameterType="String" resultMap="municipio">
+		<include refid="query" />
+		WHERE MunicipioEO.llave	= #{value}
+		<include refid="queryGroup" />
+	</select>
+	<select id="listadoPorEntidades" resultMap="municipio" parameterType="list">
+		<include refid="query" />
+		<where>
+			<choose>
+				<when test="list != null">
+					MunicipioEO.id_entidad in 
+					<foreach collection="list" open="(" separator="," close=")" item="item" index="index">
+						${item.id}
+					</foreach>
+				</when>
+				<otherwise>
+					MunicipioEO.id_entidad = -1
+				</otherwise>
+			</choose>
+		</where>
+		<include refid="queryGroup" />
+		ORDER BY MunicipioEO.id_entidad, MunicipioEO.id_municipio
+	</select>
+	
+	<select id="listadoPorEleccionLlave" resultMap="municipio" parameterType="EleccionEO">
+		<include refid="query" />
+		<where>
+			MunicipioEO.llave in (
+				SELECT EleccionesLlaves.llave 
+				FROM catalogos.elecciones_llaves EleccionesLlaves 
+				WHERE EleccionesLlaves.id_eleccion = #{id}
+			)
+		</where> 
+		<include refid="queryGroup" />
+		ORDER BY MunicipioEO.id_entidad, MunicipioEO.id_municipio
+	</select>
+	
+	<select id="listadoPorGeozonaParticionLlave" resultMap="municipio" parameterType="GeozonaParticionEO">
+		<include refid="query" />
+		<where>
+			MunicipioEO.llave in (
+				SELECT GeozonasParticionLlaves.llave 
+				FROM catalogos.geozonas_llaves GeozonasParticionLlaves 
+				WHERE GeozonasParticionLlaves.id_geozona_particion = #{id}
+			)
+		</where> 
+		<include refid="queryGroup" />
+		ORDER BY MunicipioEO.id_entidad, MunicipioEO.id_municipio
+	</select>
+	
+	
+	<select id="listadoPorGeozonaParticionesLlaves" resultMap="municipio" parameterType="list">
+		<include refid="query" />
+		<where>
+			MunicipioEO.llave in (
+				SELECT GeozonasParticionLlaves.llave 
+				FROM catalogos.geozonas_llaves GeozonasParticionLlaves 
+				WHERE GeozonasParticionLlaves.id_geozona_particion in 
+					<foreach collection="list" open="(" separator="," close=")" item="item" index="index">
+						#{item.id}
+					</foreach>
+			)
+		</where> 
+		<include refid="queryGroup" />
+		ORDER BY MunicipioEO.id_entidad, MunicipioEO.id_municipio
+	</select>
+	
+	<select id="listadoPorGeozonaParticionesLlave" resultMap="municipio" parameterType="Integer">
+		<include refid="query" />
+		<where>
+			MunicipioEO.llave in (
+				SELECT GeozonasParticionLlaves.llave 
+				FROM catalogos.geozonas_llaves GeozonasParticionLlaves 
+				WHERE GeozonasParticionLlaves.id_geozona_particion = #{value}
+			)
+		</where> 
+		<include refid="queryGroup" />
+		ORDER BY MunicipioEO.id_entidad, MunicipioEO.id_municipio
+	</select>
+	
+	<select id="listadoPorUsuario" parameterType="UsuarioEO" resultMap="municipio" useCache="false">
+		<include refid="query" />
+		<where>
+			MunicipioEO.llave in (
+				SELECT UsuariosLlaves.llave
+				FROM administracion.usuarios_llaves UsuariosLlaves
+				WHERE nick = #{nick}
+			)
+		</where>
+		<include refid="queryGroup" />
+	</select>
+	
+	
+	<select id="municipioInLlaves" parameterType="String" resultMap="municipio">
+		<include refid="query"/>
+		<where>
+			MunicipioEO.llave IN (${value})
+		</where>
+		<include refid="queryGroup"/>
+		ORDER BY MunicipioEO.id_entidad, MunicipioEO.id_municipio
+	</select>
+	
+	<select id="porLlave" parameterType="String" resultMap="municipio">
+		<include refid="query" />
+		WHERE MunicipioEO.llave = #{value}
+		<include refid="queryGroup" />
+	</select>
+	
+</mapper>

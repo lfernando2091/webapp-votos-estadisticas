@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="filtros">
+		<on-entry>
+			<set name="viewScope.archivoDescarga" value="null" type="java.lang.String" />
+			<set name="viewScope.agruparTerritorios" value="true" type="java.lang.Boolean" />
+			<evaluate expression="EstadisticasVariablesC.listadoNiveles()" result="viewScope.listadoNiveles" />
+			<evaluate expression="CatalogosEntidadesC.tabla()" result="viewScope.listadoEntidades" />
+			<evaluate expression="CatalogosDFederalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDFederales" />
+			<evaluate expression="CatalogosDLocalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDLocales" />
+			<evaluate expression="CatalogosMunicipiosC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoMunicipios" />
+			<evaluate expression="CatalogosGeozonasC.modeloSinTerritorios()" result="viewScope.modeloGeozonas" />
+			<evaluate expression="EstadisticasVariablesC.nivelDefault()" result="viewScope.nivel" />
+			<evaluate expression="EstadisticasVariablesC.tabla(viewScope.nivel, viewScope.modeloGeozonas.seleccionado, viewScope.agruparTerritorios)" result="viewScope.listadoVariables" />
+		</on-entry>
+		
+		<transition on="actualizarCombos">
+			<evaluate expression="CatalogosDFederalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDFederales" />
+			<evaluate expression="CatalogosDLocalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDLocales" />
+			<evaluate expression="CatalogosMunicipiosC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoMunicipios" />
+		</transition>
+		<transition on="actualizarVariables">
+			<evaluate expression="EstadisticasVariablesC.tabla(viewScope.nivel, viewScope.modeloGeozonas.seleccionado, viewScope.agruparTerritorios)" result="viewScope.listadoVariables" />
+		</transition>
+		<transition on="generar">
+			<evaluate expression="EstadisticasReportesC.generarReporte(flowRequestContext)" result="viewScope.archivoDescarga" />
+		</transition>
+	</view-state>
+
+</flow>

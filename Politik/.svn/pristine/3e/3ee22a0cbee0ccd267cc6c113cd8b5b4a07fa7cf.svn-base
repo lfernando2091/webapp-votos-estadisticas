@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="CatalogosEleccionesC.tabla()" result="viewScope.tablaElecciones" />
+		</on-entry>
+		<transition on="agregar" to="agregarEditar">
+			<evaluate expression="CatalogosEleccionesC.nuevo()" result="flowScope.eleccion" />
+		</transition>
+		<transition on="detalle" to="detalle">
+			<set name="requestScope.detalle" value="viewScope.tablaElecciones.seleccionado" />
+		</transition>
+	</view-state>
+
+	<view-state id="agregarEditar">
+		<on-entry>
+			<evaluate expression="UtilidadesDominiosC.modeloTiposEleccion()" result="viewScope.modeloTiposEleccion" />
+			<evaluate expression="UtilidadesDominiosC.modeloTiposRepresentante()" result="viewScope.modeloTiposRepresentante" />
+		</on-entry>
+		<transition on="siguiente" to="necesitaLLaves" />
+		<transition on="cancelar" to="listado">
+			<set name="flowScope.eleccion" value="null" />
+		</transition>
+	</view-state>
+	
+	<action-state id="necesitaLLaves">
+		<evaluate expression="CatalogosEleccionesC.necesitaLlaves(flowScope.eleccion)" />
+		<transition on="no" to="asignarPartidos" />
+		<transition on="yes" to="asignarLlaves" />
+	</action-state>
+	
+	<view-state id="asignarLlaves">
+		<on-entry>
+			<evaluate expression="CatalogosEntidadesC.tablaBuscadorSimple()" result="viewScope.listadoEntidades" />
+			<evaluate expression="CatalogosDFederalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDFederales" />
+			<evaluate expression="CatalogosDLocalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDLocales" />
+			<evaluate expression="CatalogosMunicipiosC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoMunicipios" />
+		</on-entry>
+		<transition on="actualizarCombos">
+			<evaluate expression="CatalogosDFederalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDFederales" />
+			<evaluate expression="CatalogosDLocalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDLocales" />
+			<evaluate expression="CatalogosMunicipiosC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoMunicipios" />
+		</transition>
+		<transition on="guardar" to="asignarPartidos">
+			<evaluate expression="CatalogosEleccionesC.listadoTerritorios(flowRequestContext)" result="requestScope.listadoTerritorios" />
+		</transition>
+		<transition on="regresar" to="agregarEditar" />
+		<transition on="cancelar" to="listado">
+			<set name="flowScope.eleccion" value="null" />
+		</transition>
+	</view-state>
+	
+	<view-state id="asignarPartidos">
+		<on-entry>
+			<set name="viewScope.listadoTerritorios" value="requestScope.listadoTerritorios" />
+			<evaluate expression="CatalogosPartidosC.tablaModeloDual()" result="viewScope.tablaPartidos" />
+		</on-entry>
+		<transition on="guardar" to="listado">
+			<evaluate expression="CatalogosEleccionesC.insertarPartidos(flowRequestContext)" />
+		</transition>
+		<transition on="regresar" to="agregarEditar" />
+		<transition on="cancelar" to="listado">
+			<set name="flowScope.eleccion" value="null" />
+		</transition>
+	</view-state>
+	
+	<view-state id="detalle">
+		<on-entry>
+			<set name="viewScope.detalle" value="requestScope.detalle" />
+			<evaluate expression="EstructurasEstructurasC.crearModelo(viewScope.detalle.estructuras, true)" result="viewScope.modeloEstructuras" />
+			<evaluate expression="EstructurasProgramasPromocionC.modelo()" result="viewScope.modeloProgramasPromocion" />
+		</on-entry>
+		
+		<transition on="asignarEstructura" to="asignarEstructura">
+			<set name="requestScope.detalle" value="viewScope.detalle" />
+		</transition>
+		
+		<transition on="agregarCandidato" to="buscarCandidato">
+			<set name="requestScope.detalle" value="viewScope.detalle" />
+		</transition>
+		
+		<transition on="agregarProgramaPromocion">
+			<evaluate expression="CatalogosEleccionesC.agregarProgramaPromocion(viewScope.detalle, viewScope.modeloProgramasPromocion.seleccionado)" />
+		</transition>
+		
+		<transition on="regresar" to="listado" />
+	</view-state>
+	
+	<view-state id="asignarEstructura">
+		<on-entry>
+			<set name="viewScope.detalle" value="requestScope.detalle" />
+			<evaluate expression="EstructurasEstructurasC.crearModeloDual(EstructurasEstructurasC.ambitoElectoral(), viewScope.detalle.estructuras)" result="viewScope.modeloEstructuras" />
+		</on-entry>
+		<transition on="asignar" to="detalle">
+			<evaluate expression="CatalogosEleccionesC.insertarEstructuras(viewScope.detalle, viewScope.modeloEstructuras.modeloDual.target)" />
+			<set name="requestScope.detalle" value="viewScope.detalle" />
+		</transition>
+		<transition on="cancelar" to="detalle">
+			<set name="requestScope.detalle" value="viewScope.detalle" />
+		</transition>
+	</view-state>
+	
+	<subflow-state id="buscarCandidato" subflow="mdm/buscadores/personas">
+		<on-entry>
+			<set name="conversationScope.contextoEleccion" value="requestScope.detalle" />
+		</on-entry>
+		<input name="flag" value="true"/>
+		<transition on="personaLocalizada" to="agregarCandidato">
+			<set name="requestScope.persona" value="conversationScope.persona" />
+			<set name="requestScope.detalle" value="conversationScope.contextoEleccion" />
+		</transition>
+		<transition on="personaNoLocalizada" to="detalle">
+			<set name="requestScope.detalle" value="conversationScope.detalleEleccion" />
+		</transition>
+	</subflow-state>
+	
+	<view-state id="agregarCandidato">
+		<on-entry>
+			<set name="viewScope.detalle" value="requestScope.detalle" />
+			<evaluate expression="CatalogosEleccionesC.crearCandidato(requestScope.persona)" result="viewScope.candidato" />
+		</on-entry>
+		<transition on="agregar" to="detalle">
+			<evaluate expression="CatalogosEleccionesC.agregarCandidato(viewScope.detalle, viewScope.candidato)" />
+			<set name="requestScope.detalle" value="viewScope.detalle" />
+		</transition>
+	</view-state>
+</flow>

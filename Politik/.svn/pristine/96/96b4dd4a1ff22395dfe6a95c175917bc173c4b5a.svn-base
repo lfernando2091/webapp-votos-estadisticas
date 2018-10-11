@@ -1,0 +1,24 @@
+package com.saganet.politik.dominios_dm;
+
+public enum CatPartidoDO {
+	PAN("PAN"),
+	PRI("PRI"),
+	PRD("PRD"),
+	MORENA("Morena"),
+	PVEM("PVEM"),
+	PT("PT"),
+	MC("MC"),
+	PNA("PNA"),
+	PES("PES"),
+	NO_CONTESTA("No contesta");
+
+	private final String nombre;
+
+	private CatPartidoDO(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+}

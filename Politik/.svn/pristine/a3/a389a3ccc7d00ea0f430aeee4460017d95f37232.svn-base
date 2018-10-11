@@ -1,0 +1,104 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Eventos" />
+						<p:menuitem value="Programas" />
+					</p:breadCrumb>
+					<p:panel header="AgregarPrograma">
+						<p:panelGrid columns="2" id="panelGrid">
+							<p:column>
+									Dependencia :
+							</p:column>
+							<p:column>
+								<p:selectOneMenu id="comboDependencias" value="${tablaDependencias.seleccionado}" converter="ObjectConverter" style="width:300px">
+									<f:selectItems value="${tablaDependencias.listado}" var="fila" itemLabel="${fila.siglas} - ${fila.dependencia}" itemValue="${fila}" />
+									<p:ajax event="itemSelect" oncomplete="actualizarProgramas()" />
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+									Programa :
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${tablaProgramas.seleccionado}" converter="ObjectConverter" style="width:300px">
+									<p:ajax event="itemSelect"  oncomplete="actualizarEjercicios()"/>
+				            		<f:selectItems value="${tablaProgramas.listado}" var="fila" itemLabel="${fila.programa}" itemValue="${fila}" />		
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+									Ejercicios :
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${nuevo.programaEjercicio}" converter="ObjectConverter" style="width:300px">
+				            		<f:selectItems value="${tablaEjercicios.listado}" var="fila" itemLabel="${fila.fechaInicio}-${fila.fechaTermino}" itemValue="${fila}" />		
+								</p:selectOneMenu>
+							</p:column>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandLink action="agregar">
+										<p:graphicImage value="/resources/botones/AGREGAR PROGRAMAS.png"></p:graphicImage>
+							</p:commandLink>
+<!-- 							<p:commandButton value="Agregar Programa" action="agregar" /> -->
+						</f:facet>
+					</p:panel>
+					<p:separator/>
+					<p:panel header="Programas">
+						<p:dataTable id="tablaProgramaEjercicio" value="${tabla.listado}" var="fila" rowKey="${fila.id}" selection="${tabla.seleccionado}"
+							selectionMode="single" paginator="true" rows="10" paginatorPosition="bottom">
+							<p:column headerText="Dependencia" >
+								${fila.programaEjercicio.programa.dependencia.dependencia}
+							</p:column>
+							<p:column headerText="Programa" >
+								${fila.programaEjercicio.programa.programa}
+							</p:column>
+							<p:column headerText="Ejercicio"  style="width:25%">
+								${fila.programaEjercicio.fechaInicio} - ${fila.programaEjercicio.fechaTermino}
+							</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+						
+							<p:commandLink action="eliminar">
+									<p:graphicImage value="/resources/botones/ELIMINAR.png" />
+									<p:confirm header="Confirmación" message="¿Esta seguro de eleminar el registro?" icon="ui-icon-alert" />
+							</p:commandLink>
+							
+<!-- 							<p:commandButton action="eliminar" value="Eliminar"> -->
+<!-- 								<p:confirm header="Confirmación" -->
+<!-- 									message="¿Esta seguro de eleminar el registro?" -->
+<!-- 									icon="ui-icon-alert" /> -->
+<!-- 							</p:commandButton> -->
+							
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton value="Yes" type="button"
+									styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+									update="messages" />
+								<p:commandButton value="No" type="button"
+									styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							</p:confirmDialog>
+							
+							<p:commandLink action="regresar" immediate="true" >
+									<p:graphicImage value="/resources/botones/REGRESAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Regresar" action="regresar" immediate="true" /> -->
+						</f:facet>
+					</p:panel>
+					<p:remoteCommand name="actualizarEjercicios" action="actualizarEjercicios" update="panelGrid" immediate="true" />
+					<p:remoteCommand name="actualizarProgramas" action="actualizarProgramas" update="panelGrid" immediate="true" />
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

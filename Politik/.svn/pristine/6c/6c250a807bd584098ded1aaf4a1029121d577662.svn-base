@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="encuestas.levantamientoRowan.registroUsuarios">
+	
+
+	
+	<select id="validarCodigo" parameterType="hashmap" resultType="Integer">
+	select count(*) from levantamiento_rowan.encuesta_edomex_registro_usuarios where codigo_alfanumerico = #{clave} and id_municipio = #{municipio}
+	</select>
+	<select id="conteoUsuario" resultType="Integer">
+	select nextval('levantamiento_rowan.encuesta_edomex_usuarios_seq')
+	</select>
+	
+	<select id="datosCodigo" parameterType="String" resultType="hashmap">
+	select upper(programa) programa,region, id_municipio, entrevista from levantamiento_rowan.encuesta_edomex_registro_usuarios where codigo_alfanumerico = #{clave} limit 1
+	</select>
+	
+	<select id="buscarDatosNick" parameterType="String" resultType="hashmap">
+	select upper(programa) programa,id_region region, id_municipio from levantamiento_rowan.entrevistadores where nick = #{value} limit 1
+	</select>
+	
+	
+	
+	<insert id="insertarEncuestadores" parameterType="LevantamientoRowanEntrevistadorEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+				SELECT NEXTVAL('levantamiento_rowan.entrevistadores_pkey_seq')
+		</selectKey>
+		INSERT INTO levantamiento_rowan.entrevistadores(
+            pkey, nombre, primer_apellido, segundo_apellido, email, telefono, 
+            id_region, id_municipio, nick, pw, programa)
+    VALUES (#{id},#{nombre}, #{primerApellido}, #{segundoApellido}, #{email}, #{movil}, 
+            #{idRegion}, #{municipio.idMunicipio},#{usuario.nick}, #{pw},#{programa})
+           
+	
+	</insert>
+	
+	<insert id="insertarPrograma" parameterType="LevantamientoRowanEntrevistadorEO">
+	 INSERT INTO administracion.usuarios_programas(
+            nick, programa)values(#{usuario.nick},#{programa})
+	</insert>
+	
+</mapper>

@@ -1,0 +1,70 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Captura" url="/app/estructuras/captura" />
+					</p:breadCrumb>
+					
+					<p:panel header="Información de la Persona">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Nombre" />
+							<p:commandLink value="${capturaCRUD.persona.primerApellido} ${capturaCRUD.persona.segundoApellido} ${capturaCRUD.persona.nombre}" action="perfilPersona" immediate="true" />
+						</p:panelGrid>
+						<p:separator rendered="${mapaCaptura.estructura.nivel != 'NACIONAL'}" />
+						<p:panelGrid id="panelTerritorios" columns="2" rendered="${mapaCaptura.estructura.nivel != 'NACIONAL'}">
+							<f:facet name="header">Teritorios</f:facet>
+							<p:outputLabel value="Entidad" />
+							<p:selectOneMenu value="${modeloEntidades.seleccionado}" converter="ObjectConverter" style="width: 250px;" filter="true" filterMatchMode="contains">
+								<f:selectItems value="${modeloEntidades.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<p:separator />
+						<p:panelGrid id="panelDependencias" columns="2"
+							rendered="${mapaCaptura.estructura.ambito == 'DEPENDENCIAS'}">
+							<f:facet name="header">Dependencia</f:facet>
+							<p:outputLabel value="Dependencia" />
+							<p:selectOneMenu value="${capturaCRUD.dependencia}"
+								converter="ObjectConverter" style="width: 250px;" filter="true" filterMatchMode="contains">
+								<f:selectItems value="${modeloDependencias.listado}" var="fila"
+									itemLabel="${fila.dependencia}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Cargo" />
+							<p:selectOneMenu value="${capturaCRUD.cargo}"
+								style="width: 200px;">
+								<f:selectItems value="${modeloCargos.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Fecha Inicio" />
+							<p:calendar value="${capturaCRUD.fechaInicio}" mode="popup"
+								converter="DateConverter" pattern="dd/MM/yyyy" />
+							<p:outputLabel value="Fecha Término" />
+							<p:calendar value="${capturaCRUD.fechaTermino}" mode="popup"
+								converter="DateConverter" pattern="dd/MM/yyyy" />
+							<p:outputLabel value="Vigente" />
+							<p:inputSwitch value="${capturaCRUD.vigente}" onLabel="Si"
+								offLabel="No" />
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="guardar" />
+							<p:commandButton value="Salir" action="cancelar" immediate="true" />
+						</f:facet>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

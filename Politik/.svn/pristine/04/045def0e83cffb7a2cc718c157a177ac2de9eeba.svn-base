@@ -1,0 +1,71 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Eventos"  url="/app/evento/"/>
+						<p:menuitem value="Editar Evento"/>
+					</p:breadCrumb>
+					<p:panel header="Editar Eventos">
+						<p:messages autoUpdate="true"/>
+								<p:panelGrid columns="2" id="panelGrid"  columnClasses="topAlign">
+									<p:column style="width:200px">
+										Nombre Evento:
+									</p:column>
+									<p:column>
+										${evento.nombre}
+									</p:column>
+									<p:column>
+										Descripción:
+									</p:column>
+									<p:column>
+										${evento.descripcionLogistica}
+									</p:column>
+									<p:column>
+										Fecha:
+									</p:column>
+									<p:column>
+										${evento.fechaFormateada}-${evento.fechaFinFormateada}
+									</p:column>
+									<p:column>
+										Estatus:
+									</p:column>
+									<p:column>
+										<p:selectOneMenu id="comboEstatus" value="${evento.estatus}" style="width:300px">
+							            		<f:selectItems value="${listadoEstatus}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+										</p:selectOneMenu>
+									</p:column>
+								</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandLink action="guardar">
+									<p:graphicImage value="/resources/botones/GUARDAR.png"/>
+							</p:commandLink>
+							<p:commandLink action="cancelar" immediate="true">
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				<h:outputStylesheet>
+					.topAlign{
+						width:200px;
+					}
+					.topAlign2{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

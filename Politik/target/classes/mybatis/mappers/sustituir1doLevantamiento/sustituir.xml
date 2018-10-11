@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="sustituir">
+	<select id="secciones1" resultType="Integer">
+		select id_seccion
+		from catalogos.secciones
+		where id_entidad = 15 and id_seccion between 1 and 1000
+		order by id_seccion
+	</select>
+	<select id="secciones2" resultType="Integer">
+		select id_seccion
+		from catalogos.secciones
+		where id_entidad = 15 and id_seccion between 1001 and 2000
+		order by id_seccion
+	</select>
+	<select id="secciones3" resultType="Integer">
+		select id_seccion
+		from catalogos.secciones
+		where id_entidad = 15 and id_seccion between 2001 and 3000
+		order by id_seccion
+	</select>
+	<select id="secciones4" resultType="Integer">
+		select id_seccion
+		from catalogos.secciones
+		where id_entidad = 15 and id_seccion between 3001 and 4000
+		order by id_seccion
+	</select>
+	<select id="secciones5" resultType="Integer">
+		select id_seccion
+		from catalogos.secciones
+		where id_entidad = 15 and id_seccion between 4001 and 5000
+		order by id_seccion
+	</select>
+	<select id="secciones6" resultType="Integer">
+		select id_seccion
+		from catalogos.secciones
+		where id_entidad = 15 and id_seccion between 5001 and 6000
+		order by id_seccion
+	</select>
+	<select id="secciones7" resultType="Integer">
+		select id_seccion
+		from catalogos.secciones
+		where id_entidad = 15 and id_seccion between 6001 and 7000
+		order by id_seccion
+	</select>
+	
+	<select id="municipios" resultType="Integer">
+		select id_municipio
+		from catalogos.municipios
+		where id_entidad = 15
+		order by id_municipio
+	</select>
+
+	<select id="porSustituir" parameterType="_int" resultType="hashmap">
+		select id_interno
+		from sujetos_sociales.encuesta_edomex_sustituida a
+		left join sujetos_sociales.e_edomex_sustituida b on (a.id_interno = b.id_contacto::integer)
+		where dup_1er_lev and enc_2do_lev and calificacion in ('A favor', 'Indeciso a favor') and pop = false
+		--where dup_1er_lev and enc_2do_lev and calificacion in ('Indeciso') and pop = false
+		and seccion = #{value}
+	</select>
+	
+	<select id="paraSustituir" parameterType="_int" resultType="hashmap">
+		select id_interno
+		from sujetos_sociales.encuesta_edomex_sustituida a
+		where dup_1er_lev = false and enc_2do_lev = false and push = false 
+		and seccion = #{value}
+		order by random()
+	</select>
+	
+	<update id="push" parameterType="hashmap">
+		update sujetos_sociales.encuesta_edomex_sustituida
+		set push = true
+		where id_interno = #{id_interno}
+	</update>
+	
+	<update id="pop1" parameterType="hashmap">
+		update sujetos_sociales.encuesta_edomex_sustituida
+		set id_interno_sustituido = #{id_interno_sustituido}, pop = true
+		where id_interno = #{id_interno}
+	</update>
+	
+	<update id="pop2" parameterType="hashmap">
+		update sujetos_sociales.e_edomex_sustituida
+		set id_contacto_sustituido = #{id_contacto_sustituido}
+		where id_contacto = #{id_contacto}
+	</update>
+</mapper>

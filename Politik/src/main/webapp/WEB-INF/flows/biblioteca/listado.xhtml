@@ -1,0 +1,135 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+	<h:outputStylesheet name="/resources/spark-layout/css/custom.css"
+		library="css" />
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel id="pnBtc" header="Biblioteca">
+						
+						<p:toolbar>
+							<f:facet name="left">
+								<p:commandLink  action="volver"  update="@form" >
+									<p:graphicImage value="/resources/botones/REGRESAR.png" />
+								</p:commandLink>
+            					<p:commandLink action="agregar">
+									<p:graphicImage value="/resources/botones/SUBIR.png" />
+								</p:commandLink>
+								<p:commandLink action="nuevaC"  onclick="PF('dlg3').show();" >
+									<p:graphicImage value="/resources/botones/NUEVA CARPETA.png" />
+								</p:commandLink>
+<!-- 								<p:commandButton action="volver" icon="fa fa-mail-reply" -->
+<!-- 									value="Volver" update="@form" /> -->
+<!-- 								<p:commandButton action="agregar" value="Subir" -->
+<!-- 									icon="fa fa-upload" /> -->
+<!-- 								<p:commandButton action="nuevaC" value="Nueva Carpeta" -->
+<!-- 									icon="fa fa-folder-o" onclick="PF('dlg3').show();" /> -->
+							</f:facet>
+						</p:toolbar>
+						<p:spacer height="20" />
+
+
+						<p:dataTable id="tablaBiblioteca"
+							value="${contenidoCarpeta.listado}" var="fila"
+							rowKey="${fila.id}" selectionMode="single"
+							selection="${contenidoCarpeta.seleccionado}"
+							 reflow="true">
+							
+							<f:facet name="header">
+								<p:outputLabel value="INICIO: "/><p:inputText id="inInicio" value="${rutaActual}" style="width:80%;">
+									<p:tooltip for="inInicio" value="Para navegar entre carpetas, utilice esta herramienta."/>
+								</p:inputText>
+								<p:commandLink action="recargarNavegacion" update="@form">
+									<p:graphicImage value="/resources/botones/IR.png" />
+								</p:commandLink>
+<!-- 								<p:commandButton value="ir" action="recargarNavegacion" update="@form"/> -->
+							</f:facet>
+							
+							
+							<p:ajax event="rowDblselect"
+								disabled="${fila.archivo.isDirectory()==false?true:false}"
+								onstart="comandoNiveles()" />
+							<p:column headerText="Archivo" sortBy="${fila.archivo}"
+								width="50%">
+								<p:graphicImage
+									value="${fila.archivo.isDirectory()==true?'/resources/spark-layout/images/folder-close-gray.svg':'/resources/spark-layout/images/info.svg'}"
+									width="20px" height="20px" />
+							${fila.archivo.getName()}</p:column>
+							<p:column headerText="Tipo"
+								sortBy="${fila.archivo.isDirectory()==true?'Directorio':'Archivo'}"
+								width="20%">${fila.archivo.isDirectory()==true?"Directorio":"Archivo"}</p:column>
+							<p:column headerText="Tamanio" sortBy="${fila.archivo.length()}"
+								width="20%">
+								<p:outputLabel
+									value="${fila.archivo.length()==0?'':fila.archivo.length()}">
+									<f:convertNumber type="number" groupingUsed="true"
+										minFractionDigits="0" pattern="#000,000" />
+								</p:outputLabel>
+								<p:outputLabel value="${fila.archivo.length()==0?'':' Bytes'}" />
+							</p:column>
+
+							<p:column headerText="Opciones" width="20%">
+
+								<p:commandLink action="descargar"
+									rendered="#{fila.archivo.isFile()==true}"
+									target="descargaArchivo"
+									oncomplete="window.open('#{request.contextPath}/app/descargaArchivo.saga','excelReport');"
+									ajax="false">
+
+									<p:graphicImage
+										value="/resources/spark-layout/images/descargar.png"
+										rendered="#{fila.archivo.isFile()==true}" />
+								</p:commandLink>
+
+							</p:column>
+
+
+						</p:dataTable>
+						<p:remoteCommand name="comandoNiveles" action="recargar"
+							 update="@form" />
+						<p:commandLink action="siguiente" rendered="${flag==true?true:false}" >
+								<p:graphicImage value="/resources/botones/SIGUIENTE.png" />
+						</p:commandLink>
+<!-- 						<p:commandButton action="siguiente" value="Siguiente" rendered="${flag==true?true:false}" /> -->
+
+
+						<!-- 					Dialogo para crear nueva carpeta -->
+						<p:dialog header="Nueva Carpeta" widgetVar="dlg3"
+							showEffect="explode" hideEffect="bounce" modal="true"
+							height="50%">
+							<p:messages autoUpdate="true"/>
+							<p:panelGrid columns="2">
+								<p:outputLabel value="Nombre:" />
+								<p:inputText value="${nombreFolder}"
+									validatorMessage="No se permiten caracteres especiales">
+									<f:validateRegex pattern="^[a-zA-Z0-9]+$" />
+								</p:inputText>
+								<p:commandLink action="crearCarpeta"
+									oncomplete="PF('dlg3').hide();" update="@form" >
+									<p:graphicImage value="/resources/botones/CREAR.png" />
+								</p:commandLink>
+            					<p:commandLink onclick="PF('dlg3').hide();" >
+									<p:graphicImage value="/resources/botones/SALIR.png" />
+								</p:commandLink>
+<!-- 								<p:commandButton value="Crear" action="crearCarpeta" -->
+<!-- 									oncomplete="PF('dlg3').hide();" update="@form" /> -->
+<!-- 								<p:commandButton type="button" value="Salir" -->
+<!-- 									onclick="PF('dlg3').hide();" /> -->
+							</p:panelGrid>
+						</p:dialog>
+
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

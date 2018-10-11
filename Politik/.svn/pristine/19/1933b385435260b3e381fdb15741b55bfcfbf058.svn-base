@@ -1,0 +1,62 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Agregar">
+					<p:panelGrid columns="2">
+					<p:outputLabel value="Tabla:"/>
+					<p:outputLabel value="${tablaSeleccionada.mapeoImportacion.tablaSeleccionada!=null?tablaSeleccionada.mapeoImportacion.tablaSeleccionada.particionada?tablaSeleccionada.mapeoImportacion.tablaSeleccionada.tabla:'':''}${tablaSeleccionada.mapeoImportacion.tablaSeleccionada!=null?tablaSeleccionada.mapeoImportacion.tablaSeleccionada.particionada?'_':'':''}${tablaSeleccionada.mapeoImportacion.tablaSeleccionada!=null?tablaSeleccionada.mapeoImportacion.tablaSeleccionada.particionada?tablaSeleccionada.mapeoImportacion.tablaParticionSeleccionada.particion:tablaSeleccionada.mapeoImportacion.tablaSeleccionada.tabla:tablaSeleccionada.mapeoImportacion.nombreTablaImportacion}"/>
+					<p:outputLabel value="Nombre"/>
+					<p:inputTextarea value="${nuevo.nombre}"  cols="30" rows="8" required="true"/>
+					<p:outputLabel value="Objeto"/>
+					<p:selectOneMenu value="${nuevo.objeto}" converter="ObjectConverter"  style="width:250px">
+					<f:selectItems value="${tiposObjetos}" var="lista" itemLabel="${lista.nombre}" itemValue="${lista}"/>
+					</p:selectOneMenu>
+					<p:outputLabel value="Tipo"/>
+					<p:selectOneMenu value="${nuevo.tipo}" converter="ObjectConverter" style="width:250px">
+					<f:selectItems value="${tiposMatch}" var="lista" itemLabel="${lista.nombre}" itemValue="${lista}"/>
+					</p:selectOneMenu>
+					</p:panelGrid>
+					<f:facet name="footer">
+					<p:commandLink title="Guardar" action="guardar">
+					<p:graphicImage value="/resources/botones/GUARDAR.png"/>
+					</p:commandLink>
+					<p:commandLink title="Cancelar" action="cancelar">
+					<p:graphicImage value="/resources/botones/CANCELAR.png"/>
+					</p:commandLink>
+					</f:facet>
+					</p:panel>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.columna1{
+						vertical-align: top;
+						width: 415px;
+					}
+					
+					.columna2{
+						vertical-align: top;
+					}
+					
+					.ui-datatable-header{
+						text-align: right !important;
+					}
+					
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

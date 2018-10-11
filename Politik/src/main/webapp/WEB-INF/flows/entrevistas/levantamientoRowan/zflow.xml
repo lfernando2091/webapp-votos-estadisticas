@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	<secured attributes="ROLE_ENTREVISTA_LEVANTAMIENTO_ROWAN" />
+	<view-state id="buscar">
+		<on-entry>
+			<set name="viewScope.folioBusqueda" value="''"/>
+			
+		<set name="flowScope.d" value="''"/>
+		</on-entry>
+		<transition on="buscar" to="capturaEncuesta">
+			<evaluate
+				expression="LevantamientoRowanCapturaC.buscarId(flowRequestContext, viewScope.folioBusqueda)" />
+		</transition>
+		<transition on="noEncuestado" to="noEncuestado">
+			<evaluate
+				expression="LevantamientoRowanCapturaC.buscarId(flowRequestContext, viewScope.folioBusqueda)" />
+		</transition>
+		<transition on="mandarDuplicado" to="capturaEncuesta">
+			<evaluate expression="LevantamientoRowanCapturaC.buscaInterno(flowRequestContext, flowScope.d)" />
+		</transition>
+	</view-state>
+
+	<view-state id="capturaEncuesta">
+		<on-entry>
+			<set name="viewScope.modeloSiNoNsNc" value="DominiosModelosC.modeloSiNoNsNc()" />
+			<set name="viewScope.modeloHorarios" value="DominiosModelosC.modeloHorarios()" />
+			<set name="viewScope.modeloCandidatos" value="DominiosModelosC.modeloCandidatosEdomex()" />
+			<evaluate expression="DominiosModelosC.modeloResultadoEncuesta()"
+				result="viewScope.modeloResultadoEncuesta" />
+				<evaluate expression="LevantamientoRowanCapturaC.modeloEntrevistadores()"
+				result="viewScope.modeloEntrevistadores" />
+			<set name="viewScope.modeloGeneros" value="DominiosModelosC.modeloGenero()" />
+		</on-entry>
+		<transition on="insertar" to="fin">
+			<evaluate expression="LevantamientoRowanCapturaC.guardar(flowRequestContext)" />
+		</transition>
+		<transition on="actualizar" to="fin">
+			<evaluate expression="LevantamientoRowanCapturaC.actualizar(flowRequestContext)" />
+		</transition>
+		<transition on="salir" to="fin" />
+	</view-state>
+	<view-state id="noEncuestado">
+		<on-entry>
+			<set name="viewScope.modeloGeneros" value="DominiosModelosC.modeloGenero()" />
+			<set name="viewScope.modeloResultadoEncuestaNo" value="DominiosModelosC.modeloResultadoEncuestaNo()" />
+			<evaluate expression="LevantamientoRowanCapturaC.modeloEntrevistadores()"
+				result="viewScope.modeloEntrevistadores" />
+		</on-entry>
+		<transition on="guardar" to="fin">
+			<evaluate expression="LevantamientoRowanCapturaC.guardar(flowRequestContext)" />
+		</transition>
+		<transition on="actualizar" to="fin">
+			<evaluate expression="LevantamientoRowanCapturaC.actualizar(flowRequestContext)" />
+		</transition>
+		<transition on="salir" to="fin" />
+	</view-state>
+	<end-state id="fin" />
+
+</flow>

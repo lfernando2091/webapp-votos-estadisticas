@@ -1,0 +1,132 @@
+package com.saganet.politik.components.diaD;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.RolEO;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.diaD.MovilizadorEO;
+import com.saganet.politik.database.diaD.RegistroMovilizadorEO;
+import com.saganet.politik.dominios.NivelesDO;
+
+
+@Component("RegistroMovilizadoresC")
+public class RegistroUsuarioMovilizadoresC {
+	@Autowired
+	SqlSession sqlSession;
+
+	private static final Logger logger = LoggerFactory.getLogger(RegistroUsuarioMovilizadoresC.class);
+
+	public MovilizadorEO nuevo(){
+		return new MovilizadorEO();
+	}
+	
+	
+	public String validarDatos(RequestContext context, MovilizadorEO movilizador1) {
+		HashMap<String, Object> flowScope, parametros;
+		RegistroMovilizadorEO registro;
+		MovilizadorEO movilizador;
+		registro=new RegistroMovilizadorEO();
+		flowScope = (HashMap<String, Object>) context.getFlowScope().asMap();
+		logger.debug("flowScope ENTRADA: {}",flowScope);
+		logger.debug("municipio ENTRADA: {}",movilizador1);
+		movilizador = (MovilizadorEO) flowScope.get("movilizador1");
+		parametros = new HashMap<>();
+		logger.debug("movilizador entrada: {}",movilizador);
+		parametros.put("codigoAlfanumerico", movilizador.getCodigoAlfanumerico());
+		registro=sqlSession.selectOne("diaD.registroUsuariosMovilizadores.validarCodigo",parametros);
+		
+		if(registro != null){
+			movilizador.setIdRegion(registro.getRegion());
+			movilizador.setIdMunicipio(registro.getIdMunicipio());
+			movilizador.setPrograma(registro.getPrograma());
+			registrar(movilizador);
+			logger.debug("movilizador a registrar: {}",movilizador);
+			return "sucess";
+		}else{
+			new FacesMessage(FacesMessage.SEVERITY_ERROR, "No se encontró información", "Contact admin.");
+			return "error";
+		}
+	}
+
+	
+	public UsuarioEO registrar(MovilizadorEO movilizador) {
+		UsuarioEO usuario;
+		List<RolEO> listado;
+		RolEO rol;
+		usuario = new UsuarioEO();
+		listado = new ArrayList<>();
+		rol = new RolEO();
+		rol.setRol("ROLE_MOVILIZACION_CAPTURISTA");
+		listado.add(rol);
+		rol = new RolEO();
+		rol.setRol("ROLE_USER");
+		listado.add(rol);
+
+		usuario.setNick("mo_" + sqlSession.selectOne("diaD.capturaMovilizador.contadorMovilizadores"));
+		usuario.setNombre(movilizador.getNombre() + " " + movilizador.getPrimerApellido() + " " + movilizador.getSegundoApellido());
+		usuario.setCelular(movilizador.getTelefono());
+		usuario.setMail(movilizador.getEmail());
+		usuario.setPw(clave());
+		usuario.setHabilitado(true);
+		usuario.setNivel(NivelesDO.NACIONAL);
+		usuario.setRoles(listado);
+		
+		logger.debug("Encuesta guardar: {}", "entro");
+		sqlSession.insert("diaD.capturaMovilizador.insertar", movilizador);
+		
+		
+		sqlSession.insert("administracion.usuarios.insertar", usuario);
+		sqlSession.insert("administracion.roles.insertarAutorizacionesPorUsuario", usuario);
+		
+		// registrar en tabla de MODILIZADORES
+		movilizador.setNombre(movilizador.getNombre());
+		movilizador.setPrimerApellido(movilizador.getPrimerApellido());
+		movilizador.setSegundoApellido( movilizador.getSegundoApellido());
+		movilizador.setEmail(movilizador.getEmail());
+		movilizador.setTelefono(movilizador.getTelefono());
+		movilizador.setIdMunicipio(movilizador.getIdMunicipio());
+		movilizador.setPrograma(movilizador.getPrograma());
+
+		movilizador.setNick(usuario.getNick());
+		logger.debug("movilizador: {}", movilizador);
+		sqlSession.insert("diaD.capturaMovilizador.insertarMovilizador", movilizador);
+	
+		
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage(FacesMessage.SEVERITY_INFO,
+						"¡Registro Correcto!. Los datos de acceso se muestran a continuación, favor de conservelos en un lugar seguro.",
+						"Ok"));
+		return usuario;
+	}
+
+	public String clave() {
+		String pass = "";
+		char[] caracteres;
+		caracteres = new char[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+				'H', 'J', 'K', 'M', 'N',  'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+		for (int i = 0; i < 9; i++) {
+			pass += caracteres[new Random().nextInt(62)];
+		}
+		return pass;
+	}
+
+	public UsuarioEO getUsuario() {
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+}

@@ -1,0 +1,29 @@
+package com.saganet.politik.database.biblioteca;
+
+import java.util.List;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.encuestas.admin.PreguntaEO;
+
+
+
+
+@Component("ParametrosEstadisticas")
+@Scope(value="session", proxyMode=ScopedProxyMode.TARGET_CLASS)
+public class ParametrosEstadisticas {
+	
+	private List<PreguntaEO> preguntasEncuesta;
+
+	public List<PreguntaEO> getPreguntasEncuesta() {
+		return preguntasEncuesta;
+	}
+
+	public void setPreguntasEncuesta(List<PreguntaEO> preguntasEncuesta) {
+		this.preguntasEncuesta = preguntasEncuesta;
+	}
+	
+	
+}

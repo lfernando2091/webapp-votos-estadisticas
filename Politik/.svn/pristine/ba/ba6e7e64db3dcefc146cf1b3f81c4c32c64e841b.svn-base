@@ -1,0 +1,45 @@
+package com.saganet.politik.database.encuestas.admin;
+
+import java.util.HashMap;
+import java.util.List;
+
+public class ReglaRE {
+
+	private Integer id;
+	private List<ValoresRE> valoresRegla;
+	private HashMap<String, Object> parametros;
+	private String fechaActualizacion;
+	
+	
+	@Override
+	public String toString() {
+		return "ReglaRE [id=" + id + ", valoresRegla=" + valoresRegla + ", parametros=" + parametros
+				+ ", fechaActualizacion=" + fechaActualizacion + "]";
+	}
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public List<ValoresRE> getValoresRegla() {
+		return valoresRegla;
+	}
+	public void setValoresRegla(List<ValoresRE> valoresRegla) {
+		this.valoresRegla = valoresRegla;
+	}
+	public HashMap<String, Object> getParametros() {
+		return parametros;
+	}
+	public void setParametros(HashMap<String, Object> parametros) {
+		this.parametros = parametros;
+	}
+	public String getFechaActualizacion() {
+		return fechaActualizacion;
+	}
+	public void setFechaActualizacion(String fechaActualizacion) {
+		this.fechaActualizacion = fechaActualizacion;
+	}
+	
+	
+}

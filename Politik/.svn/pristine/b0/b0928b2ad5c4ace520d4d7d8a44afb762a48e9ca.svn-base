@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+	<on-entry>
+	<evaluate expression="MatchC.modelo()" result="viewScope.modeloMatch"/>
+	</on-entry>
+	<transition on="seleccionarTabla" to="seleccionarTabla"/>
+	</view-state>
+	
+	<subflow-state id="seleccionarTabla" subflow="importaciones">
+	<input name="flag" value="true"/>
+	<transition on="end" to="agregar">
+			<set name="requestScope.tablaSeleccionada" value="conversationScope.tablaSeleccionada"/>
+		</transition>
+	</subflow-state>
+
+<view-state id="agregar">
+<on-entry>
+<set name="viewScope.tablaSeleccionada" value="requestScope.tablaSeleccionada"/>
+<evaluate expression="MatchC.nuevo(viewScope.tablaSeleccionada.mapeoImportacion.tablaSeleccionada)" result="viewScope.nuevo"/>
+<evaluate expression="MatchC.tiposMatch()" result="viewScope.tiposMatch"/>
+<evaluate expression="MatchC.tiposObjetos()" result="viewScope.tiposObjetos"/>
+</on-entry>
+<transition on="guardar">
+<evaluate expression="MatchC.guardar(viewScope.nuevo)"/>
+</transition>
+<transition on="cancelar" to="listado"/>
+</view-state>
+</flow>

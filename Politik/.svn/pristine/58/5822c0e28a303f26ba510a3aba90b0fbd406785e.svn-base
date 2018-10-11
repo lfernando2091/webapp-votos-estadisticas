@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="match.MatchPersonasFuente">
+	<cache/>
+	
+	<resultMap type="MatchEO" id="match">
+		<id column="MatchEO_id" property="id" javaType="Integer"/>
+		
+		<result column="MatchEO_nombre" property="nombre" javaType="String"/>
+		<result column="MatchEO_objeto" property="objeto" javaType="String"/>
+		<result column="MatchEO_tipo" property="tipo" javaType="String"/>
+		<result column="MatchEO_estatus" property="estatus" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			MatchEO.pkey			MatchEO_id, 
+			MatchEO.nombre			MatchEO_nombre, 
+			MatchEO.objeto			MatchEO_objeto, 
+			MatchEO.tipo			MatchEO_tipo, 
+			MatchEO.estatus			MatchEO_estatus
+  		FROM match.match MatchEO
+	</sql>
+	
+	<select id="listado" resultMap="match">
+		<include refid="query"/>
+		ORDER BY MatchEO.pkey DESC
+	</select>
+	
+</mapper>

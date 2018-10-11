@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.tiposSeccion">
+	<cache />
+	
+	<resultMap type="TipoSeccionEO" id="tipoSeccion">
+		<id column="TipoSeccionEO_id" property="id" javaType="Integer"/>
+		<result column="TipoSeccionEO_nombre" property="nombre" javaType="String"/>
+	</resultMap>
+	
+	<select id="listado" resultMap="tipoSeccion">
+		select 
+			TipoSeccionEO.id_tipo_seccion	TipoSeccionEO_id,
+			TipoSeccionEO.tipo_seccion 		TipoSeccionEO_nombre
+		from catalogos.tipos_secciones TipoSeccionEO
+		order by id_tipo_seccion
+	</select>
+</mapper>

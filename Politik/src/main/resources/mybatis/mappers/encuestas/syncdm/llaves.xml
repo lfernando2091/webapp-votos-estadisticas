@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.syncdm.llaves">
+
+<select id="municipiosImjuve" parameterType="String" resultType="hashmap">
+SELECT pkey, id_entidad, id_municipio, municipio, llave, id_municipio_inegi
+  FROM catalogos.municipios 
+  where llave =#{value}
+
+</select>
+</mapper>

@@ -1,0 +1,272 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:messages autoUpdate="true" />
+					<p:panel header="ENTREVISTA">
+						<p:panelGrid layout="grid" columns="1">
+							<p:separator/>	
+							<p:outputLabel value="Nombre : ${contacto.nombre} ${contacto.primerApellido}  " styleClass="negritas" />
+							<p:outputLabel value="Número telefonico : ${contacto.telefono1}" styleClass="negritas" />
+							<p:separator/>	
+
+							<p:outputLabel value="1. ¿Cuál considera es el principal problema de Hidalgo hoy en día?" styleClass="negritas"/> 
+							<p:selectOneRadio value="${nuevo.p_1}" style="width: 300px" layout="grid" columns="1" >
+								<f:selectItem itemLabel="Inseguridad Pública" itemValue="Inseguridad Publica" />
+            					<f:selectItem itemLabel="Economía" itemValue="Economia" />
+            					<f:selectItem itemLabel="Desempleo" itemValue="Desempleo" />
+            					<f:selectItem itemLabel="Pobreza" itemValue="Pobreza" />
+            					<f:selectItem itemLabel="Corrupción" itemValue="Corrupcion" />
+            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+            					<f:selectItem itemLabel="Otro" itemValue="Otro" />
+							</p:selectOneRadio>
+							<p:outputLabel id="otroEtiqueta" value="Otro: " /> 
+							<p:inputText id="otroCombo" value= "${nuevo.p_1_1}" />
+							
+							<p:outputLabel value="2.¿Si usted tuviera una audiencia con el Gobernador Omar Fayad que le diría? (No mencionar respuestas) " styleClass="negritas"/>
+								<p:selectOneRadio value="${nuevo.p_2}" style="width: 300px" layout="grid" columns="1">
+									<f:selectItem itemLabel="Cumpla lo que prometió" itemValue="Cumpla lo que prometió" />
+	            					<f:selectItem itemLabel="Que trabaje" itemValue="Que trabaje" />
+	            					<f:selectItem itemLabel="Un cambio" itemValue="Un cambio" />
+	            					<f:selectItem itemLabel="Buen gobierno" itemValue="Buen gobierno" />
+	            					<f:selectItem itemLabel="Más apoyos" itemValue="Mas apoyos" />
+	            					<f:selectItem itemLabel="Más empleos" itemValue="Mas empleos" />
+	            					<f:selectItem itemLabel="Mejores sueldos" itemValue="Mejores sueldos" />
+	            					<f:selectItem itemLabel="Que disminuya la inseguridad" itemValue="Que disminuya la inseguridad" />
+	            					<f:selectItem itemLabel="Quitar corrupción" itemValue="Quitar corrupcion" />
+	            					<f:selectItem itemLabel="Servicios públicos" itemValue="Servicios publicos" />
+	            					<f:selectItem itemLabel="Más oportunidades" itemValue="Mas oportunidades" />
+	            					<f:selectItem itemLabel="Felicitarlo" itemValue="Felicitarlo" />
+	            					<f:selectItem itemLabel="Que le eche ganas" itemValue="Que le eche ganas" />
+	            					<f:selectItem itemLabel="Mayor educación" itemValue="Mayor educacion" />
+	            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+            						<f:selectItem itemLabel="Otro" itemValue="Otro" />
+								</p:selectOneRadio>
+							<p:outputLabel  value="Otro: " /> 
+							<p:inputText value= "${nuevo.p_2_1}" />
+				
+							<p:outputLabel value="3.- ¿Qué opinión tiene del Gobernador Omar Fayad Meneses?" styleClass="negritas" />
+							<p:selectOneRadio value="${nuevo.p_3}" style="width: 300px" layout="grid" columns="1">
+								<f:selectItem itemLabel="Muy buena" itemValue="Muy buena" />
+            					<f:selectItem itemLabel="Buena" itemValue="Buena" />
+            					<f:selectItem itemLabel="Regular" itemValue="Regular" />
+            					<f:selectItem itemLabel="Mala" itemValue="Mala" />
+            					<f:selectItem itemLabel="Muy Mala" itemValue="Muy Mala" />
+            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+							</p:selectOneRadio>
+							
+							<p:outputLabel value="4.- ¿Cree usted que con Omar Fayad a Hidalgo le irá?" styleClass="negritas"/>
+							<p:selectOneRadio value="${nuevo.p_4}" style="width: 300px" layout="grid" columns="1" >
+								<f:selectItem itemLabel="Mucho mejor" itemValue="Mucho mejor" />
+            					<f:selectItem itemLabel="Mejor" itemValue="Mejor" />
+            					<f:selectItem itemLabel="Igual" itemValue="Igual" />
+            					<f:selectItem itemLabel="Peor" itemValue="Peor" />
+            					<f:selectItem itemLabel="Mucho peor" itemValue="Mucho peor" />
+            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+							</p:selectOneRadio>
+							
+							<p:outputLabel	value="5.- ¿Qué opinión tiene de la designación de su gabinete, le parece? " styleClass="negritas"/>
+							<p:selectOneRadio value="${nuevo.p_5}" style="width: 300px" layout="grid" columns="1">
+								<f:selectItem itemLabel="Gente profesional y renovada" itemValue="Gente profesional y renovada" />
+            					<f:selectItem itemLabel="Un buen equipo de trabajo" itemValue="Un buen equipo de trabajo" />
+            					<f:selectItem itemLabel="Por lo menos, busco rostros nuevos" itemValue="Por lo menos, busco rostros nuevos" />
+            					<f:selectItem itemLabel="No puedo opinar mucho por el momento" itemValue="No puedo opinar mucho por el momento" />
+            					<f:selectItem itemLabel="No tengo conocimiento de ellos" itemValue="No tengo conocimiento de ellos" />
+            					<f:selectItem itemLabel="Es lo mismo de siempre" itemValue="Es lo mismo de siempre" />
+            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+            					<f:selectItem itemLabel="Otro" itemValue="Otro" />
+							</p:selectOneRadio>
+							<p:outputLabel  value="Otro: " /> 
+							<p:inputText value= "${nuevo.p_5_1}" />
+							
+							<p:outputLabel	value="6. ¿Le voy a leer a continuación algunas actividades que ha realizado el Gobernador Omar Fayad, me puede decir si está usted enterado y cree que beneficiará?" styleClass="negritas"/>
+								<p:panelGrid >
+									 <p:row>
+									 	<p:column>
+									 		<p:outputLabel value="Actividades recientes" styleClass="negritas"/>
+									 	</p:column>
+									 	<p:column>
+									 		<p:outputLabel value="¿Está entera? " styleClass="negritas"/>
+									 	</p:column>
+									 	<p:column>
+									 		<p:outputLabel value="Usted cree que beneficiará" styleClass="negritas"/>
+									 	</p:column>
+									 </p:row>
+									 <p:separator/>
+									 <p:row>
+									 	<p:column>
+									 		<p:outputLabel value="6.1 ¿Sabía que presentó la propuesta de reforma para modificar el nuevo Sistema de Justicia Penal?" styleClass="negritas"/>
+									 	</p:column>
+									 	<p:column>
+									 		<p:selectOneRadio value="${nuevo.p_6_1_1}" style="width: 300px" layout="grid" columns="1">
+												<f:selectItem itemLabel="Si" itemValue="Si" />
+												<f:selectItem itemLabel="No" itemValue="No" />
+				            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+											</p:selectOneRadio>
+									 	</p:column>
+									 	<p:column>
+									 		<p:selectOneRadio value="${nuevo.p_6_1_2}" style="width: 300px" layout="grid" columns="1" >
+												<f:selectItem itemLabel="Si" itemValue="Si" />
+												<f:selectItem itemLabel="No" itemValue="No" />
+				            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+											</p:selectOneRadio>
+									 	</p:column>
+									 </p:row>
+									 <p:separator/>
+									 <p:row>
+									 	<p:column>
+									 		<p:outputLabel value="6.2 ¿Sabía usted que está organizando la cumbre de presidentes municipales en Pachuca, para generar beneficios al estado y al país?" styleClass="negritas"/>
+									 	</p:column>
+									 	<p:column>
+									 		<p:selectOneRadio value="${nuevo.p_6_2_1}" style="width: 300px" layout="grid" columns="1" >
+												<f:selectItem itemLabel="Si" itemValue="Si" />
+												<f:selectItem itemLabel="No" itemValue="No" />
+				            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+											</p:selectOneRadio>
+									 	</p:column>
+									 	<p:column>
+									 		<p:selectOneRadio value="${nuevo.p_6_2_2}" style="width: 300px" layout="grid" columns="1">
+												<f:selectItem itemLabel="Si" itemValue="Si" />
+												<f:selectItem itemLabel="No" itemValue="No" />
+				            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+											</p:selectOneRadio>
+									 	</p:column>
+									 </p:row>
+									 <p:separator/>
+									 <p:row>
+									 	<p:column>
+									 		<p:outputLabel value="6.3 ¿Sabía que está quitando Notarías Públicas para evitar corrupción?" styleClass="negritas"/>
+									 	</p:column>
+									 	<p:column>
+									 		<p:selectOneRadio value="${nuevo.p_6_3_1}" style="width: 300px" layout="grid" columns="1">
+												<f:selectItem itemLabel="Si" itemValue="Si" />
+												<f:selectItem itemLabel="No" itemValue="No" />
+				            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+											</p:selectOneRadio>
+									 	</p:column>
+									 	<p:separator/>
+									 	<p:column>
+									 		<p:selectOneRadio value="${nuevo.p_6_3_2}" style="width: 300px" layout="grid" columns="1">
+												<f:selectItem itemLabel="Si" itemValue="Si" />
+												<f:selectItem itemLabel="No" itemValue="No" />
+				            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+											</p:selectOneRadio>
+									 	</p:column>
+									 </p:row>
+									 <p:separator/>
+									 <p:row>
+									 	<p:column>
+									 		<p:outputLabel value="6.4 ¿Sabía que solicitó crear la iniciativa de ley para cuidar la biodiversidad, con el propósito de mejorar el medio ambiente?" styleClass="negritas"/>
+									 	</p:column>
+									 	<p:column>
+									 		<p:selectOneRadio value="${nuevo.p_6_4_1}" style="width: 300px" layout="grid" columns="1">
+												<f:selectItem itemLabel="Si" itemValue="Si" />
+												<f:selectItem itemLabel="No" itemValue="No" />
+				            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+											</p:selectOneRadio>
+									 	</p:column>
+									 	<p:column>
+									 		<p:selectOneRadio value="${nuevo.p_6_4_2}" style="width: 300px" layout="grid" columns="1" >
+												<f:selectItem itemLabel="Si" itemValue="Si" />
+												<f:selectItem itemLabel="No" itemValue="No" />
+				            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+											</p:selectOneRadio>
+									 	</p:column>
+									 </p:row>
+									 <p:separator/>
+									 <p:row>
+									 	<p:column>
+									 		<p:outputLabel value="6.5 ¿Está enterado que abrió licitaciones de útiles escolares en el estado, para dar oportunidad de participar a los hidalguenses?" styleClass="negritas"/>
+									 	</p:column>
+									 	<p:column>
+									 		<p:selectOneRadio value="${nuevo.p_6_5_1}" style="width: 300px" layout="grid" columns="1" >
+												<f:selectItem itemLabel="Si" itemValue="Si" />
+												<f:selectItem itemLabel="No" itemValue="No" />
+				            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+											</p:selectOneRadio>
+									 	</p:column>
+									 	<p:column>
+									 		<p:selectOneRadio value="${nuevo.p_6_5_2}" style="width: 300px" layout="grid" columns="1">
+												<f:selectItem itemLabel="Si" itemValue="Si" />
+												<f:selectItem itemLabel="No" itemValue="No" />
+				            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+											</p:selectOneRadio>
+									 	</p:column>
+									 </p:row>
+								</p:panelGrid>
+								
+							<p:outputLabel value="7.- ¿Usted estaría dispuesto a unir esfuerzo para que con el nuevo Gobernador Omar Fayad Hidalgo crezca?" styleClass="negritas"/>
+								<p:selectOneRadio value="${nuevo.p_7}" style="width: 300px" layout="grid" columns="1" >
+									<f:selectItem itemLabel="Sí por supuesto, quiero que crezca Hidalgo" itemValue="Sí por supuesto, quiero que crezca Hidalgo" />
+	            					<f:selectItem itemLabel="Todo depende de cómo vaya trabajando" itemValue="Todo depende de cómo vaya trabajando" />
+	            					<f:selectItem itemLabel="No, no estoy de acuerdo con él" itemValue="No, no estoy de acuerdo con él" />
+	            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+								</p:selectOneRadio>
+							
+								
+							<p:outputLabel value="8.- ¿El cambio de Gobierno que representa Omar Fayad le genera a usted esperanza para mejorar su calidad de vida? " styleClass="negritas"/>
+								<p:selectOneRadio value="${nuevo.p_8}" style="width: 300px" layout="grid" columns="1" >
+									<f:selectItem itemLabel="Si" itemValue="Si" />
+									<f:selectItem itemLabel="No" itemValue="No" />
+	            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+								</p:selectOneRadio>
+							<p:outputLabel value="9 ¿Por qué no?  " />
+							<p:inputText value= "${nuevo.p_9}"/>
+							
+							<p:outputLabel 	value="10. ¿Qué consejo o sugerencia le darías al nuevo gobernador del Estado De Hidalgo Omar Fayad?  " styleClass="negritas"/>
+							<p:selectOneRadio value="${nuevo.p_10}" style="width: 300px" layout="grid" columns="1" >
+									<f:selectItem itemLabel="Que trabaje" itemValue="Que trabaje"/>
+									<f:selectItem itemLabel="Cumpla lo que promete" itemValue="Cumpla lo que promete" />
+	            					<f:selectItem itemLabel="Más y mejores empleos" itemValue="Más y mejores empleos" /> 
+	            					<f:selectItem itemLabel="Apoyo/Municipios/Jóvenes/Adultos mayores/Discapacitados" itemValue="Apoyo/Municipios/Jóvenes/Adultos mayores/Discapacitados" /> 
+	            					<f:selectItem itemLabel="Honestidad/Que sea leal" itemValue="Honestidad/Que sea leal" /> 
+	            					<f:selectItem itemLabel="Cero corrupción" itemValue="Cero corrupción" />
+	            					<f:selectItem itemLabel="Escuche a la gente" itemValue="Escuche a la gente" />
+	            					<f:selectItem itemLabel="Se acerque a la gente" itemValue="Se acerque a la gente" />
+	            					<f:selectItem itemLabel="Más seguridad" itemValue="Más seguridad" />
+	            					<f:selectItem itemLabel="Más atención al campo" itemValue="Más atención al campo" />
+	            					<f:selectItem itemLabel="Ns/Nc" itemValue="Ns/Nc" />
+	            					<f:selectItem itemLabel="Otro" itemValue="Otro" />
+								</p:selectOneRadio>
+							
+							<p:outputLabel  value="Otro: " /> 
+							<p:inputText value= "${nuevo.p_10_1}" />
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="guardar" icon="fa fa-save"/>
+							<p:commandButton value="Siguiente" action="siguiente" />
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" 	value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			} 
+			.ui-selectoneradio.ui-widget td {
+     border: 0 none !important;
+}
+.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+border: hidden;
+border-color: white;
+}
+.negritas{
+			font-weight: bold !important;
+			}
+		</h:outputStylesheet>
+
+		
+
+	</ui:define>
+
+</ui:composition>

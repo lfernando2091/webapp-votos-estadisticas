@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Elecciones" url="/app/catalogos/elecciones" />
+						<p:menuitem value="Detalle de Elección" />
+					</p:breadCrumb>
+					<p:panel header="Detalle de Elección">
+						<p:panelGrid columns="2">
+							<f:facet name="header">Elección</f:facet>
+							<p:outputLabel value="Ejercicio" />
+							<p:outputLabel value="${detalle.ejercicio}" />
+							<p:outputLabel value="Tipo" />
+							<p:outputLabel value="${detalle.tipo.nombre}" />
+							<p:outputLabel value="Representante" />
+							<p:outputLabel value="${detalle.representante.nombre}" />
+							<p:outputLabel value="Fecha de Jornada" />
+							<p:outputLabel value="${detalle.fechaJornada}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</p:outputLabel>
+							<p:outputLabel value="Descripción" />
+							<p:outputLabel value="${detalle.descripcion}" />
+						</p:panelGrid>
+						<p:separator />
+						<p:tabView>
+							<p:tab title="Territorios">
+								<p:dataTable value="${detalle.territorios}" var="fila"
+									paginator="true" paginatorPosition="bottom" rows="10"
+									paginatorAlwaysVisible="false">
+									<f:facet name="header">Territorios</f:facet>
+									<p:column headerText="Clave"
+										rendered="${detalle.representante.nivel == 'ENTIDAD'}"
+										width="40">${fila.id}</p:column>
+									<p:column headerText="Clave"
+										rendered="${detalle.representante.nivel != 'ENTIDAD'}"
+										width="40">${fila.llave}</p:column>
+									<p:column headerText="Entidad"
+										rendered="${detalle.representante.nivel != 'ENTIDAD'}">${fila.entidad.nombre}</p:column>
+									<p:column headerText="Nombre">${fila.nombre}</p:column>
+								</p:dataTable>
+							</p:tab>
+							<p:tab title="Partidos">
+								<p:dataTable value="${detalle.partidos}" var="fila"
+									paginator="true" paginatorPosition="bottom" rows="10"
+									paginatorAlwaysVisible="false">
+									<f:facet name="header">Partidos Políticos</f:facet>
+									<p:column headerText="Siglas">${fila.siglas}</p:column>
+									<p:column headerText="Nombre">${fila.nombre}</p:column>
+								</p:dataTable>
+							</p:tab>
+							<p:tab title="Estructuras">
+								<p:dataTable value="${modeloEstructuras.listado}" var="fila"
+									rowKey="${fila.id}"
+									selection="${modeloEstructuras.seleccionado}"
+									selectionMode="single" paginator="true" rows="15"
+									paginatorAlwaysVisible="false" paginatorPosition="bottom">
+									<p:column headerText="Nivel" width="120">${fila.nivel.nombre}</p:column>
+									<p:column headerText="Ámbito" width="120">${fila.ambito.nombre}</p:column>
+									<p:column headerText="Nombre" width="250">${fila.nombre}</p:column>
+									<p:column headerText="Observaciones">${fila.observaciones}</p:column>
+									<f:facet name="footer">
+										<p:commandLink oncomplete="PF('dialogoDiagramaWV').show();"
+											update="${p:component('diagrama')} ${p:component('dialogoDiagrama')}" disabled="${modeloEstructuras.seleccionado == null}">
+												<p:graphicImage value="/resources/botones/VER DIAGRAMA.png" />
+										</p:commandLink>
+										<p:commandLink action="asignarEstructura">
+												<p:graphicImage value="/resources/botones/ASIGNAR ESTRUCTURA.png" />
+										</p:commandLink>
+<!-- 										<p:commandButton value="Ver Diagrama" -->
+<!-- 											oncomplete="PF('dialogoDiagramaWV').show();" -->
+<!-- 											update="${p:component('diagrama')} ${p:component('dialogoDiagrama')}" disabled="${modeloEstructuras.seleccionado == null}" /> -->
+<!-- 										<p:commandButton value="Asignar Estructura" -->
+<!-- 											action="asignarEstructura" /> -->
+									</f:facet>
+								</p:dataTable>
+							</p:tab>
+							<p:tab title="Candidatos">
+								<p:dataTable value="${detalle.candidatos}" var="fila"
+									paginator="true" paginatorPosition="bottom" rows="10"
+									paginatorAlwaysVisible="false">
+									<p:column headerText="Territorio">${fila.territorio != null ? fila.territorio.nombre : ''}</p:column>
+									<p:column headerText="Partido">${fila.partido.nombre}</p:column>
+									<p:column headerText="Nombre">${fila.persona.primerApellido} ${fila.persona.segundoApellido} ${fila.persona.nombre}</p:column>
+									<f:facet name="footer">
+										<p:commandLink action="agregarCandidato">
+												<p:graphicImage value="/resources/botones/AGREGAR CANDIDATO.png" />
+										</p:commandLink>
+<!-- 										<p:commandButton value="Agregar Candidato" action="agregarCandidato" /> -->
+									</f:facet>
+								</p:dataTable>
+							</p:tab>
+							<p:tab title="Programas de Promoción">
+								<p:dataTable id="tablaProgramasPromocion" value="${detalle.programasPromocion}" var="fila"
+									paginator="true" paginatorPosition="bottom" rows="10"
+									paginatorAlwaysVisible="false">
+									<p:column headerText="Programa">${fila.nombre}</p:column>
+									<f:facet name="footer">
+										<p:commandLink onstart="PF('dialogoProgramaPromocionWV').show();">
+												<p:graphicImage value="/resources/botones/AGREGAR PROGRAMAS.png" />
+										</p:commandLink>
+<!-- 										<p:commandButton value="Agregar Programa" onstart="PF('dialogoProgramaPromocionWV').show();" /> -->
+									</f:facet>
+								</p:dataTable>
+							</p:tab>
+						</p:tabView>
+						<f:facet name="footer">
+							<p:commandLink action="regresar">
+									<p:graphicImage value="/resources/botones/REGRESAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Regresar" action="regresar" /> -->
+						</f:facet>
+					</p:panel>
+
+					<p:dialog id="dialogoDiagrama" widgetVar="dialogoDiagramaWV"
+						visible="false"
+						header="Diagrama: ${modeloEstructuras.seleccionado.nombre}"
+						modal="true" width="600" closeOnEscape="true">
+						<p:diagram id="diagrama"
+							value="${modeloEstructuras.seleccionado.modelo}"
+							style="height:30em;" styleClass="ui-widget-content" var="el">
+							<f:facet name="element">
+								<p:outputLabel value="#{el.nombre}" />
+							</f:facet>
+						</p:diagram>
+					</p:dialog>
+
+					<p:dialog id="dialogoProgramaPromocion"
+						widgetVar="dialogoProgramaPromocionWV"
+						header="Agregar Programa de Promoción" visible="false"
+						modal="true" closable="false">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Programa" />
+							<p:selectOneMenu value="${modeloProgramasPromocion.seleccionado}"
+								converter="ObjectConverter" style="width: 300px;" filter="true"
+								filterMatchMode="contains">
+								<f:selectItems value="${modeloProgramasPromocion.listado}"
+									var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandLink action="agregarProgramaPromocion"
+								onsuccess="PF('dialogoProgramaPromocionWV').hide();"
+								update="#{p:component('tablaProgramasPromocion')}">
+									<p:graphicImage value="/resources/botones/AGREGAR.png" />
+							</p:commandLink>
+							<p:commandLink onstart="PF('dialogoProgramaPromocionWV').hide();">
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Agregar" -->
+<!-- 								action="agregarProgramaPromocion" -->
+<!-- 								onsuccess="PF('dialogoProgramaPromocionWV').hide();" -->
+<!-- 								update="#{p:component('tablaProgramasPromocion')}" /> -->
+<!-- 							<p:commandButton value="Cancelar" onstart="PF('dialogoProgramaPromocionWV').hide();" /> -->
+						</f:facet>
+					</p:dialog>
+
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+						}
+						
+						.ui-diagram-element {
+					        border:2px solid #999999;
+					        padding-left: 3px;    
+					        padding-right: 5px;
+					        line-height:3em;
+					        text-align: center;
+					    }
+					    
+					    .ui-datatable-footer{
+							text-align: left !important;
+						}
+					</h:outputStylesheet>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

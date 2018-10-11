@@ -1,0 +1,84 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Eventos" action="regresarlistado" />
+						<p:menuitem value="Programas"  action="regresar"/>
+						<p:menuitem value="Presidium" action="regresarDetalle"/>
+						<p:menuitem value="Agregar Miembro Presidium" />
+					</p:breadCrumb>
+					<p:panel header="Agregar Miembro Presidium">
+						<p:panelGrid columns="2">
+							<p:column>
+								Nombre Evento:
+							</p:column>
+							<p:column>
+								${evento.nombre}
+							</p:column>
+							<p:column>
+								Descripción Evento
+							</p:column>
+							<p:column>
+								${evento.descripcionLogistica}
+							</p:column>
+							<p:column>
+								Persona
+							</p:column>
+							<p:column>
+								${miembroPresidium.persona.nombre} ${miembroPresidium.persona.primerApellido} ${miembroPresidium.persona.segundoApellido}
+							</p:column>
+						</p:panelGrid>
+						<p:separator/>
+						<p:panelGrid columns="2" id="panelGrid">
+							<p:column>
+									Dependencia :
+							</p:column>
+							<p:column>
+								<p:selectOneMenu id="comboDependencias" value="${miembroPresidium.dependencia}" converter="ObjectConverter" style="width:300px">
+				            		<f:selectItems value="${tablaDependencias.listado}" var="fila" itemLabel="${fila.dependencia}" itemValue="${fila}" />		
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>
+									Cargo :
+							</p:column>
+							<p:column>
+									<p:inputText value="${miembroPresidium.cargo}"/>
+							</p:column>
+							<p:column>
+									¿ Presidio? :
+							</p:column>
+							<p:column>
+								<p:inputSwitch value="${miembroPresidium.presidio}" onLabel="Si" offLabel="No"/>
+							</p:column>
+							
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandLink action="regresar">
+										<p:graphicImage value="/resources/botones/CANCELAR.png"/>
+							</p:commandLink>
+							<p:commandLink action="volverBuscar">
+										<p:graphicImage value="/resources/botones/REGRESAR.png"/>
+							</p:commandLink>
+							<p:commandLink action="guardar">
+										<p:graphicImage value="/resources/botones/GUARDAR.png"/>
+							</p:commandLink>
+						</f:facet>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

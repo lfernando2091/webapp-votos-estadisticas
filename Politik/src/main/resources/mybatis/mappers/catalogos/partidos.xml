@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.partidos">
+	<cache />
+	
+	<resultMap type="PartidoEO" id="partido">
+		<id column="PartidoEO_id" property="id" javaType="Integer"/>
+		<result column="PartidoEO_nombre" property="nombre" javaType="String"/>
+		<result column="PartidoEO_siglas" property="siglas" javaType="String"/>
+		<result column="PartidoEO_coalicion" property="coalicion" javaType="Boolean"/>
+		<result column="PartidoEO_combinaciones" property="combinaciones" javaType="String"/>
+		<collection property="partidosCoalicion" resultMap="coalicion" />
+	</resultMap>
+	
+	<resultMap type="PartidoEO" id="coalicion">
+		<id column="Coalicion_id" property="id" javaType="Integer"/>
+		<result column="Coalicion_nombre" property="nombre" javaType="String"/>
+		<result column="Coalicion_siglas" property="siglas" javaType="String"/>
+		<result column="Coalicion_coalicion" property="coalicion" javaType="Boolean"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT
+			PartidoEO.id_partido 			PartidoEO_id,
+			PartidoEO.nombre 				PartidoEO_nombre,
+			PartidoEO.siglas 				PartidoEO_siglas,
+			PartidoEO.coalicion 			PartidoEO_coalicion,
+			PartidoEO.combinaciones			PartidoEO_combinaciones,
+			CoalicionesPartidos.id_partido	Coalicion_id,
+			CoalicionesPartidos.nombre 		Coalicion_nombre,
+			CoalicionesPartidos.siglas 		Coalicion_siglas,
+			CoalicionesPartidos.coalicion 	Coalicion_coalicion
+		FROM catalogos.partidos PartidoEO
+		LEFT JOIN catalogos.coaliciones Coaliciones on (PartidoEO.id_partido = Coaliciones.id_coalicion)
+		LEFT JOIN catalogos.partidos CoalicionesPartidos on (Coaliciones.id_partido = CoalicionesPartidos.id_partido)
+	</sql>
+	
+	<sql id="orderBy">
+		ORDER BY PartidoEO.coalicion, PartidoEO.id_partido
+	</sql>
+	
+	<select id="listado" resultMap="partido" parameterType="Boolean">
+		<include refid="query" />
+		<where>
+			<if test="value != null">
+				PartidoEO.coalicion = #{value}
+			</if>
+		</where>
+		<include refid="orderBy" />
+	</select>
+	
+	<select id="porId" parameterType="Integer" resultMap="partido">
+		<include refid="query" />
+		WHERE PartidoEO.id_partido = #{value}
+		<include refid="orderBy" />
+	</select>
+	
+	<select id="combinacionesPorPartido" parameterType="PartidoEO" resultType="String">
+		SELECT PartidoEO.combinaciones
+		FROM catalogos.partidos PartidoEO
+		WHERE PartidoEO.id_partido = #{id}
+	</select>
+	
+	<select id="idCoalicionPorCombinacion" parameterType="String" resultType="String">
+		SELECT id_coalicion::text
+		FROM (
+			SELECT id_coalicion, array_to_string(array_agg(id_partido),',') combinacion
+			FROM (
+				SELECT id_coalicion, id_partido
+				FROM catalogos.coaliciones
+				ORDER BY id_coalicion, id_partido
+			) a
+			GROUP BY id_coalicion
+		) b
+		WHERE b.combinacion = #{value}
+	</select>
+	
+	<insert id="insertar" parameterType="PartidoEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT nextval('catalogos.partidos_id_partido_seq'::regclass)
+		</selectKey>
+	
+		INSERT INTO catalogos.partidos(id_partido, nombre, siglas, coalicion)
+		VALUES(#{id}, #{nombre}, #{siglas}, #{coalicion})
+	</insert>
+
+	<insert id="insertarCoalicion" parameterType="hashmap">
+		INSERT INTO catalogos.coaliciones(id_coalicion, id_partido, principal)
+		VALUES(#{idCoalicion}, #{idPartido}, #{principal})
+	</insert>
+	
+	<update id="actualizar" parameterType="PartidoEO">
+		UPDATE catalogos.partidos
+   		SET nombre = #{nombre}, siglas = #{siglas}
+ 		WHERE id_partido = #{id}
+	</update>
+	
+	<update id="generarCombinaciones" parameterType="PartidoEO">
+		UPDATE catalogos.partidos
+		SET combinaciones = catalogos.saga_partidos_combinaciones(#{id})
+		WHERE id_partido = #{id}
+	</update>
+	
+	<update id="actualizarCombinacionesPorPartido" parameterType="PartidoEO">
+		UPDATE catalogos.partidos
+   		SET combinaciones = #{combinaciones}
+ 		WHERE id_partido = #{id}
+	</update>
+</mapper>

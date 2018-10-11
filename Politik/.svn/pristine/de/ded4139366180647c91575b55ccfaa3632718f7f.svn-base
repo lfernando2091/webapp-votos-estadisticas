@@ -1,0 +1,104 @@
+package com.saganet.politik.components.encuestas.admin;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.encuestas.admin.EncuestaEO;
+import com.saganet.politik.database.encuestas.admin.ReglaEncuestaEO;
+import com.saganet.politik.dominios.TiposReglasDO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("ReglasEncuestasC")
+public class ReglasEncuestasC {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ReglasEncuestasC.class);
+	
+	public Modelo<ReglaEncuestaEO> modelo(EncuestaEO encuesta) {
+		
+		Modelo<ReglaEncuestaEO> modelo;
+		List<ReglaEncuestaEO> listado;
+		
+		modelo = new Modelo<>();
+		listado = sqlSession.selectList("encuestas.admin.reglasEncuestas.listado", encuesta);
+		
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+		
+	}
+	
+	public ReglaEncuestaEO nuevo(EncuestaEO encuesta){
+		ReglaEncuestaEO nuevo = new ReglaEncuestaEO();
+		nuevo.setIdEncuesta(encuesta.getId());
+		nuevo.setNick("admin");
+		return nuevo;
+	}
+	
+	public void insertar(ReglaEncuestaEO nuevo){
+		nuevo.setScript(crearScriptForRegla(nuevo.getRegla(), nuevo.getAplica(), nuevo.getNoAplica()).toString());
+		sqlSession.insert("encuestas.admin.reglasEncuestas.insertar", nuevo);
+	}
+	
+	public StringBuilder crearScriptForRegla(String regla, String aplica, String noAplica){
+		
+		StringBuilder script = new StringBuilder();
+		
+		script.append("case when ");
+		script.append(regla);
+		script.append(" then ");
+		script.append(aplica);
+		if(noAplica != null){
+			script.append(" else ");
+			script.append(noAplica);
+		}
+		script.append("end resultado");
+		
+		return script;
+	}
+	
+	public TiposReglasDO[] listadoTiposReglas(){
+		return TiposReglasDO.values();
+	}
+	
+	public StringBuilder condicion(String condicion){
+		
+		FacesContext fc = FacesContext.getCurrentInstance();
+		
+		
+		Map<String,String> params;
+		params = fc.getExternalContext().getRequestParameterMap();
+		
+		String cadena = null;
+		
+		if(params.get("cmdIgual")!=null){
+			cadena = params.get("cmdIgual");
+		}else if(params.get("cmdtaCondicion")!=null){
+			cadena = params.get("cmdtaCondicion");
+		}
+		
+		
+		
+		StringBuilder resultado = new StringBuilder();
+		resultado.append(condicion);
+		resultado.append(cadena);
+		logger.debug("COndicion: {}", condicion);
+		return resultado;
+	}
+	
+	
+}

@@ -1,0 +1,18 @@
+package com.saganet.politik.components.biblioteca;
+
+import org.primefaces.model.UploadedFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+@Component("AgregarC")
+public class AgregarC {
+	
+	private static final Logger logger = LoggerFactory.getLogger(AgregarC.class);
+	
+	public void procesaFile(UploadedFile newFile){
+		logger.debug("Esta entrando");
+		logger.debug("FileName: ",newFile.getFileName().toString());
+	}
+	
+}

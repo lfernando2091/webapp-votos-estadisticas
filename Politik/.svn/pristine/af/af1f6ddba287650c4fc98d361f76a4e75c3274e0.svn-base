@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:messages autoUpdate="true"/>
+					<p:panel header="Agregar Encuestador">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nombre"/>
+							</p:column>
+							<p:column>
+								<p:inputText required="true" value="${nuevo.nombre}"  requiredMessage="Nombre Requerido"  onkeyup="this.value=this.value.toUpperCase();"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Primer Apellido"/>
+							</p:column>
+							<p:column>
+								<p:inputText required="true" value="${nuevo.primerApellido}" requiredMessage="Primer Apellido Requerido"  onkeyup="this.value=this.value.toUpperCase();"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Segundo Apellido"/>
+							</p:column>
+							<p:column>
+								<p:inputText required="true" value="${nuevo.segundoApellido}" requiredMessage="Segundo Apellido Requerido"  onkeyup="this.value=this.value.toUpperCase();"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="E-mail"/>
+							</p:column>
+							<p:column>
+								<p:inputText required="true" value="${nuevo.email}" validatorMessage="E-mail Incorrecto" requiredMessage="E-mail Requerido" >
+									<f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+								</p:inputText>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Telefono"/>
+							</p:column>
+							<p:column>
+								<p:inputText required="true" value="${nuevo.movil}" validatorMessage="Numero Incorrecto" requiredMessage="Telefono Requerido">
+										<f:validateRegex pattern="^[+]?[0-9]+$" />
+										<f:validateLength minimum="10" maximum="10" />
+								</p:inputText>
+							</p:column>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="guardar"/>
+							<p:commandButton value="Cancelar" action="cancelar" immediate="true"/>
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

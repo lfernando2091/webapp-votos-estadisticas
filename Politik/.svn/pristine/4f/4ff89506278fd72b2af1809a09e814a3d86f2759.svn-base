@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.programasPoblacionObjectivo">
+	<cache />
+	
+	<resultMap type="ProgramaPoblacionObjetivoEO" id="programaPoblacionObjetivo">
+	
+		<id column="ProgramaEjercicioFuenteEO_id" property="id" javaType="Integer" />
+		
+		<result column="ProgramaEjercicioFuenteEO_idEjercicio" property="idEjercicio" javaType="Integer" />
+		<result column="ProgramaEjercicioFuenteEO_tipoInversion" property="tipoInversion" javaType="String" />
+		<result column="ProgramaEjercicioFuenteEO_monto" property="monto" javaType="Double" />
+		<result column="ProgramaEjercicioFuenteEO_observaciones" property="observaciones" javaType="String" />
+		<result column="ProgramaEjercicioFuenteEO_fuenteFinanciamiento" property="fuenteFinanciamiento" javaType="String" />
+		
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			ProgramaPoblacionObjetivoEO.pkey									ProgramaPoblacionObjetivoEO_id, 
+			ProgramaPoblacionObjetivoEO.id_programa								ProgramaPoblacionObjetivoEO_idPrograma, 
+			ProgramaPoblacionObjetivoEO.poblacion								ProgramaPoblacionObjetivoEO_poblacion, 
+			ProgramaPoblacionObjetivoEO.beneficiarios_proyectados				ProgramaPoblacionObjetivoEO_beneficiariosProyectados, 
+			ProgramaPoblacionObjetivoEO.nick									ProgramaPoblacionObjetivoEO_nick, 
+       		to_char(ProgramaPoblacionObjetivoEO.fecha, 'YYYY-MM-DD HH24:MI:SS')	ProgramaPoblacionObjetivoEO_fecha
+  		FROM catalogos.programas_poblacion_objetivo ProgramaPoblacionObjetivoEO
+	</sql>
+	
+	<select id="listado" parameterType="ProgramaEO">
+		<include refid="query"/>
+		WHERE ProgramaPoblacionObjetivoEO.id_programa = #{id}
+		ORDER BY ProgramaPoblacionObjetivoEO.id_programa DESC
+	</select>
+	
+	<insert id="insertar" parameterType="ProgramaPoblacionObjetivoEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT NEXTVAL('catalogos.programas_poblacion_objetivo_pkey_seq')
+		</selectKey>
+		INSERT INTO catalogos.programas_poblacion_objetivo(pkey, id_programa, poblacion, beneficiarios_proyectados, nick)
+    	VALUES (#{id}, #{idPrograma}, #{poblacion}, #{beneficiariosProyectados}, #{nick});
+	</insert>
+	
+</mapper>

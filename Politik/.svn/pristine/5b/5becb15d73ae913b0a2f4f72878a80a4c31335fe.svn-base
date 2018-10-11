@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="EstadisticasVariablesC.tabla()" result="viewScope.tablaVariables" />
+			<set name="viewScope.detalleClick" value="false" />
+		</on-entry>
+		<transition on="agregar" to="agregar">
+			<evaluate expression="EstadisticasVariablesC.nuevo()" result="requestScope.nuevo" />
+		</transition>
+		<transition on="generar">
+			<evaluate expression="EstadisticasVariablesC.generarGenrricoAsync(viewScope.tablaVariables.seleccionado)" />
+		</transition>
+		<transition on="log" to="log">
+			<set name="requestScope.variable" value="viewScope.tablaVariables.seleccionado" />
+		</transition>
+		<transition on="agregarImportacion" to="seleccionarTabla" />
+	</view-state>
+	
+	<subflow-state id="seleccionarTabla" subflow="importaciones">
+		<input name="flag" value="true"/>
+		<transition on="end" to="agregarImportacion">
+			<set name="requestScope.tablaSeleccionada" value="conversationScope.tablaSeleccionada"/>
+		</transition>
+	</subflow-state>
+	
+	<view-state id="agregarImportacion">
+		<on-entry>
+			<set name="viewScope.tablaSeleccionada" value="requestScope.tablaSeleccionada"/>
+			<evaluate expression="EstadisticasVariablesC.nuevo()" result="viewScope.nuevo" />
+			<evaluate expression="EstadisticasVariablesC.modelo(viewScope.tablaSeleccionada)" result="viewScope.mapa"/>
+			<evaluate expression="CatalogosCamposTablaC.obtenerCamposTabla(viewScope.mapa)" result="viewScope.camposTabla"/>
+			<evaluate expression="EstadisticasVariablesC.listadoNiveles()" result="viewScope.niveles"/>	
+		</on-entry>
+		<transition on="crearVariables" to="agregadoVariables">
+			<evaluate expression="EstadisticasVariablesC.crearListado(viewScope.nuevo, viewScope.camposTabla.seleccionMultiple, viewScope.mapa)" result="requestScope.listadoVariables"/>
+		</transition>
+		<transition on="cancelar" to="fin"/>
+	</view-state>
+	
+	<view-state id="agregadoVariables">
+		<on-entry>
+			<evaluate expression="EstadisticasVariablesC.listadoTiposCampo()" result="viewScope.listadoTiposCampo" />
+			<set name="viewScope.listadoVariables" value="requestScope.listadoVariables" />
+			<set name="viewScope.nuevo" value="viewScope.listadoVariables.seleccionado" />
+		</on-entry>
+		<transition on="guardarValor" to="agregadoVariables">
+			<evaluate expression="EstadisticasVariablesC.nuevoSeleccionado(viewScope.listadoVariables,viewScope.nuevo)" result="requestScope.listadoVariables"/>
+		</transition>
+		<transition on="guardar" to="fin">
+			<evaluate expression="EstadisticasVariablesC.nuevoSeleccionado(viewScope.listadoVariables,viewScope.nuevo)" result="viewScope.listadoVariables"/>
+			<evaluate expression="EstadisticasVariablesC.guardarVariables(viewScope.listadoVariables)"/>
+		</transition>
+		<transition on="cancelar" to="fin"/>
+	</view-state>
+	
+	<view-state id="agregar">
+		<on-entry>
+			<set name="viewScope.nuevo" value="requestScope.nuevo" />
+			<evaluate expression="EstadisticasVariablesC.listadoNiveles()" result="viewScope.listadoNiveles" />
+			<evaluate expression="EstadisticasVariablesC.listadoTiposCampo()" result="viewScope.listadoTiposCampo" />
+			<evaluate expression="CatalogosTablasC.tabla()" result="viewScope.tablaTablas" />
+			<evaluate expression="EstadisticasVariablesC.listadoOperadores()" result="viewScope.listadoOperadores" />
+			
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, null)" result="viewScope.tablaCamposTabla" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaEntidad" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaDFederal" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaDLocal" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaMunicipio" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaSeccion" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaLocalidad" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaManzana" />
+		</on-entry>
+		<transition on="actualizarCamposTabla">
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, null)" result="viewScope.tablaCamposTabla" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaEntidad" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaDFederal" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaDLocal" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaMunicipio" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaSeccion" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaLocalidad" />
+			<evaluate expression="CatalogosCamposTablaC.tabla(viewScope.tablaTablas.seleccionado, 'integer')" result="viewScope.tablaCamposTablaManzana" />
+		</transition>
+		<transition on="guardar" to="listado">
+			<evaluate expression="viewScope.nuevo.getConsulta().setTabla(viewScope.tablaTablas.seleccionado)" />
+			<evaluate expression="viewScope.nuevo.getConsulta().setCampo(viewScope.tablaCamposTabla.seleccionado)" />
+			<evaluate expression="EstadisticasVariablesC.guardar(viewScope.nuevo)" />
+		</transition>
+		<transition on="cancelar" to="listado" />
+	</view-state>
+	
+	<view-state id="log">
+		<on-entry>
+			<set name="viewScope.variable" value="requestScope.variable" />
+			<evaluate expression="EstadisticasVariablesC.tablaLog(viewScope.variable)" result="viewScope.tablaLog" />
+		</on-entry>
+		<transition on="actualizar">
+			<evaluate expression="EstadisticasVariablesC.tablaLog(viewScope.variable)" result="viewScope.tablaLog" />
+		</transition>
+		<transition on="regresar" to="listado" />
+	</view-state>
+	
+	<end-state id="fin"/>
+</flow>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+
+<mapper namespace="encuestas.edomex2017.respuestasRegionesSonora">
+	
+	<resultMap type="RespuestasRegionesSonoraEO" id="respuestasRegionesSonora">
+		<id 		column="id" 						property="id" 						javaType="Integer"/>
+		<result 	column="lugar_encuesta_telefonica" 	property="lugarEncuestaTelefonica"  javaType="String"/>
+		<result 	column="nombreRegion" 				property="nombre"  					javaType="String"/> 
+		<result 	column="exitoso" 					property="exitoso"  				javaType="Integer"/>
+		<result 	column="NO_PERMITIO_MINUTOS" 		property="noPermitioMinutos"  		javaType="Integer"/>
+		<result 	column="NUMERO_INVALIDO" 			property="numeroInvalido"  			javaType="Integer"/>
+		<result 	column="NUMERO_NO_EXISTE" 			property="numeroNoExiste"   		javaType="Integer"/>
+		<result 	column="NUMERO_OCUPADO" 			property="numeroOcupado"  			javaType="Integer"/>
+		<result 	column="NUMERO_HA_CAMBIADO" 		property="numeroHaCambiado"  		javaType="Integer"/>
+		<result 	column="NUMERO_FUERA_SERVICIO" 		property="numeroFueraServicio"   	javaType="Integer"/>
+		<result 	column="NUMERO_EQUIVOCADO" 			property="numeroEquivocado"  		javaType="Integer"/>
+		<result 	column="NO_ESTA_APOYANDO" 			property="noEstaApoyando"  			javaType="Integer"/>
+	    <result 	column="PERSONA_NO_ENCONTRADA" 		property="personaNoEncontrada"   	javaType="Integer"/>
+	    <result 	column="Pendiente_total" 			property="pendienteTotal"   		javaType="Integer"/>
+	    <result 	column="PENDIENTE" 					property="pendiente"   				javaType="Integer"/>
+	    <result 	column="total" 						property="total"   					javaType="Integer"/>
+	</resultMap>
+	
+	<sql id="sqlQuery">
+	SELECT	b.region_edomex_2017 id,
+	'sonora' lugar_encuesta_telefonica,
+	b.nombre_region nombreRegion, 
+	sum(case when estatus_encuestado = 'EXITOSO' then 1 else 0 end) exitoso, 
+	sum(case when estatus_encuestado = 'NO_PERMITIO_MINUTOS' then 1 else 0 end) NO_PERMITIO_MINUTOS, 
+	sum(case when estatus_encuestado = 'NUMERO_INVALIDO' then 1 else 0 end) NUMERO_INVALIDO, 
+	sum(case when estatus_encuestado = 'NUMERO_NO_EXISTE' then 1 else 0 end) NUMERO_NO_EXISTE, 
+	sum(case when estatus_encuestado = 'NUMERO_OCUPADO' then 1 else 0 end) NUMERO_OCUPADO, 
+	sum(case when estatus_encuestado = 'NUMERO_HA_CAMBIADO' then 1 else 0 end) NUMERO_HA_CAMBIADO, 
+	sum(case when estatus_encuestado = 'NUMERO_FUERA_SERVICIO' then 1 else 0 end) NUMERO_FUERA_SERVICIO, 
+	sum(case when estatus_encuestado = 'NUMERO_EQUIVOCADO' then 1 else 0 end) NUMERO_EQUIVOCADO, 
+	sum(case when estatus_encuestado = 'NO_QUISO_CONTESTAR' then 1 else 0 end) NO_ESTA_APOYANDO, 
+	sum(case when estatus_encuestado = 'PERSONA_NO_ENCONTRADA' then 1 else 0 end) PERSONA_NO_ENCONTRADA, 
+	sum(case when estatus_encuestado = 'PENDIENTE' then 0 else 1 end) Pendiente_total,
+	sum(case when estatus_encuestado = 'PENDIENTE' then 1 else 0 end) PENDIENTE,
+	count(*) total 
+	 FROM 
+ encuestas_edomex.e_edomex a join encuestas_edomex.encuesta_edomex b ON (b.id_interno=a.id_contacto::integer) 
+ WHERE para_encuesta_telefonica = true and lugar_encuesta_telefonica='sonora' 
+ GROUP BY b.region_edomex_2017,b.nombre_region 
+ ORDER BY b.region_edomex_2017
+	</sql>
+	
+	<select id="listado" resultMap="respuestasRegionesSonora">
+		<include refid="sqlQuery"/>	
+	</select>
+
+
+</mapper>

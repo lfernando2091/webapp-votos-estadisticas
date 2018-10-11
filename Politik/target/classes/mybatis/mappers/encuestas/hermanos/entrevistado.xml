@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.hermanos.entrevistado">
+<resultMap type="HermanosEntrevistadoEO" id="entrevistadoHermanos">
+<id column="HermanosEntrevistadoEO_id" 							property="id" 					javaType="Integer"/>
+ 	<result column="HermanosEntrevistadoEO_entidad" 			property="entidad" 				javaType="Integer"/>
+ 	<result column="HermanosEntrevistadoEO_region_edomex_2017" 	property="regionEdomex2017" 	javaType="Integer"/>
+ 	<result column="HermanosEntrevistadoEO_nombre_region" 		property="nombreRegion" 		javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_municipio" 			property="municipio" 			javaType="Integer"/>
+ 	<result column="HermanosEntrevistadoEO_nombre_municipio" 	property="nombreMunicipio" 		javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_localidad" 			property="localidad" 			javaType="Integer"/>
+ 	<result column="HermanosEntrevistadoEO_nombre_localidad" 	property="nombreLocalidad" 		javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_seccion" 			property="seccion" 				javaType="Integer"/>
+ 	<result column="HermanosEntrevistadoEO_manzana" 			property="manzana" 				javaType="Integer"/>
+ 	<result column="HermanosEntrevistadoEO_id_interno" 			property="idInterno" 			javaType="Integer"/>
+ 	<result column="HermanosEntrevistadoEO_clave_elector" 		property="claveElector" 		javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_apellido_paterno" 	property="apellidoPaterno" 		javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_apellido_materno" 	property="apellidoMaterno" 		javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_nombre" 				property="nombre" 				javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_fecha_nacimiento" 	property="fechaNacimiento" 		javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_lugar_nacimiento" 	property="lugarNacimiento" 		javaType="Integer"/>
+ 	<result column="HermanosEntrevistadoEO_sexo" 				property="sexo" 				javaType="com.saganet.politik.dominios.GenerosDO"/>
+ 	<result column="HermanosEntrevistadoEO_ocupacion" 			property="ocupacion" 			javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_calle" 				property="calle" 				javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_num_exterior" 		property="numExterior" 			javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_num_interior" 		property="numInterior" 			javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_colonia"				property="colonia" 				javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_codigo_postal" 		property="codigoPostal" 		javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_programa_todo" 		property="programaTodo" 		javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_programa_general" 	property="programaGeneral" 		javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_estatus" 			property="estatus" 				javaType="String"/>
+ 	<result column="HermanosEntrevistadoEO_folio" 				property="folio" 				javaType="Integer"/>
+ 	<result column="HermanosEntrevistadoEO_duplicado" 			property="duplicado" 			javaType="Boolean"/>
+ 	<result column="HermanosEntrevistadoEO_padron" 			property="padron" 			javaType="Boolean"/>
+ 	
+</resultMap>
+
+<sql id="query">
+	select
+		HermanosEntrevistadoEO.entidad 					HermanosEntrevistadoEO_entidad,
+		HermanosEntrevistadoEO.region_edomex_2017 		HermanosEntrevistadoEO_region_edomex_2017,
+		HermanosEntrevistadoEO.nombre_region 			HermanosEntrevistadoEO_nombre_region,
+		HermanosEntrevistadoEO.municipio 				HermanosEntrevistadoEO_municipio,
+		HermanosEntrevistadoEO.nombre_municipio 		HermanosEntrevistadoEO_nombre_municipio,
+		HermanosEntrevistadoEO.localidad 				HermanosEntrevistadoEO_localidad,
+		HermanosEntrevistadoEO.nombre_localidad 		HermanosEntrevistadoEO_nombre_localidad,
+		HermanosEntrevistadoEO.seccion 					HermanosEntrevistadoEO_seccion,
+		HermanosEntrevistadoEO.manzana 					HermanosEntrevistadoEO_manzana,
+		HermanosEntrevistadoEO.id_interno 				HermanosEntrevistadoEO_id_interno,
+		HermanosEntrevistadoEO.clave_elector 			HermanosEntrevistadoEO_clave_elector,
+		HermanosEntrevistadoEO.apellido_paterno 		HermanosEntrevistadoEO_apellido_paterno,
+		HermanosEntrevistadoEO.apellido_materno 		HermanosEntrevistadoEO_apellido_materno,
+		HermanosEntrevistadoEO.nombre 					HermanosEntrevistadoEO_nombre,
+		HermanosEntrevistadoEO.fecha_nacimiento 		HermanosEntrevistadoEO_fecha_nacimiento,
+		HermanosEntrevistadoEO.lugar_nacimiento 		HermanosEntrevistadoEO_lugar_nacimiento,
+		HermanosEntrevistadoEO.sexo 					HermanosEntrevistadoEO_sexo,
+		HermanosEntrevistadoEO.ocupacion 				HermanosEntrevistadoEO_ocupacion,
+		HermanosEntrevistadoEO.calle 					HermanosEntrevistadoEO_calle,
+		HermanosEntrevistadoEO.num_exterior 			HermanosEntrevistadoEO_num_exterior,
+		HermanosEntrevistadoEO.num_interior 			HermanosEntrevistadoEO_num_interior,
+		HermanosEntrevistadoEO.colonia 					HermanosEntrevistadoEO_colonia,
+		HermanosEntrevistadoEO.codigo_postal 			HermanosEntrevistadoEO_codigo_postal,
+		HermanosEntrevistadoEO.programa_todo 			HermanosEntrevistadoEO_programa_todo,
+		HermanosEntrevistadoEO.programa_general 		HermanosEntrevistadoEO_programa_general,
+		HermanosEntrevistadoEO.estatus 					HermanosEntrevistadoEO_estatus,
+		HermanosEntrevistadoEO.grupo 					HermanosEntrevistadoEO_grupo,
+		HermanosEntrevistadoEO.folio 					HermanosEntrevistadoEO_folio,
+		HermanosEntrevistadoEO.duplicado 				HermanosEntrevistadoEO_duplicado,
+		HermanosEntrevistadoEO.padron 				HermanosEntrevistadoEO_padron
+	from hermanos.encuesta_edomex 						HermanosEntrevistadoEO
+</sql>
+
+<sql id="queryPadron">
+	select
+		15 					HermanosEntrevistadoEO_entidad,
+		HermanosEntrevistadoEO.municipio 				HermanosEntrevistadoEO_municipio,
+		--HermanosEntrevistadoEO.nombre_municipio 		HermanosEntrevistadoEO_nombre_municipio,
+		HermanosEntrevistadoEO.localidad 				HermanosEntrevistadoEO_localidad,
+		saga_nombre_localidad_nueva('15', '15-'||HermanosEntrevistadoEO.municipio, '15-'||HermanosEntrevistadoEO.municipio||'-'||HermanosEntrevistadoEO.localidad)				 		HermanosEntrevistadoEO_nombre_localidad,
+		HermanosEntrevistadoEO.seccion 					HermanosEntrevistadoEO_seccion,
+		HermanosEntrevistadoEO.manzana 					HermanosEntrevistadoEO_manzana,
+		--HermanosEntrevistadoEO.id_interno 				HermanosEntrevistadoEO_id_interno,
+		HermanosEntrevistadoEO.clave_elector 			HermanosEntrevistadoEO_clave_elector,
+		HermanosEntrevistadoEO.apellido_paterno 		HermanosEntrevistadoEO_apellido_paterno,
+		HermanosEntrevistadoEO.apellido_materno 		HermanosEntrevistadoEO_apellido_materno,
+		HermanosEntrevistadoEO.nombre 					HermanosEntrevistadoEO_nombre,
+		HermanosEntrevistadoEO.fecha_nacimiento 		HermanosEntrevistadoEO_fecha_nacimiento,
+		HermanosEntrevistadoEO.lugar_nacimiento 		HermanosEntrevistadoEO_lugar_nacimiento,
+		HermanosEntrevistadoEO.sexo 					HermanosEntrevistadoEO_sexo,
+		HermanosEntrevistadoEO.ocupacion 				HermanosEntrevistadoEO_ocupacion,
+		HermanosEntrevistadoEO.calle 					HermanosEntrevistadoEO_calle,
+		HermanosEntrevistadoEO.num_exterior 			HermanosEntrevistadoEO_num_exterior,
+		HermanosEntrevistadoEO.num_interior 			HermanosEntrevistadoEO_num_interior,
+		HermanosEntrevistadoEO.colonia 					HermanosEntrevistadoEO_colonia,
+		HermanosEntrevistadoEO.codigo_postal 			HermanosEntrevistadoEO_codigo_postal,
+		true				HermanosEntrevistadoEO_padron
+		--HermanosEntrevistadoEO.programa_todo 			HermanosEntrevistadoEO_programa_todo,
+		--HermanosEntrevistadoEO.programa_general 		HermanosEntrevistadoEO_programa_general,
+		--HermanosEntrevistadoEO.estatus 					HermanosEntrevistadoEO_estatus,
+		--HermanosEntrevistadoEO.grupo 					HermanosEntrevistadoEO_grupo,
+		--HermanosEntrevistadoEO.folio 					HermanosEntrevistadoEO_folio,
+		--HermanosEntrevistadoEO.duplicado 				HermanosEntrevistadoEO_duplicado
+	from warehouse.ine2015						HermanosEntrevistadoEO
+</sql>
+
+<select id="buscarId" parameterType="hashmap" resultMap="entrevistadoHermanos">
+<include refid="query"/>
+		where HermanosEntrevistadoEO.id_interno=#{folio} limit 1
+</select>
+
+
+<select id="duplicados" parameterType="hashmap" resultMap="entrevistadoHermanos">
+<include refid="query"/>
+		where HermanosEntrevistadoEO.folio=#{folio} 
+</select>
+<select id="buscarIdInterno" parameterType="hashmap" resultMap="entrevistadoHermanos">
+<include refid="query"/>
+		where HermanosEntrevistadoEO.id_interno=#{folio} 
+</select>
+
+
+
+<select id="buscarPadron" parameterType="String" resultMap="entrevistadoHermanos">
+<include refid="queryPadron"/>
+where clave_elector=#{value}
+</select>
+
+<update id="actualizarVisitado" parameterType="hashmap">
+UPDATE hermanos.encuesta_edomex
+   SET  seccion=#{entrevistado.seccion}, 
+      localidad=#{localidad}, nombre_localidad=#{nombreLocalidad}, manzana=#{entrevistado.manzana},  clave_elector=#{entrevistado.claveElector}, apellido_paterno=#{entrevistado.apellidoPaterno}, 
+       apellido_materno=#{entrevistado.apellidoMaterno}, nombre=#{entrevistado.nombre}, fecha_nacimiento=substring(#{entrevistado.fechaNacimiento},7,4)||substring(#{entrevistado.fechaNacimiento},4,2)||substring(#{entrevistado.fechaNacimiento},1,2) , lugar_nacimiento=#{entrevistado.lugarNacimiento}, 
+       sexo=#{entrevistado.sexo}, ocupacion=#{entrevistado.ocupacion}, calle=#{entrevistado.calle}, num_exterior=#{entrevistado.numExterior}, num_interior=#{entrevistado.numInterior}, 
+       colonia=#{entrevistado.colonia}, codigo_postal=#{entrevistado.codigoPostal}, padron=#{entrevistado.padron}
+ WHERE id_interno=#{entrevistado.idInterno};
+
+</update>
+
+</mapper>

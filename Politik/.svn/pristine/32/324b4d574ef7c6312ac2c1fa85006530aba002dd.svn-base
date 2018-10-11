@@ -1,0 +1,86 @@
+/**
+ * Ejemplos: 
+ * bounds: [${tablaEntidades.seleccionado.geoData.bounds}] 
+ * serverWMS: 'http://svr08.saganet.com.mx:8080/geoserver/politik/wms' 
+ * estilos: '' 
+ * capas: 'politik:entidades' 
+ * cqlFilter: 'id_entidad = ${tablaEntidades.seleccionado.id}' panelMapa: '#{p:component('panelMapa')}'
+ */
+
+var mapa;
+var format;
+var serverWMS
+
+function iniciarMapa(bounds, estilos, capas, cqlFilter, panelMapa){
+	
+	format = 'image/png';
+	serverWMS = 'https://svr08.saganet.com.mx:8443/geoserver/politik/wms';
+	
+	var capaOSM = new ol.layer.Tile({
+		source: new ol.source.OSM()
+	});
+	
+	var capaBase = new ol.layer.Tile({
+		opacity: 0.5,
+		source: new ol.source.TileWMS({
+				ratio: 1,
+				url: serverWMS,
+				params: {
+					'FORMAT': format,
+					'VERSION': '1.1.1',  
+					STYLES: estilos,
+					LAYERS: capas,
+					'CQL_FILTER': cqlFilter,
+				}
+		})
+	});
+	
+	var proyeccion = new ol.proj.Projection({
+		code: 'EPSG:4326',
+		units: 'degrees',
+		axisOrientation: 'neu'
+	});
+	
+	var vista = new ol.View({
+		projection: proyeccion
+	});
+	
+	mapa = new ol.Map({
+		layers: [
+		    capaOSM,
+			capaBase
+		],
+		view: vista,
+		target: panelMapa
+	});
+	
+	mapa.getView().fit(bounds, mapa.getSize());
+}
+
+function actualizarMapa(bounds){
+	mapa.getView().fit(bounds, mapa.getSize());
+}
+
+function actualizarCapa(itemCapa, cqlFilter){
+	var parametros = {'CQL_FILTER': cqlFilter};
+	mapa.getLayers().item(itemCapa).getSource().updateParams(parametros);
+}
+
+function agregarCapa(capa, estilos, cqlFilter){
+	var capaNueva = new ol.layer.Tile({
+		opacity: 0.5,
+		source: new ol.source.TileWMS({
+				ratio: 1,
+				url: serverWMS,
+				params: {
+					'FORMAT': format,
+					'VERSION': '1.1.1',  
+					STYLES: estilos,
+					LAYERS: capa,
+					'CQL_FILTER': cqlFilter,
+				}
+		})
+	});
+	
+	mapa.addLayer(capaNueva);
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="sig.poligonos">
+	<cache readOnly="true" />
+	
+	<resultMap type="PoligonoEO" id="poligono">
+		<id column="PoligonoEO_id" property="id" javaType="Integer"/>
+		<result column="PoligonoEO_tipo" property="tipo" javaType="com.saganet.politik.dominios.TiposPoligonoDO"/>
+		<result column="PoligonoEO_llave" property="llave" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			PoligonoEO.pkey 	PoligonoEO_id, 
+			PoligonoEO.tipo 	PoligonoEO_tipo, 
+			PoligonoEO.llave 	PoligonoEO_llave
+  		FROM sig.poligonos PoligonoEO
+	</sql>
+	
+	<select id="porTipoLlave" parameterType="hashmap" resultMap="poligono">
+		<include refid="query" />
+		WHERE PoligonoEO.tipo = #{tipo} AND PoligonoEO.llave = #{llave}
+		ORDER BY PoligonoEO_id
+	</select>
+	
+	<select id="obtenerPoligonos" parameterType="PoligonoEO" resultType="_byte[]">
+		SELECT poligono
+		FROM sig.poligonos PoligonoEO
+		WHERE PoligonoEO.tipo = #{tipo} AND PoligonoEO.llave = #{llave}
+	</select>
+	
+	<insert id="insertar" parameterType="hashmap">
+		INSERT INTO sig.poligonos(tipo, llave, poligono)
+    	<foreach collection="poligonosBytes" open="VALUES" separator="," item="poligonoBytes">
+    		(#{poligonoEO.tipo}, #{poligonoEO.llave}, #{poligonoBytes})
+    	</foreach>
+	</insert>
+	
+	<update id="actualizarPoligono" parameterType="hashmap">
+		UPDATE sig.poligonos
+   		SET poligono = #{poligono}
+ 		WHERE pkey = #{id}
+	</update>
+	
+</mapper>

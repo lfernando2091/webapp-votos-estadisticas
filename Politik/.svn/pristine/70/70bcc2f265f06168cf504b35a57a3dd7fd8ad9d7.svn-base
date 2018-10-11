@@ -1,0 +1,278 @@
+package com.saganet.politik.components.cronograma;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.jsoup.Jsoup;
+import org.primefaces.extensions.model.timeline.TimelineEvent;
+import org.primefaces.extensions.model.timeline.TimelineModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.cronograma.EventoEO;
+import com.saganet.politik.database.cronograma.GrupoEO;
+import com.saganet.politik.database.cronograma.IconoEO;
+import com.saganet.politik.modelos.cronograma.GruposT;
+import com.saganet.politik.modelos.cronograma.IconosT;
+import com.saganet.politik.utilidades.TimelineEventPolitik;
+
+@Component("CronogramaTimelineC")
+public class TimelineC {
+	private static final Logger logger = LoggerFactory.getLogger(TimelineC.class);
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	public TimelineModel test(){
+		TimelineModel model;
+		Calendar fechaInicio, fechaFin;
+		boolean editable;
+		String grupo, estilo;
+		
+		model = new TimelineModel();
+		fechaInicio = Calendar.getInstance();
+		fechaFin = Calendar.getInstance();
+		editable = false;
+		grupo = "Operación<br>Política";
+		estilo = "verde";
+		
+		fechaInicio.set(2016, Calendar.JULY, 1, 0, 0, 0);
+		fechaFin.set(2016, Calendar.JULY, 31);
+		model.add(new TimelineEvent("Estructuras 1er. Nivel", fechaInicio.getTime(), fechaFin.getTime(), editable, grupo, estilo));
+		
+		fechaInicio.set(2016, Calendar.SEPTEMBER, 1);
+		fechaFin.set(2016, Calendar.DECEMBER, 31);
+		model.add(new TimelineEvent("Estrategia Piloto de Promoción", fechaInicio.getTime(), fechaFin.getTime(), editable, grupo, estilo));
+		model.add(new TimelineEvent("Redes<br>"
+				+ " - Jóvenes<br>"
+				+ " - Mujeres<br>"
+				+ " - Adultos Mayores"
+				, fechaInicio.getTime(), fechaFin.getTime(), editable, grupo, estilo));
+		model.add(new TimelineEvent("Aliados Estratégicos<br>"
+				+ " - Gobernadores<br>"
+				+ " - Senadores<br>"
+				+ " - Org. Religiosas<br>"
+				+ " - ONG's<br>"
+				+ " - Migrantes<br>"
+				+ " - Líderes<br>"
+				+ " - Extranjeros", fechaInicio.getTime(), fechaFin.getTime(), editable, grupo, estilo));
+		model.add(new TimelineEvent("Estrategia de Contención", fechaInicio.getTime(), fechaFin.getTime(), editable, grupo, estilo));
+		
+		grupo = "Electoral";
+		estilo = "rojo";
+		fechaInicio.set(2016, Calendar.DECEMBER, 1);
+		fechaFin.set(2017, Calendar.SEPTEMBER, 30);
+		model.add(new TimelineEvent("Elecciones 2017", fechaInicio.getTime(), fechaFin.getTime(), editable, grupo, estilo));
+		
+		
+		return model;
+	}
+	
+	public GruposT tablaGrupos(){
+		GruposT tabla;
+		List<GrupoEO> listado;
+		
+		tabla = new GruposT();
+		
+		listado = sqlSession.selectList("cronograma.grupos.listado");
+		tabla.setListado(listado);
+		if(!listado.isEmpty()){
+			tabla.setSeleccionado(listado.get(0));
+		}
+		
+		return tabla;
+	}
+	
+	public GruposT tablaGrupos(GrupoEO grupoSeleccionado){
+		logger.debug("tablaGrupo grupoSeleccionado: {}", grupoSeleccionado);
+		
+		if(grupoSeleccionado == null)
+			return tablaGrupos();
+		
+		GruposT tabla;
+		List<GrupoEO> listado;
+		
+		tabla = new GruposT();
+		
+		listado = sqlSession.selectList("cronograma.grupos.listado");
+		tabla.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			for(GrupoEO gpo : listado){
+				if(gpo.getId().equals(grupoSeleccionado.getId()))
+					tabla.setSeleccionado(grupoSeleccionado);
+			}
+		}
+		
+		logger.debug("Grupo Seleccionado en GruposT: {}", tabla.getSeleccionado());
+
+		return tabla;
+	}
+	
+	public IconosT tablaIconos(){
+		IconosT tabla;
+		List<IconoEO> listado;
+		
+		tabla = new IconosT();
+		
+		listado = sqlSession.selectList("cronograma.iconos.listado");
+		tabla.setListado(listado);
+		if(!listado.isEmpty()){
+			tabla.setSeleccionado(listado.get(0));
+		}
+		
+		return tabla;
+	}
+	
+	public IconosT tablaIconos(IconoEO iconoSeleccionado){
+		logger.debug("tablaIconos iconoSeleccionado: {}", iconoSeleccionado);
+		
+		if(iconoSeleccionado == null)
+			return tablaIconos();
+		
+		IconosT tabla;
+		List<IconoEO> listado;
+		
+		tabla = new IconosT();
+		
+		listado = sqlSession.selectList("cronograma.iconos.listado");
+		tabla.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			for(IconoEO ico : listado){
+				if(ico.getId().equals(iconoSeleccionado.getId()))
+					tabla.setSeleccionado(iconoSeleccionado);
+			}
+		}
+		
+		logger.debug("Icono Seleccionado en IconosT: {}", tabla.getSeleccionado());
+
+		return tabla;
+	}
+	
+	public EventoEO nuevoEvento(EventoEO padre){
+		EventoEO nuevo;
+		
+		nuevo = new EventoEO();
+		if(padre != null)
+			nuevo.setIdPadre(padre.getId());
+		
+		logger.debug("Se crea Evento nuevo: {}", nuevo);
+
+		return nuevo;
+	}
+	
+	public GrupoEO nuevoGrupo(){
+		GrupoEO nuevo;
+		
+		nuevo = new GrupoEO();
+		logger.debug("Se crea Grupo nuevo: {}", nuevo);
+		
+		return nuevo;
+	}
+	
+	public void guardarGrupoNombre(String nombre){
+		sqlSession.insert("cronograma.grupos.insertarNombre", nombre);
+		logger.debug("Se crea nuevo Grupo: {}", nombre);
+	}
+	
+	public void guardarEvento(EventoEO evento, GrupoEO grupo, IconoEO icono){
+		evento.setGrupo(grupo);
+		evento.setIcono(icono);
+		evento.setDescripcion(Jsoup.parse(evento.getDescripcionHTML()).text());
+		evento.setConcentrador(false);
+		
+		if(evento.getId() == null)
+			sqlSession.insert("cronograma.eventos.insertar", evento);
+		else
+			sqlSession.update("cronograma.eventos.actualizar", evento);
+		
+		
+		logger.debug("Se guarda evento: {}", evento);
+	}
+	
+	public EventoEO padreTemporal(){
+		return sqlSession.selectOne("cronograma.eventos.porId", 39);
+	}
+	
+	public TimelineModel generarTimeline(EventoEO padre){
+		TimelineModel modelo;
+		List<EventoEO> listadoEventos;
+		String estilo;
+		String nombreIcono;
+		Date fInicio, fFin;
+		HashMap<String, EventoEO> mapa;
+		GrupoEO grupoPadre;
+		
+		logger.debug("Padre recibido: {}", padre);
+		
+		mapa = new HashMap<String, EventoEO>();
+		mapa.put("padre", padre);
+		listadoEventos = sqlSession.selectList("cronograma.eventos.listado", mapa);
+		
+		
+		modelo = new TimelineModel();
+		
+		if(padre != null){
+			grupoPadre = new GrupoEO();
+			grupoPadre.setId(0);
+			grupoPadre.setNombre("- Superior");
+			padre.setGrupo(grupoPadre);
+			listadoEventos.add(0, padre);
+		}
+		
+		for(EventoEO evento : listadoEventos){
+			switch(evento.getGrupo().getId()){
+			case 0:
+				estilo = "superior";
+				break;
+			case 4:
+				estilo = "op";
+				break;
+			case 5:
+				estilo = "electoral";
+				break;
+			case 6:
+				estilo = "sedatu";
+				break;
+			default:
+				estilo = "electoral";
+			}
+			
+			if(evento.getConcentrador() && !evento.getGrupo().getId().equals(0))
+				estilo += "_concentrador";
+			
+			if(evento.getIcono() != null)
+				nombreIcono = "<img src='/politik/app/resources/" + evento.getIcono().getRuta() + "' align='middle' style='height:32px;'> " + evento.getNombre();
+			else
+				nombreIcono = evento.getNombre();
+			
+			fInicio = null;
+			fFin = null;
+			
+			if(evento.getInicio() != null){
+				fInicio = new Date(evento.getInicio().getTime());
+			}
+			
+			if(evento.getFin() != null){
+				fFin = new Date(evento.getFin().getTime());
+			}
+			
+			modelo.add(new TimelineEventPolitik(evento, nombreIcono, fInicio, fFin, false, evento.getGrupo().getNombre(), estilo));
+		}
+		
+		return modelo;
+	}
+	
+	public void convertirConcentrador(EventoEO evento){
+		evento.setConcentrador(true);
+		sqlSession.update("cronograma.eventos.actualizar", evento);
+		logger.debug("Se convierte evento en Concentrador: {}", evento);
+	}
+	
+}

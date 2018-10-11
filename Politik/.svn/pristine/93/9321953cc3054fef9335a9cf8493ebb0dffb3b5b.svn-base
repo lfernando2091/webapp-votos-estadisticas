@@ -1,0 +1,160 @@
+package com.saganet.politik.components.encuestas.edomex2017;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.beans.seguridad.UsuariosServicio;
+import com.saganet.politik.component_dm.sincronizacion.UsuarioC;
+import com.saganet.politik.components.administracion.UsuariosC;
+import com.saganet.politik.database.administracion.RolEO;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.encuestas.edomex2017.supervisor.EncuestadorEO;
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.dominios.ProgramasEdoMexDO;
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Component("Edomex2017RegistroUsuarioC")
+public class RegistroUsuarioC {
+	@Autowired
+	SqlSession sqlSession;
+
+	private static final Logger logger = LoggerFactory.getLogger(RegistroUsuarioC.class);
+
+	public String validarDatos(RequestContext context, String nombre, String primerApellido, String segundoApellido,
+			String email, String movil, String municipio, String codigo) {
+		logger.debug("Codigo: {}", municipio);
+		HashMap<String, Object> mapa, viewScope;
+		UsuarioEO us;
+		Integer filas;
+
+		filas = 0;
+		mapa = new HashMap<>();
+		viewScope = (HashMap<String, Object>) context.getFlowScope().asMap();
+
+		us = new UsuarioEO();
+		mapa.put("codigo", codigo);
+		mapa.put("municipio", Integer.parseInt(municipio));
+		filas = sqlSession.selectOne("encuestas.edomex2017.registroUsuarios.validarCodigo", mapa);
+		if (filas == 0) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "No se encontró información", "Error"));
+			return "error";
+		} else {
+			// FacesContext.getCurrentInstance().addMessage(null, new
+			// FacesMessage(FacesMessage.SEVERITY_INFO, "Codigo Correcto",
+			// "Error"));
+			us = registrar(nombre, primerApellido, segundoApellido, email, movil, municipio, codigo);
+			viewScope.put("usuario", us);
+			return "success";
+		}
+
+	}
+
+	public UsuarioEO registrar(String nombre, String primerApellido, String segundoApellido, String email, String movil,
+			String municipio, String codigo) {
+		HashMap<String, Object> mapa;
+		UsuarioEO usuario;
+		EncuestadorEO encuestador;
+		MunicipioEO municipioe;
+		List<RolEO> listado;
+		RolEO rol;
+		encuestador = new EncuestadorEO();
+		municipioe = new MunicipioEO();
+
+		mapa = new HashMap<>();
+		usuario = new UsuarioEO();
+		listado = new ArrayList<>();
+		rol = new RolEO();
+		rol.setRol("ROLE_ENCUESTA_EDOMEX");
+		listado.add(rol);
+		rol = new RolEO();
+		rol.setRol("ROLE_USER");
+		listado.add(rol);
+
+		mapa.put("nombre", nombre);
+		mapa.put("primerApellido", primerApellido);
+		mapa.put("segundoApellido", segundoApellido);
+		mapa.put("email", email);
+		mapa.put("movil", movil);
+		mapa.put("municipio", municipio);
+		mapa.put("codigo", codigo);
+		// sqlSession.update("encuestas.edomex2017.registroUsuarios.actualizarUsuario",mapa
+		// );
+		// crear usuario
+		usuario.setNick("eem_" + sqlSession.selectOne("encuestas.edomex2017.registroUsuarios.conteoUsuario"));
+		usuario.setNombre(nombre + " " + primerApellido + " " + segundoApellido);
+		usuario.setCelular(movil);
+		usuario.setMail(email);
+		usuario.setPw(clave());
+		usuario.setHabilitado(true);
+		usuario.setNivel(NivelesDO.NACIONAL);
+		usuario.setRoles(listado);
+		// usuario.setTerritorios(territorios);
+		sqlSession.insert("administracion.usuarios.insertar", usuario);
+		sqlSession.insert("administracion.roles.insertarAutorizacionesPorUsuario", usuario);
+		// registrar en tabla de encuestador
+		encuestador.setNombre(nombre);
+		encuestador.setPrimerApellido(primerApellido);
+		encuestador.setSegundoApellido(segundoApellido);
+		encuestador.setEmail(email);
+		encuestador.setMovil(movil);
+		switch ((ProgramasEdoMexDO) sqlSession.selectOne("encuestas.edomex2017.registroUsuarios.datosCodigo", codigo)) {
+		case PROSPERA:
+			encuestador.setProgama(ProgramasEdoMexDO.PROSPERA);
+			break;
+		case INSUS:
+			encuestador.setProgama(ProgramasEdoMexDO.INSUS);
+			break;
+		case LICONSA:
+			encuestador.setProgama(ProgramasEdoMexDO.LICONSA);
+			break;
+
+		default:
+			break;
+		}
+
+		encuestador.setUsuario(usuario);
+		municipioe.setIdMunicipio(Integer.parseInt(municipio));
+		encuestador.setMunicipio(municipioe);
+		logger.debug("Encuestador: {}", encuestador);
+		sqlSession.insert("encuestas.supervisor.encuestador.insertarEncuestadores", encuestador);
+		// nick, pw, habilitado, nombre, pkey, nivel, mail, celular
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage(FacesMessage.SEVERITY_INFO,
+						"¡Registro Correcto!. Los datos de acceso se muestran a continuación, favor de conservelos en un lugar seguro.",
+						"Ok"));
+		return usuario;
+	}
+
+	public String clave() {
+		String pass = "";
+		char[] caracteres;
+		caracteres = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+				'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b',
+				'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
+				'x', 'y', 'z' };
+		for (int i = 0; i < 9; i++) {
+			pass += caracteres[new Random().nextInt(62)];
+		}
+		return pass;
+	}
+
+	public UsuarioEO getUsuario() {
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+}

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.programas">
+	<cache />
+	
+	<resultMap type="ProgramaEO" id="programa">
+		<id column="ProgramaEO_id" property="id" javaType="Integer" />
+		
+		<result column="ProgramaEO_programa" property="programa" javaType="String" />
+		<result column="ProgramaEO_descripcion" property="descripcion" javaType="String" />
+		<result column="ProgramaEO_observaciones" property="observaciones" javaType="String" />
+		<result column="ProgramaEO_estrategia" property="estrategia" javaType="Integer" />
+		<result column="ProgramaEO_nick" property="nick" javaType="String"/>
+		<result column="ProgramaEO_fecha" property="fecha" javaType="String"/>
+		<result column="ProgramaEO_nickActualizacion" property="nickActualizacion" javaType="String"/>
+		<result column="ProgramaEO_fechaActualizacion" property="fechaActualizacion" javaType="String"/>
+		<association column="ProgramaEO_idProgramaPadre" property="programaPadre" select="catalogos.programas.programaById" />
+		<association column="ProgramaEO_idDependencia" property="dependencia" select="catalogos.dependencias.dependenciaById" />
+		
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+		ProgramaEO.pkey														ProgramaEO_id, 
+		ProgramaEO.id_dependencia											ProgramaEO_idDependencia, 
+		ProgramaEO.id_programa_padre										ProgramaEO_idProgramaPadre,
+		ProgramaEO.programa													ProgramaEO_programa,
+		ProgramaEO.descripcion												ProgramaEO_descripcion,
+		ProgramaEO.observaciones											ProgramaEO_observaciones,
+		ProgramaEO.estrategia												ProgramaEO_estrategia,
+		ProgramaEO.nick														ProgramaEO_nick,
+		to_char(ProgramaEO.fecha, 'YYYY-MM-DD HH24:MI:SS')					ProgramaEO_fecha,
+		ProgramaEO.nick_actualizacion										ProgramaEO_nickActualizacion,
+		to_char(ProgramaEO.fecha_actualizacion, 'YYYY-MM-DD HH24:MI:SS')	ProgramaEO_fechaActualizacion
+  		FROM catalogos.programas ProgramaEO
+	</sql>
+	
+	<select id="listado" resultMap="programa" parameterType="hashmap">
+		<include refid="query"/>
+		<where>
+			ProgramaEO.id_dependencia in (
+				<foreach collection="dependencias" item="item" separator=",">
+					${item.id}
+				</foreach>
+			)
+		</where>
+		ORDER BY ProgramaEO.id_programa_padre, ProgramaEO.pkey
+	</select>
+	
+	
+	<select id="listadoPorDependencia" resultMap="programa" parameterType="DependenciaEO">
+		<include refid="query"/>
+		WHERE ProgramaEO.id_dependencia	 = #{id}
+		ORDER BY ProgramaEO.id_programa_padre, ProgramaEO.pkey
+	</select>
+	
+	<select id="programaById" parameterType="Integer" resultMap="programa">
+		<include refid="query"/>
+		WHERE ProgramaEO.pkey = #{value}
+	</select>
+	
+	<select id="getNexIdPrograma" resultType="Integer">
+		SELECT NEXTVAL('catalogos.programas_pkey_seq')
+	</select>
+	
+	<insert id="insertar" parameterType="ProgramaEO">
+		INSERT INTO catalogos.programas(pkey, id_dependencia, id_programa_padre, programa, descripcion, observaciones, estrategia, nick)
+    	VALUES (#{id}, #{dependencia.id}, #{programaPadre.id}, #{programa}, #{descripcion}, #{observaciones}, #{estrategia}, #{nick})
+	</insert>	
+	
+	<delete id="eliminarPrograma" parameterType="Integer">
+		DELETE FROM catalogos.programas
+ 		<where>
+ 			pkey = #{value}
+ 		</where>
+	</delete>
+	
+	<insert id="programasEstrategias" parameterType="hashmap">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT NEXTVAL('catalogos.programas_estrategias_pkey_seq')
+		</selectKey>
+		INSERT INTO catalogos.programas_estrategias(pkey, id_programa_principal, id_programa_integra, nick)
+    	VALUES (#{id}, #{idProgramaPrincipal}, #{idProgramaIntegra}, #{nick});
+	</insert>
+	
+	<select id="listadoProgramasEstrategias" parameterType="ProgramaEO" resultMap="programa">
+		<include refid="query"/>
+		JOIN catalogos.programas_estrategias pe ON (ProgramaEO.pkey = pe.id_programa_integra)
+		<where>
+			pe.id_programa_principal = #{id}
+		</where>
+		ORDER BY ProgramaEO.programa
+	</select>
+	
+	<delete id="eliminarProgramaEstrategia" parameterType="hashmap">
+		DELETE FROM catalogos.programas_estrategias
+		<where>
+			id_programa_principal = #{programaPrincipal.id} and id_programa_integra = #{programaAplica.id}
+		</where>
+	</delete>
+	
+</mapper>

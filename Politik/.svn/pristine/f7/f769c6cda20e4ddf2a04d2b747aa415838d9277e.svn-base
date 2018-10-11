@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	<secured attributes="ROLE_CATALOGO_DEPENDENCIAS" />
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="DependenciasC.modeloByUsuario()" result="viewScope.modeloDependencias" />
+			<evaluate expression="DependenciasC.getModeloGenerico(viewScope.modeloDependencias.seleccionado.territorios)" result="viewScope.modeloContenidoGeozona"/>
+			<evaluate expression="DependenciasC.getModeloTerritoriosGeozona(viewScope.modeloContenidoGeozona.seleccionado)" result="viewScope.modeloGeozonaTerritorios"/>
+		</on-entry>
+		<transition on="agregar" to="agregarEditar">
+			<evaluate expression="DependenciasC.nuevo()" result="viewScope.dependencia" />
+			<set name="requestScope.dependencia" value="viewScope.dependencia" />
+			<set name="requestScope.tipoEdicion" value="1" />
+		</transition>
+		
+		<transition on="agregarSubnivel" to="agregarEditar">
+			<evaluate expression="DependenciasC.nuevoSubnivel(viewScope.modeloDependencias.seleccionado)" result="requestScope.dependencia" />
+			<set name="requestScope.tipoEdicion" value="1" />
+		</transition>
+		
+		<transition on="editar" to="agregarEditar">
+			<set name="request.dependencia" value="viewScope.modeloDependencias.seleccionado" />
+			<set name="requestScope.tipoEdicion" value="2" />
+		</transition>
+		<transition on="llenarTerritorios">
+		<evaluate expression="DependenciasC.getDependenciaCompleta(viewScope.modeloDependencias.seleccionado)" result="viewScope.modeloDependencias.seleccionado"/>
+		<evaluate expression="DependenciasC.getModeloGenerico(viewScope.modeloDependencias.seleccionado.territorios)" result="viewScope.modeloContenidoGeozona"/>
+		</transition>
+		
+		<transition on="llenarContenidoGeozona">
+		<evaluate expression="DependenciasC.getModeloTerritoriosGeozona(viewScope.modeloContenidoGeozona.seleccionado)" result="viewScope.modeloGeozonaTerritorios"/>
+		</transition>
+ <transition on="eliminar" to="listado">
+ <evaluate expression="DependenciasC.inhabilitarDependencia(viewScope.modeloDependencias.seleccionado)"/>
+ </transition>
+	</view-state>
+
+	<view-state id="agregarEditar">
+		<on-entry>
+		<set name="viewScope.dependencia" value="requestScope.dependencia"/>
+		<evaluate expression="DependenciasC.modeloByUsuario()" result="viewScope.modeloDependencias" />
+			<evaluate expression="DependenciasC.nuevoModelo()" result="viewScope.modeloLlaves"/>
+			<evaluate expression="DependenciasC.nivelesDependencias()"
+				result="viewScope.nivelesDependencias" />
+			<evaluate expression="DependenciasC.niveles()" result="viewScope.nivelesGeograficos" />
+			<evaluate expression="CatalogosEntidadesC.modelo()" result="viewScope.modeloEntidades" />
+			<evaluate
+				expression="DependenciasC.nuevoModelo()"
+				result="viewScope.modeloDFederales" />
+				<evaluate expression="DependenciasC.nuevoModelo()" result="viewScope.modeloDLocales"/>
+				<evaluate expression="DependenciasC.nuevoModelo()" result="viewScope.modeloMunicipios"/>
+				<evaluate expression="DependenciasC.nuevoModelo()" result="viewScope.modeloSecciones"/>
+				<evaluate expression="DependenciasC.nuevoModelo()" result="viewScope.modeloGeozonas"/>
+			</on-entry>
+		
+
+		<transition on="llenarModeloEntidades">
+			<evaluate expression="CatalogosEntidadesC.modelo()" result="viewScope.modeloEntidades" />
+		</transition>
+		<transition on="llenarModeloDFederales">
+			<evaluate
+				expression="CatalogosDFederalesC.tabla(viewScope.modeloEntidades.seleccionMultiple)"
+				result="viewScope.modeloDFederales" />
+		</transition>
+		<transition on="llenarModeloDLocales">
+		<evaluate expression="CatalogosDLocalesC.tabla(viewScope.modeloEntidades.seleccionMultiple)" result="viewScope.modeloDLocales"/>
+		</transition>
+		<transition on="llenarModeloMunicipios">
+		<evaluate expression="CatalogosMunicipiosC.tabla(viewScope.modeloEntidades.seleccionMultiple)" result="viewScope.modeloMunicipios"/>
+		</transition>
+		
+		<transition on="llenarModeloSecciones">
+		<evaluate expression="CatalogosSeccionesC.modeloByEntidades(viewScope.modeloEntidades.seleccionMultiple)" result="viewScope.modeloSecciones"/>
+		</transition>
+		
+		<transition on="llenarModeloGeozonas">
+		<evaluate expression="EventosSocialesC.tablaGeozonas()" result="viewScope.modeloGeozonas"/>
+		</transition>
+		
+		
+		
+		<transition on="insertar" to="listado">
+		
+			<evaluate expression="DependenciasC.guardar(viewScope.dependencia,viewScope.modeloLlaves.seleccionMultiple)" />
+		</transition>
+		<transition on="insertarEntidad" to="listado">
+		
+			<evaluate expression="DependenciasC.guardar(viewScope.dependencia,viewScope.modeloEntidades.seleccionMultiple)" />
+		</transition>
+		<transition on="actualizar" to="listado">
+			<evaluate expression="DependenciasC.actualizar(viewScope.dependencia)" />
+		</transition>
+	<transition on="cancelar" to="fin"/>
+	</view-state>
+
+	<end-state id="fin"></end-state>
+</flow>

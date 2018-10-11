@@ -1,0 +1,77 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="head">
+		<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyCv60kiiu8HUPsm7SIm8dFUmVzpigHUCAs" />
+	</ui:define>
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Municipios Prioritarios">
+						<p:panelGrid columns="2" columnClasses="topAlign, topAlign">
+							<p:dataTable value="${modeloMunicipios.listado}" var="fila"
+								paginator="true" rows="15" paginatorAlwaysVisible="false"
+								paginatorPosition="bottom">
+								<p:column headerText="Entidad" width="150">${fila.municipio.entidad.nombre}</p:column>
+								<p:column headerText="Municipio" width="150">${fila.municipio.nombre}</p:column>
+								<p:column headerText="Prioridad" width="100">${fila.prioridad}</p:column>
+							</p:dataTable>
+							<p:panel header="Mapa">
+								<p:gmap widgetVar="mapaWV" model="${modeloMapa}" fitBounds="true" type="terrain" style="width:${width}px; height:${height}px;" />
+							</p:panel>
+						</p:panelGrid>
+
+						<f:facet name="footer">
+							<p:commandButton value="Salir" action="salir" immediate="true" />
+							<p:commandButton value="Zoom" onstart="acercarMapa()" />
+						</f:facet>
+					</p:panel>
+
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			}
+		</h:outputStylesheet>
+		
+		<h:outputScript>
+			window.onload = function() {
+				gmap = PF('mapaWV').getMap();
+				
+				gmap.polygons.forEach(
+					function(item, index){
+						item.addListener('click', 
+							function (event) {
+								bounds = new google.maps.LatLngBounds();
+								item.getPath().getArray().forEach(
+									function(item, index){
+									bounds.extend(item);
+								});
+								gmap.fitBounds(bounds)
+							}
+						);
+					}
+				);
+				
+			}
+			
+			function acercarMapa(){
+				gmap.fitBounds(bounds)
+			}
+			
+			
+		</h:outputScript>
+
+	</ui:define>
+
+</ui:composition>

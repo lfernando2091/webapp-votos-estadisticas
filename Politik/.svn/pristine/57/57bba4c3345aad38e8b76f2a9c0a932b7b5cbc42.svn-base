@@ -1,0 +1,125 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:messages autoUpdate="true" />
+					<p:panel header="CUESTIONARIO PARA ENTREVISTADOR">
+						<p:panelGrid layout="grid" columns="1" styleClass="panelNoBorder">
+							<p:separator/>	
+							<p:separator/>	
+							<p:outputLabel value="Número telefonico: ${visitador.movil}" styleClass="negritas" />
+							<p:separator/>	
+							<p:separator/>	
+							<p:row>
+								<p:outputLabel value="Mi nombre es ${usuario.nombre}, le llamo del programa amigos de Alfredo, ¿Me permitiría algunos minutos de su atención?"  />
+							</p:row>
+							<p:row>
+							 	<p:outputLabel value="Me comunica con ${visitador.nombre} ${visitador.primerApellido} ${visitador.segundoApellido}, tengo informacion de que usted no esta apoyando en ${visitador.programa.nombre}, ¿Es correcto? "/> 
+							</p:row>
+							<p:row>
+							<p:selectOneRadio value="${entrevista._1}"
+								converter="ObjectConverter" style="width: 300px" layout="grid" columns="1">
+								<f:selectItems value="${modeloSiNoNsNc.listado}" var="f"
+									itemLabel="${f.nombre}" itemValue="${f}" />
+							</p:selectOneRadio>
+							</p:row>
+							<p:outputLabel value="1. ¿Cual es su cargo?" />
+								<p:inputText value= "${entrevista._2}"/>
+								
+							<p:outputLabel value="2.- A grandes rasgos, ¿Cuáles son sus principales funciones?" />
+								<p:inputTextarea value= "${entrevista._3}"/>
+							<p:outputLabel
+								value="3.- ¿Recibió capacitación?" />
+							<p:selectOneRadio value="${entrevista._4}"
+								converter="ObjectConverter" style="width: 300px"  layout="grid" columns="1">
+								<f:selectItems value="${modeloSiNoNsNc.listado}" var="f"
+									itemLabel="${f.nombre}" itemValue="${f}" />
+							</p:selectOneRadio>
+							<p:outputLabel
+								value="4.- ¿Sabe quién es su coordinador? " />
+							<p:selectOneRadio value="${entrevista._5}"
+								converter="ObjectConverter" style="width: 300px"  layout="grid" columns="1">
+								<f:selectItems value="${modeloSiNoNsNc.listado}" var="f"
+									itemLabel="${f.nombre}" itemValue="${f}" />
+							</p:selectOneRadio>
+							<p:outputLabel
+								value="5.	¿Me podría proporcionar su nombre?" />
+							<p:inputText value= "${entrevista._6}"/>
+								<p:outputLabel
+								value="6.- ¿Conoce cuál es su meta de levantamiento?  " />
+							<p:selectOneRadio value="${entrevista._7}"
+								converter="ObjectConverter" style="width: 300px"  layout="grid" columns="1">
+								<f:selectItems value="${modeloSiNoNsNc.listado}" var="f"
+									itemLabel="${f.nombre}" itemValue="${f}" />
+							</p:selectOneRadio>	
+							
+							<p:outputLabel
+								value="7.	¿Me podría decir cantidad?  " />
+							<p:inputText value= "${entrevista._8}"/>	
+							
+							<p:outputLabel
+								value="8.	Al día de hoy, ¿Cuál es su avance?   " />
+							<p:inputText value= "${entrevista._9}"/>	
+							
+							<p:outputLabel
+								value="9.	¿Con qué material de apoyo cuenta?    " />
+							<p:inputTextarea value= "${entrevista._10}"/>
+							
+							
+							<p:outputLabel
+								value="10.	¿Le gustaría compartir con nosotros alguna duda o comentario para esta campaña?    " />
+							<p:inputTextarea value= "${entrevista._11}"/>		
+							
+							<p:outputLabel value="Causa de No Respuesta" />
+							<p:selectOneMenu value="${entrevista.resultado}"
+								converter="ObjectConverter" style="width: 300px">
+								<f:selectItems value="${modeloResultadoEncuesta.listado}" var="s" itemLabel="${s.nombre}"
+									itemValue="${s}" />
+							</p:selectOneMenu>
+							
+							<p:outputLabel value="A nombre de Alfredo del Mazo le agradezco mucho su compromiso y participación."/>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="guardar" icon="fa fa-save"/>
+						
+							<p:commandButton value="Salir"   action="salir" icon="fa fa-close"	immediate="true" />
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			} 
+			.ui-selectoneradio.ui-widget td {
+     border: 0 none !important;
+}
+.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+border: hidden;
+border-color: white;
+}
+.negritas{
+			font-weight: bold !important;
+			}
+		</h:outputStylesheet>
+
+		<h:outputScript>
+			window.onload = function() {
+				gmap = PF('mapaWV').getMap();
+			}
+		</h:outputScript>
+
+	</ui:define>
+
+</ui:composition>

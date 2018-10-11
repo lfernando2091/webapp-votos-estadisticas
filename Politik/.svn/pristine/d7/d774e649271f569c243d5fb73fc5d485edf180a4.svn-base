@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestasTelefonicas.respuestas">
+<resultMap type="RespuestasEncuestaTelefonica2EO" id="respuestas">
+<id column="RespuestasEncuestaTelefonica2EO_id" 						property="id" 		javaType="Integer"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_1" 			property="p_1" 		javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_1_1" 			property="p_1_1" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_2" 			property="p_2" 		javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_2_1" 			property="p_2_1"	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_3" 			property="p_3" 		javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_p_4" 			property="p_4" 		javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_5" 			property="p_5" 		javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_5_1" 			property="p_5_1" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_6_1_1" 		property="p_6_1_1" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_6_1_2" 		property="p_6_1_2" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_6_2_1" 		property="p_6_2_1" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_6_2_2" 		property="p_6_2_2" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_6_3_1" 		property="p_6_3_1" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_6_3_2" 		property="p_6_3_2" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_6_4_1" 		property="p_6_4_1" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_6_4_2" 		property="p_6_4_2" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_6_5_1" 		property="p_6_5_1" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_6_5_2" 		property="p_6_5_2" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_7" 			property="p_7" 		javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_8" 			property="p_8" 		javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_9" 			property="p_9" 		javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_10" 			property="p_10" 	javaType="String"/>
+ 	<result column="RespuestasEncuestaTelefonica2EO_p_10_1" 		property="p_10_1" 	javaType="String"/>
+ 	<association column="RespuestasEncuestaTelefonica2EO_contacto" 	property="contacto" select="encuestasTelefonicas.contacto.buscarPorId"/>
+</resultMap>
+
+<sql id="query">
+	SELECT 
+	   RespuestasEncuestaTelefonica2EO.pkey 		RespuestasEncuestaTelefonica2EO_id, 
+	   RespuestasEncuestaTelefonica2EO.id_contacto 	RespuestasEncuestaTelefonica2EO_contacto, 
+	   RespuestasEncuestaTelefonica2EO.p_1 			RespuestasEncuestaTelefonica2EO_p_1, 
+	   RespuestasEncuestaTelefonica2EO.p_1_1 		RespuestasEncuestaTelefonica2EO_p_1_1, 
+	   RespuestasEncuestaTelefonica2EO.p_2 			RespuestasEncuestaTelefonica2EO_p_2, 
+	   RespuestasEncuestaTelefonica2EO.p_2_1 		RespuestasEncuestaTelefonica2EO_p_2_1, 
+	   RespuestasEncuestaTelefonica2EO.p_3 			RespuestasEncuestaTelefonica2EO_p_3, 
+	   RespuestasEncuestaTelefonica2EO.p_4 			RespuestasEncuestaTelefonica2EO_p_4, 
+	   RespuestasEncuestaTelefonica2EO.p_5			RespuestasEncuestaTelefonica2EO_p_5, 
+	   RespuestasEncuestaTelefonica2EO.p_5_1 		RespuestasEncuestaTelefonica2EO_p_5_1, 
+       RespuestasEncuestaTelefonica2EO.p_6_1_1 		RespuestasEncuestaTelefonica2EO_p_6_1_1, 
+       RespuestasEncuestaTelefonica2EO.p_6_1_2 		RespuestasEncuestaTelefonica2EO_p_6_1_2, 
+       RespuestasEncuestaTelefonica2EO.p_6_2_1 		RespuestasEncuestaTelefonica2EO_p_6_2_1, 
+       RespuestasEncuestaTelefonica2EO.p_6_2_2 		RespuestasEncuestaTelefonica2EO_p_6_2_2, 
+       RespuestasEncuestaTelefonica2EO.p_6_3_1 		RespuestasEncuestaTelefonica2EO_p_6_3_1, 
+       RespuestasEncuestaTelefonica2EO.p_6_3_2 		RespuestasEncuestaTelefonica2EO_p_6_3_2, 
+       RespuestasEncuestaTelefonica2EO.p_6_4_1 		RespuestasEncuestaTelefonica2EO_p_6_4_1, 
+       RespuestasEncuestaTelefonica2EO.p_6_4_2 		RespuestasEncuestaTelefonica2EO_p_6_4_2, 
+       RespuestasEncuestaTelefonica2EO.p_6_5_1 		RespuestasEncuestaTelefonica2EO_p_6_5_1, 
+       RespuestasEncuestaTelefonica2EO.p_6_5_2 		RespuestasEncuestaTelefonica2EO_p_6_5_2, 
+       RespuestasEncuestaTelefonica2EO.p_7 			RespuestasEncuestaTelefonica2EO_p_7, 
+       RespuestasEncuestaTelefonica2EO.p_8 			RespuestasEncuestaTelefonica2EO_p_8, 
+       RespuestasEncuestaTelefonica2EO.p_9 			RespuestasEncuestaTelefonica2EO_p_9, 
+       RespuestasEncuestaTelefonica2EO.p_10 			RespuestasEncuestaTelefonica2EO_p_10, 
+       RespuestasEncuestaTelefonica2EO.p_10_1 		RespuestasEncuestaTelefonica2EO_p_10_1
+  FROM encuestas_telefonicas.resultados 			RespuestasEncuestaTelefonica2EO
+	
+</sql>
+
+
+<insert id="guardar" parameterType="RespuestasEncuestaTelefonica2EO" >
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+				SELECT NEXTVAL('encuestas_telefonicas.resultados_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas_telefonicas.resultados(
+            id_contacto, p_1, p_1_1, p_2, p_2_1, p_3, p_4, p_5, p_5_1, 
+            p_6_1_1, p_6_1_2, p_6_2_1, p_6_2_2, p_6_3_1, p_6_3_2, p_6_4_1, 
+            p_6_4_2, p_6_5_1, p_6_5_2, p_7, p_8, p_9, p_10, p_10_1, nick)
+   		VALUES ( #{contacto.id}, #{p_1} , #{p_1_1}, #{p_2}, #{p_2_1}, #{p_3}, #{p_4}, #{p_5}, #{p_5_1}, 
+            #{p_6_1_1}, #{p_6_1_2}, #{p_6_2_1}, #{p_6_2_2}, #{p_6_3_1}, #{p_6_3_2}, #{p_6_4_1},
+             #{p_6_4_2}, #{p_6_5_1}, #{p_6_5_2}, #{p_7}, #{p_8}, #{p_9}, #{p_10}, #{p_10_1}, #{nick});
+</insert>
+
+
+</mapper>

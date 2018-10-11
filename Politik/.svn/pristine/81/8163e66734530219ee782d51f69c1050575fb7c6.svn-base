@@ -1,0 +1,43 @@
+package com.saganet.politik.database.encuestas.admin;
+
+import java.io.Serializable;
+
+import com.saganet.politik.modelos.JavaBeanT;
+
+public class RespuestaCerradaEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 399462197551997127L;
+	
+	private Integer id;
+	private Integer idPregunta;
+	private String respuestas;
+	
+	@Override
+	public String toString() {
+		return "RespuestaCerradaEO [id=" + id + ", idPregunta=" + idPregunta + ", respuestas=" + respuestas + "]";
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getIdPregunta() {
+		return idPregunta;
+	}
+
+	public void setIdPregunta(Integer idPregunta) {
+		this.idPregunta = idPregunta;
+	}
+
+	public String getRespuestas() {
+		return respuestas;
+	}
+
+	public void setRespuestas(String respuestas) {
+		this.respuestas = respuestas;
+	}
+
+}

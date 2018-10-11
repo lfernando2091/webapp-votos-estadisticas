@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructuras.nodos">
+	<cache />
+	
+	<resultMap type="NodoEO" id="nodo">
+		<id column="NodoEO_id" property="id" javaType="Integer"/>
+		<result column="NodoEO_nodo" property="nodo" javaType="String"/>
+		<result column="NodoEO_nivel" property="nivel" javaType="Integer"/>
+		<association property="figura" resultMap="estructuras.figuras.figura" />
+	</resultMap>
+	
+	<resultMap type="NodoMetaEO" id="nodoMeta">
+		<id column="NodoMetaEO_id" property="id" javaType="Integer"/>
+		<result column="NodoMetaEO_llave" property="llave" javaType="String"/>
+		<result column="NodoMetaEO_meta" property="meta" javaType="Integer"/>
+		<result column="NodoMetaEO_avance" property="avance" javaType="Integer"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			NodoEO.id_nodo 				NodoEO_id,
+			NodoEO.nodo 				NodoEO_nodo,
+			nlevel(NodoEO.nodo) 		NodoEO_nivel,
+			FiguraEO.id_figura 			FiguraEO_id, 
+			FiguraEO.nivel 				FiguraEO_nivel, 
+			FiguraEO.figura 			FiguraEO_nombre,
+			FiguraEO.id_geozona			FiguraEO_idGeozona,
+			FiguraEO.jerarquico			FiguraEO_jerarquico
+  		FROM estructuras.nodos NodoEO
+  		JOIN estructuras.figuras FiguraEO on (NodoEO.id_figura = FiguraEO.id_figura)
+	</sql>
+	
+	<sql id="queryNodoMeta">
+		SELECT 
+			NodoMetaEO.id_nodo_meta 	NodoMetaEO_id, 
+			NodoMetaEO.llave 			NodoMetaEO_llave, 
+			NodoMetaEO.meta 			NodoMetaEO_meta,
+			NodoMetaEO.avance 			NodoMetaEO_avance
+  		FROM estructuras.nodos_metas NodoMetaEO
+	</sql>
+	
+	<sql id="queryNodoMetaSum">
+		SELECT 
+			1 						NodoMetaEO_id, 
+			sum(NodoMetaEO.meta)	NodoMetaEO_meta,
+			sum(NodoMetaEO.avance) 	NodoMetaEO_avance
+  		FROM estructuras.nodos_metas NodoMetaEO
+	</sql>
+	
+	<select id="listadoPorEstructura" resultMap="nodo" parameterType="EstructuraEO">
+		<include refid="query" />
+		WHERE NodoEO.id_estructura = #{id}
+		ORDER BY NodoEO.nodo 
+	</select>
+	
+	<select id="porId" parameterType="Integer" resultMap="nodo">
+		<include refid="query" />
+		WHERE NodoEO.id_nodo = #{value}
+	</select>
+	
+	<select id="porEstructuraPadreYNivel" parameterType="hashmap" resultMap="nodo">
+		<include refid="query" />
+		<where>
+			NodoEO.id_estructura = #{estructura.id} AND nlevel(nodo) = #{nivel}
+			<if test="nodoPadre != null">
+				AND nodo &lt;@ '${nodoPadre.nodo}'
+			</if>
+		</where>
+	</select>
+	
+	<select id="metasPorNodo" parameterType="NodoEO" resultMap="nodoMeta">
+		<include refid="queryNodoMeta" />
+		WHERE NodoMetaEO.id_nodo = #{id}
+	</select>
+	
+	<select id="metasPorNodoDinamico" parameterType="hashmap" resultMap="nodoMeta">
+		<include refid="queryNodoMetaSum" />
+		<if test="joinQuery != null">
+			${joinQuery}
+		</if>
+		<where>
+			id_nodo = #{nodo.id}
+			<if test="llave != null">
+				AND llave = #{llave}
+			</if>
+			<if test="llaveCompleja != null">
+				AND ${llaveCompleja}
+			</if>
+		</where>
+	</select>
+	
+	<select id="metasPorNodo_MismoNivel" parameterType="hashmap" resultMap="nodoMeta">
+		<include refid="queryNodoMeta" />
+		WHERE id_nodo = #{nodo.id} and llave = #{llave}
+	</select>
+	
+	<select id="metasPorNodo_MenorNivel" parameterType="hashmap" resultMap="nodoMeta">
+		<include refid="queryNodoMetaSum" />
+		<if test="joinQuery != null">
+			${joinQuery}
+		</if>
+		<where>
+			id_nodo = #{nodo.id}
+			<if test="llave != null">
+				AND llave = #{llave}
+			</if>
+			<if test="llaveCompleja != null">
+				AND ${llaveCompleja}
+			</if>
+		</where>
+	</select>
+
+	<insert id="insertar" parameterType="hashmap">
+		INSERT INTO estructuras.nodos(id_estructura, id_figura, nodo)
+		VALUES
+    	<foreach collection="nodos" item="item" separator="," close=";">
+    		(#{estructura.id}, #{item.figura.id}, '${item.nodo}')
+    	</foreach>
+	</insert>
+	
+</mapper>

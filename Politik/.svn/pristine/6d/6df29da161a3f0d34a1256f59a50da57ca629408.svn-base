@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sincronizacion.usuario">
+
+	<cache/>
+	
+	<resultMap type="UsuarioEO" id="usuario">
+		<id column="UsuarioEO_id"					property="id" 				javaType="Integer"/>
+		<result column="UsuarioEO_usuario" 			property="usuario" 			javaType="String"/>
+		<result column="UsuarioEO_password" 		property="password" 		javaType="String"/>
+		<result column="UsuarioEO_nombre" 			property="nombre" 			javaType="String"/>
+		<result column="UsuarioEO_primerapellido" 	property="primerApellido" 	javaType="String"/>
+		<result column="UsuarioEO_segundoapellido" 	property="segundoApellido" 	javaType="String"/>
+		<result column="UsuarioEO_supervisor" 		property="supervisor" 		javaType="Integer"/>
+		<result column="UsuarioEO_borrado" 			property="borrado" 			javaType="Integer"/>
+		<result column="UsuarioEO_admin" 			property="admin" 			javaType="Integer"/>
+		<result column="UsuarioEO_empresa" 			property="empresa" 			javaType="com.saganet.politik.dominios_dm.EmpresaDO" />	
+	</resultMap>
+	
+	<sql id="query"> 		
+  		SELECT 
+  			UsuarioEO.id  				UsuarioEO_id, 
+  			UsuarioEO.usuario 			UsuarioEO_usuario, 
+  			UsuarioEO.password 			UsuarioEO_password, 
+  			UsuarioEO.nombre 			UsuarioEO_nombre, 
+  			UsuarioEO.primerapellido 	UsuarioEO_primerapellido, 
+  			UsuarioEO.segundoapellido 	UsuarioEO_segundoapellido, 
+       		UsuarioEO.supervisor		UsuarioEO_supervisor, 
+        	UsuarioEO.borrado 			UsuarioEO_borrado, 
+        	UsuarioEO.empresa_id 		UsuarioEO_empresa, 
+        	UsuarioEO.admin 			UsuarioEO_admin
+ 		 FROM usuario 					UsuarioEO
+  		
+	</sql>
+	
+	<select id="listado" resultMap="usuario">
+		<include refid="query"/>
+	</select>
+	
+	<select id="buscarPorId" resultMap="usuario" parameterType="Integer">
+		<include refid="query"/>
+			WHERE UsuarioEO.id=#{value}
+			ORDER BY UsuarioEO.id 
+	</select>
+	
+	<insert id="insertar" parameterType="UsuarioEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT NEXTVAL('"Usuario_id_seq"'::regclass')
+		</selectKey>
+		 INSERT INTO usuario(
+            id, usuario, password, nombre, primerapellido, segundoapellido, 
+            supervisor, borrado, empresa_id, admin)
+   			VALUES (#{id}, #{usuario}, #{password}, #{nombre}, #{primerapellido}, #{segundoapellido}, 
+            #{supervisor}, #{borrado}, #{empresa}, #{admin});
+	</insert>
+	
+	<delete id="eliminar" parameterType="UsuarioEO">
+			DELETE FROM usuario
+ 			WHERE 	id =#{id}
+	</delete>
+
+	<update id="actualizarUsuario" parameterType="UsuarioEO">
+	UPDATE usuario
+   		SET  usuario=#{usuario}, password=#{password}, nombre=#{nombre}, primerapellido=#{primerapellido}, segundoapellido={segundoapellido}, 
+       	supervisor=#{supervisor}, borrado=#{borrado}, empresa_id=#{empresa}, admin=#{admin}
+ 		WHERE id=#{id}	
+	</update>
+	
+	
+
+</mapper>

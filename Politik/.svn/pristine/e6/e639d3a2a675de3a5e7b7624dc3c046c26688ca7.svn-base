@@ -1,0 +1,219 @@
+package com.saganet.politik.components.encuestas.admin;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.encuestas.admin.CampaniaEO;
+import com.saganet.politik.database.encuestas.admin.ParametrosEstadisticas;
+import com.saganet.politik.database.encuestas.admin.ReglaEncuestaEO;
+import com.saganet.politik.database.encuestas.admin.ReglaResultadoEO;
+
+@Component("ReglasResultadosC")
+public class ReglasResultadosC {
+
+	@Autowired
+	SqlSession sqlSession;
+
+	@Autowired
+	ParametrosEstadisticas parametrosEstadisticas;
+
+	private static final Logger logger = LoggerFactory.getLogger(ReglasResultadosC.class);
+
+	public void actualizarResultados(CampaniaEO campania) {
+
+		List<ReglaEncuestaEO> reglasEncuesta;
+		StringBuilder reglasCombinadas;
+		StringBuilder reglasSimples;
+		StringBuilder reglasCombinadasACrear;
+		HashMap<String, Object> parametros = null;
+		
+		//Actualizamos universos en la campania
+		campania.setUniversoContactos((Integer)sqlSession.selectOne("encuestas.captura.cuestionario.contactosUniversoTotal",campania.getTablaContactos()));
+		campania.setAvanceContactos((Integer)sqlSession.selectOne("encuestas.captura.cuestionario.contactosUniversoTotal.contactosUniversoAvance",campania.getTablaContactos()));
+		
+		sqlSession.update("encuestas.admin.campania.actualizarUniversosCampania", campania);
+		//--------------------------------------------
+
+		// Identificación_de_reglas_existentes.
+		reglasCombinadas = new StringBuilder();
+		reglasCombinadasACrear = new StringBuilder();
+		reglasSimples = new StringBuilder();
+		reglasEncuesta = sqlSession.selectList("encuestas.admin.reglasEncuestas.listado", campania.getEncuesta());
+
+		for (ReglaEncuestaEO reglaEncuesta : reglasEncuesta) {
+			if (reglaEncuesta.getTipo().equals("COMBINADA")) {
+
+				// Eliminacio_de_reglas_combinadas_existentes_si_es_que_ya_fueron_generadas_en_la_tabla_de_resultados_de_la_campaña
+				parametros = new HashMap<>();
+				parametros.put("tablaCampania", campania.getId());
+				parametros.put("reglasCombinadas", "r" + reglaEncuesta.getId());
+
+				try {
+					sqlSession.update("encuestas.captura.cuestionario.eliminarColumnasReglasResultados", parametros);
+					logger.debug("Las columnas fueron eliminadas de la tabla de resultados de la campania");
+				} catch (Exception e) {
+					logger.debug("Error esperado: {}", e.toString());
+					logger.debug("Aun no han sido creadas las columnas de resultados en la tabla de la campania");
+				}
+				// -----------------------------------------------
+
+				reglasCombinadas.append("r" + reglaEncuesta.getId());
+				reglasCombinadas.append(",");
+
+				reglasCombinadasACrear.append(" ADD COLUMN r" + reglaEncuesta.getId());
+				reglasCombinadasACrear.append(" TEXT");
+				reglasCombinadasACrear.append(",");
+
+			} else if (reglaEncuesta.getTipo().equals("SIMPLE")) {
+				reglasSimples.append("r" + reglaEncuesta.getId());
+				reglasSimples.append(",");
+			}
+		}
+
+		reglasCombinadas = reglasCombinadas.deleteCharAt(reglasCombinadas.length() - 1);
+		reglasSimples = reglasSimples.deleteCharAt(reglasSimples.length() - 1);
+		reglasCombinadasACrear = reglasCombinadasACrear.deleteCharAt(reglasCombinadasACrear.length() - 1);
+
+		logger.debug("reglasEncuestas: {}", reglasEncuesta);
+		logger.debug("reglasCombinadas: {}", reglasCombinadas);
+		logger.debug("reglasSimples: {}", reglasSimples);
+
+		// Creación_de_las_columas_para_las_reglas_combinadas_en_la_tabla_de_la_campaña
+		parametros.clear();
+		parametros = new HashMap<>();
+		parametros.put("tablaCampania", campania.getId());
+		parametros.put("reglasCombinadasACrear", reglasCombinadasACrear);
+		sqlSession.update("encuestas.captura.cuestionario.crearColumnasReglasResultados", parametros);
+		logger.debug("Las columnas de resultados, se crearon correctamente");
+
+		// Actualizamos_campos_de_resultados_de_la_tabla_de_la_campania,_de_acuerdo_a_sus_reglas
+		for (ReglaEncuestaEO reglaEncuesta : reglasEncuesta) {
+			if (reglaEncuesta.getTipo().equals("COMBINADA")) {
+				parametros.clear();
+				parametros = new HashMap<>();
+				parametros.put("tablaCampania", campania.getId());
+				parametros.put("reglaColumna", "r" + reglaEncuesta.getId());
+				parametros.put("script", reglaEncuesta.getScript());
+				sqlSession.update("encuestas.captura.cuestionario.actualizarColumnasResultados", parametros);
+			}
+		}
+		
+		ReglaResultadoEO reglaResultado;
+		Integer validadcionCreacionReglasResultados = 0;
+		// Creacion_de_resultados_por_regla,_SIMPLE_O_COMBINADA.
+		for (ReglaEncuestaEO reglaEncuesta : reglasEncuesta) {
+			switch (reglaEncuesta.getTipo()) {
+			case "COMBINADA":
+				reglaResultado = new ReglaResultadoEO();
+				reglaResultado.setIdRegla(reglaEncuesta.getId());
+				reglaResultado.setNick("admin");
+				reglaResultado.setResultado("");
+				
+				//Obtenemos_los_parametros
+				parametros.clear();
+				parametros = new HashMap<>();
+				parametros.put("tablaCampania", campania.getId());
+				parametros.put("columnaTabla", "r"+reglaEncuesta.getId());
+				logger.debug("Parametros: {}", parametros);
+				//-----------------------
+				
+				List<HashMap<String, Object>> resultado = sqlSession.selectList("encuestas.captura.cuestionario.resultadosEncuesta", parametros);
+				logger.debug("ResultadoEnceusta: {}", resultado);
+				
+				for(HashMap<String, Object> map : resultado){
+					reglaResultado.setResultado(reglaResultado.getResultado()+map.get("r"+reglaEncuesta.getId()).toString()+"|"+map.get("total")+"@");
+				}
+				
+				reglaResultado.setResultado(reglaResultado.getResultado().substring(0, reglaResultado.getResultado().length()-1));
+				logger.debug("ResultadoCombinadoEnEO: {}", reglaResultado.getResultado());
+				
+				//VALIDAMOS_LA_INSERCION_O_ACTUALIZACION_DE_LAS_REGLAS_COMBINADAS
+				validadcionCreacionReglasResultados = 0;
+				validadcionCreacionReglasResultados = sqlSession.selectOne("encuestas.admin.reglasResultados.validarReglaResultado", reglaResultado);
+				if(validadcionCreacionReglasResultados<1){
+					logger.debug("No existe resultado para esta regla combinada, se va a insertar uno nuevo");
+					sqlSession.insert("encuestas.admin.reglasResultados.insertar", reglaResultado);
+				}else{
+					logger.debug("Ya existe resultado para esta regla combinada, se va a actualizar");
+					sqlSession.update("encuestas.admin.reglasResultados.actualizar", reglaResultado);
+				}
+				//---------------------------------------------------------------
+				
+				break;
+
+			case "SIMPLE":
+				
+				reglaResultado = new ReglaResultadoEO();
+				reglaResultado.setIdRegla(reglaEncuesta.getId());
+				reglaResultado.setNick("admin");
+				reglaResultado.setResultado("");
+				
+				//Obtenemos_los_parametros
+				parametros.clear();
+				parametros = new HashMap<>();
+				parametros.put("tablaCampania", campania.getId());
+				parametros.put("columnaTabla", reglaEncuesta.getScript());
+				logger.debug("Parametros: {}", parametros);
+				//-----------------------
+				
+				List<HashMap<String, Object>> resultadoSimple = sqlSession.selectList("encuestas.captura.cuestionario.resultadosEncuesta", parametros);
+				logger.debug("ResultadoEnceusta: {}", resultadoSimple);
+				
+				for(HashMap<String, Object> map : resultadoSimple){
+					reglaResultado.setResultado(reglaResultado.getResultado()+map.get(reglaEncuesta.getScript()).toString()+"|"+map.get("total")+"@");
+				}
+				
+				reglaResultado.setResultado(reglaResultado.getResultado().substring(0, reglaResultado.getResultado().length()-1));
+				logger.debug("ResultadoSimpleEnEO: {}", reglaResultado.getResultado());
+				
+				//VALIDAMOS_LA_INSERCION_O_ACTUALIZACION_DE_LAS_REGLAS_SIMPLES
+				validadcionCreacionReglasResultados = 0;
+				validadcionCreacionReglasResultados = sqlSession.selectOne("encuestas.admin.reglasResultados.validarReglaResultado", reglaResultado);
+				if(validadcionCreacionReglasResultados<1){
+					logger.debug("No existe resultado para esta regla simple, se va a insertar uno nuevo");
+					sqlSession.insert("encuestas.admin.reglasResultados.insertar", reglaResultado);
+				}else{
+					logger.debug("Ya existe resultado para esta regla simple, se va a actualizar");
+					sqlSession.update("encuestas.admin.reglasResultados.actualizar", reglaResultado);
+				}
+				
+				break;
+			}
+		}
+
+	}
+
+	public void estadisticas(CampaniaEO campania) {
+
+		logger.debug("CampaniaEntrada: {}", campania);
+		
+		//--Obtenemos Universos Campaña
+		campania.setUniversoContactos((Integer)sqlSession.selectOne("encuestas.admin.campania.universoContactos", campania));
+		campania.setAvanceContactos((Integer)sqlSession.selectOne("encuestas.admin.campania.universoContactosAvance", campania));
+		//-----------------------------------
+
+		List<ReglaEncuestaEO> reglasEncuestas = null;
+		reglasEncuestas = sqlSession.selectList("encuestas.admin.reglasEncuestas.listado", campania.getEncuesta());
+
+		campania.getEncuesta().setReglasEncuestas(reglasEncuestas);
+
+		logger.debug("ReglasEncuestas: {}", reglasEncuestas);
+
+		for (ReglaEncuestaEO reglaEncuesta : campania.getEncuesta().getReglasEncuestas()) {
+			List<ReglaResultadoEO> reglasResultados = null;
+			reglasResultados = sqlSession.selectList("encuestas.admin.reglasResultados.listado", reglaEncuesta);
+			reglaEncuesta.setReglasResultados(reglasResultados);
+		}
+
+		logger.debug("CampaniaSalida: {}", campania);
+		parametrosEstadisticas.setCampania(campania);
+
+	}
+
+}

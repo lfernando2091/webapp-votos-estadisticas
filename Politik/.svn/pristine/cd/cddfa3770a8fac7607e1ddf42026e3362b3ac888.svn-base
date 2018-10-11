@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.edomex2017.entrevistaEntrevistador.entrevistaEntrevistados">
+	
+	<resultMap type="Edomex2017EntrevistaEntrevistadosEO" id="entrevistaEntrevistados">
+		<id 		column="id" 		 				property="id" 							javaType="Integer"/>
+		<result 	column="folio" 						property="folio" 						javaType="Integer"/>
+		<result 	column="_1" 						property="_1" 							javaType="com.saganet.politik.dominios.SiNoNSNCDO"/>
+		<result 	column="_2" 						property="_2" 							javaType="String"/>
+		<result 	column="_3" 						property="_3" 							javaType="com.saganet.politik.dominios.SiNoNSNCDO"/>
+		<result 	column="_4" 						property="_4" 							javaType="String"/>
+		<result 	column="_5" 						property="_5" 							javaType="String"/>
+		<result 	column="_6" 						property="_6" 							javaType="com.saganet.politik.dominios.SiNoNSNCDO"/>
+		<result 	column="_7" 						property="_7" 							javaType="String"/>
+		<result 	column="_8" 						property="_8" 							javaType="String"/>
+		<result     column="resultado"					property="resultado" 					javaType="com.saganet.politik.dominios.ResultadoEntrevistaEntrevistadorDO"/>
+		<result 	column="nick" 						property="nick" 						javaType="String"/>
+		<result 	column="fechaCaptura" 				property="fechaCaptura" 				javaType="java.sql.Timestamp"/>
+		<result 	column="fechaActualizacion" 		property="fechaActualizacion" 			javaType="java.sql.Timestamp"/>
+	</resultMap>
+	
+	<select id="listado" resultMap="entrevistaEntrevistados">
+		SELECT 
+			Edomex2017EntrevistaEntrevistadosEO.pkey							id, 
+			Edomex2017EntrevistaEntrevistadosEO.id_entrevistado					folio, 
+			Edomex2017EntrevistaEntrevistadosEO.p_1								_1, 
+			Edomex2017EntrevistaEntrevistadosEO.p_2								_2, 
+			Edomex2017EntrevistaEntrevistadosEO.p_3								_3, 
+			Edomex2017EntrevistaEntrevistadosEO.p_4								_4, 
+			Edomex2017EntrevistaEntrevistadosEO.p_5								_5, 
+			Edomex2017EntrevistaEntrevistadosEO.p_6								_6, 
+			Edomex2017EntrevistaEntrevistadosEO.p_7								_7, 
+			Edomex2017EntrevistaEntrevistadosEO.p_8								_8,
+			Edomex2017EntrevistaEntrevistadosEO.fecha_captura					fechaCaptura, 
+			Edomex2017EntrevistaEntrevistadosEO.fecha_actualizacion				fechaActualizacion, 
+			Edomex2017EntrevistaEntrevistadosEO.nick							nick,
+			Edomex2017EntrevistaEntrevistadosEO.resultado						resultado
+		FROM encuestas_edomex.cuestionario_entrevistados 						Edomex2017EntrevistaEntrevistadosEO
+	</select>
+	
+	<insert id="insertar" parameterType="Edomex2017EntrevistaEntrevistadosEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT nextval('encuestas_edomex.cuestionario_entrevistados_pkey_seq'::regclass)
+		</selectKey>
+		INSERT INTO encuestas_edomex.cuestionario_entrevistados(
+	            pkey, id_visitador, p_1, p_2, p_3, p_4, p_5, p_6, p_7, p_8, 
+	            fecha_captura, fecha_actualizacion, nick, resultado
+	    )
+	    VALUES (
+	    		#{id}, #{folio}, #{_1}, #{_2}, #{_3}, #{_4}, #{_5}, #{_6}, #{_7}, #{_8}, 
+	            #{fechaCaptura}, #{fechaActualizacion}, #{nick}, #{resultado}
+	    )
+	</insert>
+</mapper>

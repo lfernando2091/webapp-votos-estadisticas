@@ -1,0 +1,79 @@
+package com.saganet.politik.components.diaD.reportes;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+
+import com.saganet.politik.database.diaD.reportes.MetasMovilizadoresEO;
+import com.saganet.politik.dominios.NivelReporteCompletoDO;
+import com.saganet.politik.dominios.ProgramasEdoMexDO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("DiaDReportesMetasMovilizadoresC")
+public class MetasMovilizadoresC {
+@Autowired
+SqlSession sqlSession;
+
+private static final Logger logger = LoggerFactory.getLogger(MetasMovilizadoresC.class);
+public String modelo(RequestContext context, NivelReporteCompletoDO nivel, ProgramasEdoMexDO programa){
+	HashMap<String, Object> flowScope;
+	List<MetasMovilizadoresEO> listado;
+	Modelo<MetasMovilizadoresEO> modelo;
+	
+	logger.debug("Listado: {}", nivel);
+	logger.debug("Listado: {}", programa);
+	flowScope = (HashMap<String, Object>) context.getFlowScope().asMap();
+	if(nivel.getNombre().equals("General")){
+		flowScope.put("nivel", "general");
+	}else if(nivel.getNombre().equals("Estatal")){
+		flowScope.put("nivel", "estatal");
+	}else if(nivel.getNombre().equals("Region")){
+		flowScope.put("nivel", "region");
+	}else if(nivel.getNombre().equals("Sección")){
+		flowScope.put("nivel", "seccion");
+	}else if(nivel.getNombre().equals("Municipio")){
+		flowScope.put("nivel", "municipio");
+	}
+	
+	flowScope.put("programa", programa);
+	flowScope.put("region",flowScope.get("listadoRegiones"));
+	flowScope.put("municipio",flowScope.get("listadoMunicipios"));
+	flowScope.put("seccion",flowScope.get("listadoSecciones"));
+	try{
+	listado = sqlSession.selectList("diaD.reportes.metasMovilizadores.listado", flowScope);
+	modelo = new Modelo<>(listado);
+	flowScope.put("modelo", modelo);
+	flowScope.put("total", subtotal(modelo));
+	logger.debug("Listado: {}", listado);
+	}catch(Exception e){
+		
+		System.out.println(e.getMessage());
+	}
+	
+	return "success";
+}
+public HashMap<String, Object> subtotal(Modelo<MetasMovilizadoresEO> modelo){
+	HashMap<String, Object> mapa;
+	Integer meta, avance;
+	
+	meta = 0;
+	avance = 0;
+	mapa = new HashMap<>();
+	
+	for (MetasMovilizadoresEO metaMovilizador : modelo.getListado()) {
+		avance = avance + metaMovilizador.getCapturados();
+		meta = meta + metaMovilizador.getMeta();
+	}
+	mapa.put("tavance", avance);
+	mapa.put("tmeta", meta);
+	mapa.put("tporcentaje", Math.round((avance/meta)*100));
+	return mapa;
+	
+}
+}

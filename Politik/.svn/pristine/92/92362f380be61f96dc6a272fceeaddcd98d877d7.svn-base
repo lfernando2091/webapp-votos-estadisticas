@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.dependencias">
+	<cache />
+	
+	<resultMap type="DependenciaEO" id="dependencia">
+		<id column="DependenciaEO_id" property="id" javaType="Integer"/>
+		<result column="DependenciaEO_dependencia" property="dependencia" javaType="String"/>
+		<result column="DependenciaEO_siglas" property="siglas" javaType="String"/>
+		<result column="DependenciaEO_nivelGeografico" property="nivelGeografico" javaType="String"/>
+		<result column="DependenciaEO_nivelDependencia" property="nivelDependencia" javaType="String"/>
+		<result column="DependenciaEO_idDependenciaPadre" property="idDependenciaPadre" javaType="Integer"/>
+		<result column="DependenciaEO_estatus" property="estatus" javaType="Integer"/>
+		<result column="DependenciaEO_nick" property="nick" javaType="String"/>
+		<result column="DependenciaEO_fecha" property="fecha" javaType="String"/>
+		<result column="DependenciaEO_nickActualizacion" property="nickActualizacion" javaType="String"/>
+		<result column="DependenciaEO_fechaActualizacion" property="fechaActualizacion" javaType="String"/>
+		<association column="DependenciaEO_idDependenciaPadre" property="dependenciaPadre" select="catalogos.dependencias.dependenciaById" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+		DependenciaEO.pkey														DependenciaEO_id, 
+		DependenciaEO.dependencia												DependenciaEO_dependencia, 
+		DependenciaEO.siglas													DependenciaEO_siglas, 
+		DependenciaEO.nivel_geografico											DependenciaEO_nivelGeografico, 
+		DependenciaEO.nivel_dependencia											DependenciaEO_nivelDependencia, 
+       	DependenciaEO.id_dependencia_padre										DependenciaEO_idDependenciaPadre,
+       	DependenciaEO.estatus													DependenciaEO_estatus,
+       	DependenciaEO.nick														DependenciaEO_nick,
+       	to_char(DependenciaEO.fecha, 'YYYY-MM-DD HH24:MI:SS')					DependenciaEO_fecha,
+       	DependenciaEO.nick_actualizacion										DependenciaEO_nickActualizacion,
+       	to_char(DependenciaEO.fecha_actualizacion, 'YYYY-MM-DD HH24:MI:SS')		DependenciaEO_fechaActualizacion
+  		FROM catalogos.dependencias DependenciaEO
+	</sql>
+	
+	<select id="listado" resultMap="dependencia">
+		<include refid="query"/>
+		<where>
+			DependenciaEO.estatus = 1
+		</where>
+		ORDER BY DependenciaEO.id_dependencia_padre, DependenciaEO.pkey
+	</select>
+	
+	<select id="dependenciaById" resultMap="dependencia" parameterType="Integer">
+		<include refid="query"/>
+		WHERE DependenciaEO.pkey = #{value} and DependenciaEO.estatus = 1
+	</select>
+	
+	<insert id="insertar" parameterType="DependenciaEO">
+		INSERT INTO catalogos.dependencias(pkey, dependencia, siglas, nivel_geografico, nivel_dependencia, id_dependencia_padre, nick)
+    	VALUES (#{id}, #{dependencia}, #{siglas}, #{nivelGeografico}, #{nivelDependencia}, #{dependenciaPadre.id}, #{nick})
+	</insert>
+	
+	<select id="idNextDependencia" resultType="Integer">
+		SELECT NEXTVAL('catalogos.dependencias_pkey_seq')
+	</select>
+	
+	<update id="actualizar" parameterType="DependenciaEO">
+		UPDATE catalogos.dependencias SET 
+		dependencia = #{dependencia}, 
+		siglas = #{siglas}, 
+		nivel_geografico = #{nivelGeografico}, 
+		nivel_dependencia = #{nivelDependencia}, 
+		id_dependencia_padre = #{idDependenciaPadre},
+		nick_actualizacion = #{nickActualizacion},
+		fecha_actualizacion = now()
+		<where>
+			pkey = #{id}
+		</where>
+	</update>
+	
+	<update id="estatusDependenciaChange" parameterType="hashmap">
+		UPDATE catalogos.dependencias SET estatus = #{estatus}, nick_actualizacion = #{nickActualizacion}, fecha_actualizacion = now()
+ 		<where>
+ 			pkey = #{idDependencia}
+ 		</where>
+	</update>
+	
+	<select id="listadoPorUsuario" parameterType="UsuarioEO" resultMap="dependencia" useCache="false">
+		<include refid="query" />
+		<where>
+			DependenciaEO.pkey in (
+				SELECT id_dependencia
+				FROM administracion.usuarios_dependencias
+				WHERE nick = #{nick}
+			)
+		</where>
+	</select>
+	
+</mapper>

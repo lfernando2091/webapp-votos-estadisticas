@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="diaD.seccional">
+	<resultMap type="SeccionalEO" id="seccional">
+		<id 			column="SeccionalEO_pkey" 						property="id" 				javaType="Integer" />
+		<result 		column="SeccionalEO_nombre" 					property="nombre"			javaType="String"/>
+		<result  		column="SeccionalEO_fechaNacimiento"			property="fechaNacimiento" 	javaType="java.sql.Date"/>
+		<result  		column="SeccionalEO_primerApellido"				property="primerApellido" 	javaType="String"/>
+		<result  		column="SeccionalEO_segundoApellido"			property="segundoApellido" 	javaType="String"/>
+		<result  		column="SeccionalEO_calle"						property="calle" 			javaType="String"/>
+		<result  		column="SeccionalEO_numeroInterior"				property="numeroInterior" 	javaType="String"/>
+		<result  		column="SeccionalEO_numeroExterior"				property="numeroExterior" 	javaType="String"/>
+		<result  		column="SeccionalEO_colonia"					property="colonia" 			javaType="String"/>
+		<result  		column="SeccionalEO_codigoPostal"				property="codigoPostal" 	javaType="Integer"/>
+		<result 		column="SeccionalEO_llaveSeccion" 				property="llaveSeccion"		javaType="String" />
+		<result 	    column="SeccionalEO_genero" 					property="genero"			javaType="com.saganet.politik.dominios.GenerosDO" />
+	</resultMap>
+	
+	
+	<sql id="query">
+		SELECT 
+			SeccionalEO.pkey				SeccionalEO_pkey, 
+			SeccionalEO.nombre				SeccionalEO_nombre, 
+			SeccionalEO.primer_apellido		SeccionalEO_primerApellido, 
+			SeccionalEO.segundo_apellido	SeccionalEO_segundoApellido, 
+			SeccionalEO.fecha_nacimiento	SeccionalEO_fechaNacimiento, 
+       		SeccionalEO.genero				SeccionalEO_genero, 
+       		SeccionalEO.calle				SeccionalEO_calle, 
+       		SeccionalEO.numero_interior		SeccionalEO_numeroInterior, 
+       		SeccionalEO.numero_exterior		SeccionalEO_numeroExterior, 
+       		SeccionalEO.colonia				SeccionalEO_colonia, 
+       		SeccionalEO.codigo_postal		SeccionalEO_codigoPostal, 
+       		SeccionalEO.llave_seccion		SeccionalEO_llaveSeccion
+  		FROM dia_d.seccional SeccionalEO
+	</sql>
+		
+	<select id="buscarPorId" parameterType="Integer"  resultMap="seccional">
+		<include refid="query" />
+		WHERE SeccionalEO.pkey = #{value}
+	</select>
+	
+	<select id="listado" resultMap="seccional">
+		<include refid="query" />
+		order by SeccionalEO.pkey
+	</select>
+	
+	<insert id="insertar" parameterType="SeccionalEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT nextval('dia_d.seccional_pkey_seq'::regclass)
+		</selectKey>
+		INSERT INTO dia_d.seccional(
+            pkey, nombre, primer_apellido, segundo_apellido, fecha_nacimiento, 
+            genero, calle, numero_interior, numero_exterior, colonia, codigo_postal, 
+            llave_seccion)
+		VALUES  (#{id}, #{nombre}, #{primerApellido}, #{segundoApellido}, #{fechaNacimiento}, #{genero}, #{calle}, 
+			#{numeroInterior}, #{numeroExterior}, #{colonia}, #{codigoPostal}, #{llaveSeccion})
+	</insert>
+	
+	<update id="actualizar" parameterType="SeccionalEO">
+		UPDATE dia_d.seccional
+   		SET nombre=#{nombre}, primer_apellido=#{primerApellido}, segundo_apellido=#{segundoApellido}, fecha_nacimiento=#{fechaNacimiento}, 
+       	genero=#{genero}, calle=#{calle}, numero_interior=#{numeroInterior}, numero_exterior=#{numeroExterior}, colonia=#{colonia}, 
+       	codigo_postal=#{codigoPostal}, llave_seccion=#{llaveSeccion}
+		WHERE pkey=#{id}
+	</update>
+</mapper>

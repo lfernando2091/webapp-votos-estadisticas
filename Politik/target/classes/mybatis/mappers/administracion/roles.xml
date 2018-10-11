@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="administracion.roles">
+	<cache />
+	
+	<resultMap type="RolEO" id="rol">
+		<id column="RolEO_id" property="id" javaType="Integer"/>
+		<result column="RolEO_rol" property="rol" javaType="String"/>
+		<result column="RolEO_descripcion" property="descripcion" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT
+			RolEO.pkey 			RolEO_id, 
+			RolEO.rol 			RolEO_rol, 
+			RolEO.descripcion 	RolEO_descripcion
+  		FROM administracion.roles RolEO
+	</sql>
+	
+	<select id="listado" resultMap="rol">
+		<include refid="query" />
+		ORDER BY RolEO.rol
+	</select>
+	
+	<insert id="insertar" parameterType="RolEO">
+		INSERT INTO administracion.roles(rol, descripcion)
+        VALUES (#{rol}, #{descripcion});
+	</insert>
+	
+	<insert id="insertarAutorizacionesPorUsuario" parameterType="UsuarioEO">
+		INSERT INTO administracion.autorizaciones(nick, rol)
+    	VALUES
+    	<foreach collection="roles" item="item" separator="," close=";">
+			(#{nick}, #{item.rol})
+		</foreach>
+	</insert>
+	
+	<delete id="eliminarAutorizacionesPorUsuario" parameterType="UsuarioEO">
+		DELETE FROM administracion.autorizaciones
+ 		WHERE nick = #{nick}
+	</delete>
+</mapper>

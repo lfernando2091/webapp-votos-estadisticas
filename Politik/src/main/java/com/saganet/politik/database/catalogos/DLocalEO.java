@@ -1,0 +1,83 @@
+package com.saganet.politik.database.catalogos;
+
+import java.io.Serializable;
+
+import org.apache.ibatis.type.Alias;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("DLocalEO")
+public class DLocalEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 1582897401613487307L;
+
+	private Integer id;
+	private Integer idDLocal;
+	private EntidadEO entidad;
+	private String nombre;
+	private String llave;
+
+	@Override
+	public String toString() {
+		return "DLocalEO [id=" + id + ", idDLocal=" + idDLocal + ", entidad=" + entidad + ", nombre=" + nombre
+				+ ", llave=" + llave + "]";
+	}
+	
+	public boolean contieneTerritorio(JavaBeanT territorio){
+		return this.equals(territorio) || entidad.equals(territorio);
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getIdDLocal() {
+		return idDLocal;
+	}
+
+	public void setIdDLocal(Integer idDLocal) {
+		this.idDLocal = idDLocal;
+	}
+
+	public EntidadEO getEntidad() {
+		return entidad;
+	}
+
+	public void setEntidad(EntidadEO entidad) {
+		this.entidad = entidad;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getLlave() {
+		return llave;
+	}
+
+	public void setLlave(String llave) {
+		this.llave = llave;
+	}
+	
+	@JsonIgnore
+	public String getNombreCompleto(){
+		StringBuilder nombre;
+		
+		nombre = new StringBuilder();
+		
+		nombre.append(entidad.getNombre());
+		nombre.append(": ");
+		nombre.append(this.nombre);
+		
+		return nombre.toString();
+	}
+
+}

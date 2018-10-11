@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Agregar Aliado Estratégico">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Nombre: "/>
+							<p:outputLabel value="${idPersona.id} - ${idPersona.nombre} ${idPersona.primerApellido} ${idPersona.segundoApellido}"/>
+							<p:outputLabel value="Fecha de Nacimiento: "/>
+							<p:outputLabel value="${idPersona.dia} - ${idPersona.mes} - ${idPersona.anho}"/>
+							<p:outputLabel value="Entidad de Nacimiento: "/>
+							<p:outputLabel value="${idPersona.entidadNacimiento.nombre}"/>
+							<p:outputLabel value="Entidad: "/>
+							<p:outputLabel value="idPersona.entidad.nombre"/>
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" action="guardar"/>
+								<p:commandButton value="Cancelar" action="cancelar"/>
+							</f:facet>
+						</p:panelGrid>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

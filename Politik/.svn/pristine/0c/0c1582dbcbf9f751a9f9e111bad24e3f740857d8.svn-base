@@ -1,0 +1,24 @@
+package com.saganet.politik.dominios_dm;
+
+public enum CatMedioDO {
+	TV("T.V."),
+	RADIO("Radio"),
+	PERIODICOS("Periódicos"),
+	FACEBOOK("Facebook"),
+	TWITTER("Twitter "),
+	REVISTAS("Revistas"),
+	VECINOS("Vecinos "),
+	AMIGOS("Amigos"),
+	FAMILIARES("Familiares"),
+	NO_CONTESTA("No contesta");
+
+	private final String nombre;
+
+	private CatMedioDO(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+}

@@ -1,0 +1,383 @@
+package com.saganet.politik.components.administracion;
+
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.RolEO;
+import com.saganet.politik.database.administracion.UsuarioAccesoEO;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.DependenciaEO;
+import com.saganet.politik.dominios.ProgramasEdoMexDO;
+import com.saganet.politik.modelos.JavaBeanT;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("UsuariosC")
+public class UsuariosC {
+
+	@Autowired
+	SqlSession sqlSession;
+	
+	@Autowired
+	SessionRegistry session;
+
+	private static final Logger logger = LoggerFactory.getLogger(UsuariosC.class);
+
+	public UsuarioEO porNick(String nick) {
+		UsuarioEO usuario;
+		usuario = sqlSession.selectOne("administracion.usuarios.porNick", nick);
+		cargarTerritorios(usuario);
+		cargarDependencias(usuario);
+		cargarAccesos(usuario);
+		//cargarPrograma(usuario);
+		return usuario;
+	}
+
+	public void cargarTerritorios(UsuarioEO usuario) {
+		List<JavaBeanT> territorios;
+		territorios = null;
+		switch (usuario.getNivel()) {
+		case DFEDERAL:
+			territorios = sqlSession.selectList("catalogos.dFederales.listadoPorUsuario", usuario);
+			break;
+		case DLOCAL:
+			territorios = sqlSession.selectList("catalogos.dLocales.listadoPorUsuario", usuario);
+			break;
+		case ENTIDAD:
+			territorios = sqlSession.selectList("catalogos.entidades.listadoPorUsuario", usuario);
+			break;
+		case GEOZONA:
+			territorios = sqlSession.selectList("catalogos.geozonas.listadoParticionesPorUsuario", usuario);
+			break;
+		case LOCALIDAD:
+			break;
+		case MANZANA:
+			break;
+		case MUNICIPIO:
+			territorios = sqlSession.selectList("catalogos.municipios.listadoPorUsuario", usuario);
+			break;
+		case NACIONAL:
+			break;
+		case SECCION:
+			break;
+		}
+
+		if (territorios == null)
+			usuario.setTerritorios(new ArrayList<JavaBeanT>());
+		else
+			usuario.setTerritorios(territorios);
+	}
+	
+	public void cargarDependencias(UsuarioEO usuario){
+		List<DependenciaEO> listado;
+		
+		listado = sqlSession.selectList("catalogos.dependencias.listadoPorUsuario", usuario);
+		usuario.setDependencias(listado);
+	}
+	
+	public void cargarAccesos(UsuarioEO usuario){
+		List<UsuarioAccesoEO> listado;
+		listado = sqlSession.selectList("administracion.accesos.porUsuario", usuario);
+		usuario.setAccesos(listado);
+	}
+
+	public Modelo<UsuarioEO> modelo() {
+
+		Modelo<UsuarioEO> modelo;
+		List<UsuarioEO> listado;
+
+		listado = sqlSession.selectList("administracion.usuarios.listado");
+
+		// Cargar Información complementaria
+		for(UsuarioEO usuario : listado){
+			cargarTerritorios(usuario);
+			cargarDependencias(usuario);
+			cargarAccesos(usuario);
+		}
+
+		//logger.debug("listadoUsuarios: {}", listado);
+
+		modelo = new Modelo<>();
+		modelo.setListado(listado);
+
+		if (!listado.isEmpty()) {
+			modelo.setSeleccionado(listado.get(0));
+		}
+
+		//logger.debug("modeloUsuarios: {}", modelo);
+		
+		return modelo;
+	}
+	
+	public Date newfechaInicial(){
+		return new Date();
+	}
+	
+	@SuppressWarnings("deprecation")
+	public Modelo<UsuarioEO> modeloBitacora(Date fechaInicio, Date fechaFin) {
+		
+		Modelo<UsuarioEO> modelo;
+		List<UsuarioEO> listado;
+		HashMap<String, Object> params;
+		
+		String fechaInicioF;
+		String fechaFinF;
+		
+		logger.debug("Fecha Inicio: {}", fechaInicio);
+		logger.debug("Fecha Fin: {}", fechaFin);
+		
+		Format formatter = new SimpleDateFormat("yyyy-MM-dd");
+		
+		if(fechaInicio.getDate()==fechaFin.getDate()){
+			fechaInicioF = formatter.format(fechaInicio);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(fechaFin);
+			calendar.add(Calendar.DAY_OF_YEAR, 1);
+			fechaFin = calendar.getTime();
+			fechaFinF = formatter.format(fechaFin);
+		}else{
+			fechaInicioF = formatter.format(fechaInicio);
+			fechaFinF = formatter.format(fechaFin);
+		}
+		
+		logger.debug("fechaInicial: {}",fechaInicioF);
+		logger.debug("fechaFinal: {}",fechaFinF);
+		
+		params = new HashMap<>();
+		params.put("fechaInicio", fechaInicioF);
+		params.put("fechaFin", fechaFinF);
+		
+		listado = sqlSession.selectList("administracion.usuarios.listadoConcentradoPorFechas", params);
+		
+		//logger.debug("Listado Concentrado Por Fecha: {}", listado);
+		
+		modelo = new Modelo<>();
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}else{
+			UsuarioEO usuario = new UsuarioEO();
+			modelo.setSeleccionado(usuario);
+		}
+		
+		//logger.debug("Modelo Concentrado Por Fecha: {}", modelo);
+		
+		return modelo;
+		
+	}
+	
+	public Modelo<JavaBeanT> modeloTerritorios(UsuarioEO usuario) {
+		Modelo<JavaBeanT> modelo;
+
+		modelo = new Modelo<>();
+
+		modelo.setListado(usuario.getTerritorios());
+		if (!usuario.getTerritorios().isEmpty()) {
+			modelo.setSeleccionado(usuario.getTerritorios().get(0));
+		}
+
+		return modelo;
+	}
+
+	public void limpiarTerritorios(UsuarioEO usuario) {
+		usuario.setTerritorios(new ArrayList<JavaBeanT>());
+	}
+
+	public UsuarioEO nuevoUsuario() {
+		UsuarioEO usuario;
+
+		usuario = new UsuarioEO();
+
+		return usuario;
+	}
+
+	public void agregarRol(UsuarioEO usuario, RolEO rol) {
+		if (rol != null) {
+			if (!usuario.getRoles().contains(rol)) {
+				usuario.getRoles().add(rol);
+			}
+		}
+	}
+
+	public void quitarRol(UsuarioEO usuario, RolEO rol) {
+		if (rol != null) {
+			usuario.getRoles().remove(rol);
+		}
+	}
+
+	public void agregarTerritorios(UsuarioEO usuario, List<JavaBeanT> entidades, List<JavaBeanT> dfederales,
+			List<JavaBeanT> dlocales, List<JavaBeanT> municipios, JavaBeanT geozona, List<JavaBeanT> geozonaParticiones) {
+		switch (usuario.getNivel()) {
+		case DFEDERAL:
+			usuario.setTerritorios(dfederales);
+			break;
+		case DLOCAL:
+			usuario.setTerritorios(dlocales);
+			break;
+		case ENTIDAD:
+			usuario.setTerritorios(entidades);
+			break;
+		case GEOZONA:
+			//List<JavaBeanT> geozonas;
+			//geozonas = new ArrayList<>();
+			//geozonas.add(geozona);
+			usuario.setTerritorios(geozonaParticiones);
+			break;
+		case LOCALIDAD:
+			break;
+		case MANZANA:
+			break;
+		case MUNICIPIO:
+			usuario.setTerritorios(municipios);
+			break;
+		case NACIONAL:
+			break;
+		case SECCION:
+			break;
+		}
+	}
+	
+	public Modelo<DependenciaEO> modeloDependencias(UsuarioEO usuario){
+		Modelo<DependenciaEO> modelo;
+		
+		modelo = new Modelo<>();
+		modelo.setListado(usuario.getDependencias());
+		if(!usuario.getDependencias().isEmpty()){
+			modelo.setSeleccionado(usuario.getDependencias().get(0));
+		}
+		
+		return modelo;
+	}
+	
+	public void agregarDependencia(UsuarioEO usuario, DependenciaEO dependencia){
+		if(dependencia != null){
+			if(!usuario.getDependencias().contains(dependencia)){
+				usuario.getDependencias().add(dependencia);
+			}
+		}
+	}
+	
+	public void quitarDependencia(UsuarioEO usuario, DependenciaEO dependencia){
+		if (dependencia != null) {
+			usuario.getDependencias().remove(dependencia);
+		}
+	}
+	
+	public void insertarActualizar(UsuarioEO usuario) {
+		//logger.debug("Usuario recibido: {}", usuario);
+		if (usuario.getId() == null) {
+			sqlSession.insert("administracion.usuarios.insertar", usuario);
+		} else {
+			sqlSession.update("administracion.usuarios.actualizar", usuario);
+		}
+
+		sqlSession.delete("administracion.roles.eliminarAutorizacionesPorUsuario", usuario);
+		sqlSession.insert("administracion.roles.insertarAutorizacionesPorUsuario", usuario);
+
+		sqlSession.delete("administracion.usuarios.eliminarTerritoriosPorUsuario", usuario);
+		sqlSession.insert("administracion.usuarios.insertarTerritorios", usuario);
+		
+		sqlSession.delete("administracion.usuarios.eliminarDependenciasPorUsuario", usuario);
+		sqlSession.insert("administracion.usuarios.insertarDependencias", usuario);
+	}
+	
+	public boolean cambiarPassword(String actual, String nueva){
+		boolean respuesta;
+		Boolean actualValida;
+		HashMap<String, Object> parametros;
+		UsuarioEO usuario;
+		
+		respuesta = false;
+		parametros = new HashMap<>();
+		usuario = ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+		
+		parametros.put("actual", actual);
+		parametros.put("nueva", nueva);
+		parametros.put("usuario", usuario);
+		
+		actualValida = sqlSession.selectOne("administracion.usuarios.comprobarPassword", parametros);
+		if(actualValida){
+			sqlSession.update("administracion.usuarios.cambiarPassword", parametros);
+			respuesta = true;
+		} else {
+			respuesta = false;
+		}
+		
+		return respuesta;
+	}
+	
+	public HashMap<String, Object> mapaUsuariosConectados(){
+		HashMap<String, Object> mapa, usuario;
+		List<HashMap<String, Object>> listado;
+		Usuario user;
+		List<SessionInformation> sessionInformation;
+		
+		mapa = new HashMap<>();
+		listado = new ArrayList<>();
+		
+		for(Object o : session.getAllPrincipals()){
+			usuario = new HashMap<>();
+			user = (Usuario) o;
+			sessionInformation = session.getAllSessions(user, false);
+			
+			usuario.put("nick", user.getUsuario().getNick());
+			usuario.put("nombre", user.getUsuario().getNombre());
+			usuario.put("ultimoAcceso", user.getUsuario().getUltimoAccesoFormato());
+			usuario.put("sesiones", sessionInformation.size());
+			if(sessionInformation.size() != 0){
+				usuario.put("sessionID", sessionInformation.get(0).getSessionId());
+				usuario.put("estatus", !sessionInformation.get(0).isExpired());
+			} else {
+				usuario.put("sessionID", "");
+				usuario.put("estatus", false);
+			}
+			
+			listado.add(usuario);
+			logger.debug("Usuario Conectado: {}", user.getUsuario().getNick());
+		}
+		mapa.put("listado", listado);
+		
+		if(!listado.isEmpty()){
+			mapa.put("seleccionado", listado.get(0));
+		}
+		
+		return mapa;
+	}
+	
+	public void terminarSesion(String sessionId){
+		logger.debug("Expirar sessionID: {}", sessionId);
+		SessionInformation sessionInformation;
+		
+		sessionInformation = session.getSessionInformation(sessionId);
+		
+		sessionInformation.expireNow();
+	}
+	
+	public UsuarioEO cargarPrograma(UsuarioEO usuario) {	
+		List<ProgramasEdoMexDO> programas= new ArrayList<>();
+		programas= sqlSession.selectOne("administracion.usuariosProgramas.usuarioPrograma", getUsuario().getNick());
+		usuario.setProgamas(programas);
+		//logger.debug("PROGRAMA USUARIO {}", usuario.getProgamas());
+		return usuario;
+	}
+	
+	private UsuarioEO getUsuario(){
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+	
+}

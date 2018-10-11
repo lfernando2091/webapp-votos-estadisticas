@@ -1,0 +1,127 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Asignación De Movilizados" id="panelResultados">
+						<p:panelGrid>
+									<p:growl autoUpdate="true" globalOnly="true" life="999999999" for="msg" widgetVar="msgWid"/>
+						</p:panelGrid>
+						<p:panelGrid columns="2" id="gridFiltros">
+							<p:column>
+								<p:outputLabel value="Movilizador :"/>
+							</p:column>
+							<p:column>
+									<p:outputLabel value="${movilizador.nombre} ${movilizador.primerApellido} ${movilizador.segundoApellido}"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Tipo Busqueda :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloBusquedas.seleccionado}" style="width:300px" converter="ObjectConverter">
+										<p:ajax event="itemSelect" update="gridFiltros" oncomplete="vaciar()"/>
+					            		<f:selectItems value="${modeloBusquedas.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+									</p:selectOneMenu>
+							</p:column>
+							<p:column rendered="${modeloBusquedas.seleccionado=='POR_FOLIO'}">
+								<p:outputLabel value="Folio:"/>
+							</p:column>
+							<p:column rendered="${modeloBusquedas.seleccionado=='POR_FOLIO'}">
+								<p:inputText value="${folio}">
+									<f:validateRegex pattern="^[0-9]+$" />		
+								</p:inputText>
+							</p:column>
+							<p:column rendered="${modeloBusquedas.seleccionado=='POR_SECCION'}">
+								<p:outputLabel value="Seccion:"/>
+							</p:column>
+							<p:column rendered="${modeloBusquedas.seleccionado=='POR_SECCION'}">
+								<p:inputText value="${seccion}">
+									<f:validateRegex pattern="^[0-9]+$" /> 
+								</p:inputText>
+							</p:column>
+							<p:column rendered="${modeloBusquedas.seleccionado=='POR_NOMBRE'}">
+								<p:outputLabel value="Nombre:"/>
+							</p:column>
+							<p:column rendered="${modeloBusquedas.seleccionado=='POR_NOMBRE'}">
+								<p:inputText value="${nombre}" onkeyup="this.value=this.value.toUpperCase();"/>
+							</p:column>
+							<p:column rendered="${modeloBusquedas.seleccionado=='POR_NOMBRE'}">
+								<p:outputLabel value="Primer Apellido:"/>
+							</p:column>
+							<p:column rendered="${modeloBusquedas.seleccionado=='POR_NOMBRE'}">
+								<p:inputText value="${primerApellido}" onkeyup="this.value=this.value.toUpperCase();"/>
+							</p:column>
+							<p:column rendered="${modeloBusquedas.seleccionado=='POR_NOMBRE'}">
+								<p:outputLabel value="Segundo Apellido:"/>
+							</p:column>
+							<p:column rendered="${modeloBusquedas.seleccionado=='POR_NOMBRE'}">
+								<p:inputText value="${segundoApellido}" onkeyup="this.value=this.value.toUpperCase();"/>
+							</p:column>
+							<p:column>
+								<p:commandButton value="Buscar" action="actualizar" update="#{p:component('panelResultados')}"  onstart="PF('dlg2').show();" oncomplete="PF('dlg2').hide();"/>
+							</p:column>
+						</p:panelGrid>
+						<p:panel id="gridEncuestas">
+							<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}" emptyMessage="Sin Resultados"
+									selectionMode="single" paginator="true" rows="15" paginatorPosition="bottom" widgetVar="tabla">
+									<p:column headerText="FOLIO"  width="100" >
+										<p:outputLabel value="${fila.folio}"/>
+									</p:column>
+									<p:column headerText="MUNICIPIO"  width="200"  filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.idMunicipio} - ${fila.municipio}">
+										<p:outputLabel value="${fila.idMunicipio} - ${fila.municipio}"/>
+									</p:column>
+									<p:column headerText="SECCION"  width="100"   filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.seccion}">
+										<p:outputLabel value="${fila.seccion}"/>
+									</p:column>
+									<p:column headerText="NOMBRE"  width="100"    filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.nombre}">
+										<p:outputLabel value="${fila.nombre}"/>
+									</p:column>
+									<p:column headerText="PRIMER APELLIDO"  width="100"    filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.primerApellido}">
+										<p:outputLabel value="${fila.primerApellido}"/>
+									</p:column>
+									<p:column headerText="SEGUNDO APELLIDO"  width="100"    filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.segundoApellido}">
+										<p:outputLabel value="${fila.segundoApellido}"/>
+									</p:column> 
+									<p:column headerText="CALIFICACION"  width="100"    filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.calificacion}">
+										<p:outputLabel value="${fila.calificacion.nombre}"/>
+									</p:column>
+									<p:column headerText="Asignar" width="75">
+										<p:commandButton value="Asignar"  action="asignar"  update="#{p:component('panelResultados')}" onstart="PF('dlg1').show();" oncomplete="PF('dlg1').hide();">
+											<f:setPropertyActionListener value="${fila}" target="${modelo.seleccionado}" />
+										</p:commandButton>
+									</p:column>
+							</p:dataTable>
+						</p:panel>
+						<f:facet name="footer">
+							<p:commandButton value="Regresar" action="regresar"/>
+						</f:facet>
+					</p:panel>	
+					
+					
+					<p:dialog header="Asignando..." widgetVar="dlg1" minHeight="200"  modal="true" onHide="PF('tabla').filter()">
+					    <h:outputText value="Espere Mientras se asigna el movilizador" />
+					    <p:graphicImage value="/resources/spark-layout/images/preloader.gif" />
+					</p:dialog>
+					
+					<p:dialog header="Buscando..." widgetVar="dlg2" minHeight="200"  modal="true">
+					    <h:outputText value="Espere Mientras Se Realiza La Busqueda" />
+					    <p:graphicImage value="/resources/spark-layout/images/preloader.gif" />
+					</p:dialog>
+					
+					
+					<p:remoteCommand action="vaciar" name="vaciar"/>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+        
+    <input name="padre" type="com.saganet.politik.database.cronograma.EventoEO"/>
+
+	<view-state id="general">
+		<var name="TimelineBean" class="com.saganet.politik.beans.cronograma.TimelineB" />
+		<on-entry>
+			<evaluate expression="CronogramaTimelineC.padreTemporal()" result="flowScope.padre" />
+			<evaluate expression="CronogramaTimelineC.generarTimeline(flowScope.padre)"
+				result="viewScope.model" />
+			<set name="viewScope.eventoSeleccionado" value="TimelineBean.getEventoSeleccionado()" />
+		</on-entry>
+		<transition on="agregar" to="agregar">
+			<evaluate expression="CronogramaTimelineC.nuevoEvento(flowScope.padre)"
+				result="requestScope.nuevoEvento" />
+		</transition>
+		<transition on="editar" to="agregar">
+			<set name="requestScope.nuevoEvento" value="viewScope.eventoSeleccionado.evento" />
+		</transition>
+		<transition on="detalle" to="general">
+			<set name="flowScope.padre" value="viewScope.eventoSeleccionado.evento" />
+		</transition>
+		<transition on="cargarSeleccion">
+			<evaluate expression="TimelineBean.getEventoSeleccionado()"
+				result="viewScope.eventoSeleccionado" />
+		</transition>
+		<transition on="convertirConcentrador" to="general">
+			<evaluate expression="CronogramaTimelineC.convertirConcentrador(viewScope.eventoSeleccionado.evento)" />
+			<set name="flowScope.padre" value="viewScope.eventoSeleccionado.evento" />
+		</transition>
+	</view-state>
+
+	<view-state id="agregar">
+		<on-entry>
+			<set name="viewScope.nuevoEvento" value="requestScope.nuevoEvento" />
+			<evaluate
+				expression="CronogramaTimelineC.tablaGrupos(viewScope.nuevoEvento.getGrupo())"
+				result="viewScope.tablaGrupos" />
+			<evaluate
+				expression="CronogramaTimelineC.tablaIconos(viewScope.nuevoEvento.getIcono())"
+				result="viewScope.tablaIconos" />
+			<set name="viewScope.grupoNombre" value="''" />
+		</on-entry>
+		<transition on="limpiarNombre">
+			<evaluate expression="viewScope.grupoNombre = ''" />
+		</transition>
+		<transition on="guardarGrupo">
+			<evaluate
+				expression="CronogramaTimelineC.guardarGrupoNombre(viewScope.grupoNombre)" />
+			<evaluate expression="CronogramaTimelineC.tablaGrupos()"
+				result="viewScope.tablaGrupos" />
+		</transition>
+		<transition on="guardarEvento" to="general">
+			<evaluate
+				expression="CronogramaTimelineC.guardarEvento(viewScope.nuevoEvento, viewScope.tablaGrupos.seleccionado, viewScope.tablaIconos.seleccionado)" />
+		</transition>
+		<transition on="cancelar" to="general" />
+	</view-state>
+
+</flow>

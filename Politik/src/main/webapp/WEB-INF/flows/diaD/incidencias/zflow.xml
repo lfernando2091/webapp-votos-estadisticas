@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+			
+		<view-state id="listado">
+			<on-entry>
+				<evaluate expression="CatalogosMunicipiosC.modeloPorUsuario('15')" result="viewScope.municipios"/>
+				<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.municipios.seleccionado)" result="viewScope.secciones"/>									
+				<evaluate expression="DiaDIncidenciasC.modelo(viewScope.secciones.seleccionado)" result="viewScope.modelo" />	
+			</on-entry>
+			
+			<transition on="actualizar">			
+				<evaluate expression="DiaDIncidenciasC.guardar(viewScope.modelo.seleccionado)" />
+				<evaluate expression="DiaDIncidenciasC.modelo(viewScope.secciones.seleccionado)" result="viewScope.modelo" />
+			</transition>
+			
+			<transition on="actualizarSeccion">			
+				<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.municipios.seleccionado)" result="viewScope.secciones"/>
+				<evaluate expression="DiaDIncidenciasC.modelo(viewScope.secciones.seleccionado)" result="viewScope.modelo" />
+			</transition>
+			
+			<transition on="actualizarModelo">			
+				<evaluate expression="DiaDIncidenciasC.modelo(viewScope.secciones.seleccionado)" result="viewScope.modelo" />
+			</transition>
+			
+			<transition on="agregar" to="agregar">
+				<evaluate expression="DiaDIncidenciasC.nuevo(viewScope.secciones.seleccionado)" result="requestScope.nuevo" />
+			</transition>			
+		</view-state>
+		
+		<view-state id="agregar">
+			<on-entry>
+				<set name="viewScope.nuevo" value="requestScope.nuevo"/>
+				<evaluate expression="CatalogosMunicipiosC.modeloPorUsuario('15')" result="viewScope.municipios"/>
+				<set name="viewScope.municipios.seleccionado" value="requestScope.nuevo.seccion.municipio"/>
+				<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.municipios.seleccionado)" result="viewScope.secciones"/>								
+				<evaluate expression="DiaDIncidenciasC.modeloTipos()" result="viewScope.tipos" />								
+				<evaluate expression="DominiosModelosC.incidenciasEstatus()" result="viewScope.estatus" />								
+				<evaluate expression="DominiosModelosC.incidenciasPrioridad()" result="viewScope.prioridades" />
+				
+			</on-entry>
+			<transition on="actualizarSeccion">			
+				<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.municipios.seleccionado)" result="viewScope.secciones"/>
+				<evaluate expression="DiaDIncidenciasC.modelo(viewScope.secciones.seleccionado)" result="viewScope.modelo" />
+			</transition>
+			<transition on="cancelar" to="listado"/>
+			<transition on="guardar" to="listado">			
+				<evaluate expression="DiaDIncidenciasC.insertar(viewScope.nuevo)"/>
+			</transition>
+		</view-state>
+		<end-state id="fin"/>
+</flow>

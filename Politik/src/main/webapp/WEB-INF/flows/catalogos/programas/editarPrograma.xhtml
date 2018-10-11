@@ -1,0 +1,172 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Editar Programa">
+					
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Dependencia: " />
+							<p:outputLabel value="${programa.dependencia.dependencia}" />
+							<p:outputLabel value="Siglas: " />
+							<p:outputLabel value="${programa.dependencia.siglas}" />
+							<p:outputLabel value="Nombre del Programa:" />
+							<p:inputText value="${programa.programa}" />
+							<p:outputLabel value="Programa Padre: " rendered="${programa.programaPadre!=null}" />
+							<p:inputText value="${programa.programaPadre.programa}" rendered="${programa.programaPadre!=null}" />
+							<p:outputLabel value="Descripción: " />
+							<p:inputText value="${programa.descripcion}" />
+							<p:outputLabel value="Observaciones: " />
+							<p:inputText value="${programa.observaciones}" />
+							<p:outputLabel value="¿Es estrategia?: " />
+							<p:inputText value="${programa.estrategia == 1 ? 'SI':'NO'}" />
+							
+							<f:facet name="footer">
+								<p:commandButton value="Actualizar" icon="fa fa-refresh"/>
+							</f:facet>
+						</p:panelGrid>
+					</p:panel>
+						
+					<p:separator/>
+
+					<p:panel header="Poblaciones Objetivo">
+						<p:dataTable id="pobjetivoDT"
+							value="${modeloPoblacionObjetivo.listado}" var="po"
+							rowKey="${po.id}"
+							selection="${poblacionObjetivo}"
+							selectionMode="single" rows="10" paginator="true"
+							paginatorAlwaysVisible="false" paginatorPosition="bottom">
+							<p:column headerText="Población">
+								<p:outputLabel value="${po.poblacion.nombre}" />
+							</p:column>
+							<p:column headerText="Beneficiarios Proyectados">
+								<p:outputLabel value="${po.beneficiariosProyectados}" />
+							</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" 
+												icon="fa fa-plus-circle" 
+												oncomplete="PF('apoDialog').show()"
+												update="@form"/>
+							<p:commandButton process="pobjetivoDT" 
+												value="Editar"
+												icon="fa fa-edit" 
+												oncomplete="PF('poDialog').show()"
+												update="@form"/>
+							<p:commandButton value="Eliminar" 
+												icon="fa fa-times-circle" />
+						</f:facet>
+						
+						<p:dialog header="Editar Población Objetivo" widgetVar="poDialog"
+							modal="true" showEffect="fade" hideEffect="fade"
+							resizable="false"
+							rendered="${poblacionObjetivo!=null}"
+							closable="true">
+							<p:panel id="poDetail">
+								<p:panelGrid columns="2">
+									<p:outputLabel value="Población: " />
+									<p:selectOneMenu
+										value="${poblacionObjetivo.poblacion}"
+										style="width:150px;">
+										<p:ajax event="change"/>
+										<f:selectItems value="${tiposPoblacionObjetivo}" var="tpo"
+											itemLabel="${tpo.nombre}" itemValue="${tpo}" />
+									</p:selectOneMenu>
+									<p:outputLabel value="Beneficiarios Proyectados: " />
+									<p:inputText
+										value="${poblacionObjetivo.beneficiariosProyectados}">
+											<p:ajax event="change"/>
+										</p:inputText>
+								</p:panelGrid>
+								<f:facet name="footer">
+									<p:commandLink action="actualizarPoblacionObjetivo"
+										update="@form" partialSubmit="@form" immediate="true" process="@form">
+										<p:graphicImage value="/resources/botones/ACTUALIZAR.png" />
+									</p:commandLink>
+									<p:commandLink onclick="PF('poDialog').hide()">
+										<p:graphicImage value="/resources/botones/CANCELAR.png" />
+									</p:commandLink>
+								</f:facet>
+							</p:panel>
+						</p:dialog>
+						
+						<p:dialog header="Agregar Población Objetivo" widgetVar="apoDialog"
+							modal="true" showEffect="fade" hideEffect="fade"
+							resizable="false"
+							closable="true">
+							<p:panel id="apoDetail">
+								<p:panelGrid columns="2">
+									<p:outputLabel value="Población: " />
+									<p:selectOneMenu
+										value="${nuevaPoblacionObjetivo.poblacion}"
+										style="width:150px;">
+										<p:ajax event="change"/>
+										<f:selectItems value="${tiposPoblacionObjetivo}" var="tpo"
+											itemLabel="${tpo.nombre}" itemValue="${tpo}" />
+									</p:selectOneMenu>
+									<p:outputLabel value="Beneficiarios Proyectados: " />
+									<p:inputText
+										value="${nuevaPoblacionObjetivo.beneficiariosProyectados}">
+											<p:ajax event="change"/>
+										</p:inputText>
+								</p:panelGrid>
+								<f:facet name="footer">
+									<p:commandLink action="agregarPoblacionObjetivo"
+										update="@form" partialSubmit="@form" immediate="true" process="@form">
+										<p:graphicImage value="/resources/botones/GUARDAR.png" />
+									</p:commandLink>
+									<p:commandLink onclick="PF('apoDialog').hide()">
+										<p:graphicImage value="/resources/botones/CANCELAR.png" />
+									</p:commandLink>
+								</f:facet>
+							</p:panel>
+						</p:dialog>
+						
+					</p:panel>
+
+					<p:separator/>
+
+					<p:panel header="Contenido de Estrategia"
+						rendered="${programa.estrategia==1}">
+						<p:dataTable id="cestrategicoDT"
+							value="${contenidoEstrategia.listado}" var="ce">
+							<p:column headerText="Programa">
+								<p:outputLabel value="${ce.programa}" />
+							</p:column>
+							<p:column headerText="Dependencia">
+								<p:outputLabel value="${ce.dependencia.dependencia}" />
+							</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" icon="fa fa-plus-circle" />
+							<p:commandButton value="Editar" icon="fa fa-edit" />
+							<p:commandButton value="Eliminar" icon="fa fa-times-circle" />
+						</f:facet>
+					</p:panel>
+
+					<p:commandLink action="regresar" immediate="true">
+						<p:graphicImage value="/resources/botones/REGRESAR.png" />
+					</p:commandLink>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

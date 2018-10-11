@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="diaD.movilizado">
+	<cache />
+	<resultMap type="DiaDMovilizadoEO" id="movilizado">
+		<id 			column="id" 				property="id" 					javaType="Integer"/>
+		<result			column="idRegion"			property="idRegion"				javaType="Integer"/>
+		<result			column="region"				property="region"				javaType="String"/>
+		<result			column="idMunicipio"		property="idMunicipio"			javaType="Integer"/>
+		<result			column="municipio"			property="municipio"			javaType="String"/>
+		<result			column="seccion"			property="seccion"				javaType="Integer"/>
+		<result			column="email"				property="email"				javaType="String"/>
+		<result			column="telefono"			property="telefono"				javaType="String"/>
+		<result			column="nombre"				property="nombre"				javaType="String"/>
+		<result			column="primerApellido"		property="primerApellido"		javaType="String"/>
+		<result			column="segundoApellido"	property="segundoApellido"		javaType="String"/>
+		<result			column="folio"				property="folio"				javaType="Integer"/>
+		<result			column="programa"			property="programa"				javaType="com.saganet.politik.dominios.ProgramasEdoMexDO"/>
+		<result			column="calificacion"		property="calificacion"			javaType="com.saganet.politik.dominios.CalificacionDO"/>
+		<result			column="registroJornada"	property="registroJornada"		javaType="Boolean" />
+		<association 	column="idMovilizador"		property="movilizador"			select="diaD.capturaMovilizador.buscarPorId"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+				DiaDMovilizadoEO.pkey							id, 
+				DiaDMovilizadoEO.id_region						idRegion, 
+				DiaDMovilizadoEO.region							region, 
+				DiaDMovilizadoEO.id_municipio					idMunicipio, 
+				DiaDMovilizadoEO.municpio						municipio, 
+				DiaDMovilizadoEO.seccion						seccion, 
+				DiaDMovilizadoEO.id_movilizador					idMovilizador,
+				DiaDMovilizadoEO.registro_jornada				registroJornada, 
+				DiaDMovilizadoEO.telefono						telefono,
+				DiaDMovilizadoEO.email							email,
+				Movilizables.nombre								nombre,
+				Movilizables.apellido_materno					primerApellido,
+				Movilizables.apellido_paterno					segundoApellido,
+				(CASE 
+						WHEN Movilizables.grupo_movilizacion='Abby-PH' THEN  'PROSPERA'	
+						WHEN Movilizables.grupo_movilizacion='Fitz-HP' THEN 'LICONSA'
+						WHEN Movilizables.grupo_movilizacion='Rowan-JAL' THEN 'INSUS'
+				END)																	programa,
+       			DiaDMovilizadoEO.folio													folio,
+       			REPLACE(UPPER(Encuesta.calificacion_3),' ','_')							calificacion
+  		FROM dia_d.movilizados 									DiaDMovilizadoEO
+  		JOIN encuestas_edomex.encuesta_edomex					Movilizables				ON 			(DiaDMovilizadoEO.folio=Movilizables.id_interno)
+  		JOIN encuestas_edomex.e_edomex							Encuesta				ON 			(Encuesta.id_contacto::integer=Movilizables.id_interno)
+	</sql>
+	
+	
+	<sql id="queryMovilizables">
+		SELECT 
+				row_number() OVER (ORDER BY Movilizables.region_edomex_2017) AS			id, 
+				Movilizables.region_edomex_2017											idRegion, 
+				Movilizables.nombre_region												region, 
+				Movilizables.municipio													idMunicipio, 
+				Movilizables.nombre_municipio											municipio, 
+				Movilizables.seccion													seccion, 
+				DiaDMovilizadoEO.id_movilizador											idMovilizador, 
+				Encuesta.tel															telefono,
+				Encuesta.email															email,
+				Movilizables.nombre														nombre,
+				Movilizables.apellido_materno											primerApellido,
+				Movilizables.apellido_paterno											segundoApellido,
+				(CASE 
+						WHEN Movilizables.grupo_movilizacion='Abby-PH' THEN  'PROSPERA'	
+						WHEN Movilizables.grupo_movilizacion='Fitz-HP' THEN 'LICONSA'
+						WHEN Movilizables.grupo_movilizacion='Rowan-JAL' THEN 'INSUS'
+				END)																	programa,
+       			Movilizables.id_interno													folio,
+       			REPLACE(UPPER(Encuesta.calificacion_3),' ','_')							calificacion
+  		FROM encuestas_edomex.encuesta_edomex											Movilizables
+  		JOIN encuestas_edomex.e_edomex													Encuesta				
+  												ON 	(Encuesta.id_contacto::integer=Movilizables.id_interno)
+  		LEFT JOIN 	dia_d.movilizados 													DiaDMovilizadoEO			
+  												ON 	(DiaDMovilizadoEO.folio=Movilizables.id_interno AND DiaDMovilizadoEO.id_movilizador=#{idMovilizador})
+	</sql>
+	
+	
+	<select id="listado" resultMap="movilizado">
+		<include refid="query"/>
+	</select>
+	
+	<select id="listadoPorMovilizador" resultMap="movilizado" parameterType="Integer">
+		<include refid="query"/>
+		WHERE DiaDMovilizadoEO.id_movilizador=#{value}
+	</select>
+	
+	
+	
+	<select id="buscarPorFolio" resultMap="movilizado" parameterType="hashmap">
+		<include refid="queryMovilizables"/>
+		WHERE 
+			Movilizables.estatus!='PENDIENTE' AND
+			DiaDMovilizadoEO.pkey IS NULL AND 
+			Movilizables.id_interno=#{folio}
+	</select>
+	
+	<select id="buscarPorSeccion" resultMap="movilizado" parameterType="hashmap">
+		<include refid="queryMovilizables"/>
+		WHERE 
+			Movilizables.estatus!='PENDIENTE' AND
+			DiaDMovilizadoEO.pkey IS NULL AND 
+			Movilizables.seccion=#{seccion} AND Movilizables.grupo_movilizacion=#{programa.nombre2}
+		ORDER BY Movilizables.apellido_paterno, Movilizables.apellido_materno, Movilizables.nombre
+	</select>
+	
+	<select id="buscarPorNombre" resultMap="movilizado" parameterType="hashmap">
+		<include refid="queryMovilizables"/>
+		<where>
+			Movilizables.estatus!='PENDIENTE' AND
+			DiaDMovilizadoEO.pkey IS NULL AND 
+			Movilizables.nombre LIKE '${nombre}%' AND Movilizables.apellido_paterno LIKE '${primerApellido}%' 
+			AND Movilizables.apellido_materno LIKE '${segundoApellido}%' AND Movilizables.grupo_movilizacion=#{programa.nombre2}
+		</where>
+		ORDER BY Movilizables.apellido_paterno, Movilizables.apellido_materno, Movilizables.nombre
+	</select>
+	
+	<insert id="insert" parameterType="DiaDMovilizadoEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+				SELECT NEXTVAL('dia_d.movilizados_pkey_seq')
+		</selectKey>
+		INSERT INTO dia_d.movilizados(pkey, id_region, region, id_municipio, municpio, seccion, id_movilizador, folio, telefono, email)
+    	VALUES (#{id}, #{idRegion}, #{region}, #{idMunicipio}, #{municipio}, #{seccion}, #{movilizador.id}, #{folio}, #{telefono}, #{email})
+	</insert>
+	
+	<!-- Mappers para Registro de la Jornada -->
+	
+	<select id="estadoRegistroJornada" parameterType="Integer" resultType="Boolean">
+		SELECT registro_jornada
+		FROM dia_d.movilizados
+		WHERE folio = #{value}
+		limit 1
+	</select>
+	
+	<update id="registrarJornada" parameterType="Integer">
+		UPDATE dia_d.movilizados
+		SET registro_jornada = true
+		WHERE folio = #{value}
+	</update>
+	
+	<update id="registrarJornada2" parameterType="Integer">
+		UPDATE dia_d.movilizados
+		SET registro_jornada = not registro_jornada
+		WHERE folio = #{value}
+	</update>
+	
+	<select id="porSeccion_jornada" resultMap="movilizado" parameterType="hashmap">
+		<include refid="query"/>
+		WHERE 
+			Movilizables.seccion=#{seccion.idSeccion} 
+		ORDER BY Movilizables.apellido_paterno, Movilizables.apellido_materno, Movilizables.nombre
+	</select>
+	
+</mapper>

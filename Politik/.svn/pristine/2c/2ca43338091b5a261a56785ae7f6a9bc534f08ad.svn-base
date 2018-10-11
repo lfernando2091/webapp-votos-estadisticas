@@ -1,0 +1,240 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Reporte por Genero">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nivel :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloNiveles.seleccionado}" style="width:300px">
+										<p:ajax event="itemSelect" oncomplete="actualizar()"/>
+					            		<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+									</p:selectOneMenu>	
+							</p:column>	
+							<p:outputLabel value="Programa" />
+							<p:selectOneMenu value="${modeloProgramas.seleccionado}"
+								style="width:300px">
+								<p:ajax event="itemSelect" onsuccess="actualizar()" />
+								<f:selectItems value="${modeloProgramas.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<p:panel id="gridAcance">
+							<p:dataTable value="${modeloGenero.listado}" var="fila" paginator="true" rows="15" id="tablaResultados" paginatorPosition="bottom" >
+								<p:columnGroup type="header">
+            					<p:row>
+            				
+            						<p:column headerText="Regiones" rowspan="5" width="150"  filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.nombreRegion}"/>
+            						<p:column headerText="Municipios" rowspan="5" width="150"   rendered="${modeloNiveles.seleccionado!='REGION'?true:false}" filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.nombreMunicipio}" />
+            						<p:column headerText="Secciones" rowspan="5" width="150" rendered="${modeloNiveles.seleccionado=='SECCION'}"   filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.seccion}"/>
+            					</p:row>
+            					
+            					<p:row>
+            						<p:column headerText="Hombres" colspan="11" />
+            						<p:column headerText="Mujeres" colspan="11" />
+            						
+            					</p:row>
+            					<p:row>
+            						<p:column headerText="Exitosas" rowspan="3" colspan="1"/>
+            						<p:column headerText="A favor" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos a Favor" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos en Contra" rowspan="1" colspan="2"/>
+            						<p:column headerText="En contra" rowspan="1" colspan="2"/>
+            						
+            						<p:column headerText="Exitosas" rowspan="3" colspan="1"/>
+            						<p:column headerText="A favor" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos a Favor" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos en Contra" rowspan="1" colspan="2"/>
+            						<p:column headerText="En contra" rowspan="1" colspan="2"/>
+            			
+            					</p:row>
+            				
+            					<p:row>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            				
+                 				</p:row>
+            					
+            					
+            					
+            				</p:columnGroup>
+								<p:column>
+								<p:outputLabel value="${fila.nombreRegion}"  />
+								</p:column>
+								<p:column rendered="${modeloNiveles.seleccionado!='REGION'?true:false}"  >
+								<p:outputLabel value="${fila.nombreMunicipio}" />
+								</p:column>
+								<p:column rendered="${modeloNiveles.seleccionado=='SECCION'}" >
+								<p:outputLabel value="${fila.seccion}"  />
+								</p:column>
+								
+								<p:column>
+								<p:outputLabel value="${fila.hombresExitosas}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.hombresAFavor}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.hombresAFavorPorcentaje}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.hombresIndecisoAFavor}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.hombresIndecisoAFavorPorcentaje}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.hombresIndeciso}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.hombresIndecisoPorcentaje}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.hombresIndecisoEnContra}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.hombresIndecisoEnContraPorcentaje}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.hombresEnContra}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.hombresEnContraPorcentaje}"/>
+								</p:column>
+								
+								
+															
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.mujeresExitosas}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.mujeresAFavor}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.mujeresAFavorPorcentaje}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.mujeresIndecisoAFavor}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.mujeresIndecisoAFavorPorcentaje}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.mujeresIndeciso}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.mujeresIndecisoPorcentaje}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.mujeresIndecisoEnContra}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.mujeresIndecisoEnContraPorcentaje}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.mujeresEnContra}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.mujeresEnContraPorcentaje}"/>
+								</p:column>
+								
+											
+							<p:columnGroup type="footer">
+								<p:row>
+										<p:column colspan="1"  style="text-align:right"  footerText="Totales:"  rendered="${modeloNiveles.seleccionado=='REGION'}" />
+									<p:column colspan="2"  style="text-align:right"  footerText="Totales:"  rendered="${modeloNiveles.seleccionado=='MUNICIPIO'}" />
+									<p:column colspan="3"  style="text-align:right"  footerText="Totales:"  rendered="${modeloNiveles.seleccionado=='SECCION'}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.thombresExitosas}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.thombresAFavor}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.thombresAFavorPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.thombresIndecisosAFavor}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.thombresIndecisosAFavorPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.thombresIndecisos}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.thombresIndecisosPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.thombresIndecisosEnContra}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.thombresIndecisosEnContraPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.thombresEnContra}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.thombresEnContraPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tmujeresExitosas}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tmujeresaFavor}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tmujeresaFavorPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tmujeresIndecisosAFavor}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tmujeresIndecisosAFavorPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tmujeresIndecisos}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tmujeresIndecisosPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tmujeresIndecisosEnContra}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tmujeresIndecisosEnContraPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tmujeresEnContra}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tmujeresEnContraPorcentaje}" />
+									
+	
+			
+								</p:row>
+							</p:columnGroup>
+								
+							</p:dataTable>
+						
+						</p:panel>
+					</p:panel>	
+					
+
+					<p:remoteCommand action="actualizar" name="actualizar" update="@form" />
+					
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

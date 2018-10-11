@@ -1,0 +1,103 @@
+package com.saganet.politik.components.dominios;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.dominios.BuenaRegularMaloDO;
+import com.saganet.politik.dominios.BuenaRegularMaloNoReciboDO;
+import com.saganet.politik.dominios.BuenaRegularNadaDO;
+import com.saganet.politik.dominios.GobiernosDO;
+import com.saganet.politik.dominios.MuchoRegularNadaDO;
+import com.saganet.politik.dominios.NivelesReporteDO;
+import com.saganet.politik.dominios.ProgramasEdoMexDO;
+import com.saganet.politik.dominios.ResultadoEncuestaEdomexDO;
+import com.saganet.politik.dominios.SiNoDO;
+import com.saganet.politik.modelos.Modelo;
+
+
+
+@Component("DominiosModelosC")
+public class ModelosC {
+
+	private static final Logger logger = LoggerFactory.getLogger(ModelosC.class);
+	
+	public Modelo<NivelesReporteDO> nivelesReporte(){
+		return  new Modelo<>(Arrays.asList(NivelesReporteDO.values()));
+	}
+	
+	public Modelo<NivelesReporteDO> nivelesReporte2(){
+		NivelesReporteDO[] arreglo=new NivelesReporteDO[2];
+		arreglo[0]=NivelesReporteDO.REGION;
+		arreglo[1]=NivelesReporteDO.MUNICIPIO;
+		return new Modelo<>(Arrays.asList(arreglo));
+	}
+	
+	public Modelo<ProgramasEdoMexDO> programasEdoMex(){
+		return  new Modelo<>(Arrays.asList(ProgramasEdoMexDO.values()));
+	}
+	
+	public Modelo<ProgramasEdoMexDO> programasEdoMex2(){
+		ProgramasEdoMexDO[] arreglo=new ProgramasEdoMexDO[2];
+		arreglo[0]=ProgramasEdoMexDO.LICONSA;
+		arreglo[1]=ProgramasEdoMexDO.GEM;
+		return new Modelo<>(Arrays.asList(arreglo));
+	}
+	
+	public Modelo<SiNoDO>  sino(){
+		 Modelo<SiNoDO> modelo;
+		 List<SiNoDO> listado;
+		 listado= Arrays.asList(SiNoDO.values());	
+		 logger.debug("Listado {}",listado);
+		 modelo =  new Modelo<>(listado);
+		return modelo;
+	}
+	
+	
+	public Modelo<MuchoRegularNadaDO>  muchoRegularNada(){
+		 Modelo<MuchoRegularNadaDO> modelo;
+		 List<MuchoRegularNadaDO> listado;
+		 listado= Arrays.asList(MuchoRegularNadaDO.values());			
+		 modelo =  new Modelo<>(listado);
+		return modelo;
+	}
+	public Modelo<BuenaRegularNadaDO>  buenaRegularNada(){
+		 Modelo<BuenaRegularNadaDO> modelo;
+		 List<BuenaRegularNadaDO> listado;
+		 listado= Arrays.asList(BuenaRegularNadaDO.values());			
+		 modelo =  new Modelo<>(listado);
+		return modelo;
+	}
+	public Modelo<ResultadoEncuestaEdomexDO>  modeloResultadoEncuesta(){
+		 Modelo<ResultadoEncuestaEdomexDO> modelo;
+		 List<ResultadoEncuestaEdomexDO> listado;
+		 listado= Arrays.asList(ResultadoEncuestaEdomexDO.values());			
+		 modelo =  new Modelo<>(listado);
+		return modelo;
+	}
+	
+	public Modelo<GobiernosDO>  modeloGobierno(){
+		 Modelo<GobiernosDO> modelo;
+		 List<GobiernosDO> listado;
+		 listado= Arrays.asList(GobiernosDO.values());			
+		 modelo =  new Modelo<>(listado);
+		return modelo;
+	}
+	public Modelo<BuenaRegularMaloDO>  modeloBuenoRegularMalo(){
+		 Modelo<BuenaRegularMaloDO> modelo;
+		 List<BuenaRegularMaloDO> listado;
+		 listado= Arrays.asList(BuenaRegularMaloDO.values());			
+		 modelo =  new Modelo<>(listado);
+		return modelo;
+	}
+	public Modelo<BuenaRegularMaloNoReciboDO>  modeloBuenoRegularMaloNoRecibo(){
+		 Modelo<BuenaRegularMaloNoReciboDO> modelo;
+		 List<BuenaRegularMaloNoReciboDO> listado;
+		 listado= Arrays.asList(BuenaRegularMaloNoReciboDO.values());			
+		 modelo =  new Modelo<>(listado);
+		return modelo;
+	}
+}

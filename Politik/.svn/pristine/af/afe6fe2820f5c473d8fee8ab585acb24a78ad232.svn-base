@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="head">
+		<h:outputScript library="openlayers" name="ol.js" />
+		<h:outputStylesheet library="openlayers" name="ol.css" />
+		<h:outputScript library="openlayers" name="politikMapas.js" />
+	</ui:define>
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form id="formMapaEventos">
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Eventos" />
+						<p:menuitem value="Mapa" url="/app/eventos/mapa" />
+					</p:breadCrumb>
+					<p:panel header="Distribución Geográfica de Eventos">
+						<p:tabView id="tabView" widgetVar="tabViewWV">
+						<p:tab title="Mapa y Eventos Localizados">
+								<p:panelGrid columns="2" columnClasses="topAlign, topAlign">
+									<h:panelGroup id="panelMapa" layout="block"
+										style="width:400px; height: 400px;" />
+									<p:dataTable id="tablaEventos" value="${modeloEventos.listado}"
+										var="fila" paginator="true" rows="5"
+										paginatorAlwaysVisible="false" paginatorPosition="bottom">
+										<p:column headerText="Nombre" width="150">${fila.nombre}</p:column>
+										<p:column headerText="Descripción">${fila.descripcionLogistica}</p:column>
+										<p:column headerText="Fecha" width="130">${fila.fechaFormateada}<br />${fila.fechaFinFormateada}</p:column>
+										<p:column headerText="Estatus" width="100">${fila.estatus}</p:column>
+										<p:column headerText="Tipo" width="100">${fila.tipo}</p:column>
+										<p:column headerText="Lugar" width="150"
+											rendered="${fila.territorios[0]!=null}">
+											<ui:repeat value="${fila.territorios}" var="value">
+									     #{value.llave} - #{value.nombre} <br />
+											</ui:repeat>
+										</p:column>
+										<p:column headerText="Lugar" width="150"
+											rendered="${fila.territorios[0]==null}">
+										</p:column>
+									</p:dataTable>
+								</p:panelGrid>
+							</p:tab>
+							<p:tab title="Filtros">
+								<p:panelGrid columns="2" id="panelFiltros">
+									<f:facet name="header">Filtros</f:facet>
+									<p:outputLabel value="Nivel de Visualización" />
+									<p:selectOneMenu value="${filtros.nivel}" style="width: 125px;">
+										<p:ajax event="itemSelect"
+											update="#{p:component('panelFiltros')}" />
+										<f:selectItems value="${modeloNiveles.listado}" var="fila"
+											itemLabel="${fila.nombre}" itemValue="${fila}"
+											itemDisabled="${(fila.name() == 'GEOZONA' or fila.name() == 'NACIONAL' or fila.name() == 'DFEDERAL' or fila.name() == 'DLOCAL' or fila.name() == 'SECCION' or fila.name() == 'LOCALIDAD' or fila.name() == 'MANZANA')}" />
+									</p:selectOneMenu>
+									<p:outputLabel value="Entidad"
+										rendered="${filtros.nivel != 'ENTIDAD'}" />
+									<p:selectOneMenu value="${filtros.entidad}"
+										style="width: 200px;" converter="ObjectConverter"
+										rendered="${filtros.nivel != 'ENTIDAD'}">
+										<f:selectItems value="${modeloEntidades.listado}" var="fila"
+											itemLabel="${fila.nombre}" itemValue="${fila}" />
+									</p:selectOneMenu>
+									<p:outputLabel value="Fecha Inicio" />
+									<p:calendar value="${filtros.fechaInicio}"
+										converter="TimestampConverter" pattern="yyyy/MM/dd HH:mm"
+										locale="es" />
+									<p:outputLabel value="Fecha Final" />
+									<p:calendar value="${filtros.fechaFinal}"
+										converter="TimestampConverter" pattern="yyyy/MM/dd HH:mm"
+										locale="es" />
+									<f:facet name="footer">
+										<p:commandButton value="Actualizar" action="actualizar"
+											update="#{p:component('panelRefreshMap')} #{p:component('tablaEventos')}" oncomplete="PF('tabViewWV').select(0);" />
+									</f:facet>
+								</p:panelGrid>
+							</p:tab>
+						</p:tabView>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:panelGroup id="panelRefreshMap">
+					<h:outputScript>
+						${modeloMapa.inicio}
+						${modeloMapa.actualizar}
+						PF('tabViewWV').select(1);
+					</h:outputScript>
+				</h:panelGroup>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

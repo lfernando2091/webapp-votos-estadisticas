@@ -1,0 +1,81 @@
+package com.saganet.politik.components.diaD;
+
+import java.util.Date;
+import java.util.List;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+//import javax.faces.context.FacesContext;
+import com.saganet.politik.modelos.Modelo;
+//import javax.faces.application.FacesMessage;
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Component;
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.SeccionEO;
+import com.saganet.politik.database.diaD.IncidenciasEO;
+import com.saganet.politik.database.diaD.TiposIncidenciasEO;
+import com.saganet.politik.dominios.IncidenciasEstatusDO;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+@Component("DiaDIncidenciasC")
+public class IncidenciasC {
+	private static final Logger logger = LoggerFactory.getLogger(IncidenciasC.class);
+
+	@Autowired
+	SqlSession sqlSession;
+
+	private UsuarioEO getUsuario() {
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+
+	public Modelo<TiposIncidenciasEO> modeloTipos() {
+		List<TiposIncidenciasEO> listado = sqlSession.selectList("diaD.tiposIncidencias.listado");
+		return new Modelo<>(listado);
+	}
+	
+	public Modelo<IncidenciasEO> modelo(SeccionEO seccion){
+		List<IncidenciasEO> listado = sqlSession.selectList("diaD.incidencias.listado",seccion);
+		return new Modelo<>(listado);
+	}
+
+	public Modelo<IncidenciasEO> modelo(){
+		List<IncidenciasEO> listado = sqlSession.selectList("diaD.incidencias.listadoGeneral");
+		return new Modelo<>(listado);
+	}
+	
+	public IncidenciasEO nuevo(SeccionEO seccion){
+		IncidenciasEO nuevo=new IncidenciasEO();
+		nuevo.setSeccion(seccion);
+		nuevo.setUsuario(getUsuario());
+		nuevo.setFechaDate(new Date());
+		logger.debug("NUevo Incidente: {}", nuevo);
+		return nuevo;
+	}
+	
+	public void insertar(IncidenciasEO incidencia) {
+		if (!incidencia.getObservaciones().equals("")) {
+			sqlSession.insert("diaD.incidencias.insertar", incidencia);
+			FacesContext.getCurrentInstance().addMessage( null ,new FacesMessage("Agregado Correctamente"));
+		}
+		else {
+			FacesContext.getCurrentInstance().addMessage( null ,new FacesMessage(FacesMessage.SEVERITY_ERROR,"Error al Agregar (Faltan Observaciones)",""));
+		}
+	}
+	
+	public void guardar(IncidenciasEO incidencia) {
+		if (incidencia.getEstatus().equals(IncidenciasEstatusDO.PENDIENTE)) {
+			incidencia.setEstatus(IncidenciasEstatusDO.RESUELTO);
+		}
+		else if (incidencia.getEstatus().equals(IncidenciasEstatusDO.RESUELTO)) {
+			incidencia.setEstatus(IncidenciasEstatusDO.PENDIENTE);
+		}
+		sqlSession.update("diaD.incidencias.actualizar", incidencia);
+		FacesContext.getCurrentInstance().addMessage( null ,new FacesMessage("Actualizado"));
+	}
+}

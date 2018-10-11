@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<secured attributes="ROLE_ADMIN" />
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="UsuariosC.modelo()" result="viewScope.modeloUsuarios" />
+		</on-entry>
+		<transition on="agregar" to="agregarEditar">
+			<evaluate expression="UsuariosC.nuevoUsuario()" result="flowScope.usuarioCRUD" />
+		</transition>
+		<transition on="editar" to="agregarEditar">
+			<set name="flowScope.usuarioCRUD" value="viewScope.modeloUsuarios.seleccionado" />
+		</transition>
+	</view-state>
+
+	<view-state id="agregarEditar">
+		<on-entry>
+			<evaluate expression="AdministracionRolesC.modelo()" result="viewScope.modeloRoles" />
+			<evaluate expression="AdministracionRolesC.modelo(flowScope.usuarioCRUD)"
+				result="viewScope.modeloRolesUsuario" />
+			<evaluate expression="UtilidadesDominiosC.modeloNiveles()"
+				result="viewScope.modeloNiveles" />
+
+			<evaluate expression="CatalogosEntidadesC.modelo()" result="viewScope.modeloEntidades" />
+			<evaluate
+				expression="CatalogosDFederalesC.modelo(modeloEntidades.seleccionMultiple)"
+				result="viewScope.modeloDFederales" />
+			<evaluate
+				expression="CatalogosDLocalesC.modelo(modeloEntidades.seleccionMultiple)"
+				result="viewScope.modeloDLocales" />
+			<evaluate
+				expression="CatalogosMunicipiosC.modelo(modeloEntidades.seleccionMultiple)"
+				result="viewScope.modeloMunicipios" />
+			<evaluate expression="CatalogosGeozonasC.modeloSinTerritorios()"
+				result="viewScope.modeloGeozonas" />
+		</on-entry>
+		<transition on="agregarRol">
+			<evaluate
+				expression="UsuariosC.agregarRol(flowScope.usuarioCRUD, viewScope.modeloRoles.seleccionado)" />
+			<evaluate
+				expression="AdministracionRolesC.quitarRolDeModelo(viewScope.modeloRoles, viewScope.modeloRoles.seleccionado)" />
+			<evaluate expression="AdministracionRolesC.modelo(flowScope.usuarioCRUD)"
+				result="viewScope.modeloRolesUsuario" />
+		</transition>
+		<transition on="quitarRol">
+			<evaluate
+				expression="UsuariosC.quitarRol(flowScope.usuarioCRUD, viewScope.modeloRolesUsuario.seleccionado)" />
+			<evaluate expression="AdministracionRolesC.modelo(flowScope.usuarioCRUD)"
+				result="viewScope.modeloRolesUsuario" />
+		</transition>
+		<transition on="cambiarNivel">
+			<evaluate expression="UsuariosC.limpiarTerritorios(flowScope.usuarioCRUD)" />
+		</transition>
+		<transition on="actualizarCombosTerritorios">
+			<evaluate
+				expression="CatalogosDFederalesC.modelo(modeloEntidades.seleccionMultiple)"
+				result="viewScope.modeloDFederales" />
+			<evaluate
+				expression="CatalogosDLocalesC.modelo(modeloEntidades.seleccionMultiple)"
+				result="viewScope.modeloDLocales" />
+			<evaluate
+				expression="CatalogosMunicipiosC.modelo(modeloEntidades.seleccionMultiple)"
+				result="viewScope.modeloMunicipios" />
+			<evaluate expression="CatalogosGeozonasC.modeloSinTerritorios()"
+				result="viewScope.modeloGeozonas" />
+		</transition>
+		<transition on="agregarTerritorios">
+			<evaluate expression="UsuariosC.agregarTerritorios(flowScope.usuarioCRUD, 
+				viewScope.modeloEntidades.seleccionMultiple, modeloDFederales.seleccionMultiple, 
+				modeloDLocales.seleccionMultiple, modeloMunicipios.seleccionMultiple, 
+				viewScope.modeloGeozonas.seleccionado)" />
+		</transition>
+		<transition on="guardar" to="fin">
+			<evaluate expression="UsuariosC.insertarActualizar(flowScope.usuarioCRUD)" />
+			<set name="flowScope.usuarioCRUD" value="null" />
+		</transition>
+		<transition on="cancelar" to="fin">
+			<set name="flowScope.usuarioCRUD" value="null" />
+		</transition>
+	</view-state>
+
+	<end-state id="fin" />
+
+</flow>

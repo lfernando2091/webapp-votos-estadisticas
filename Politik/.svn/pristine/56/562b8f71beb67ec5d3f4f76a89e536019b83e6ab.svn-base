@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+
+			<evaluate expression="CatalogosGeozonasC.regionesPorUsuario()"  result="viewScope.listadoRegiones"/>
+			<set name="viewScope.listadoRegiones.seleccionado" value="(flowScope.region!=null)?flowScope.region:viewScope.listadoRegiones.seleccionado"/>
+			<evaluate expression="CatalogosMunicipiosC.modeloConRegion(viewScope.listadoRegiones.seleccionado)" result="viewScope.listadoMunicipios"/>
+			<set name="viewScope.listadoMunicipios.seleccionado" value="(flowScope.municipio!=null)?flowScope.municipio:viewScope.listadoMunicipios.seleccionado"/>
+			<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.listadoMunicipios.seleccionado)" result="viewScope.listadoSeccion" />
+			<set name="viewScope.listadoSeccion.seleccionado" value="(flowScope.seccion!=null)?flowScope.seccion:viewScope.listadoSeccion.seleccionado"/>
+			<evaluate expression="diaDMovilicadoresC.modeloMovilizador(viewScope.listadoSeccion.seleccionado)" result="viewScope.listadoMovilizadores" />
+		</on-entry>
+	
+	<transition on="actualizaComboMpios" >
+		<evaluate expression="CatalogosMunicipiosC.modeloConRegion(viewScope.listadoRegiones.seleccionado)" result="viewScope.listadoMunicipios"/>
+		<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.listadoMunicipios.seleccionado)" result="viewScope.listadoSeccion" />
+		<evaluate expression="diaDMovilicadoresC.modeloMovilizador(viewScope.listadoSeccion.seleccionado)" result="viewScope.listadoMovilizadores" />
+	</transition>
+
+	<transition on="actualizaComboSecc">
+		<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.listadoMunicipios.seleccionado)" result="viewScope.listadoSeccion" />
+		<evaluate expression="diaDMovilicadoresC.modeloMovilizador(viewScope.listadoSeccion.seleccionado)" result="viewScope.listadoMovilizadores" />
+	</transition>
+	
+	<transition on="actualizaListado">
+			<evaluate expression="diaDMovilicadoresC.modeloMovilizador(viewScope.listadoSeccion.seleccionado)" result="viewScope.listadoMovilizadores" />
+	</transition>
+	
+	<transition on="eliminar" to="listado">
+			<evaluate expression="diaDMovilicadoresC.eliminar(viewScope.listadoMovilizadores.seleccionado)" /> 
+	</transition>
+
+
+	<transition on="asignar" to="movilizados">
+		<set name="requestScope.seleccionado" value="viewScope.listadoMovilizadores.seleccionado" />
+	</transition>
+
+	<transition on="insertarNuevoRegistro" to="nuevoMovilizador" >
+			<set name="flowScope.region" value="viewScope.listadoRegiones.seleccionado"/>
+			<set name="flowScope.municipio" value="viewScope.listadoMunicipios.seleccionado"/>
+			<set name="flowScope.seccion" value="viewScope.listadoSeccion.seleccionado"/>
+			<evaluate expression="diaDMovilicadoresC.nuevo(flowScope.region, flowScope.municipio, flowScope.seccion)" result="requestScope.movilizador"/>
+	</transition>
+
+	<transition on="editar" to="nuevoMovilizador">
+			<set name="requestScope.movilizador" value="viewScope.listadoMovilizadores.seleccionado"/>
+	</transition>
+		
+	<transition on="movilizados">
+			<evaluate expression="diaDMovilicadoresC.listadoMovilizados(viewScope.listadoMovilizadores.seleccionado)" />
+	</transition>
+	
+	<transition on="movilizadosOrdenFolio">
+			<evaluate expression="diaDMovilicadoresC.listadoMovilizadosPorFolio(viewScope.listadoMovilizadores.seleccionado)" />
+	</transition>	
+	
+	<transition on="movilizadosOrdenNombre">
+			<evaluate expression="diaDMovilicadoresC.listadoMovilizadosPorNombre(viewScope.listadoMovilizadores.seleccionado)" />
+	</transition>	
+	
+	<transition on="movilizadosFoliosOrdenFolio">
+			<evaluate expression="diaDMovilicadoresC.listadoMovilizadosPorFolio(viewScope.listadoMovilizadores.seleccionado)" />
+	</transition>	
+	
+	<transition on="movilizadosFoliosOrdenFolio">
+			<evaluate expression="diaDMovilicadoresC.listadoMovilizadosFoliosPorFolio(viewScope.listadoMovilizadores.seleccionado)" />
+	</transition>	
+	
+	<transition on="movilizadosFoliosOrdenNombre">
+			<evaluate expression="diaDMovilicadoresC.listadoMovilizadosFoliosPorNombre(viewScope.listadoMovilizadores.seleccionado)" />
+	</transition>	
+	
+	<transition on="cancelar" to="fin" />
+		
+    </view-state>
+    
+    
+    <subflow-state id="movilizados" subflow="diaD/movilizados">
+		<on-entry>
+			<set name="conversationScope.movilizador" value="requestScope.seleccionado" />
+		</on-entry>
+		<input name="flag" value="true"/>
+		<transition on="fin" to="listado"/>
+	</subflow-state>
+    
+        
+    
+    <view-state id="nuevoMovilizador">
+		<on-entry>
+		    <set name="viewScope.persona" value="requestScope.movilizador"/>		    
+		    <evaluate expression="DominiosModelosC.modeloGenero()" result="viewScope.listadoGenero"/>	
+			<evaluate expression="DominiosModelosC.programasEdoMex()" result="viewScope.listadoPrograma" />
+			
+			<evaluate expression="CatalogosGeozonasC.regionesPorUsuario()"  result="viewScope.listadoRegiones"/>
+			<evaluate expression="CatalogosMunicipiosC.modeloConRegion(viewScope.persona.region!=null?viewScope.persona.region:viewScope.listadoRegiones.seleccionado)" result="viewScope.listadoMunicipios"/>
+			<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.persona.municipio!=null?viewScope.persona.municipio:viewScope.listadoMunicipios.seleccionado)" result="viewScope.listadoSeccion" />
+		</on-entry>
+		
+		
+		<transition on="actualizacionMunicipios" >
+			<evaluate expression="CatalogosMunicipiosC.modeloConRegion(viewScope.persona.region)" result="viewScope.listadoMunicipios"/>
+			<set name="viewScope.persona.municipio" value="viewScope.listadoMunicipios.seleccionado"/>
+			<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.persona.municipio)" result="viewScope.listadoSeccion" />
+			
+		</transition>
+		
+		<transition on="actualizacionSecciones">
+		    <evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.persona.municipio)" result="viewScope.listadoSeccion" />
+		</transition>
+		
+		<transition on="insertarNuevoRegistro" to="listado" >
+			<set value="diaDMovilicadoresC.guarda(viewScope.persona)" name="requestScope.persona" />
+		</transition>
+		
+		<transition on="actualizarRegistro" to="listado">
+			<set value="diaDMovilicadoresC.guarda(viewScope.persona)" name="requestScope.persona" />
+		</transition>
+		<transition on="cancelar" to="listado" />
+		
+
+		
+	</view-state>
+	
+	<end-state id="fin"/>
+	
+
+					
+
+    
+    
+    
+    
+</flow>

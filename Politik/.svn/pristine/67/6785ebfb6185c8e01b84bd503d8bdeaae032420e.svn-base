@@ -1,0 +1,101 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Geozonas" action="cancelar" />
+						<p:menuitem
+							value="${geozona.id == null ? 'Agregar' : 'Editar'} Geozona" />
+						<p:menuitem value="Asignar Territorios" action="regresar"
+							immediate="true" />
+						<p:menuitem value="Generar Particiones" />
+					</p:breadCrumb>
+
+					<p:panel header="Generar Particiones">
+						<p:panelGrid columns="2">
+							<f:facet name="header">Geozona</f:facet>
+							<p:outputLabel value="Nombre" />
+							<p:outputLabel value="${geozona.nombre}" />
+							<p:outputLabel value="Nivel de Agrupación" />
+							<p:outputLabel value="${geozona.nivel.nombre}" />
+							<p:outputLabel value="Observaciones" />
+							<p:outputLabel value="${geozona.observaciones}" />
+						</p:panelGrid>
+						<p:separator />
+						<p:panelGrid id="panelParticiones" columns="2" columnClasses="topAlign, topAlign">
+							<p:dataTable value="${modeloParticiones.listado}" var="fila"
+								rowKey="${fila.id}"
+								selection="${modeloParticiones.seleccionado}"
+								selectionMode="single">
+								<f:facet name="header">Particiones</f:facet>
+								<p:ajax event="rowSelect" update="#{p:component('tablaParticionesTerritorios')}" />
+								<p:column headerText="Id">${fila.id}</p:column>
+								<p:column headerText="Id Particion">${fila.idParticion}</p:column>
+								<p:column headerText="Nombre">${fila.nombre}</p:column>
+								<f:facet name="footer">
+									<p:commandButton value="Agregar"
+										onsuccess="PF('dialogoAgregarParticionWV').show()" />
+								</f:facet>
+							</p:dataTable>
+							<p:dataTable id="tablaParticionesTerritorios"
+								value="${modeloParticiones.seleccionado.territorios}" var="fila">
+								<f:facet name="header">Territorios - ${modeloParticiones.seleccionado.nombre}</f:facet>
+								<p:column headerText="Id">${fila.id}</p:column>
+								<p:column headerText="Nombre">${fila.nombre}</p:column>
+							</p:dataTable>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Regresar" action="regresar" immediate="true" />
+							<p:commandButton value="Guardar" action="guardar" />
+							<p:commandButton value="Cancelar" action="cancelar" immediate="true" />
+						</f:facet>
+					</p:panel>
+
+					<p:dialog widgetVar="dialogoAgregarParticionWV" modal="true"
+						visible="false">
+						<f:facet name="header">Agregar Partición</f:facet>
+						<p:panelGrid id="panelAgregarParticion" columns="2">
+							<p:outputLabel value="ID Partición" />
+							<p:inputText value="${particion.idParticion}" size="5" />
+							<p:outputLabel value="Partición" />
+							<p:inputText value="${particion.nombre}" size="25" />
+						</p:panelGrid>
+						<p:separator />
+						<p:pickList id="pickListTerritorios"
+							value="${modeloTerritorios.modeloDual}" var="p"
+							itemLabel="${p.nombre}" itemValue="${p}"
+							converter="ObjectConverter" showSourceFilter="true"
+							showTargetControls="true">
+							<f:facet name="sourceCaption">Disponibles</f:facet>
+							<f:facet name="targetCaption">Asignados</f:facet>
+						</p:pickList>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregarParticion" onsuccess="PF('dialogoAgregarParticionWV').hide();" update="panelParticiones #{p:component('panelAgregarParticion')} #{p:component('pickListTerritorios')}" />
+							<p:commandButton value="Cancelar" onstart="PF('dialogoAgregarParticionWV').hide();" />
+						</f:facet>
+					</p:dialog>
+
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+						}
+						.ui-datatable-footer{
+							text-align: left !important;
+						}
+					</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

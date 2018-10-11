@@ -1,0 +1,77 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:panel header="Datos del Validador">
+				<p:panelGrid>
+				<p:row>
+				<p:column>
+				<p:outputLabel value="Región: "/>
+				</p:column>
+				<p:column>
+				<p:outputLabel value="${seleccionado.get('region')}"/>
+				</p:column>
+				</p:row>
+				<p:row>
+				<p:column>
+				<p:outputLabel value="Usuario:  "/>
+				</p:column>
+				<p:column>
+				<p:outputLabel value="${seleccionado.get('nombre_completo')}"/>
+				</p:column>
+				</p:row>
+				</p:panelGrid>
+				</p:panel>
+				<p:separator/>
+				<p:panel header="Listado">
+				<p:dataTable value="${listadoRegion}" var="y" id="dtListadoPersonas" > 
+				<f:facet name="header">
+								<h:commandLink>
+									<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+									<p:dataExporter type="xls" target="dtListadoPersonas"
+										fileName="Listado Entrevistados ${seleccionado.get('nombre_completo')} " />
+								</h:commandLink>
+								<p:spacer />
+								<h:commandLink onclick="window.history.back();">
+									<p:graphicImage value="/resources/botones/REGRESAR.png" />
+									
+								</h:commandLink>
+								
+							</f:facet>
+				<p:column headerText="Nombre" style="width: 50%">
+								<p:outputLabel value="${y.get('nombre_completo')}">
+								</p:outputLabel>
+							</p:column>
+							
+							<p:column headerText="Estado">
+								<p:outputLabel value="${y.get('estado')}">
+									<f:convertNumber maxFractionDigits="3" />
+								</p:outputLabel>
+							</p:column>
+							
+							
+				</p:dataTable>
+				</p:panel>
+				<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cronograma.iconos">
+	<cache />
+	
+	<resultMap type="IconoEO" id="icono">
+		<id column="IconoEO_id" property="id" javaType="Integer"/>
+		<result column="IconoEO_nombre" property="nombre" javaType="String"/>
+		<result column="IconoEO_ruta" property="ruta" javaType="String"/>
+	</resultMap>
+	
+	<select id="listado" resultMap="icono">
+		select 
+			id_icono IconoEO_id,
+			icono IconoEO_nombre,
+			ruta IconoEO_ruta
+		from cronograma.iconos
+		order by icono
+	</select>
+	
+	<select id="buscarPorId" parameterType="Integer">
+		select 
+			id_icono IconoEO_id,
+			icono IconoEO_nombre,
+			ruta IconoEO_ruta
+		from cronograma.iconos
+		where id_icono = #{value}
+	</select>
+	
+</mapper>

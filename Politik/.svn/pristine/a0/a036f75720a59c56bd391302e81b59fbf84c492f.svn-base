@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.levantamientoRowan.resultadoEncuestasCompletos">
+	
+	<resultMap type="LevantamientoRowanResultadoEncuestaCompletoEO" id="resultadoSeccionPrograma">
+		<id 		column="id" 						property="id" 						javaType="Integer"/>
+		<result 	column="entidad" 					property="entidad" 					javaType="Integer"/>
+		<result 	column="region" 					property="region" 					javaType="Integer"/>
+		<result 	column="nombre_region" 				property="nombreRegion" 			javaType="String"/>
+		<result 	column="municipio" 					property="municipio" 				javaType="Integer"/>
+		<result 	column="nombre_municipio" 			property="nombreMunicipio" 			javaType="String"/>
+		<result 	column="seccion" 					property="seccion" 					javaType="Integer"/>
+
+		<result 	column="exitoso" 					property="exitoso" 					javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara" 	property="noHuboQuienContestara" 	javaType="Integer"/>
+		<result 	column="menor_de_edad" 				property="menorDeEdad" 				javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado" 	property="domicilioNoEncontrado" 	javaType="Integer"/>
+		<result 	column="no_quisieron_contestar" 	property="noQuisieronContestar" 	javaType="Integer"/>
+		<result 	column="otro" 						property="otro" 					javaType="Integer"/>
+		<result 	column="total" 						property="total" 					javaType="Integer"/>
+		<result 	column="totalTotal" 				property="totalTotal" 				javaType="Integer"/>
+		<result 	column="meta" 						property="meta"		 				javaType="Integer"/>
+	</resultMap>
+	
+	<resultMap type="LevantamientoRowanResultadoEncuestaCompletoEO" id="resultadoMunicipioPrograma">
+		<id 		column="id" 						property="id" 						javaType="Integer"/>
+		<result 	column="entidad" 					property="entidad" 					javaType="Integer"/>
+		<result 	column="region" 					property="region" 					javaType="Integer"/>
+		<result 	column="nombre_region" 				property="nombreRegion" 			javaType="String"/>
+		<result 	column="municipio" 					property="municipio" 				javaType="Integer"/>
+		<result 	column="nombre_municipio" 			property="nombreMunicipio" 			javaType="String"/>
+		<result 	column="num_seccion" 				property="numSeccion" 				javaType="Integer"/>
+
+		<result 	column="exitoso" 					property="exitoso" 					javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara" 	property="noHuboQuienContestara" 	javaType="Integer"/>
+		<result 	column="menor_de_edad" 				property="menorDeEdad" 				javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado" 	property="domicilioNoEncontrado" 	javaType="Integer"/>
+		<result 	column="no_quisieron_contestar" 	property="noQuisieronContestar" 	javaType="Integer"/>
+		<result 	column="otro" 						property="otro" 					javaType="Integer"/>
+		<result 	column="total" 						property="total" 					javaType="Integer"/>
+		<result 	column="totalTotal" 				property="totalTotal" 				javaType="Integer"/>
+		<result 	column="meta" 						property="meta"		 				javaType="Integer"/>
+	</resultMap>
+
+	<resultMap type="LevantamientoRowanResultadoEncuestaCompletoEO" id="resultadoRegionPrograma">
+		<id 		column="id" 						property="id" 						javaType="Integer"/>
+		<result 	column="entidad" 					property="entidad" 					javaType="Integer"/>
+		<result 	column="region" 					property="region" 					javaType="Integer"/>
+		<result 	column="nombre_region" 				property="nombreRegion" 			javaType="String"/>
+		<result 	column="num_municipio" 				property="numMunicipio" 			javaType="Integer"/>
+		<result 	column="num_seccion" 				property="numSeccion" 				javaType="Integer"/>
+
+		<result 	column="exitoso" 					property="exitoso" 					javaType="Integer"/>
+		<result 	column="no_hubo_quien_contestara" 	property="noHuboQuienContestara" 	javaType="Integer"/>
+		<result 	column="menor_de_edad" 				property="menorDeEdad" 				javaType="Integer"/>
+		<result 	column="domicilio_no_encontrado" 	property="domicilioNoEncontrado" 	javaType="Integer"/>
+		<result 	column="no_quisieron_contestar" 	property="noQuisieronContestar" 	javaType="Integer"/>
+		<result 	column="otro" 						property="otro" 					javaType="Integer"/>
+		<result 	column="total" 						property="total" 					javaType="Integer"/>
+		<result 	column="totalTotal" 				property="totalTotal" 				javaType="Integer"/>
+		<result 	column="meta" 						property="meta"		 				javaType="Integer"/>
+	</resultMap>
+	
+	<select id="resultadoSeccionPrograma" resultMap="resultadoSeccionPrograma" parameterType="hashmap">
+		SELECT  
+			row_number() OVER (ORDER BY ee.entidad) AS id,  
+			ee.entidad, ee.region_edomex_2017 region, ee.nombre_region, ee.municipio, ee.nombre_municipio, ee.seccion,			
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='EXITOSO' THEN 1 ELSE 0 END),0) exitoso,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END),0) no_hubo_quien_contestara,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END),0) menor_de_edad,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END),0) domicilio_no_encontrado,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END),0) no_quisieron_contestar,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='OTRO' THEN 1 ELSE 0 END),0) otro,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL THEN 1 ELSE 0 END),0) total,
+			COALESCE((ems.contactos),0) totalTotal,
+			COALESCE((ems.meta),0) meta			
+		FROM (SELECT id_contacto,estatus FROM levantamiento_rowan.e_edomex) r			
+		RIGHT JOIN levantamiento_rowan.encuesta_edomex ee ON (ee.id_interno=r.id_contacto::INTEGER)
+		RIGHT JOIN levantamiento_rowan.e_edomex_secciones ems ON (ems.llave_seccion=(ee.entidad||'-'||ee.seccion))
+		<where>
+			<if test="municipios!=null">
+				ee.municipio IN 
+				<foreach collection="municipios" open="(" separator="," close=")" item="item" index="index">
+						#{item.idMunicipio}
+				</foreach> 
+			</if>
+			<if test="regiones!=null">
+				ee.region_edomex_2017 IN 
+				<foreach collection="regiones" open="(" separator="," close=")" item="item" index="index">
+						#{item.idParticion}
+				</foreach> 
+			</if>
+		</where>
+		GROUP BY ee.entidad, ee.region_edomex_2017, ee.nombre_region, ee.municipio, ee.nombre_municipio, ee.seccion, ems.contactos, ems.meta 
+		ORDER BY ee.entidad, ee.region_edomex_2017, ee.nombre_region, ee.municipio, ee.nombre_municipio, ee.seccion, ems.contactos, ems.meta 
+	</select>
+	
+	<select id="resultadoMunicipioPrograma" resultMap="resultadoMunicipioPrograma" parameterType="hashmap">
+		SELECT  
+			row_number() OVER (ORDER BY ee.entidad) AS id,  
+			ee.entidad, ee.region_edomex_2017 region, ee.nombre_region, ee.municipio, ee.nombre_municipio, COUNT(DISTINCT(ee.seccion)) num_seccion,			
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='EXITOSO' THEN 1 ELSE 0 END),0) exitoso,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END),0) no_hubo_quien_contestara,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END),0) menor_de_edad,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END),0) domicilio_no_encontrado,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END),0) no_quisieron_contestar,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='OTRO' THEN 1 ELSE 0 END),0) otro,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL THEN 1 ELSE 0 END),0) total,
+			COALESCE((ems.contactos),0) totalTotal,
+			COALESCE((ems.meta),0) meta			
+		FROM (SELECT id_contacto,estatus FROM levantamiento_rowan.e_edomex) r			
+		RIGHT JOIN levantamiento_rowan.encuesta_edomex ee ON (ee.id_interno=r.id_contacto::INTEGER)
+		RIGHT JOIN levantamiento_rowan.e_edomex_municipios ems ON (ems.llave_municipio=(ee.entidad||'-'||ee.municipio))
+		<where>
+			<if test="municipios!=null">
+				ee.municipio IN 
+				<foreach collection="municipios" open="(" separator="," close=")" item="item" index="index">
+						#{item.idMunicipio}
+				</foreach>
+			</if>
+			<if test="regiones!=null">
+				ee.region_edomex_2017 IN 
+				<foreach collection="regiones" open="(" separator="," close=")" item="item" index="index">
+						#{item.idParticion}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY ee.entidad, ee.region_edomex_2017, ee.nombre_region, ee.municipio, ee.nombre_municipio, ems.contactos, ems.meta  
+		ORDER BY ee.entidad, ee.region_edomex_2017, ee.nombre_region, ee.municipio, ee.nombre_municipio, ems.contactos, ems.meta 
+	</select>
+	
+	<select id="resultadoRegionPrograma" resultMap="resultadoRegionPrograma" parameterType="hashmap">
+		SELECT  
+			row_number() OVER (ORDER BY ee.entidad) AS id,  
+			ee.entidad, ee.region_edomex_2017 region, ee.nombre_region, COUNT(DISTINCT(ee.municipio)) num_municipio,  COUNT(DISTINCT(ee.seccion)) num_seccion,	
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='EXITOSO' THEN 1 ELSE 0 END),0) exitoso,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='NO_HUBO_QUIEN_CONTESTARA' THEN 1 ELSE 0 END),0) no_hubo_quien_contestara,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='MENOR_DE_EDAD' THEN 1 ELSE 0 END),0) menor_de_edad,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='DOMICILIO_NO_ENCONTRADO' THEN 1 ELSE 0 END),0) domicilio_no_encontrado,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='NO_QUISIERON_CONTESTAR' THEN 1 ELSE 0 END),0) no_quisieron_contestar,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL AND r.estatus='OTRO' THEN 1 ELSE 0 END),0) otro,
+			COALESCE(SUM(CASE WHEN r.id_contacto IS NOT NULL THEN 1 ELSE 0 END),0) total,
+			COALESCE((ems.contactos),0) totalTotal,
+			COALESCE((ems.meta),0) meta			
+		FROM (SELECT id_contacto, estatus FROM levantamiento_rowan.e_edomex) r			
+		RIGHT JOIN levantamiento_rowan.encuesta_edomex ee ON (ee.id_interno=r.id_contacto::INTEGER)
+		RIGHT JOIN levantamiento_rowan.e_edomex_regiones ems ON (ems.region=ee.region_edomex_2017)
+		<where>
+			<if test="municipios!=null">
+				ee.municipio IN 
+				<foreach collection="municipios" open="(" separator="," close=")" item="item" index="index">
+						#{item.idMunicipio}
+				</foreach>
+			</if>
+			<if test="regiones!=null">
+				ee.region_edomex_2017 IN 
+				<foreach collection="regiones" open="(" separator="," close=")" item="item" index="index">
+						#{item.idParticion}
+				</foreach> 
+			</if>
+		</where>
+		GROUP BY ee.entidad, ee.region_edomex_2017, ee.nombre_region, ems.contactos, ems.meta 
+		ORDER BY ee.entidad, ee.region_edomex_2017, ee.nombre_region, ems.contactos, ems.meta
+	</select>
+</mapper>

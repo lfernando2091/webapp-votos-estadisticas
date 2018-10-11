@@ -1,0 +1,581 @@
+package com.saganet.politik.components.importaciones;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.StringTokenizer;
+//import javax.faces.application.FacesMessage;
+//import javax.faces.context.FacesContext;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.faces.bean.ManagedBean;
+
+import com.saganet.politik.database.catalogos.TablaEO;
+import com.saganet.politik.database.catalogos.TablaParticionEO;
+import com.saganet.politik.database.importaciones.ImportacionesEO;
+import com.saganet.politik.database.importaciones.LogEO;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.ibatis.session.SqlSession;
+import org.primefaces.event.RowEditEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+import com.saganet.politik.database.importaciones.MapeoImportacionEO;
+import com.saganet.politik.database.importaciones.ImportacionTablaEO;
+import com.saganet.politik.dominios.EsquemasDO;
+import com.saganet.politik.dominios.EsquemasParticionesDO;
+import com.saganet.politik.dominios.EstatusImportacionDO;
+import com.saganet.politik.dominios.TiposCampoDO;
+import com.saganet.politik.dominios.TiposDelimitadorColumnasDO;
+import com.saganet.politik.dominios.TiposDelimitadorTextoDO;
+import com.saganet.politik.dominios.TiposImportacionesDO;
+import com.saganet.politik.modelos.importaciones.ImportacionesT;
+import com.saganet.politik.modelos.importaciones.LogsT;
+import static java.nio.file.StandardCopyOption.*;
+
+@Component("ImportacionC")
+@ManagedBean(name="ImportacionC")
+public class ImportacionC {
+	private static final Logger logger = LoggerFactory.getLogger(ImportacionC.class);
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	public void onRowEdit(RowEditEvent event) {
+    	ImportacionTablaEO importacion=(ImportacionTablaEO) event.getObject();
+		logger.debug("Importacion datos Nombre original ({}) Editado ({})",importacion.getNombreOriginal(), importacion.getNombreTabla());
+    }
+     
+    public void onRowCancel(RowEditEvent event) {
+    	ImportacionTablaEO importacion=(ImportacionTablaEO) event.getObject();
+		logger.debug("Importacion datos {}",importacion);
+    }
+	
+    
+	public ImportacionesT tablaHistorico(){
+		ImportacionesT tabla=new ImportacionesT();
+		List<ImportacionesEO> listado=new ArrayList<>();
+		listado=sqlSession.selectList("importaciones.importacion.listado");
+		logger.debug("El listado es {}",listado);
+		ByteArrayInputStream bais;
+		ObjectInputStream ois;
+		byte[] diagramaBytes;
+
+		// Deserializar modelos
+		for (ImportacionesEO estructura : listado) {
+			diagramaBytes = sqlSession.selectOne("importaciones.importacion.buscarMapeo", estructura);
+			try {
+				bais = new ByteArrayInputStream(diagramaBytes);
+				ois = new ObjectInputStream(bais);
+				estructura.setMapeoImportacion((MapeoImportacionEO) ois.readObject());
+				ois.close();
+				bais.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		tabla.setListado(listado);
+		if (!listado.isEmpty()) {
+			tabla.setSeleccionado(listado.get(0));
+		}
+		return tabla;
+	}
+	
+	
+	public String validarCSV(File archivo){
+		StringTokenizer tokens=new StringTokenizer(archivo.getName(), ".");
+		String nombreArchivo=new String("");
+		while(tokens.hasMoreTokens()){
+			nombreArchivo=tokens.nextToken();
+		}
+		if(nombreArchivo.equals("csv")){
+			return "true";
+		}
+		else{
+			return "false";
+		}
+	}
+	
+	public String tipoImportacion(boolean band) {
+		logger.debug("Bandera Tipo de Importacion {}",band);
+		if(band){
+			return "true";
+		}
+		else{
+			return "false";
+		}
+	}
+	
+	public TablaParticionEO nuevaParicion() {
+		return new TablaParticionEO();
+	}
+	
+	public TiposDelimitadorColumnasDO[] listadoDelimitadores() {
+		return TiposDelimitadorColumnasDO.values();
+	}
+	
+	public TiposDelimitadorTextoDO[] listadoQuote() {
+		return TiposDelimitadorTextoDO.values();
+	}
+	
+	public MapeoImportacionEO obtenerMapeo(File archivo , TiposDelimitadorColumnasDO delimitador, TiposDelimitadorTextoDO quote, EsquemasDO esquema){
+		MapeoImportacionEO mapeoNuevo=new MapeoImportacionEO();
+		mapeoNuevo.setDelimitador(delimitador);
+		mapeoNuevo.setQuote(quote);
+		
+		TablaEO tablaImportar;
+		tablaImportar = new TablaEO();
+		tablaImportar.setEsquema(esquema);
+		tablaImportar.setParticionada(false);
+		
+		logger.debug("El archivo se llama {}",archivo.getName());
+		logger.debug("El archivo tiene ruta {}",archivo.getAbsolutePath());
+		
+		logger.debug("Es directorio {}",archivo.isDirectory());
+		
+		File dest = new File("E:\\Politik\\importaciones\\"+archivo.getName());
+		
+		logger.debug("El archivo se llama {}",dest.getName());
+		logger.debug("El archivo tiene ruta {}",dest.getAbsolutePath());
+		
+		logger.debug("Es directorio {}",dest.isDirectory());
+		
+		try {
+			//FileUtils.copyDirectory(archivo, dest);
+			Path ruta=Paths.get(dest.getAbsolutePath());
+		    InputStream targetStream = new FileInputStream(archivo);
+			Files.copy(targetStream, ruta, REPLACE_EXISTING);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		mapeoNuevo.setArchivo(dest);
+
+		StringTokenizer tokens2=new StringTokenizer(dest.getName(), ".");
+		String nombreArchivo2=new String("");
+		while(tokens2.hasMoreTokens()){
+			nombreArchivo2=tokens2.nextToken();
+		}
+    	String nombreArchivo=new String(dest.getName().substring(0, (dest.getName().length()-(nombreArchivo2.length()+1))));
+		
+		nombreArchivo = (nombreArchivo.replaceAll("[%,&,°,á,é,í,ó,ú,/,ä,ë,ï,ö,ü,{,},0-9,\"]", "")).replaceAll(" ","_").replaceAll("ñ","ni");
+		
+		
+		HashMap<String, Object> mapaValidacionTabla;
+		mapaValidacionTabla = new HashMap<>();
+		mapaValidacionTabla.put("nombreArchivo", nombreArchivo);
+		mapaValidacionTabla.put("esquema", esquema.getNombre());
+
+		Integer numCampos=sqlSession.selectOne("importaciones.importacion.validarTabla",mapaValidacionTabla);
+		Integer serial=0;
+		//numCampos=sqlSession.selectOne("importaciones.importacion.validarTabla",nombreArchivo);
+		while(numCampos!=0){
+			serial++;
+			//nombreArchivo=nombreArchivo+serial;
+			mapaValidacionTabla.put("nombreArchivo", nombreArchivo+serial);
+			numCampos=sqlSession.selectOne("importaciones.importacion.validarTabla",mapaValidacionTabla);
+		}
+		if (serial!=0) {
+			nombreArchivo=nombreArchivo+serial;
+		}
+		tablaImportar.setTabla(nombreArchivo);
+		
+		mapeoNuevo.setTablaSeleccionada(tablaImportar);
+		
+		mapeoNuevo.setNombreTablaImportacion(nombreArchivo);
+		List<ImportacionTablaEO> listadoTablas = new ArrayList<>();
+		
+		//String header=new String("");
+		try {
+			mapeoNuevo.setArchivo(dest);
+
+			BufferedReader br = new BufferedReader(new FileReader(dest.getAbsolutePath()));
+			
+			CSVFormat format= CSVFormat.EXCEL;
+			
+			format= format.withQuote(quote.getSimbolo().charAt(0));
+			format=format.withDelimiter(delimitador.getSimbolo().charAt(0));
+			
+			CSVParser parser = format.parse(br);
+			 
+			logger.debug("BufferedReader {}",br);
+			
+			List<CSVRecord> listadoHeaders=parser.getRecords();
+			logger.debug("el listado de headers son {}",listadoHeaders.get(0));
+			for (String csvRecord : listadoHeaders.get(0)) {
+				ImportacionTablaEO tabla=new ImportacionTablaEO();
+				String columna=csvRecord;
+				tabla.setNombreOriginal(columna);
+				columna = (columna.replaceAll("[%,&,°,á,é,í,ó,ú,/,ä,ë,ï,ö,ü,{,},\"]", "")).replaceAll(" ","_").replaceAll("ñ","ni");
+				tabla.setNombreTabla(columna);
+				tabla.setTipoDatoTabla(TiposCampoDO.TEXT);
+				listadoTablas.add(tabla);
+				logger.debug("Columnas {} tipo {}",columna,tabla.getTipoDatoTabla());
+			}
+			/*header=br.readLine();
+			if(header!=null){
+					logger.debug("Encabezado {}",header);
+					StringTokenizer tokens=new StringTokenizer(header, "|");
+					while(tokens.hasMoreTokens()){
+						ImportacionTablaEO tabla=new ImportacionTablaEO();
+						String columna=(tokens.nextToken());
+						tabla.setNombreOriginal(columna);
+						columna = (columna.replaceAll("[%,&,°,á,é,í,ó,ú,/,ä,ë,ï,ö,ü,{,},0-9,\"]", "")).replaceAll(" ","_").replaceAll("ñ","ni");
+						tabla.setNombreTabla(columna);
+						tabla.setTipoDatoTabla(TiposCampoDO.TEXT);
+						listadoTablas.add(tabla);
+						logger.debug("Columnas {} tipo {}",columna,tabla.getTipoDatoTabla());
+			        }
+			}
+			else{
+				logger.debug("No contiene encabezado");
+			}*/
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		mapeoNuevo.setTablaImportacion(listadoTablas);
+		return mapeoNuevo;
+	}
+
+	@Async
+	public void importacion (MapeoImportacionEO mapeoVista){
+		for (ImportacionTablaEO tablaImportacionLogger : mapeoVista.getTablaImportacion()) {
+			logger.debug("valor texto {} tipo {}",tablaImportacionLogger.getNombreTabla(),tablaImportacionLogger.getTipoDatoTabla());
+		}
+		ImportacionesEO importacion = new ImportacionesEO();
+		importacion.setMapeoImportacion(mapeoVista);
+		
+		Integer id=sqlSession.selectOne("importaciones.importacion.selectPkey");
+		importacion.setId(id);
+		
+		LogEO log=new LogEO();
+		log.setIdImportacion(id);
+		log.setDescripcion("Se inicia Proceso Asincrono de Creación de Historico");
+		sqlSession.insert("importaciones.logs.insertar", log);
+		logger.debug("Se inicia Proceso Asincrono de Creación de Historico");
+
+		importacion.setTipo(TiposImportacionesDO.COMPLETA);
+		importacion.setEstatus(EstatusImportacionDO.PENDIENTE);
+
+		ByteArrayOutputStream baos;
+		ObjectOutputStream oos;
+		byte[] diagramaBytes;
+		
+		diagramaBytes = null;
+		try {
+			baos = new ByteArrayOutputStream();
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(mapeoVista);
+			oos.close();
+			diagramaBytes = baos.toByteArray();
+			baos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		HashMap<String, Object> parametros;
+		parametros = new HashMap<>();
+		parametros.put("importacion", importacion);
+		parametros.put("objeto", diagramaBytes);
+		
+		sqlSession.insert("importaciones.importacion.insertar",parametros);
+		
+		HashMap<String, Object> mapa=new HashMap<String, Object>();
+	    List<ImportacionTablaEO> valoresVista  = new ArrayList<>();
+		valoresVista=mapeoVista.getTablaImportacion();
+		String query=new String("");
+		for(int i=0; valoresVista.size()>i; i++ ){
+			Pattern p = Pattern.compile("^\\d+.*");
+			Matcher m = p.matcher(mapeoVista.getTablaImportacion().get(i).getNombreTabla());
+			if(m.matches()){
+				query= new String(query+"\""+mapeoVista.getTablaImportacion().get(i).getNombreTabla()+"\" "+mapeoVista.getTablaImportacion().get(i).getTipoDatoTabla().getTipo()+",");
+			}
+			else{
+				query= new String(query+ mapeoVista.getTablaImportacion().get(i).getNombreTabla()+" "+mapeoVista.getTablaImportacion().get(i).getTipoDatoTabla().getTipo()+",");
+			}	
+		}
+		logger.debug("Los Campos son {}",query);
+		mapa.put("camposTabla", query);
+		mapa.put("nombreTabla", mapeoVista.getTablaSeleccionada().getTabla());
+		mapa.put("esquema", mapeoVista.getTablaSeleccionada().getEsquema().getNombre());
+		
+		
+		importacion.setEstatus(EstatusImportacionDO.PREPARANDO);
+		sqlSession.update("importaciones.importacion.actualizarEstatus",importacion);
+		log.setDescripcion("Se Crea la Tabla de la Importacion");
+		sqlSession.insert("importaciones.logs.insertar", log);
+		logger.debug("Se Crea la Tabla de la Importacion");
+		
+		//Obtenemos_id_tabla_de_catalogos_tablas
+		importacion.getMapeoImportacion().getTablaSeleccionada().setId((Integer) sqlSession.selectOne("catalogos.tablas.obtenerIdTabla"));
+		//Creamos_el_registro_de_la_tabla_en_catalogos_tablas
+		sqlSession.insert("catalogos.tablas.insertarTabla", importacion.getMapeoImportacion().getTablaSeleccionada());
+		
+		sqlSession.update("importaciones.importacion.createTable",mapa);
+		
+		String campos=new String("");
+		
+		for (int i = 0; i < mapeoVista.getTablaImportacion().size(); i++) {
+			if(i!=0){
+				campos=campos+",";
+			}
+			Pattern p = Pattern.compile("^\\d+.*");
+			Matcher m = p.matcher(mapeoVista.getTablaImportacion().get(i).getNombreTabla());
+			if(m.matches()){
+				campos=campos+"\""+mapeoVista.getTablaImportacion().get(i).getNombreTabla()+"\"";
+			}
+			else{
+				campos=campos+mapeoVista.getTablaImportacion().get(i).getNombreTabla();
+			}	
+		}
+		
+		HashMap<String, Object> mapaCopy=new HashMap<String, Object>();
+		mapaCopy.put("tabla", mapeoVista.getTablaSeleccionada().getTabla());
+		mapaCopy.put("url", mapeoVista.getArchivo().getAbsolutePath());
+		mapaCopy.put("campos", campos);
+		mapaCopy.put("esquema", mapeoVista.getTablaSeleccionada().getEsquema().getNombre());
+		mapaCopy.put("delimitador", mapeoVista.getDelimitador().getSimbolo());
+		mapaCopy.put("quote", mapeoVista.getQuote().getSimbolo());
+		
+		importacion.setEstatus(EstatusImportacionDO.EJECUTANDO);
+		sqlSession.update("importaciones.importacion.actualizarEstatus",importacion);
+		
+		log.setDescripcion("Se Ejecuta la Importacion Con Copy");
+		sqlSession.insert("importaciones.logs.insertar", log);
+		logger.debug("Se Ejecuta la Importacion Con Copy");
+		
+		
+		try {
+			sqlSession.update("importaciones.importacion.copy",mapaCopy);
+		} catch (Exception e2) {
+			importacion.setEstatus(EstatusImportacionDO.ERROR);
+			sqlSession.update("importaciones.importacion.actualizarEstatus",importacion);
+			log.setDescripcion("Error En Copy");
+			sqlSession.insert("importaciones.logs.insertar", log);
+			logger.debug("Error En Copy");
+		}
+		
+//		sqlSession.update("importaciones.importacion.copy",mapaCopy);
+
+		importacion.setEstatus(EstatusImportacionDO.TERMINADO);
+		sqlSession.update("importaciones.importacion.actualizarEstatus",importacion);
+		
+		log.setDescripcion("Finalizado El Proceso De Importación");
+		sqlSession.insert("importaciones.logs.insertar", log);
+		logger.debug("Finalizado El Proceso De Importación");
+			
+	}
+	
+	public LogsT tablaLog(ImportacionesEO importacion){
+		//MapeoImportacionEO mapeoVista=importacion.getMapeoImportacion();
+		LogsT tabla;
+		List<LogEO> listado;
+		tabla = new LogsT();
+		listado = sqlSession.selectList("importaciones.logs.listadoPorIdImportacion", importacion);
+		logger.debug("Listado {}",listado);
+		tabla.setListado(listado);
+		if(!listado.isEmpty()){
+			tabla.setSeleccionado(listado.get(0));
+		}
+		return tabla;
+	}
+	
+	public TiposCampoDO[] listadoTiposCampo(){
+		logger.debug("Se genera listado de Tipos de Campo");
+		return TiposCampoDO.values();
+	}
+	
+	public Integer registrosTablas(TablaEO tablaImpo, TablaParticionEO tablaImpoParticion) {
+		Integer count=0;
+		logger.debug("Conteo de registros tabla es particionada {}",tablaImpo.getParticionada());
+		String tabla=new String("");
+		if (tablaImpo.getParticionada()) {
+			if (tablaImpoParticion==null) {
+				return 0;
+			}
+			else{
+				tabla=new String(tablaImpoParticion.getEsquema().getNombre()+"."+tablaImpo.getTabla()+"_"+tablaImpoParticion.getParticion());
+			}
+		}
+		else{
+			tabla=new String(tablaImpo.getEsquema().getNombre()+"."+tablaImpo.getTabla());
+		
+		}
+		count=sqlSession.selectOne("importaciones.importacion.conteoRegistros",tabla);
+		logger.debug("Conteo de registros tabla :{} registros: {}",tabla, count);
+		return count;
+	}
+	
+	public MapeoImportacionEO importacionTablas(MapeoImportacionEO mapeoVista, TablaParticionEO tablaImpoParticion, TablaEO tablaImpo ){
+		logger.debug("Tabla {}",tablaImpo);
+		logger.debug("Tabla Importacion {}",tablaImpoParticion);
+		if(tablaImpo.getParticionada() && tablaImpoParticion!=null){
+			mapeoVista.setNombreTablaImportacion(tablaImpo.getTabla()+"_"+tablaImpoParticion.getParticion());
+		}
+		else{
+			mapeoVista.setNombreTablaImportacion(tablaImpo.getTabla());
+		}
+		mapeoVista.setTablaParticionSeleccionada(tablaImpoParticion);
+		mapeoVista.setTablaSeleccionada(tablaImpo);
+		return mapeoVista;	
+	}
+	
+	public MapeoImportacionEO limpiarNombreTabla(MapeoImportacionEO mapeoVista){
+		for (ImportacionTablaEO tabla : mapeoVista.getTablaImportacion()) {
+			tabla.setNombreTabla("");
+		}
+		return mapeoVista;	
+	}
+	
+	@Async
+	public void importacionTExistente(MapeoImportacionEO mapeoVista , boolean banderaTruncar){
+		logger.debug("Bandera de truncas {}",banderaTruncar);
+//		FacesContext context = FacesContext.getCurrentInstance();
+//		context.addMessage(null, new FacesMessage("Guardado :","LOS CAMBIOS SE REALIZARÓN SATISFACTORIAMENTE"));
+		ImportacionesEO importacion = new ImportacionesEO();
+		importacion.setMapeoImportacion(mapeoVista);
+		
+		Integer id=sqlSession.selectOne("importaciones.importacion.selectPkey");
+		importacion.setId(id);
+		
+		LogEO log=new LogEO();
+		log.setIdImportacion(id);
+		log.setDescripcion("Se inicia Proceso Asincrono de Creación de Historico");
+		sqlSession.insert("importaciones.logs.insertar", log);
+		logger.debug("Se inicia Proceso Asincrono de Creación de Historico");
+
+		importacion.setTipo(TiposImportacionesDO.PARCIAL);
+		importacion.setEstatus(EstatusImportacionDO.PENDIENTE);
+
+		ByteArrayOutputStream baos;
+		ObjectOutputStream oos;
+		byte[] diagramaBytes;
+		
+		diagramaBytes = null;
+		try {
+			baos = new ByteArrayOutputStream();
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(mapeoVista);
+			oos.close();
+			diagramaBytes = baos.toByteArray();
+			baos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		HashMap<String, Object> parametros;
+		parametros = new HashMap<>();
+		parametros.put("importacion", importacion);
+		parametros.put("objeto", diagramaBytes);
+		
+		sqlSession.insert("importaciones.importacion.insertar",parametros);
+
+		importacion.setEstatus(EstatusImportacionDO.PREPARANDO);
+		sqlSession.update("importaciones.importacion.actualizarEstatus",importacion);
+		if(banderaTruncar){
+			if(mapeoVista.getTablaSeleccionada().getParticionada()){
+				sqlSession.update("importaciones.importacion.truncarTabla", mapeoVista.getTablaParticionSeleccionada().getEsquema()+"."+mapeoVista.getTablaSeleccionada().getTabla()+"_"+mapeoVista.getTablaParticionSeleccionada().getParticion());
+			}
+			else{
+				sqlSession.update("importaciones.importacion.truncarTabla",mapeoVista.getTablaSeleccionada().getEsquema()+"."+mapeoVista.getTablaSeleccionada().getTabla());
+			}
+			log.setDescripcion("Se Trunca la Tabla En Preparacion A La Importación");
+			sqlSession.insert("importaciones.logs.insertar", log);
+			logger.debug("Se Trunca la Tabla En Preparacion A La Importación");
+		}
+		String campos=new String("");
+		
+		for (int i = 0; i < mapeoVista.getTablaImportacion().size(); i++) {
+			if(i!=0){
+				campos=campos+",";
+			}
+			Pattern p = Pattern.compile("^\\d+.*");
+			Matcher m = p.matcher(mapeoVista.getTablaImportacion().get(i).getNombreTabla());
+			if(m.matches()){
+				campos=campos+"\""+mapeoVista.getTablaImportacion().get(i).getNombreTabla()+"\"";
+			}
+			else {
+				Pattern pa = Pattern.compile("[a-z]{1,}");
+				Matcher ma = pa.matcher(mapeoVista.getTablaImportacion().get(i).getNombreTabla());
+			    if(!ma.matches()){
+			    	campos=campos+"\""+mapeoVista.getTablaImportacion().get(i).getNombreTabla()+"\"";
+			    }
+			    else{
+					campos=campos+mapeoVista.getTablaImportacion().get(i).getNombreTabla();
+			    }
+			}
+		}
+		
+		HashMap<String, Object> mapaCopy=new HashMap<String, Object>();
+		
+		if(mapeoVista.getTablaSeleccionada().getParticionada()){
+			mapaCopy.put("tabla", mapeoVista.getTablaSeleccionada().getTabla()+"_"+mapeoVista.getTablaParticionSeleccionada().getParticion());
+			mapaCopy.put("esquema", mapeoVista.getTablaParticionSeleccionada().getEsquema().getNombre());
+		}
+		else{
+			mapaCopy.put("tabla", mapeoVista.getTablaSeleccionada().getTabla());
+			mapaCopy.put("esquema", mapeoVista.getTablaSeleccionada().getEsquema().getNombre());
+		}
+		//mapaCopy.put("tabla", mapeoVista.getNombreTablaImportacion());
+		mapaCopy.put("url", mapeoVista.getArchivo().getAbsolutePath());
+		mapaCopy.put("campos", campos);
+		mapaCopy.put("delimitador", mapeoVista.getDelimitador().getSimbolo());
+		mapaCopy.put("quote", mapeoVista.getQuote().getSimbolo());
+		
+		
+		importacion.setEstatus(EstatusImportacionDO.EJECUTANDO);
+		sqlSession.update("importaciones.importacion.actualizarEstatus",importacion);
+		
+		log.setDescripcion("Se Ejecuta la Importacion Con Copy");
+		sqlSession.insert("importaciones.logs.insertar", log);
+		logger.debug("Se Ejecuta la Importacion Con Copy");
+		
+		try {
+			sqlSession.update("importaciones.importacion.copy",mapaCopy);
+		} catch (Exception e2) {
+			importacion.setEstatus(EstatusImportacionDO.ERROR);
+			sqlSession.update("importaciones.importacion.actualizarEstatus",importacion);
+			log.setDescripcion("Error En Copy");
+			sqlSession.insert("importaciones.logs.insertar", log);
+			logger.debug("Error En Copy "+e2.getMessage());
+		}
+		
+
+		importacion.setEstatus(EstatusImportacionDO.TERMINADO);
+		sqlSession.update("importaciones.importacion.actualizarEstatus",importacion);
+		
+		log.setDescripcion("Finalizado El Proceso De Importación");
+		sqlSession.insert("importaciones.logs.insertar", log);
+		logger.debug("Finalizado El Proceso De Importación");
+			
+	}
+	
+	public EsquemasDO[] listadoEsquemas() {
+		return EsquemasDO.values();
+	}
+	
+	public EsquemasParticionesDO[] listadoEsquemasParticiones() {
+		return EsquemasParticionesDO.values();
+	}
+	
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="inicio">
+		<on-entry>
+			<evaluate expression="DominiosModelosC.nivelesReporte3()" result="viewScope.modeloNiveles"/>
+			<evaluate expression="CatalogosGeozonasC.regionesPorUsuario()"  result="viewScope.modeloRegiones"/>
+			
+			<evaluate expression="CatalogosMunicipiosC.modeloConRegion(viewScope.modeloRegiones.seleccionado)" result="viewScope.modeloMunicipios"/>
+			<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.modeloMunicipios.seleccionado)" result="viewScope.modeloSecciones" />
+			
+			<evaluate expression="DominiosModelosC.programasEdoMex3()" result="viewScope.modeloGrupos" />
+			<evaluate expression="diaDReportesMetasJornadaEstatica.elegirGrupo(viewScope.modeloGrupos)" result="viewScope.grupo" />
+			<evaluate expression="diaDReportesMetasJornadaEstatica.metasJornada(flowRequestContext)" result="viewScope.mapa" />
+		</on-entry>
+		
+		<transition on="actualizarMunicipios">
+			<evaluate expression="CatalogosMunicipiosC.modeloRegion(viewScope.modeloRegiones.seleccionado)" result="viewScope.modeloMunicipios"/>
+			<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.modeloMunicipios.seleccionado)" result="viewScope.modeloSecciones" />
+		</transition>
+		
+		<transition on="actualizarSecciones">
+			<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.modeloMunicipios.seleccionado)" result="viewScope.modeloSecciones" />
+		</transition>
+		
+		<transition on="actualizarTabla">
+			<evaluate expression="diaDReportesMetasJornadaEstatica.metasJornada(flowRequestContext)" result="viewScope.mapa" />
+		</transition>
+		
+		<transition on="actualizarMunicipioReporte">
+			<evaluate expression="diaDReportesMetasJornadaEstatica.cargarMunicipio(viewScope.mapa.seleccionado, viewScope.grupo)"/>
+		</transition>
+	</view-state>
+
+</flow>

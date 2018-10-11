@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.edomex2017.avanceEncuestadores">
+	
+	<resultMap type="Edomex2017AvanceEncuestadoresEO" id="avanceEncuestadoresRegion">
+		<id 		column="id" 						property="id" 							javaType="Integer"/>
+		<result 	column="region" 					property="region" 						javaType="Integer"/>
+		<result 	column="nombreRegion" 				property="nombreRegion" 				javaType="String"/>
+		<result 	column="numMunicipio" 				property="numMunicipio" 				javaType="Integer"/>
+		<result 	column="encuestadoresProspera" 		property="encuestadoresProspera" 		javaType="Integer"/>
+		<result 	column="encuestadoresLiconsa" 		property="encuestadoresLiconsa" 		javaType="Integer"/>
+		<result 	column="encuestadoresGem" 			property="encuestadoresGem" 			javaType="Integer"/>
+		<result 	column="encuestadoresProsperaMeta" 	property="encuestadoresProsperaMeta" 	javaType="Integer"/>
+		<result 	column="encuestadoresLiconsaMeta" 	property="encuestadoresLiconsaMeta" 	javaType="Integer"/>
+		<result 	column="encuestadoresGemMeta" 		property="encuestadoresGemMeta" 		javaType="Integer"/>
+	</resultMap>
+	
+	<resultMap type="Edomex2017AvanceEncuestadoresEO" id="avanceEncuestadoresMunicipio">
+		<id 		column="id" 						property="id" 							javaType="Integer"/>
+		<result 	column="region" 					property="region" 						javaType="Integer"/>
+		<result 	column="nombreRegion" 				property="nombreRegion" 				javaType="String"/>
+		<result 	column="municipio" 					property="municipio" 					javaType="Integer"/>
+		<result 	column="nombreMunicipio" 			property="nombreMunicipio" 				javaType="String"/>
+		<result 	column="encuestadoresProspera" 		property="encuestadoresProspera" 		javaType="Integer"/>
+		<result 	column="encuestadoresLiconsa" 		property="encuestadoresLiconsa" 		javaType="Integer"/>
+		<result 	column="encuestadoresGem" 			property="encuestadoresGem" 			javaType="Integer"/>
+		<result 	column="encuestadoresProsperaMeta" 	property="encuestadoresProsperaMeta" 	javaType="Integer"/>
+		<result 	column="encuestadoresLiconsaMeta" 	property="encuestadoresLiconsaMeta" 	javaType="Integer"/>
+		<result 	column="encuestadoresGemMeta" 		property="encuestadoresGemMeta" 		javaType="Integer"/>
+	</resultMap>
+
+	
+	<select id="avanceEncuestadoresRegion" resultMap="avanceEncuestadoresRegion" parameterType="hashmap">
+		SELECT 
+			row_number() OVER (ORDER BY em.region) AS id,  
+			em.region::integer, em.nombre_region nombreRegion,
+			SUM(CASE WHEN ee.progama='PROSPERA' THEN 1 ELSE 0 END) encuestadoresProspera,
+			SUM(CASE WHEN ee.progama='LICONSA' THEN 1 ELSE 0 END) encuestadoresLiconsa,
+			SUM(CASE WHEN ee.progama='GEM' THEN 1 ELSE 0 END) encuestadoresGem,
+			er.encuestadores_prospera encuestadoresProsperaMeta,
+			er.encuestadores_liconsa encuestadoresLiconsaMeta, 
+			er.encuestadores_gem encuestadoresGemMeta,
+			COUNT(DISTINCT(ee.id_municipio)) numMunicipio
+		FROM encuestas.encuesta_edomex_encuestadores ee
+		JOIN encuestas_resultados.edomex_millon_municipios em ON (ee.id_municipio=em.municipio) 
+		JOIN encuestas_resultados.edomex_millon_regiones er ON (em.region=er.region) 
+		WHERE ee.usuario IS NOT NULL 
+		<if test="municipio!=null">
+			AND em.municipio=#{municipio} 
+		</if>
+		<if test="region!=null">
+			AND em.region=#{region} 
+		</if>
+		GROUP BY em.region, em.nombre_region, er.encuestadores_prospera, er.encuestadores_liconsa, er.encuestadores_gem
+		ORDER BY em.region, em.nombre_region, er.encuestadores_prospera, er.encuestadores_liconsa, er.encuestadores_gem
+	</select>
+	
+	
+	<select id="avanceEncuestadoresMunicipio" resultMap="avanceEncuestadoresMunicipio" parameterType="hashmap">
+		SELECT 
+			row_number() OVER (ORDER BY em.region) AS id,  
+			em.region::integer, em.nombre_region nombreRegion, em.municipio, em.nombre_municipio nombreMunicipio,
+			SUM(CASE WHEN ee.progama='PROSPERA' THEN 1 ELSE 0 END) encuestadoresProspera,
+			SUM(CASE WHEN ee.progama='LICONSA' THEN 1 ELSE 0 END) encuestadoresLiconsa,
+			SUM(CASE WHEN ee.progama='GEM' THEN 1 ELSE 0 END) encuestadoresGem,
+			em.encuestadores_prospera encuestadoresProsperaMeta,
+			em.encuestadores_liconsa encuestadoresLiconsaMeta, 
+			em.encuestadores_gem encuestadoresGemMeta
+		FROM encuestas.encuesta_edomex_encuestadores ee
+		JOIN encuestas_resultados.edomex_millon_municipios em ON (ee.id_municipio=em.municipio) 
+		WHERE ee.usuario IS NOT NULL 
+		<if test="municipio!=null">
+			AND em.municipio=#{municipio} 
+		</if>
+		<if test="region!=null">
+			AND em.region=#{region} 
+		</if>
+		GROUP BY em.region, em.nombre_region, em.municipio, em.nombre_municipio,em.encuestadores_prospera, em.encuestadores_liconsa,  em.encuestadores_gem
+		ORDER BY em.region, em.nombre_region, em.municipio, em.nombre_municipio,em.encuestadores_prospera, em.encuestadores_liconsa,  em.encuestadores_gem
+	</select>
+</mapper>

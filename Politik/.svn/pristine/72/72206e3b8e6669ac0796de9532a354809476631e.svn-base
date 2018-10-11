@@ -1,0 +1,12 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+	
+	<p:dataTable value="${datos}" var="fila" paginator="true" rows="10" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+		<p:column headerText="Elección">${fila.eleccion.descripcion}</p:column>
+		<p:column headerText="Asignación" width="200">${fila.nodo.figura.nombre}</p:column>
+		<p:column headerText="Territorio" width="150">${fila.territorio.nombre}</p:column>
+	</p:dataTable>
+</ui:composition>

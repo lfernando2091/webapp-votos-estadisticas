@@ -1,0 +1,72 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:growl autoUpdate="true" globalOnly="true" life="12000" for="msg" widgetVar="msgWid"/>
+					<p:panel header="Promovidos">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Promotor :"/>
+							</p:column>
+							<p:column>
+									<p:outputLabel value="${movilizador.nombre} ${movilizador.primerApellido} ${movilizador.segundoApellido}"/>
+							</p:column>
+						</p:panelGrid>
+						<p:panel id="gridEncuestas">
+							<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}"
+									selectionMode="single" paginator="true" rows="15" paginatorPosition="bottom">
+									<p:column headerText="FOLIO"  width="100" >
+										<p:outputLabel value="${fila.folio}"/>
+									</p:column>
+									<p:column headerText="REGION"  width="200"  filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.idRegion} - ${fila.region}">
+										<p:outputLabel value="${fila.idRegion} - ${fila.region}"/>
+									</p:column>
+									<p:column headerText="MUNICIPIO"  width="200"  filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.idMunicipio} - ${fila.municipio}">
+										<p:outputLabel value="${fila.idMunicipio} - ${fila.municipio}"/>
+									</p:column>
+									<p:column headerText="SECCION"  width="100"   filterable="true" filterMatchMode="exact" filterStyle="width:90%;" filterBy="${fila.seccion}">
+										<p:outputLabel value="${fila.seccion}"/>
+									</p:column>
+									<p:column headerText="NOMBRE"  width="100"    filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.nombre}">
+										<p:outputLabel value="${fila.nombre}"/>
+									</p:column>
+									<p:column headerText="PRIMER APELLIDO"  width="100"    filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.primerApellido}">
+										<p:outputLabel value="${fila.primerApellido}"/>
+									</p:column>
+									<p:column headerText="SEGUNDO APELLIDO"  width="100"    filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.segundoApellido}">
+										<p:outputLabel value="${fila.segundoApellido}"/>
+									</p:column> 
+									<p:column headerText="CALIFICACION"  width="100"    filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.calificacion}">
+										<p:outputLabel value="${fila.calificacion.nombre}"/>
+									</p:column>
+									<p:column headerText="TELEFONO"  width="100"    filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.telefono}">
+										<p:outputLabel value="${fila.telefono}"/>
+									</p:column>
+									<p:column headerText="EMAIL"  width="100"    filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.email}">
+										<p:outputLabel value="${fila.email}"/>
+									</p:column>
+									<p:column headerText="DOMICILIO"  width="200"    filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.email}">
+										<p:outputLabel value="${fila.domicilio}"/>
+									</p:column>
+							</p:dataTable>
+						</p:panel>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregar"/>
+							<p:commandButton value="Regresar" action="regresar" rendered="${flag}"/>
+						</f:facet>
+					</p:panel>	
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

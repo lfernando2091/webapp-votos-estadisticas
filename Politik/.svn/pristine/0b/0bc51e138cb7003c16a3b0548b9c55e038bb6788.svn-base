@@ -1,0 +1,733 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2017-04-26T17:09:51 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Reporte_Entrevistas_Por_Dia" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isIgnorePagination="true" uuid="df013db5-f76e-44d3-b0df-bcbc46d93160">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="POLITIK.xml"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<style name="Title" fontName="Times New Roman" fontSize="50" isBold="true"/>
+	<style name="SubTitle" forecolor="#736343" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<style name="Row" mode="Transparent">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="Dataset1" uuid="ccc9f5a4-1054-47b2-a3de-48a41e146a54">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="POLITIK.xml"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT 
+			pkey, dia, programa, meta, esperadas, 
+			TO_CHAR(visitadas,'999G999G999')||'  ('||round(((visitadas::NUMERIC/esperadas::NUMERIC)*100), 1)::TEXT||'%)' visitadas,
+			TO_CHAR(exitosas,'999G999G999')||'  ('||round(((exitosas::NUMERIC/visitadas::NUMERIC)*100), 1)::TEXT||'%)'  exitosas,
+			a_favor, indeciso_a_favor, indeciso, indeciso_en_contra, en_contra, estatus
+ FROM encuestas_edomex.reporte_respuestas_entidad 
+ WHERE estatus=to_char(now(), 'DD/MM/YYYY')
+ ORDER BY programa]]>
+		</queryString>
+		<field name="pkey" class="java.lang.Integer"/>
+		<field name="dia" class="java.lang.Integer"/>
+		<field name="programa" class="java.lang.String"/>
+		<field name="meta" class="java.lang.Integer"/>
+		<field name="esperadas" class="java.lang.Integer"/>
+		<field name="visitadas" class="java.lang.String"/>
+		<field name="exitosas" class="java.lang.String"/>
+		<field name="a_favor" class="java.lang.Integer"/>
+		<field name="indeciso_a_favor" class="java.lang.Integer"/>
+		<field name="indeciso" class="java.lang.Integer"/>
+		<field name="indeciso_en_contra" class="java.lang.Integer"/>
+		<field name="en_contra" class="java.lang.Integer"/>
+		<field name="estatus" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="Dataset2" uuid="4bf2448f-f545-496d-b287-a84c29a44bd1">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="POLITIK.xml"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT 
+			programa, meta,  esperadas,   visitadas,  exitosas
+ FROM encuestas_edomex.reporte_respuestas_entidad 
+ WHERE estatus=to_char(now(), 'DD/MM/YYYY')
+ ORDER BY programa]]>
+		</queryString>
+		<field name="programa" class="java.lang.String"/>
+		<field name="meta" class="java.lang.Integer"/>
+		<field name="esperadas" class="java.lang.Integer"/>
+		<field name="visitadas" class="java.lang.Integer"/>
+		<field name="exitosas" class="java.lang.Integer"/>
+	</subDataset>
+	<subDataset name="Dataset3" uuid="a0d0fa1b-14f8-4571-8c94-66877cf0558d">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="205"/>
+		<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="786"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="POLITIK.xml"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT 
+			 programa,
+			a_favor, indeciso_a_favor, indeciso, indeciso_en_contra, en_contra, estatus
+ FROM encuestas_edomex.reporte_respuestas_entidad 
+ WHERE estatus=to_char(now(), 'DD/MM/YYYY')
+ ORDER BY programa]]>
+		</queryString>
+		<field name="programa" class="java.lang.String"/>
+		<field name="a_favor" class="java.lang.Integer"/>
+		<field name="indeciso_a_favor" class="java.lang.Integer"/>
+		<field name="indeciso" class="java.lang.Integer"/>
+		<field name="indeciso_en_contra" class="java.lang.Integer"/>
+		<field name="en_contra" class="java.lang.Integer"/>
+		<field name="estatus" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="DatasetINSUS" uuid="556d2b37-6094-4893-b0ca-adba60dfc337">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="205"/>
+		<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="786"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="postgresql_politik"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT  
+			(CASE WHEN exitosas!=0 THEN round(((a_favor::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) a_favor, 
+			(CASE WHEN exitosas!=0 THEN round(((indeciso_a_favor::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) indeciso_a_favor, 
+			(CASE WHEN exitosas!=0 THEN round(((indeciso::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) indeciso, 
+			(CASE WHEN exitosas!=0 THEN round(((indeciso_en_contra::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) indeciso_en_contra, 
+			(CASE WHEN exitosas!=0 THEN round(((en_contra::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) en_contra
+ FROM encuestas_edomex.reporte_respuestas_entidad 
+ WHERE estatus=to_char(now(), 'DD/MM/YYYY') AND  programa='INSUS']]>
+		</queryString>
+		<field name="a_favor" class="java.math.BigDecimal"/>
+		<field name="indeciso_a_favor" class="java.math.BigDecimal"/>
+		<field name="indeciso" class="java.math.BigDecimal"/>
+		<field name="indeciso_en_contra" class="java.math.BigDecimal"/>
+		<field name="en_contra" class="java.math.BigDecimal"/>
+	</subDataset>
+	<subDataset name="DatasetPROSPERA" uuid="be74929e-9e91-4119-ae83-3fa269b60023">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="205"/>
+		<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="786"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="postgresql_politik"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT  
+			(CASE WHEN exitosas!=0 THEN round(((a_favor::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) a_favor, 
+			(CASE WHEN exitosas!=0 THEN round(((indeciso_a_favor::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) indeciso_a_favor, 
+			(CASE WHEN exitosas!=0 THEN round(((indeciso::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) indeciso, 
+			(CASE WHEN exitosas!=0 THEN round(((indeciso_en_contra::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) indeciso_en_contra, 
+			(CASE WHEN exitosas!=0 THEN round(((en_contra::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) en_contra
+ FROM encuestas_edomex.reporte_respuestas_entidad 
+ WHERE estatus=to_char(now(), 'DD/MM/YYYY') AND  programa='PROSPERA']]>
+		</queryString>
+		<field name="a_favor" class="java.math.BigDecimal"/>
+		<field name="indeciso_a_favor" class="java.math.BigDecimal"/>
+		<field name="indeciso" class="java.math.BigDecimal"/>
+		<field name="indeciso_en_contra" class="java.math.BigDecimal"/>
+		<field name="en_contra" class="java.math.BigDecimal"/>
+	</subDataset>
+	<subDataset name="DatasetLICONSA" uuid="d7923ba4-024b-4371-8c46-63b9ded67fe6">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="205"/>
+		<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="786"/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="postgresql_politik"/>
+		<queryString language="SQL">
+			<![CDATA[SELECT  
+			(CASE WHEN exitosas!=0 THEN round(((a_favor::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) a_favor, 
+			(CASE WHEN exitosas!=0 THEN round(((indeciso_a_favor::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) indeciso_a_favor, 
+			(CASE WHEN exitosas!=0 THEN round(((indeciso::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) indeciso, 
+			(CASE WHEN exitosas!=0 THEN round(((indeciso_en_contra::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) indeciso_en_contra, 
+			(CASE WHEN exitosas!=0 THEN round(((en_contra::NUMERIC/exitosas::NUMERIC)*100),2) ELSE 0 END) en_contra
+ FROM encuestas_edomex.reporte_respuestas_entidad 
+ WHERE estatus=to_char(now(), 'DD/MM/YYYY') AND  programa='LICONSA']]>
+		</queryString>
+		<field name="a_favor" class="java.math.BigDecimal"/>
+		<field name="indeciso_a_favor" class="java.math.BigDecimal"/>
+		<field name="indeciso" class="java.math.BigDecimal"/>
+		<field name="indeciso_en_contra" class="java.math.BigDecimal"/>
+		<field name="en_contra" class="java.math.BigDecimal"/>
+	</subDataset>
+	<queryString>
+		<![CDATA[SELECT 
+			dia
+ FROM encuestas_edomex.reporte_respuestas_entidad 
+ WHERE estatus=to_char(now(), 'DD/MM/YYYY')
+ GROUP BY dia]]>
+	</queryString>
+	<field name="dia" class="java.lang.Integer"/>
+	<variable name="dia1" class="java.lang.Integer" calculation="Variance">
+		<variableExpression><![CDATA[$F{dia}]]></variableExpression>
+	</variable>
+	<group name="Group2">
+		<groupExpression><![CDATA[(int)($V{REPORT_COUNT}/5)]]></groupExpression>
+	</group>
+	<title>
+		<band height="114" splitType="Stretch">
+			<staticText>
+				<reportElement style="Title" x="92" y="48" width="313" height="56" uuid="bc1ce1da-8232-46ea-be55-cec4abb986dd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial Black" size="27"/>
+				</textElement>
+				<text><![CDATA[Estado de México]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="SubTitle" x="32" y="26" width="60" height="22" forecolor="#595959" uuid="5a5e4cde-a589-44ae-aba6-a3bcfd1d1508"/>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman"/>
+				</textElement>
+				<text><![CDATA[Día]]></text>
+			</staticText>
+			<ellipse>
+				<reportElement x="32" y="48" width="60" height="57" forecolor="#9E9E9E" backcolor="#9E9E9E" uuid="f5025cee-0c4b-4d48-a6a6-d243d397c780"/>
+			</ellipse>
+			<textField>
+				<reportElement x="32" y="48" width="60" height="57" forecolor="#FFFFFF" uuid="2f464408-5d6a-475a-bf35-8c5770d3054a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="28" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dia}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="522" splitType="Stretch">
+			<componentElement>
+				<reportElement x="10" y="15" width="480" height="40" uuid="8c8828ae-7b59-45b0-a44a-064cc7c71ba6">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Dataset1" uuid="efafbebf-f07b-46a2-8892-6ef79d5887f2">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="90" uuid="a6317a30-873e-43c4-8b8f-0bbbe57198a6">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<jr:columnHeader height="20">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="20" uuid="3e932b17-3726-40b7-8b39-19c553e80104"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Programa]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="20">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="20" uuid="803172b0-36f6-43ef-8485-11e22336e377"/>
+								<box>
+									<pen lineWidth="2.0" lineStyle="Solid" lineColor="#40A84A"/>
+									<topPen lineWidth="1.0"/>
+									<leftPen lineWidth="1.0"/>
+									<bottomPen lineWidth="1.0"/>
+									<rightPen lineWidth="1.0"/>
+								</box>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{programa}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="ef5a0fff-7d64-406d-adce-b9d5d371e432">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<jr:columnHeader height="20">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="20" uuid="df3f49ed-e0b8-4f47-b9b7-459d42e59c53"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Meta]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="20">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="90" height="20" uuid="4c9491b2-3d47-4e67-8800-a1d7b834548c"/>
+								<box>
+									<pen lineWidth="2.0" lineStyle="Solid" lineColor="#40A84A"/>
+									<topPen lineWidth="1.0"/>
+									<leftPen lineWidth="1.0"/>
+									<bottomPen lineWidth="1.0"/>
+									<rightPen lineWidth="1.0"/>
+								</box>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{meta}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="e2aadb14-f33b-4959-a8ca-c8e3c1ee77ec">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<jr:columnHeader height="20">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="20" uuid="555bdaa0-e76f-486a-9c54-38e03531ede0"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Esperadas]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="20">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="90" height="20" uuid="b0d914fd-4990-429b-8331-ff193c6591e0"/>
+								<box>
+									<pen lineWidth="2.0" lineStyle="Solid" lineColor="#40A84A"/>
+									<topPen lineWidth="1.0"/>
+									<leftPen lineWidth="1.0"/>
+									<bottomPen lineWidth="1.0"/>
+									<rightPen lineWidth="1.0"/>
+								</box>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{esperadas}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="110" uuid="99cb6f1a-8e8c-4a52-8fb6-0000bd037caf">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<jr:columnHeader height="20">
+							<staticText>
+								<reportElement x="0" y="0" width="110" height="20" uuid="27b5e7ad-aff7-4653-94f2-decce595d0a3"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Visitadas]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="20">
+							<textField pattern="">
+								<reportElement x="0" y="0" width="110" height="20" uuid="c1015089-7e28-4d33-a79e-4b9c074ea877"/>
+								<box>
+									<pen lineWidth="2.0" lineStyle="Solid" lineColor="#40A84A"/>
+									<topPen lineWidth="1.0"/>
+									<leftPen lineWidth="1.0"/>
+									<bottomPen lineWidth="1.0"/>
+									<rightPen lineWidth="1.0"/>
+								</box>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{visitadas}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="100" uuid="fb046192-1a26-4a49-9c5f-e25b441cec23">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<jr:columnHeader height="20">
+							<staticText>
+								<reportElement x="0" y="0" width="100" height="20" uuid="26716c61-5e12-401f-8936-a1e1ccc882b7"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Exitosas]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="20">
+							<textField pattern="">
+								<reportElement x="0" y="0" width="100" height="20" uuid="69fb1c79-a58f-408f-846f-233718c742f3"/>
+								<box>
+									<pen lineWidth="2.0" lineStyle="Solid" lineColor="#40A84A"/>
+									<topPen lineWidth="1.0"/>
+									<leftPen lineWidth="1.0"/>
+									<bottomPen lineWidth="1.0"/>
+									<rightPen lineWidth="1.0"/>
+								</box>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{exitosas}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<bar3DChart>
+				<chart evaluationTime="Report" renderType="draw">
+					<reportElement x="490" y="16" width="340" height="264" uuid="09d0c97a-e128-45fb-95f3-b08f176f10e1"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="Dataset2" uuid="ded90200-af8c-45fe-9007-b8f3b25176cd"/>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA["META"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{programa}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{meta}]]></valueExpression>
+						<labelExpression><![CDATA["META"]]></labelExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA["ESPERADAS"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{programa}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{esperadas}]]></valueExpression>
+						<labelExpression><![CDATA["ESPERADAS"]]></labelExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA["VISITADAS"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{programa}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{visitadas}]]></valueExpression>
+						<labelExpression><![CDATA["VISITADAS"]]></labelExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA["EXITOSAS"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{programa}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{exitosas}]]></valueExpression>
+						<labelExpression><![CDATA["EXITOSAS"]]></labelExpression>
+					</categorySeries>
+				</categoryDataset>
+				<bar3DPlot isShowLabels="false">
+					<plot orientation="Horizontal">
+						<seriesColor seriesOrder="0" color="#697ED8"/>
+						<seriesColor seriesOrder="1" color="#F51F27"/>
+						<seriesColor seriesOrder="2" color="#9900E6"/>
+						<seriesColor seriesOrder="3" color="#ED5300"/>
+					</plot>
+					<itemLabel>
+						<font size="8"/>
+					</itemLabel>
+					<categoryAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000">
+							<labelFont>
+								<font size="7"/>
+							</labelFont>
+							<tickLabelFont>
+								<font size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</valueAxisFormat>
+				</bar3DPlot>
+			</bar3DChart>
+			<componentElement>
+				<reportElement x="9" y="124" width="480" height="50" uuid="2a83178b-5cb3-467a-abc1-1ce7e552a7b5">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Dataset3" uuid="1f62cd64-d943-460c-9a14-13d26668fe93">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="80" uuid="e2955bca-0ee8-4cde-88e5-3b0847c7616a">
+						<jr:columnHeader style="Table_CH" height="60">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<staticText>
+								<reportElement x="0" y="0" width="80" height="60" uuid="a3b1258c-a07a-4d62-ab0a-b47f754425f0"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Programa]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="19">
+							<textField>
+								<reportElement x="0" y="0" width="80" height="19" uuid="7d0cfffa-2649-4713-a0d0-65a4e91f8442"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{programa}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="70" uuid="3962012a-52b4-4b5d-a1a6-b6fb66b585a3">
+						<jr:columnHeader style="Table_CH" height="60">
+							<image scaleImage="RetainShape" hAlign="Center">
+								<reportElement x="0" y="0" width="70" height="30" uuid="8f2b2481-3bf9-46d6-9efb-901a0fdb7d82">
+									<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+									<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+								</reportElement>
+								<imageExpression><![CDATA["E:\\Politik\\FuentesReportes\\imagenes\\afavor.png"]]></imageExpression>
+							</image>
+							<staticText>
+								<reportElement mode="Opaque" x="0" y="30" width="70" height="30" backcolor="#007F00" uuid="811675fa-6b87-477b-95c9-c1529d849688"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[A Favor]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="19">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="70" height="19" uuid="6d2fd4a6-2182-442b-982d-108eb2de0eac"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{a_favor}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="80" uuid="5476b9db-3235-4e4b-937e-bbedc99b036e">
+						<jr:columnHeader style="Table_CH" height="60">
+							<image hAlign="Center" vAlign="Middle">
+								<reportElement x="0" y="0" width="80" height="30" uuid="1a6aa038-1e8c-45fe-a099-1d6c4ef0bf6b"/>
+								<imageExpression><![CDATA["E:\\Politik\\FuentesReportes\\imagenes\\afavor_indecisos.png"]]></imageExpression>
+							</image>
+							<staticText>
+								<reportElement mode="Opaque" x="0" y="30" width="80" height="30" backcolor="#E5ECE9" uuid="8e532e3f-2e23-4226-a069-d2c71409546a"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Indeciso A Favor]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="19">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="80" height="19" uuid="985aaacc-9f97-495a-8674-c9f54567b1f2"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{indeciso_a_favor}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="80" uuid="8892aa68-7385-48ab-86a2-ce0136ecaacf">
+						<jr:columnHeader style="Table_CH" height="60">
+							<image hAlign="Center" vAlign="Middle">
+								<reportElement x="0" y="0" width="80" height="30" uuid="7110e977-e2b7-4015-ac42-cbce6a07f950"/>
+								<imageExpression><![CDATA["E:\\Politik\\FuentesReportes\\imagenes\\indecisos.png"]]></imageExpression>
+							</image>
+							<staticText>
+								<reportElement mode="Opaque" x="0" y="30" width="80" height="30" backcolor="#FBFC7E" uuid="39203980-96e3-40e9-9fe2-6c313caf6179"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Indeciso]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="19">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="80" height="19" uuid="f3d9f28f-44e9-4e7d-b4eb-3ef57eb4ede4"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{indeciso}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="b2bdcf81-74e4-4322-a11f-be0b9846d0e9">
+						<jr:columnHeader style="Table_CH" height="60">
+							<image hAlign="Center" vAlign="Middle">
+								<reportElement x="0" y="0" width="90" height="30" uuid="1e4a555e-6a0a-4810-80b8-04551bd4d4ed"/>
+								<imageExpression><![CDATA["E:\\Politik\\FuentesReportes\\imagenes\\indecisos_encontra.png"]]></imageExpression>
+							</image>
+							<staticText>
+								<reportElement mode="Opaque" x="0" y="30" width="90" height="30" backcolor="#F8E5E8" uuid="2c3722a6-341b-42cc-b316-fe8cb8ceb883"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Indeciso En Contra]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="19">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="90" height="19" uuid="d4ea2f16-07ef-4242-96a5-b6ff6967f023"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{indeciso_en_contra}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="80" uuid="41b8937c-7415-43e7-a9b5-9f50f029625b">
+						<jr:columnHeader style="Table_CH" height="60">
+							<image hAlign="Center" vAlign="Middle">
+								<reportElement x="0" y="0" width="80" height="30" uuid="2026d420-dcb4-4268-92de-c582c176e642"/>
+								<imageExpression><![CDATA["E:\\Politik\\FuentesReportes\\imagenes\\encontra.png"]]></imageExpression>
+							</image>
+							<staticText>
+								<reportElement mode="Opaque" x="0" y="30" width="80" height="30" backcolor="#FB0000" uuid="78e4aabb-6bc8-456d-9f13-9a14bcb99434"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[En Contra]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="19">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="80" height="19" uuid="7adf89f5-405e-49a7-ab80-ecf9e0080ea1"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{en_contra}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<pieChart>
+				<chart isShowLegend="false" evaluationTime="Report" renderType="draw">
+					<reportElement x="5" y="295" width="275" height="210" uuid="8520739f-6a16-4a8a-acb2-883bf121e73d"/>
+					<chartTitle>
+						<titleExpression><![CDATA["INSUS"]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle/>
+					<chartLegend position="Bottom"/>
+				</chart>
+				<pieDataset>
+					<dataset>
+						<datasetRun subDataset="DatasetINSUS" uuid="433dd49f-c992-4180-9d6e-4ed5baa7e358"/>
+					</dataset>
+					<pieSeries>
+						<keyExpression><![CDATA["A Favor"]]></keyExpression>
+						<valueExpression><![CDATA[$F{a_favor}]]></valueExpression>
+						<labelExpression><![CDATA["A Favor "+$F{a_favor}+"%"]]></labelExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["Indeciso A Favor"]]></keyExpression>
+						<valueExpression><![CDATA[$F{indeciso_a_favor}]]></valueExpression>
+						<labelExpression><![CDATA["Indeciso A Favor "+$F{indeciso_a_favor}+"%"]]></labelExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["Indeciso"]]></keyExpression>
+						<valueExpression><![CDATA[$F{indeciso}]]></valueExpression>
+						<labelExpression><![CDATA["Indeciso "+$F{indeciso}+"%"]]></labelExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["Indeciso En Contra"]]></keyExpression>
+						<valueExpression><![CDATA[$F{indeciso_en_contra}]]></valueExpression>
+						<labelExpression><![CDATA["Indeciso En Contra "+$F{indeciso_en_contra}+"%"]]></labelExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["En Contra"]]></keyExpression>
+						<valueExpression><![CDATA[$F{en_contra}]]></valueExpression>
+						<labelExpression><![CDATA["En Contra "+$F{en_contra}+"%"]]></labelExpression>
+					</pieSeries>
+				</pieDataset>
+				<piePlot isShowLabels="true" legendLabelFormat="">
+					<plot orientation="Horizontal">
+						<seriesColor seriesOrder="0" color="#007E00"/>
+						<seriesColor seriesOrder="1" color="#E5ECE9"/>
+						<seriesColor seriesOrder="2" color="#FBFB00"/>
+						<seriesColor seriesOrder="3" color="#F8E7EA"/>
+						<seriesColor seriesOrder="4" color="#FB0000"/>
+					</plot>
+					<itemLabel>
+						<font size="7"/>
+					</itemLabel>
+				</piePlot>
+			</pieChart>
+			<pieChart>
+				<chart isShowLegend="false" evaluationTime="Report" renderType="draw">
+					<reportElement x="280" y="295" width="280" height="210" uuid="7a073d8b-2ae5-40e8-a587-d90d6b914713"/>
+					<chartTitle>
+						<titleExpression><![CDATA["PROSPERA"]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle/>
+					<chartLegend position="Bottom"/>
+				</chart>
+				<pieDataset>
+					<dataset>
+						<datasetRun subDataset="DatasetPROSPERA" uuid="316c5e4e-c51c-4dbc-9511-09ec2b509a1a"/>
+					</dataset>
+					<pieSeries>
+						<keyExpression><![CDATA["A Favor"]]></keyExpression>
+						<valueExpression><![CDATA[$F{a_favor}]]></valueExpression>
+						<labelExpression><![CDATA["A Favor "+$F{a_favor}+"%"]]></labelExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["Indeciso A Favor"]]></keyExpression>
+						<valueExpression><![CDATA[$F{indeciso_a_favor}]]></valueExpression>
+						<labelExpression><![CDATA["Indeciso A Favor "+$F{indeciso_a_favor}+"%"]]></labelExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["Indeciso"]]></keyExpression>
+						<valueExpression><![CDATA[$F{indeciso}]]></valueExpression>
+						<labelExpression><![CDATA["Indeciso "+$F{indeciso}+"%"]]></labelExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["Indeciso En Contra"]]></keyExpression>
+						<valueExpression><![CDATA[$F{indeciso_en_contra}]]></valueExpression>
+						<labelExpression><![CDATA["Indeciso En Contra "+$F{indeciso_en_contra}+"%"]]></labelExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["En Contra"]]></keyExpression>
+						<valueExpression><![CDATA[$F{en_contra}]]></valueExpression>
+						<labelExpression><![CDATA["En Contra "+$F{en_contra}+"%"]]></labelExpression>
+					</pieSeries>
+				</pieDataset>
+				<piePlot isShowLabels="true" legendLabelFormat="">
+					<plot orientation="Horizontal">
+						<seriesColor seriesOrder="0" color="#007E00"/>
+						<seriesColor seriesOrder="1" color="#E5ECE9"/>
+						<seriesColor seriesOrder="2" color="#FBFB00"/>
+						<seriesColor seriesOrder="3" color="#F8E7EA"/>
+						<seriesColor seriesOrder="4" color="#FB0000"/>
+					</plot>
+					<itemLabel>
+						<font size="8"/>
+					</itemLabel>
+				</piePlot>
+			</pieChart>
+			<pieChart>
+				<chart isShowLegend="false" evaluationTime="Report" renderType="draw">
+					<reportElement key="" x="560" y="295" width="275" height="210" uuid="1424890d-60a6-4f16-85b9-46871c11eaa5"/>
+					<chartTitle>
+						<titleExpression><![CDATA["LICONSA"]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle/>
+					<chartLegend position="Bottom"/>
+				</chart>
+				<pieDataset>
+					<dataset>
+						<datasetRun subDataset="DatasetLICONSA" uuid="2e2cebe0-b513-44bb-9ae3-802fe6cafa8b"/>
+					</dataset>
+					<pieSeries>
+						<keyExpression><![CDATA["A Favor"]]></keyExpression>
+						<valueExpression><![CDATA[$F{a_favor}]]></valueExpression>
+						<labelExpression><![CDATA["A Favor "+$F{a_favor}+"%"]]></labelExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["Indeciso A Favor"]]></keyExpression>
+						<valueExpression><![CDATA[$F{indeciso_a_favor}]]></valueExpression>
+						<labelExpression><![CDATA["Indeciso A Favor "+$F{indeciso_a_favor}+"%"]]></labelExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["Indeciso"]]></keyExpression>
+						<valueExpression><![CDATA[$F{indeciso}]]></valueExpression>
+						<labelExpression><![CDATA["Indeciso "+$F{indeciso}+"%"]]></labelExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["Indeciso En Contra"]]></keyExpression>
+						<valueExpression><![CDATA[$F{indeciso_en_contra}]]></valueExpression>
+						<labelExpression><![CDATA["Indeciso En Contra "+$F{indeciso_en_contra}+"%"]]></labelExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["En Contra"]]></keyExpression>
+						<valueExpression><![CDATA[$F{en_contra}]]></valueExpression>
+						<labelExpression><![CDATA["En Contra "+$F{en_contra}+"%"]]></labelExpression>
+					</pieSeries>
+				</pieDataset>
+				<piePlot isShowLabels="true" legendLabelFormat="">
+					<plot orientation="Horizontal" backgroundAlpha="1.0" foregroundAlpha="1.0">
+						<seriesColor seriesOrder="0" color="#007E00"/>
+						<seriesColor seriesOrder="1" color="#E5ECE9"/>
+						<seriesColor seriesOrder="2" color="#FBFB00"/>
+						<seriesColor seriesOrder="3" color="#F8E7EA"/>
+						<seriesColor seriesOrder="4" color="#FB0000"/>
+					</plot>
+					<itemLabel>
+						<font size="8"/>
+					</itemLabel>
+				</piePlot>
+			</pieChart>
+		</band>
+	</detail>
+</jasperReport>

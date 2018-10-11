@@ -1,0 +1,157 @@
+package com.saganet.politik.database.encuestas.edomex2017;
+
+import java.io.Serializable;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.dominios.ProgramasEdoMexDO;
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("Edomex2017ResultadoEncuestaEO")
+public class ResultadoEncuestaEO extends JavaBeanT implements Serializable {
+	
+	private static final long serialVersionUID = -6147451553202869253L;
+
+	private Integer id;
+	private Integer entidad;
+	private Integer numRegion;
+	private Integer region;
+	private String nombreRegion;
+	private Integer numMunicipio;
+	private Integer municipio;
+	private String nombreMunicipio;
+	private Integer seccion;
+	private Integer numSeccion;
+	private ProgramasEdoMexDO programa;
+	private Integer exitoso;
+	private Integer noHuboQuienContestara;
+	private Integer menorDeEdad;
+	private Integer domicilioNoEncontrado;
+	private Integer noQuisieronContestar;
+	private Integer otro;
+	private Integer total;
+	
+	@Override
+	public String toString() {
+		return "ResultadoEncuestaEO [id=" + id + ", entidad=" + entidad + ", numRegion=" + numRegion + ", region="
+				+ region + ", nombreRegion=" + nombreRegion + ", numMunicipio=" + numMunicipio + ", municipio="
+				+ municipio + ", nombreMunicipio=" + nombreMunicipio + ", seccion=" + seccion + ", numSeccion="
+				+ numSeccion + ", programa=" + programa + ", exitoso=" + exitoso + ", noHuboQuienContestara="
+				+ noHuboQuienContestara + ", menorDeEdad=" + menorDeEdad + ", domicilioNoEncontrado="
+				+ domicilioNoEncontrado + ", noQuisieronContestar=" + noQuisieronContestar + ", otro=" + otro+ ", total=" + total + "]";
+	}
+
+	public Integer getNumRegion() {
+		return numRegion;
+	}
+
+	public void setNumRegion(Integer numRegion) {
+		this.numRegion = numRegion;
+	}
+
+	public Integer getNumMunicipio() {
+		return numMunicipio;
+	}
+
+	public void setNumMunicipio(Integer numMunicipio) {
+		this.numMunicipio = numMunicipio;
+	}
+
+	public Integer getNumSeccion() {
+		return numSeccion;
+	}
+
+	public void setNumSeccion(Integer numSeccion) {
+		this.numSeccion = numSeccion;
+	}
+	
+	public Integer getEntidad() {
+		return entidad;
+	}
+	public void setEntidad(Integer entidad) {
+		this.entidad = entidad;
+	}
+	public Integer getRegion() {
+		return region;
+	}
+	public void setRegion(Integer region) {
+		this.region = region;
+	}
+	public String getNombreRegion() {
+		return nombreRegion;
+	}
+	public void setNombreRegion(String nombre_region) {
+		this.nombreRegion = nombre_region;
+	}
+	public Integer getMunicipio() {
+		return municipio;
+	}
+	public void setMunicipio(Integer municipio) {
+		this.municipio = municipio;
+	}
+	public String getNombreMunicipio() {
+		return nombreMunicipio;
+	}
+	public void setNombreMunicipio(String nombre_municipio) {
+		this.nombreMunicipio = nombre_municipio;
+	}
+	public Integer getSeccion() {
+		return seccion;
+	}
+	public void setSeccion(Integer seccion) {
+		this.seccion = seccion;
+	}
+	public ProgramasEdoMexDO getPrograma() {
+		return programa;
+	}
+	public void setPrograma(ProgramasEdoMexDO programa) {
+		this.programa = programa;
+	}
+	public Integer getExitoso() {
+		return exitoso;
+	}
+	public void setExitoso(Integer exitoso) {
+		this.exitoso = exitoso;
+	}
+	public Integer getNoHuboQuienContestara() {
+		return noHuboQuienContestara;
+	}
+	public void setNoHuboQuienContestara(Integer noHuboQuienContestara) {
+		this.noHuboQuienContestara = noHuboQuienContestara;
+	}
+	public Integer getMenorDeEdad() {
+		return menorDeEdad;
+	}
+	public void setMenorDeEdad(Integer menorDeEdad) {
+		this.menorDeEdad = menorDeEdad;
+	}
+	public Integer getDomicilioNoEncontrado() {
+		return domicilioNoEncontrado;
+	}
+	public void setDomicilioNoEncontrado(Integer domicilioNoEncontrado) {
+		this.domicilioNoEncontrado = domicilioNoEncontrado;
+	}
+	public Integer getNoQuisieronContestar() {
+		return noQuisieronContestar;
+	}
+	public void setNoQuisieronContestar(Integer noQuisieronContestar) {
+		this.noQuisieronContestar = noQuisieronContestar;
+	}
+	public Integer getOtro() {
+		return otro;
+	}
+	public void setOtro(Integer otro) {
+		this.otro = otro;
+	}
+	public Integer setId() {
+		return id;
+	}
+
+	public Integer getTotal() {
+		return total;
+	}
+
+	public void setTotal(Integer total) {
+		this.total = total;
+	}
+}

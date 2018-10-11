@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.syncdm.encuestas">
+	<resultMap type="SyncDMEncuestaEO" id="encuesta">
+		<id column="EncuestaEO_id" property="id" javaType="Integer" />
+		<result column="EncuestaEO_nombre" property="nombre" javaType="String" />
+		<result column="EncuestaEO_fecha_caducidad" property="fechaCaducidad"
+			javaType="java.sql.Date" />
+		<association column="EncuestaEO_id" property="preguntas"
+			select="encuestas.syncdm.preguntas.listado" />
+	</resultMap>
+	<sql id="query">
+		SELECT EncuestaEO.pkey EncuestaEO_id,
+		EncuestaEO.nombre EncuestaEO_nombre,
+		EncuestaEO.fecha_caducidad EncuestaEO_fecha_caducidad
+		FROM encuestas_dm.encuestas EncuestaEO
+	</sql>
+	<select id="listado" resultMap="encuesta">
+	<include refid="query"/>
+	</select>
+</mapper>

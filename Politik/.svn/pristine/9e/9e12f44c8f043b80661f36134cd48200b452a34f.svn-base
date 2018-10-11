@@ -1,0 +1,43 @@
+package com.saganet.politik.components.encuestas.edomex2017.supervisor;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.encuestas.edomex2017.supervisor.EncuestadorEO;
+import com.saganet.politik.database.encuestas.edomex2017.supervisor.SupervisorEO;
+import com.saganet.politik.modelos.Modelo;
+
+
+@Component("Edomex2017SupervisorEncuestador")
+public class EncuestadorC {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	private static final Logger logger = LoggerFactory.getLogger(EncuestadorC.class);
+	
+	public Modelo<EncuestadorEO> modelo(SupervisorEO supervisor){
+		List<EncuestadorEO> listado;
+		listado=sqlSession.selectOne("encuestas.supervisor.encuestador.buscarPorSupervisor",supervisor.getUsuario().getUsuario());
+		logger.debug("listado {}",listado);
+		return new Modelo<EncuestadorEO>(listado);
+	}
+	
+	
+	public void modelo(EncuestadorEO encuestador){
+		logger.debug("Encuestador a Insertar {}",encuestador);
+		sqlSession.insert("encuestas.supervisor.encuestador.insertarEncuestadores",encuestador);
+	}
+	
+	
+	public UsuarioEO getUsuario(){
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+}

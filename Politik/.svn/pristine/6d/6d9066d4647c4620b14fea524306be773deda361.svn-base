@@ -1,0 +1,17 @@
+package com.saganet.politik.dominios;
+
+public enum DiaDBusquedasDO {
+	POR_FOLIO("Busqueda Por Folio"),
+	POR_SECCION("Busqueda Por Seccion"),
+	POR_NOMBRE("Busqueda Por Nombre");
+	
+	private final String nombre;
+	
+	private DiaDBusquedasDO(String nombre){
+		this.nombre = nombre;
+	}
+	
+	public String getNombre(){
+		return nombre;
+	}
+}

@@ -1,0 +1,96 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Figuras" url="/app/estructuras/figuras" />
+						<p:menuitem
+							value="${figura.id == null ? 'Agregar' : 'Editar'} Figura" />
+					</p:breadCrumb>
+					<p:panel
+						header="${figura.id == null ? 'Agregar' : 'Editar'} Figura">
+						<p:focus />
+						<p:panelGrid id="panelFigura" columns="2">
+							<f:facet name="header">Datos Generales</f:facet>
+							<p:outputLabel value="Nivel" />
+							<p:selectOneMenu value="${figura.nivel}"
+								converter="ObjectConverter" style="width: 150px;" disabled="${figura.id != null}">
+								<p:ajax event="itemSelect" update="panelFigura" />
+								<f:selectItems value="${modeloNiveles.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Geozona" rendered="${figura.nivel == 'GEOZONA'}" />
+							<p:selectOneMenu value="${figura.geozona}"
+								converter="ObjectConverter" style="width: 300px;" rendered="${figura.nivel == 'GEOZONA'}" disabled="${figura.id != null}">
+								<f:selectItems value="${modeloGeozonas.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Nombre" />
+							<p:inputText value="${figura.nombre}" size="40" disabled="${figura.id != null}" />
+							<p:outputLabel value="Jerárquico" />
+							<p:inputSwitch value="${figura.jerarquico}" onLabel="Si" offLabel="No" disabled="${figura.id != null}" />
+						</p:panelGrid>
+						<p:separator />
+						<p:dataTable id="tablaAtributos" value="${figura.atributos}" var="fila">
+							<p:column headerText="Nombre">${fila.nombre}</p:column>
+							<f:facet name="footer">
+								<p:commandLink  onstart="PF('dialogoAtributosWV').show();">
+									<p:graphicImage value="/resources/botones/AGREGAR ATRIBUTO.png" />
+								</p:commandLink>
+<!-- 								<p:commandButton value="Agregar Atributo" onstart="PF('dialogoAtributosWV').show();" /> -->
+							</f:facet>
+						</p:dataTable>
+						<f:facet name="footer">
+								<p:commandLink action="guardar">
+									<p:graphicImage value="/resources/botones/GUARDAR.png" />
+								</p:commandLink>
+								<p:commandLink action="cancelar" immediate="true" >
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+								</p:commandLink>
+<!-- 								<p:commandButton value="Guardar" action="guardar" /> -->
+<!-- 								<p:commandButton value="Cancelar" action="cancelar" immediate="true" /> -->
+							</f:facet>
+					</p:panel>
+					
+					<p:dialog id="dialogoAtributos" widgetVar="dialogoAtributosWV" modal="true" visible="false" header="Agregar Atributo">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Atributo" />
+							<p:selectOneMenu value="${modeloAtributos.seleccionado}" style="width: 200px;">
+								<f:selectItems value="${modeloAtributos.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandLink action="agregarAtributo" oncomplete="PF('dialogoAtributosWV').hide();" update="#{p:component('tablaAtributos')}" >
+									<p:graphicImage value="/resources/botones/AGREGAR.png" />
+							</p:commandLink>
+							<p:commandLink onstart="PF('dialogoAtributosWV').hide();">
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Agregar" action="agregarAtributo" oncomplete="PF('dialogoAtributosWV').hide();" update="#{p:component('tablaAtributos')}" /> -->
+<!-- 							<p:commandButton value="Cancelar" onstart="PF('dialogoAtributosWV').hide();" /> -->
+						</f:facet>
+					</p:dialog>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				
+				<h:outputStylesheet>
+					.ui-datatable-footer{
+						text-align: left !important;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

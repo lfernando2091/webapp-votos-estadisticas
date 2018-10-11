@@ -1,0 +1,96 @@
+package com.saganet.politik.components.encuestas.admin;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.biblioteca.ParametrosEstadisticas;
+import com.saganet.politik.database.encuestas.admin.CampaniaEO;
+import com.saganet.politik.database.encuestas.admin.EncuestaEO;
+import com.saganet.politik.database.encuestas.admin.PreguntaEO;
+import com.saganet.politik.database.encuestas.admin.TablaContactoEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("CampaniasC")
+public class CampaniasC {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	@Autowired
+	ParametrosEstadisticas parametrosEstadisticas;
+	
+	@SuppressWarnings("unused")
+	private static final Logger logger = LoggerFactory.getLogger(CampaniasC.class);
+	
+	public Modelo<CampaniaEO> modelo(EncuestaEO encuesta){
+		Modelo<CampaniaEO> modelo;
+		List<CampaniaEO> listado;
+		
+		modelo = new Modelo<>();
+		listado = sqlSession.selectList("encuestas.admin.campania.listado",encuesta);
+		
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+			
+			for(CampaniaEO campania:listado){
+				campania.setEncuesta(encuesta);
+			}
+		}
+		
+		return modelo;
+	}
+	
+	public CampaniaEO nuevo(EncuestaEO encuesta) {
+		CampaniaEO nuevo = new CampaniaEO();
+		nuevo.setEncuesta(encuesta);
+		nuevo.setNick("admin");
+		return nuevo;
+	}
+	
+	public void insertar(CampaniaEO nuevo, TablaContactoEO tablaContacto){
+		nuevo.setTablaContactos(tablaContacto.getTabla());
+		sqlSession.insert("encuestas.admin.campania.insertar", nuevo);
+		crearTablaCampania(nuevo);
+	}
+	
+	public void crearTablaCampania(CampaniaEO campania){
+		HashMap<String, Object> params;
+		List<PreguntaEO> preguntas;
+		StringBuilder idPreguntas;
+		
+		
+		preguntas = sqlSession.selectList("encuestas.admin.preguntas.listado2", campania.getEncuesta());
+		
+		idPreguntas = new StringBuilder(); 
+		
+		for(PreguntaEO pregunta: preguntas){
+			idPreguntas.append("_");
+			idPreguntas.append(pregunta.getConsecutivoPregunta().toString());
+			idPreguntas.append(" TEXT");
+			idPreguntas.append(",");
+		}
+		
+		params = new HashMap<>();
+		
+		params.put("idCampania", campania.getId());
+		params.put("idPreguntas", idPreguntas);
+		
+		sqlSession.update("encuestas.admin.campania.createTable", params);
+		
+	}
+	
+	public CampaniaEO campaniaCompetaByNick(String nick){
+		CampaniaEO campaniaCompleta = new CampaniaEO();
+		campaniaCompleta = sqlSession.selectOne("encuestas.admin.campania.campaniaCompletaByNick",nick);
+		return campaniaCompleta;
+	}
+	
+}

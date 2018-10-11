@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Geozonas" />
+					</p:breadCrumb>
+					
+					<p:panel header="Listado de Geozonas">
+						<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}" selectionMode="single">
+							<p:column headerText="Llave" width="50">${fila.llave}</p:column>
+							<p:column headerText="Nombre" width="300">${fila.nombre}</p:column>
+							<p:column headerText="Nivel de Agrupación" width="120">${fila.nivel}</p:column>
+							<p:column headerText="Observaciones">${fila.observaciones}</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregar" />
+							<p:commandButton value="Detalle" action="detalle" />
+						</f:facet>
+					</p:panel>
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

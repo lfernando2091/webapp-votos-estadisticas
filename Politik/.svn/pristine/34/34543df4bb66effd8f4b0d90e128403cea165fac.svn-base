@@ -1,0 +1,161 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estadísticas" />
+						<p:menuitem value="Reportes" url="/app/estadisticas/reportes" />
+					</p:breadCrumb>
+					<p:panel header="Generar Reporte">
+						<p:panelGrid columns="2"
+							columnClasses="topAlign, topAlign, topAlign">
+
+							<p:panelGrid id="panelOpciones" columns="2">
+								<f:facet name="header">
+								Nivel y Delimitación Geográfica
+								<pe:timer widgetVar="timerGenerar" timeout="5" forward="true"
+										singleRun="true" autoStart="false"
+										ontimercomplete="PF('dialogoGenerarReporte').hide()" />
+								</f:facet>
+								<p:outputLabel value="Nivel" />
+								<p:selectOneMenu value="${nivel}" style="width: 130px;">
+									<p:ajax event="itemSelect" onstart="actualizarVariables();"
+										update="panelOpciones" />
+									<f:selectItems value="${listadoNiveles}" var="fila"
+										itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+								<p:outputLabel value="Entidad" />
+								<p:selectCheckboxMenu
+									value="${listadoEntidades.seleccionMultiple}"
+									converter="ObjectConverter" label="Entidades"
+									style="width: 215px;" filter="true" filterMatchMode="contains"
+									disabled="${nivel == 'GEOZONA' or nivel == 'NACIONAL'}">
+									<p:ajax event="change" onstart="actualizarCombos();" />
+									<p:ajax event="toggleSelect" onstart="actualizarCombos();" />
+									<f:selectItems value="${listadoEntidades.listado}" var="fila"
+										itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectCheckboxMenu>
+								<p:outputLabel value="Distrito Federal" />
+								<p:selectCheckboxMenu id="comboDFederales"
+									label="Dttos. Federales"
+									value="${listadoDFederales.seleccionMultiple}"
+									converter="ObjectConverter" filter="true"
+									filterMatchMode="contains"
+									disabled="${nivel != 'DFEDERAL' and nivel != 'SECCION' and nivel != 'MANZANA'}">
+									<f:selectItems value="${listadoDFederales.listado}" var="fila"
+										itemLabel="${fila.entidad.nombre}: ${fila.idDFederal} - ${fila.nombre}"
+										itemValue="${fila}" />
+								</p:selectCheckboxMenu>
+								<p:outputLabel value="Distrito Local" />
+								<p:selectCheckboxMenu id="comboDLocales" label="Dttos. Locales"
+									value="${listadoDLocales.seleccionMultiple}"
+									converter="ObjectConverter" filter="true"
+									filterMatchMode="contains"
+									disabled="${nivel != 'DLOCAL' and nivel != 'SECCION' and nivel != 'MANZANA'}">
+									<f:selectItems value="${listadoDLocales.listado}" var="fila"
+										itemLabel="${fila.entidad.nombre}: ${fila.idDLocal} - ${fila.nombre}"
+										itemValue="${fila}" />
+								</p:selectCheckboxMenu>
+								<p:outputLabel value="Municipio" />
+								<p:selectCheckboxMenu id="comboMunicipios" label="Municipios"
+									value="${listadoMunicipios.seleccionMultiple}"
+									converter="ObjectConverter" filter="true"
+									filterMatchMode="contains"
+									disabled="${nivel != 'MUNICIPIO' and nivel != 'SECCION' and nivel != 'LOCALIDAD' and nivel != 'MANZANA'}">
+									<f:selectItems value="${listadoMunicipios.listado}" var="fila"
+										itemLabel="${fila.entidad.nombre}: ${fila.idMunicipio} - ${fila.nombre}"
+										itemValue="${fila}" />
+								</p:selectCheckboxMenu>
+								<p:outputLabel value="Geozona" rendered="${nivel == 'GEOZONA'}" />
+								<p:selectOneMenu value="${modeloGeozonas.seleccionado}"
+									converter="ObjectConverter" style="width: 300px;"
+									rendered="${nivel == 'GEOZONA'}">
+									<p:ajax event="itemSelect" onstart="actualizarVariables();"
+										update="panelOpciones" />
+									<f:selectItems value="${modeloGeozonas.listado}" var="fila"
+										itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+
+							<p:panelGrid columns="1">
+								<f:facet name="header">
+								Variables
+							</f:facet>
+								<p:selectManyMenu id="comboVariables"
+									value="${listadoVariables.seleccionMultiple}"
+									showCheckbox="true" converter="ObjectConverter" filter="true"
+									filterMatchMode="contains" style="width: 350px;"
+									scrollHeight="170">
+									<f:selectItems value="${listadoVariables.listado}" var="fila"
+										itemLabel="${fila.descripcion}" itemValue="${fila}" />
+								</p:selectManyMenu>
+							</p:panelGrid>
+
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton id="commandGenerar" value="Generar"
+								action="generar" update="linkDescarga"
+								onstart="PF('dialogoGenerarReporte').show()"
+								oncomplete="PF('timerGenerar').start()" />
+							<p:button id="linkDescarga" target="_blank"
+								href="/resources/reportesGenerados/${archivoDescarga}"
+								value="Descargar" disabled="${archivoDescarga == null}" />
+						</f:facet>
+					</p:panel>
+
+					<p:remoteCommand id="remoteActualizarCombos"
+						name="actualizarCombos" action="actualizarCombos"
+						update="comboDFederales, comboDLocales, comboMunicipios"
+						onstart="PF('dialogoActualizarCombos').show()"
+						oncomplete="PF('dialogoActualizarCombos').hide()" />
+
+					<p:remoteCommand id="remoteActualizarVariables"
+						name="actualizarVariables" action="actualizarVariables"
+						update="comboVariables" />
+
+					<p:dialog widgetVar="dialogoActualizarCombos"
+						header="Actualizando Resultados" closeOnEscape="false"
+						closable="false" modal="true" appendTo="@(body)">
+						<p:panelGrid columns="1">
+							<p:outputLabel value="Se están cargando los resultados." />
+							<p:outputLabel
+								value="Esta operación puede tardar, por favor espere." />
+							<p:outputLabel
+								value="No refresque la página ni oprima el botón atrás del explorador." />
+						</p:panelGrid>
+					</p:dialog>
+
+					<p:dialog widgetVar="dialogoGenerarReporte"
+						header="Generando Reporte" closeOnEscape="false" closable="false"
+						modal="true" appendTo="@(body)"
+						onHide="PF('timerGenerar').stop(true)">
+						<p:panelGrid columns="1">
+							<p:outputLabel value="Se está Generando el Reporte." />
+							<p:outputLabel
+								value="Esta operación puede tardar, por favor espere." />
+							<p:outputLabel
+								value="No refresque la página ni oprima el botón atrás del explorador." />
+						</p:panelGrid>
+					</p:dialog>
+
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+						}
+					</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

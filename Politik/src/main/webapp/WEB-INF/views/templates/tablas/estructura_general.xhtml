@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+	
+	<ui:repeat var="mapaDatos" value="${datos}">
+		<p:panelGrid columns="2">
+			<p:outputLabel value="Figura" />
+			<p:outputLabel value="${mapaDatos.captura.nodo.figura.nombre}" />
+			<p:outputLabel value="Territorio" />
+			<p:outputLabel value="${mapaDatos.captura.territorio == null ? '' : mapaDatos.territorio.nombreCompleto}" />
+			
+			<p:outputLabel value="Programas de Promoción" rendered="${mapaDatos.captura.mapaAtributos.PROGRAMA_PROMOCION != null}" />
+			<ui:repeat var="var" value="${mapaDatos.captura.mapaAtributos.PROGRAMA_PROMOCION}" rendered="${mapaDatos.captura.mapaAtributos.PROGRAMA_PROMOCION != null}" >
+				${var.programaPromocion.nombre})<br/>
+			</ui:repeat>
+			
+			<p:outputLabel value="Partido Político" rendered="${mapaDatos.captura.mapaAtributos.PARTIDO_POLITICO != null}" />
+			<p:graphicImage library="logos_partidos" name="p${mapaDatos.captura.mapaAtributos.PARTIDO_POLITICO[0].partidoPolitico.id}_small.jpg" style="padding-top: 2px;" rendered="${mapaDatos.captura.mapaAtributos.PARTIDO_POLITICO != null}" />
+			
+			<p:outputLabel value="Periodo" rendered="${mapaDatos.captura.mapaAtributos.PERIODO != null}" />
+			<p:outputLabel value="${mapaDatos.captura.mapaAtributos.PERIODO[0].fechaInicio} // ${mapaDatos.captura.mapaAtributos.PERIODO[0].fechaTermino} (${mapaDatos.captura.mapaAtributos.PERIODO[0].vigente ? 'Vigente' : 'No vigente'})" rendered="${mapaDatos.captura.mapaAtributos.PERIODO != null}" />
+			
+			<p:outputLabel value="Legislaturas" rendered="${mapaDatos.captura.mapaAtributos.LEGISLATURA != null}" />
+			<ui:repeat var="var" value="${mapaDatos.captura.mapaAtributos.LEGISLATURA}" rendered="${mapaDatos.captura.mapaAtributos.LEGISLATURA != null}" >
+				${var.legislatura.nombre}<br/>
+			</ui:repeat>
+			
+			<p:outputLabel value="Tipo de Senador" rendered="${mapaDatos.captura.mapaAtributos.TIPO_SENADOR != null}" />
+			<p:outputLabel value="${mapaDatos.captura.mapaAtributos.TIPO_SENADOR[0].tipoSenador.nombre}" rendered="${mapaDatos.captura.mapaAtributos.TIPO_SENADOR != null}" />
+			
+			<p:outputLabel value="Comisiones" rendered="${mapaDatos.captura.mapaAtributos.COMISION_CAMARA_SENADORES != null}" />
+			<ui:repeat var="var" value="${mapaDatos.captura.mapaAtributos.COMISION_CAMARA_SENADORES}" rendered="${mapaDatos.captura.mapaAtributos.COMISION_CAMARA_SENADORES != null}" >
+				${var.comision.nombre} (${var.comisionCargo.nombre})<br/>
+			</ui:repeat>
+		</p:panelGrid>
+		<p:separator />
+	</ui:repeat>
+</ui:composition>

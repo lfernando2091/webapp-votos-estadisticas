@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="filtro">
+		<on-entry>
+		<evaluate expression="DominiosModelosC.programasEdoMex3()" result="flowScope.modeloProgramas"/>
+			<evaluate expression="CatalogoSeccionalC.modelo(flowScope.modeloProgramas.seleccionado)" result="flowScope.modeloSeccionales" />
+			<set name="viewScope.NomPatMat" value="''"/>
+		</on-entry>
+		<transition on="movilizadores" to="movilizadores"/>
+		<transition on="actualizar">
+		<evaluate expression="CatalogoSeccionalC.modelo(flowScope.modeloProgramas.seleccionado)" result="flowScope.modeloSeccionales" />
+		</transition>
+	</view-state>
+
+<view-state id="movilizadores">
+<on-entry>
+<evaluate expression="diaDMovilicadoresC.modeloMovilizador(flowScope.modeloSeccionales.seleccionado.seccion)" result="flowScope.modeloMovilizadores"/>
+</on-entry>
+<transition on="movilizados" to="movilizados"/>
+<transition on="salir" to="fin"/>
+
+</view-state>
+<view-state id="movilizados">
+<on-entry>
+<evaluate expression="DiaDMovilizados.modelo(flowScope.modeloMovilizadores.seleccionado)" result="flowScope.modeloMovilizados"/>
+</on-entry>
+<transition on="movilizadores" to="movilizadores">
+</transition>
+<transition on="mostrarDetalle">
+<evaluate expression="diaDReportesListadoSeccionalesC.contacto(flowScope.modeloMovilizados.seleccionado.folio)" result="flowScope.contacto"/>
+</transition>
+<transition on="salir" to="fin"/>
+</view-state>
+<end-state id="fin"/>
+</flow>

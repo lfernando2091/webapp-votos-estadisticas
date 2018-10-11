@@ -1,0 +1,112 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:focus />
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Estructuras" action="cancelar" immediate="true" />
+						<p:menuitem value="${estructura.id == null ? 'Agregar' : 'Editar'} Estructura" action="regresar" immediate="true" />
+						<p:menuitem value="Asignar Territorios" />
+					</p:breadCrumb>
+					<p:panel header="Asignar Territorios">
+						<p:panelGrid columns="2">
+							<f:facet name="header">Estructura</f:facet>
+							<p:outputLabel value="Nivel" />
+							<p:outputLabel value="${estructura.nivel.nombre}" />
+							<p:outputLabel value="Ámbito" />
+							<p:outputLabel value="${estructura.ambito.nombre}" />
+							<p:outputLabel value="Nombre" />
+							<p:outputLabel value="${estructura.nombre}" />
+							<p:outputLabel value="Observaciones" />
+							<p:outputLabel value="${estructura.observaciones}" />
+						</p:panelGrid>
+						<p:separator />
+						<p:panelGrid columns="2">
+							<f:facet name="header">Territorios</f:facet>
+
+							<p:outputLabel value="Entidad" />
+							<p:selectCheckboxMenu
+								value="${listadoEntidades.seleccionMultiple}"
+								converter="ObjectConverter" label="Entidades"
+								style="width: 215px;" filter="true" filterMatchMode="contains">
+								<p:ajax event="change" onstart="actualizarCombos();" />
+								<p:ajax event="toggleSelect" onstart="actualizarCombos();" />
+								<f:selectItems value="${listadoEntidades.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+
+							<p:outputLabel value="Distrito Federal" />
+							<p:selectCheckboxMenu id="comboDFederales"
+								label="Dttos. Federales"
+								value="${listadoDFederales.seleccionMultiple}"
+								converter="ObjectConverter" filter="true"
+								filterMatchMode="contains"
+								disabled="${estructura.nivel != 'DFEDERAL'}">
+								<f:selectItems value="${listadoDFederales.listado}" var="fila"
+									itemLabel="${fila.entidad.nombre}: ${fila.idDFederal} - ${fila.nombre}"
+									itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+
+							<p:outputLabel value="Distrito Local" />
+							<p:selectCheckboxMenu id="comboDLocales" label="Dttos. Locales"
+								value="${listadoDLocales.seleccionMultiple}"
+								converter="ObjectConverter" filter="true"
+								filterMatchMode="contains"
+								disabled="${estructura.nivel != 'DLOCAL'}">
+								<f:selectItems value="${listadoDLocales.listado}" var="fila"
+									itemLabel="${fila.entidad.nombre}: ${fila.idDLocal} - ${fila.nombre}"
+									itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+
+							<p:outputLabel value="Municipio" />
+							<p:selectCheckboxMenu id="comboMunicipios" label="Municipios"
+								value="${listadoMunicipios.seleccionMultiple}"
+								converter="ObjectConverter" filter="true"
+								filterMatchMode="contains"
+								disabled="${estructura.nivel != 'MUNICIPIO'}">
+								<f:selectItems value="${listadoMunicipios.listado}" var="fila"
+									itemLabel="${fila.entidad.nombre}: ${fila.idMunicipio} - ${fila.nombre}"
+									itemValue="${fila}" />
+							</p:selectCheckboxMenu>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Siguiente" action="siguiente" />
+							<p:commandButton value="Regresar" action="regresar" immediate="true" />
+							<p:commandButton value="Cancelar" action="cancelar" immediate="true" />
+						</f:facet>
+					</p:panel>
+
+					<p:remoteCommand id="remoteActualizarCombos"
+						name="actualizarCombos" action="actualizarCombos"
+						update="comboDFederales, comboDLocales, comboMunicipios"
+						onstart="PF('dialogoActualizarCombos').show()"
+						oncomplete="PF('dialogoActualizarCombos').hide()" />
+
+					<p:dialog widgetVar="dialogoActualizarCombos"
+						header="Actualizando Resultados" closeOnEscape="false"
+						closable="false" modal="true" appendTo="@(body)">
+						<p:panelGrid columns="1">
+							<p:outputLabel value="Se están cargando los resultados." />
+							<p:outputLabel
+								value="Esta operación puede tardar, por favor espere." />
+							<p:outputLabel
+								value="No refresque la página ni oprima el botón atrás del explorador." />
+						</p:panelGrid>
+					</p:dialog>
+
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

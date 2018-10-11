@@ -1,0 +1,81 @@
+package com.saganet.politik.components.catalogos;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.catalogos.DFederalEO;
+import com.saganet.politik.database.catalogos.EntidadEO;
+import com.saganet.politik.modelos.Modelo;
+import com.saganet.politik.modelos.catalogos.DFederalesT;
+
+
+@Component("CatalogosDFederalesC")
+public class DFederalesC {
+	private static final Logger logger = LoggerFactory.getLogger(DFederalesC.class);
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	public Modelo<DFederalEO> modelo(EntidadEO entidad){
+		Modelo<DFederalEO> modelo;
+		List<DFederalEO> listado;
+		
+		modelo = new Modelo<>();
+		
+		listado = sqlSession.selectList("catalogos.dFederales.listado", entidad);
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+	}
+	
+	public DFederalesT tabla(EntidadEO entidad){
+		DFederalesT tabla;
+		List<DFederalEO> listado;
+		logger.debug("Entidad recibidad: {}", entidad);
+		
+		tabla = new DFederalesT();
+		
+		listado = sqlSession.selectList("catalogos.dFederales.listado", entidad);
+		tabla.setListado(listado);
+		if(!listado.isEmpty()){
+			tabla.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado de DFederales: {}", listado);
+		
+		return tabla;
+	}
+	
+	public DFederalesT tabla(List<EntidadEO> entidades){
+		DFederalesT tabla;
+		List<DFederalEO> listado;
+		
+		logger.debug("Entidades recibidadas: {}", entidades);
+		
+		tabla = new DFederalesT();
+		
+		if(entidades == null || entidades.isEmpty())
+			listado = new ArrayList<DFederalEO>();
+		else
+			listado = sqlSession.selectList("catalogos.dFederales.listadoPorEntidades", entidades);
+		
+		tabla.setListado(listado);
+		if(!listado.isEmpty()){
+			tabla.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado de DFederales: {}", listado);
+		
+		return tabla;
+	}
+	
+}

@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Encuesta Seleccionada">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Encuesta: " />
+							<p:outputLabel
+								value="${modeloEncuestaSeleccionada.id} - ${modeloEncuestaSeleccionada.descripcion}" />
+								<p:outputLabel value="Fecha de Creación: " />
+							<p:outputLabel
+								value="${modeloEncuestaSeleccionada.fecha}" />
+								<p:outputLabel value="Usuario: " />
+							<p:outputLabel
+								value="${modeloEncuestaSeleccionada.nick}" />
+						</p:panelGrid>
+					</p:panel>
+<p:spacer/>
+					<p:panelGrid>
+						<p:row>
+							<p:column>
+								<p:panel header="Reglas de Validacion">
+									<p:dataTable value="${modeloReglasEncuesta.listado}" var="fila"
+										rowKey="${fila.id}"
+										selection="${modeloReglasEncuesta.seleccionado}"
+										selectionMode="single" paginator="true"
+										paginatorAlwaysVisible="false" paginatorPosition="bottom"
+										rows="15" reflow="true">
+										<p:column headerText="ID" width="5%">
+${fila.id}
+</p:column>
+<p:column headerText="Tipo" width="15%" sortBy="${fila.tipo}">
+${fila.tipo}
+</p:column>
+<p:column headerText="Descipción">
+${fila.descripcion}
+</p:column>
+										<p:column headerText="Regla">
+${fila.regla}
+</p:column>
+
+									</p:dataTable>
+									<f:facet name="footer">
+										<p:commandButton action="nuevaRegla"
+											icon="fa fa-plus-circle" value="Regla" />
+											<p:commandButton icon="fa fa-level-up" action="cancelar" value="Salir"/>
+									</f:facet>
+								</p:panel>
+							</p:column>
+		
+							
+						</p:row>
+					</p:panelGrid>
+
+
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+							
+						}
+					</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

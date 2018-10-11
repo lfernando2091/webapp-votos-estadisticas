@@ -1,0 +1,83 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Eventos" action="regresarlistado" />
+						<p:menuitem value="Programas"  action="regresar"/>
+						<p:menuitem value="Presidium" />
+					</p:breadCrumb>
+					<p:panel header="Presidium">
+						<p:panelGrid columns="2">
+							<p:column>
+								Nombre Evento:
+							</p:column>
+							<p:column>
+								${evento.nombre}
+							</p:column>
+							<p:column>
+								Descripción Evento
+							</p:column>
+							<p:column>
+								${evento.descripcionLogistica}
+							</p:column>
+						</p:panelGrid>
+						<p:dataTable id="tablaPresidium" value="${tabla.listado}" var="fila" rowKey="${fila.id}" selection="${tabla.seleccionado}"
+							selectionMode="single" paginator="true" rows="15" paginatorPosition="bottom" emptyMessage="Sin Resultados">
+
+							<p:column headerText="Nombre" >
+								${fila.persona.nombre} ${fila.persona.primerApellido} ${fila.persona.segundoApellido}
+							</p:column>
+							<p:column headerText="Dependencia" >
+								${fila.dependencia.dependencia}
+							</p:column>
+							<p:column headerText="Cargo">
+								${fila.cargo}
+							</p:column>
+							<p:column headerText="Presidio">
+								${fila.presidio?'SI':''}
+							</p:column>
+						</p:dataTable>
+
+						<f:facet name="footer">	
+							<p:commandLink action="regresar" immediate="true" >
+									<p:graphicImage value="/resources/botones/REGRESAR.png" />
+							</p:commandLink>
+							<p:commandLink action="agregar">
+									<p:graphicImage value="/resources/botones/AGREGAR PRESIDIUM.png" />
+							</p:commandLink>
+							<p:commandLink action="eliminar" >
+								<p:graphicImage value="/resources/botones/ELIMINAR.png"/>
+								<p:confirm header="Confirmación" message="¿Esta seguro de eliminar el miembro del presidium?" icon="ui-icon-alert" />
+							</p:commandLink>
+							
+							<p:commandLink action="perfilPresidium" >
+								<p:graphicImage value="/resources/botones/PERFIL.png"/>
+							</p:commandLink>
+							
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton value="Si" type="button"
+									styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+									update="messages" />
+								<p:commandButton value="No" type="button"
+									styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							</p:confirmDialog>
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

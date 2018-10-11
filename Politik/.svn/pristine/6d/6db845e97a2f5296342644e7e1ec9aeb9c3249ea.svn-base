@@ -1,0 +1,137 @@
+package com.saganet.politik.components.encuestas.sujetosSociales.v2;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.encuestas.sujetosSociales.v2.ReporteGeneroEO;
+import com.saganet.politik.dominios.NivelesReporteDO;
+import com.saganet.politik.dominios.ProgramasEdoMexDO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("EncuestaSujetosSocialesV2ReporteGeneroC")
+public class ReporteGeneroC {
+
+	@Autowired
+	SqlSession sqlSession;
+
+	private static final Logger logger = LoggerFactory.getLogger(ReporteGeneroC.class);
+	
+	public Modelo<ReporteGeneroEO> modelo(NivelesReporteDO nivel, ProgramasEdoMexDO programa){
+		List<ReporteGeneroEO> listado;
+		HashMap<String, Object> variables;
+		listado =  new ArrayList<>();
+		variables =  new HashMap<>();
+		logger.debug("variables: {}",variables);
+		variables.put("nivel", nivel.toString());
+		variables.put("programa", programa);
+		
+		listado = sqlSession.selectList("encuestas.sujetosSociales.porGenero.listado", variables);
+	    logger.debug("Listado: {}",listado);
+		return new Modelo<>(listado);
+	}
+	
+	
+	public HashMap<String, Object> subtotal(List<ReporteGeneroEO> listado){
+		HashMap<String, Object> mapa;
+		DecimalFormat f = new DecimalFormat("#0.00");
+		
+		mapa = new HashMap<>();
+		
+		 Integer thombresEnContra=0;
+		 Integer thombresIndecisoEnContra=0;
+		 Integer thombresIndeciso=0;
+		 Integer thombresIndecisoAFavor=0;
+		 Integer thombresAFavor=0;
+		 Integer thombresExitosas=0;
+		 Integer tmujeresEnContra=0;
+		 Integer tmujeresIndecisoEnContra=0;
+		 Integer tmujeresIndeciso=0;
+		 Integer tmujeresIndecisoAFavor=0;
+		 Integer tmujeresAFavor=0;
+		 Integer tmujeresExitosas=0;
+		 
+		 String thombresEnContraPorcentaje="";
+		 String thombresIndecisoEnContraPorcentaje="";
+		 String thombresIndecisoPorcentaje="";
+		 String thombresIndecisoAFavorPorcentaje="";
+		 String thombresAFavorPorcentaje="";
+		 String thombresExitosasPorcentaje="";
+		 String tmujeresEnContraPorcentaje="";
+		 String tmujeresIndecisoEnContraPorcentaje="";
+		 String tmujeresIndecisoPorcentaje="";
+		 String tmujeresIndecisoAFavorPorcentaje="";
+		 String tmujeresAFavorPorcentaje="";
+		 String tmujeresExitosasPorcentaje="";
+
+
+		 
+		 for (ReporteGeneroEO reporte : listado) {
+			 thombresEnContra = thombresEnContra + reporte.getHombresEnContra();
+			 thombresIndecisoEnContra = thombresIndecisoEnContra + reporte.getHombresIndecisoEnContra();
+			 thombresIndeciso = thombresIndeciso + reporte.getHombresIndeciso();
+			 thombresIndecisoAFavor = thombresIndecisoAFavor + reporte.getHombresIndecisoAFavor();
+			 thombresAFavor = thombresAFavor + reporte.getHombresAFavor();
+			 thombresExitosas = thombresExitosas + reporte.getHombresExitosas();
+			 tmujeresEnContra = tmujeresEnContra + reporte.getMujeresEnContra();
+			 tmujeresIndecisoEnContra = tmujeresIndecisoEnContra + reporte.getMujeresIndecisoEnContra();
+			 tmujeresIndeciso = tmujeresIndeciso + reporte.getMujeresIndeciso();
+			 tmujeresIndecisoAFavor = tmujeresIndecisoAFavor + reporte.getMujeresIndecisoAFavor();
+			 tmujeresAFavor = tmujeresAFavor + reporte.getMujeresAFavor();
+			 tmujeresExitosas = tmujeresExitosas + reporte.getMujeresExitosas();
+
+
+		 }
+		 
+		 thombresEnContraPorcentaje = f.format((double)Math.round(((thombresEnContra.doubleValue()/thombresExitosas.doubleValue())*100)*100)/100)+"%";
+		 thombresIndecisoEnContraPorcentaje = f.format((double)Math.round(((thombresIndecisoEnContra.doubleValue()/thombresExitosas.doubleValue())*100)*100)/100)+"%";
+		 thombresIndecisoPorcentaje = f.format((double)Math.round(((thombresIndeciso.doubleValue()/thombresExitosas.doubleValue())*100)*100)/100)+"%";
+		 thombresIndecisoAFavorPorcentaje = f.format((double)Math.round(((thombresIndecisoAFavor.doubleValue()/thombresExitosas.doubleValue())*100)*100)/100)+"%";
+		 thombresAFavorPorcentaje = f.format((double)Math.round(((thombresAFavor.doubleValue()/thombresExitosas.doubleValue())*100)*100)/100)+"%";
+		 tmujeresEnContraPorcentaje = f.format((double)Math.round(((tmujeresEnContra.doubleValue()/tmujeresExitosas.doubleValue())*100)*100)/100)+"%";
+		 tmujeresIndecisoEnContraPorcentaje = f.format((double)Math.round(((tmujeresIndecisoEnContra.doubleValue()/tmujeresExitosas.doubleValue())*100)*100)/100)+"%";
+		 tmujeresIndecisoPorcentaje = f.format((double)Math.round(((tmujeresIndeciso.doubleValue()/tmujeresExitosas.doubleValue())*100)*100)/100)+"%";
+		 tmujeresIndecisoAFavorPorcentaje = f.format((double)Math.round(((tmujeresIndecisoAFavor.doubleValue()/tmujeresExitosas.doubleValue())*100)*100)/100)+"%";
+		 tmujeresAFavorPorcentaje = f.format((double)Math.round(((tmujeresAFavor.doubleValue()/tmujeresExitosas.doubleValue())*100)*100)/100)+"%";
+
+		 
+		 
+		 mapa.put("thombresEnContra",thombresEnContra);
+		 mapa.put("thombresIndecisoEnContra",thombresIndecisoEnContra);
+		 mapa.put("thombresIndeciso",thombresIndeciso);
+		 mapa.put("thombresIndecisoAFavor",thombresIndecisoAFavor);
+		 mapa.put("thombresAFavor",thombresAFavor);
+		 mapa.put("thombresExitosas",thombresExitosas);
+		 mapa.put("tmujeresEnContra",tmujeresEnContra);
+		 mapa.put("tmujeresIndecisoEnContra",tmujeresIndecisoEnContra);
+		 mapa.put("tmujeresIndeciso",tmujeresIndeciso);
+		 mapa.put("tmujeresIndecisoAFavor",tmujeresIndecisoAFavor);
+		 mapa.put("tmujeresAFavor",tmujeresAFavor);
+		 mapa.put("tmujeresExitosas",tmujeresExitosas);
+
+		 
+		 mapa.put("thombresEnContraPorcentaje",thombresEnContraPorcentaje);
+		 mapa.put("thombresIndecisoEnContraPorcentaje",thombresIndecisoEnContraPorcentaje);
+		 mapa.put("thombresIndecisoPorcentaje",thombresIndecisoPorcentaje);
+		 mapa.put("thombresIndecisoAFavorPorcentaje", thombresIndecisoAFavorPorcentaje);
+		 mapa.put("thombresAFavorPorcentaje",thombresAFavorPorcentaje);
+		 mapa.put("thombresExitosasPorcentaje",thombresExitosasPorcentaje);
+		 mapa.put("tmujeresEnContraPorcentaje",tmujeresEnContraPorcentaje);
+		 mapa.put("tmujeresIndecisoEnContraPorcentaje",tmujeresIndecisoEnContraPorcentaje);
+		 mapa.put("tmujeresIndecisoPorcentaje",tmujeresIndecisoPorcentaje);
+		 mapa.put("tmujeresIndecisoAFavorPorcentaje",tmujeresIndecisoAFavorPorcentaje);
+		 mapa.put("tmujeresAFavorPorcentaje",tmujeresAFavorPorcentaje);
+		 mapa.put("tmujeresExitosasPorcentaje",tmujeresExitosasPorcentaje);
+
+		 logger.debug("Mapa: {}", mapa);
+
+		 return mapa;
+	}
+}

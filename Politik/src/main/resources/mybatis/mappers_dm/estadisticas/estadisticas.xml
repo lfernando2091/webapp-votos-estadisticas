@@ -1,0 +1,677 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="estadisticas.estadisticas">
+
+	<select id="porUsuarioRegion" parameterType="hashmap" resultType="hashmap">
+		select 
+			u.region, u.usuario, u.nombre, u.primerapellido, u.segundoapellido, a.imei, sum(case when a.usuario_id is not null then 1 else 0 end) num
+		from usuario u
+		left join encuesta a on (u.id = a.usuario_id)
+		<where>
+			u.region in (${idRegion})
+			and (a.codigo_resultado = 1 or (a.codigo_resultado = 8 and a.tiene_ine = 1))
+			<if test="usuario!=''">
+				and u.usuario = #{usuario}
+			</if>
+			<if test="nombre!=''">
+				and u.nombre||' '||u.primerapellido||' '||u.segundoapellido like '%${nombre}%'
+			</if>
+			<if test="imei!=''">
+				and a.imei = #{imei}
+			</if>
+			<if test="zona!=''">
+				and u.zona = #{zona}
+			</if>
+			<if test="municipio!=''">
+				and u.id_municipio = #{municipio}
+			</if>
+		</where>
+		group by u.region, u.usuario, u.nombre, u.primerapellido, u.segundoapellido, a.imei
+		order by u.region, sum(case when a.usuario_id is not null then 1 else 0 end) desc
+	</select>
+	
+	<select id="porFechas" parameterType="hashmap" resultType="hashmap">
+		select to_char(creada, 'dd/mm/yyyy') fecha, count(*) num
+		from encuesta
+		<if test="fechaInicio.equals(fechaFin)">
+			where tiene_ine is not null and to_char(creada, 'dd/mm/yyyy') = #{fechaInicio}
+		</if>
+		<if test="!fechaInicio.equals(fechaFin)">
+			where tiene_ine is not null and to_char(creada, 'dd/mm/yyyy') &gt;= #{fechaInicio} and to_char(creada, 'dd/mm/yyyy') &lt;= #{fechaFin}
+		</if>
+		group by to_char(creada, 'dd/mm/yyyy')
+		order by to_char(creada, 'dd/mm/yyyy') desc
+	</select>
+	
+	<select id="porRegiones" resultType="hashmap" parameterType="hashmap">
+		select 
+		u.region, sum(case when a.usuario_id is not null then 1 else 0 end) num
+		from usuario u
+		left join encuesta a on (u.id = a.usuario_id)
+		where (a.codigo_resultado = 1 or (a.codigo_resultado = 8 and a.tiene_ine = 1))
+		<if test="region!=''">
+			and u.region in (${region})
+		</if>
+		<if test="zona!=''">
+			and u.zona = #{zona}
+		</if>
+		<if test="municipio!=''">
+			and u.id_municipio = #{municipio}
+		</if>
+		group by u.region
+		order by u.region
+	</select>
+	
+	<select id="concentrado1" resultType="hashmap" parameterType="hashmap">
+		select
+		u.region, sum(t1.count) count,
+		(select count(*) from usuario where region = u.region) usuarios_registrados,
+		sum(case when t1.con_resp&gt;=10 then 1 else 0 end)mas_de_10,
+		
+		round(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) * 100)::numeric / (sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end))),2) por_mas_de_10,
+		
+		sum(case when t1.con_resp&lt;10 then 1 else 0 end)menos_de_10,
+		
+		round(((sum(case when t1.con_resp&lt;10 then 1 else 0 end) * 100)::numeric / (sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end))),2) por_menos_de_10,
+		
+		(sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) total_uconectados,
+		sum(t1.con_resp) con_resp,
+		
+		round(((sum(t1.con_resp)*100)/(sum(t1.con_resp) + sum(t1.sin_resp))),2) por_con_resp,
+		
+		sum(t1.sin_resp) sin_resp,
+		
+		round(((sum(t1.sin_resp)*100)/(sum(t1.con_resp) + sum(t1.sin_resp))),2) por_sin_resp,
+		
+		(sum(t1.con_resp) + sum(t1.sin_resp)) total_enc_sincronizadas,
+		((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) * 25)de_usuarios_conectados
+		from(
+
+		select a.usuario_id, count(*),
+		sum(case when (a.codigo_resultado = 1 or (a.codigo_resultado = 8 and a.tiene_ine = 1)) then 1 else 0 end)con_resp,
+		sum(case when (a.codigo_resultado in (2,3,4,5,6,7) or (a.codigo_resultado = 8 and a.tiene_ine !=1)) then 1 else 0 end)sin_resp
+		from encuesta a
+		left join usuario u on (a.usuario_id = u.id)
+		<if test="!region.equals('')">
+			where u.region in (${region})
+		</if>
+		group by a.usuario_id
+		order by a.usuario_id
+
+		)t1
+		join usuario u on (t1.usuario_id = u.id)
+		group by u.region
+		order by u.region
+	</select>
+	
+	<select id="concentrado1PorFecha" resultType="hashmap" parameterType="hashmap">
+		select
+		u.region, sum(t1.count) count,
+		(select count(*) from usuario where region = u.region) usuarios_registrados,
+		sum(case when t1.con_resp&gt;=10 then 1 else 0 end)mas_de_10,
+		
+		round(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) * 100) / (sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end))),2) por_mas_de_10,
+		
+		sum(case when t1.con_resp&lt;10 then 1 else 0 end)menos_de_10,
+		
+		round(((sum(case when t1.con_resp&lt;10 then 1 else 0 end) * 100) / (sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end))),2) por_menos_de_10,
+		
+		(sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) total_uconectados,
+		sum(t1.con_resp) con_resp,
+		
+		round(((sum(t1.con_resp)*100)/(sum(t1.con_resp) + sum(t1.sin_resp))),2) por_con_resp,
+		
+		sum(t1.sin_resp) sin_resp,
+		
+		round(((sum(t1.sin_resp)*100)/(sum(t1.con_resp) + sum(t1.sin_resp))),2) por_sin_resp,
+		
+		(sum(t1.con_resp) + sum(t1.sin_resp)) total_enc_sincronizadas,
+		((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) * 25)de_usuarios_conectados
+		from(
+
+		select a.usuario_id, count(*),
+		sum(case when (a.codigo_resultado = 1 or (a.codigo_resultado = 8 and a.tiene_ine = 1)) then 1 else 0 end)con_resp,
+		sum(case when (a.codigo_resultado in (2,3,4,5,6,7) or (a.codigo_resultado = 8 and a.tiene_ine !=1)) then 1 else 0 end)sin_resp
+		from encuesta a
+		left join usuario u on (a.usuario_id = u.id)
+		<if test="fechaInicio.equals(fechaFin)">
+			where to_char(a.creada, 'yyyy-mm-dd') = to_char(DATE '${fechaInicio}', 'yyyy-mm-dd')
+		</if>
+		<if test="!fechaInicio.equals(fechaFin)">
+			where to_char(a.creada, 'yyyy-mm-dd') &gt;= to_char(DATE '${fechaInicio}', 'yyyy-mm-dd') and to_char(a.creada, 'yyyy-mm-dd') &lt;= to_char(DATE '${fechaFin}', 'yyyy-mm-dd')
+		</if>
+		<if test="!region.equals('')">
+			and u.region in (${region})
+		</if>
+		group by a.usuario_id
+		order by a.usuario_id
+
+		)t1
+		join usuario u on (t1.usuario_id = u.id)
+		group by u.region
+		order by u.region
+	</select>
+	
+	
+	
+	<select id="concentrado2Municipios" resultType="hashmap" parameterType="hashmap">
+		select
+		u.region, u.id_municipio, u.municipio, coalesce(sum(t1.count),0) count,
+		(select count(*) from usuario where region = u.region and id_municipio = u.id_municipio) usuarios_registrados,
+		sum(case when t1.con_resp&gt;=10 then 1 else 0 end)mas_de_10,
+		
+		coalesce(round(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) * 100)::numeric / NULLIF((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)),0)),2),0) por_mas_de_10,
+		
+		sum(case when t1.con_resp&lt;10 then 1 else 0 end)menos_de_10,
+		
+		coalesce(round(((sum(case when t1.con_resp&lt;10 then 1 else 0 end) * 100)::numeric / NULLIF((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)),0)),2),0) por_menos_de_10,
+		
+		(sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) total_uconectados,
+		coalesce(sum(t1.con_resp),0) con_resp,
+		
+		coalesce(round(((sum(t1.con_resp)*100)/NULLIF((sum(t1.con_resp) + sum(t1.sin_resp)),0)),2),0) por_con_resp,
+		
+		coalesce(sum(t1.sin_resp),0) sin_resp,
+		
+		coalesce(round(((sum(t1.sin_resp)*100)/NULLIF((sum(t1.con_resp) + sum(t1.sin_resp)),0)),2),0) por_sin_resp,
+		
+		coalesce((sum(t1.con_resp) + sum(t1.sin_resp)),0) total_enc_sincronizadas,
+		coalesce(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) * 25),0) de_usuarios_conectados
+		from(
+
+		select a.usuario_id, count(*),
+		sum(case when (a.codigo_resultado = 1 or (a.codigo_resultado = 8 and a.tiene_ine = 1)) then 1 else 0 end)con_resp,
+		sum(case when (a.codigo_resultado in (2,3,4,5,6,7) or (a.codigo_resultado = 8 and a.tiene_ine !=1)) then 1 else 0 end)sin_resp
+		from encuesta a
+		left join usuario u on (a.usuario_id = u.id)
+		<if test="municipio!=''">
+			and u.id_municipio = #{municipio}
+		</if>
+		group by a.usuario_id
+		order by a.usuario_id
+
+		)t1
+		right join usuario u on (t1.usuario_id = u.id)
+		where u.region = #{idRegion}
+		<if test="municipio!=''">
+			and u.id_municipio = #{municipio}
+		</if>
+		group by u.region, u.id_municipio, u.municipio
+		order by u.region, u.id_municipio, u.municipio
+	</select>
+	
+	<select id="concentrado2MunicipiosFecha" resultType="hashmap" parameterType="hashmap">
+		select
+		u.region, u.id_municipio, u.municipio, coalesce(sum(t1.count),0) count,
+		(select count(*) from usuario where region = u.region and id_municipio = u.id_municipio) usuarios_registrados,
+		sum(case when t1.con_resp&gt;=10 then 1 else 0 end)mas_de_10,
+		
+		coalesce(round(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) * 100)::numeric / NULLIF((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)),0)),2),0) por_mas_de_10,
+		
+		sum(case when t1.con_resp&lt;10 then 1 else 0 end)menos_de_10,
+		
+		coalesce(round(((sum(case when t1.con_resp&lt;10 then 1 else 0 end) * 100)::numeric / NULLIF((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)),0)),2),0) por_menos_de_10,
+		
+		(sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) total_uconectados,
+		coalesce(sum(t1.con_resp),0) con_resp,
+		
+		coalesce(round(((sum(t1.con_resp)*100)/NULLIF((sum(t1.con_resp) + sum(t1.sin_resp)),0)),2),0) por_con_resp,
+		
+		coalesce(sum(t1.sin_resp),0) sin_resp,
+		
+		coalesce(round(((sum(t1.sin_resp)*100)/NULLIF((sum(t1.con_resp) + sum(t1.sin_resp)),0)),2),0) por_sin_resp,
+		
+		coalesce((sum(t1.con_resp) + sum(t1.sin_resp)),0) total_enc_sincronizadas,
+		coalesce(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) * 25),0) de_usuarios_conectados
+		from(
+
+		select a.usuario_id, count(*),
+		sum(case when (a.codigo_resultado = 1 or (a.codigo_resultado = 8 and a.tiene_ine = 1)) then 1 else 0 end)con_resp,
+		sum(case when (a.codigo_resultado in (2,3,4,5,6,7) or (a.codigo_resultado = 8 and a.tiene_ine !=1)) then 1 else 0 end)sin_resp
+		from encuesta a
+		left join usuario u on (a.usuario_id = u.id)
+		<if test="fechaInicio.equals(fechaFin)">
+			where to_char(a.creada, 'yyyy-mm-dd') = to_char(DATE '${fechaInicio}', 'yyyy-mm-dd')
+			<if test="municipio!=''">
+				and u.id_municipio = #{municipio}
+			</if>
+		</if>
+		<if test="!fechaInicio.equals(fechaFin)">
+			where to_char(a.creada, 'yyyy-mm-dd') &gt;= to_char(DATE '${fechaInicio}', 'yyyy-mm-dd') and to_char(a.creada, 'yyyy-mm-dd') &lt;= to_char(DATE '${fechaFin}', 'yyyy-mm-dd')
+			<if test="municipio!=''">
+				and u.id_municipio = #{municipio}
+			</if>
+		</if>
+		group by a.usuario_id
+		order by a.usuario_id
+
+		) t1
+		right join usuario u on (t1.usuario_id = u.id)
+		where u.region = #{idRegion}
+		<if test="municipio!=''">
+			and u.id_municipio = #{municipio}
+		</if>
+		group by u.region, u.id_municipio, u.municipio
+		order by u.region, u.id_municipio, u.municipio
+	</select>
+	
+	
+	
+	<select id="concentrado3Zonas" resultType="hashmap" parameterType="hashmap">
+		select
+		u.region, u.zona, coalesce(sum(t1.count),0) count,
+		(select count(*) from usuario where region = u.region and zona = u.zona) usuarios_registrados,
+		sum(case when t1.con_resp&gt;=10 then 1 else 0 end)mas_de_10,
+		
+		coalesce(round(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) * 100)::numeric / NULLIF((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)),0)),2),0) por_mas_de_10,
+		
+		sum(case when t1.con_resp&lt;10 then 1 else 0 end)menos_de_10,
+		
+		coalesce(round(((sum(case when t1.con_resp&lt;10 then 1 else 0 end) * 100)::numeric / NULLIF((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)),0)),2),0) por_menos_de_10,
+		
+		(sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) total_uconectados,
+		coalesce(sum(t1.con_resp),0) con_resp,
+		
+		coalesce(round(((sum(t1.con_resp)*100)/NULLIF((sum(t1.con_resp) + sum(t1.sin_resp)),0)),2),0) por_con_resp,
+		
+		coalesce(sum(t1.sin_resp),0) sin_resp,
+		
+		coalesce(round(((sum(t1.sin_resp)*100)/NULLIF((sum(t1.con_resp) + sum(t1.sin_resp)),0)),2),0) por_sin_resp,
+		
+		coalesce((sum(t1.con_resp) + sum(t1.sin_resp)),0) total_enc_sincronizadas,
+		coalesce(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) * 25),0) de_usuarios_conectados
+		from(
+
+		select a.usuario_id, count(*),
+		sum(case when (a.codigo_resultado = 1 or (a.codigo_resultado = 8 and a.tiene_ine = 1)) then 1 else 0 end)con_resp,
+		sum(case when (a.codigo_resultado in (2,3,4,5,6,7) or (a.codigo_resultado = 8 and a.tiene_ine !=1)) then 1 else 0 end)sin_resp
+		from encuesta a
+		left join usuario u on (a.usuario_id = u.id)
+		<if test="zona!=''">
+			where u.zona = #{zona}
+		</if>
+		group by a.usuario_id
+		order by a.usuario_id
+
+		)t1
+		
+		right join usuario u on (t1.usuario_id = u.id)
+	
+		where u.region = #{idRegion}
+		<if test="zona!=''">
+			and u.zona = #{zona}
+		</if>
+		group by u.region, u.zona
+		order by u.region, u.zona
+	</select>
+	
+	<select id="concentrado3ZonasFecha" resultType="hashmap" parameterType="hashmap">
+		select
+		u.region, u.zona, coalesce(sum(t1.count),0) count,
+		(select count(*) from usuario where region = u.region and zona = u.zona) usuarios_registrados,
+		sum(case when t1.con_resp&gt;=10 then 1 else 0 end)mas_de_10,
+		
+		coalesce(round(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) * 100)::numeric / NULLIF((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)),0)),2),0) por_mas_de_10,
+		
+		sum(case when t1.con_resp&lt;10 then 1 else 0 end)menos_de_10,
+		
+		coalesce(round(((sum(case when t1.con_resp&lt;10 then 1 else 0 end) * 100)::numeric / NULLIF((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)),0)),2),0) por_menos_de_10,
+		
+		(sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) total_uconectados,
+		coalesce(sum(t1.con_resp),0) con_resp,
+		
+		coalesce(round(((sum(t1.con_resp)*100)/NULLIF((sum(t1.con_resp) + sum(t1.sin_resp)),0)),2),0) por_con_resp,
+		
+		coalesce(sum(t1.sin_resp),0) sin_resp,
+		
+		coalesce(round(((sum(t1.sin_resp)*100)/NULLIF((sum(t1.con_resp) + sum(t1.sin_resp)),0)),2),0) por_sin_resp,
+		
+		coalesce((sum(t1.con_resp) + sum(t1.sin_resp)),0) total_enc_sincronizadas,
+		coalesce(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) * 25),0) de_usuarios_conectados
+		from(
+
+		select a.usuario_id, count(*),
+		sum(case when (a.codigo_resultado = 1 or (a.codigo_resultado = 8 and a.tiene_ine = 1)) then 1 else 0 end)con_resp,
+		sum(case when (a.codigo_resultado in (2,3,4,5,6,7) or (a.codigo_resultado = 8 and a.tiene_ine !=1)) then 1 else 0 end)sin_resp
+		from encuesta a
+		left join usuario u on (a.usuario_id = u.id)
+		<if test="fechaInicio.equals(fechaFin)">
+			where to_char(a.creada, 'yyyy-mm-dd') = to_char(DATE '${fechaInicio}', 'yyyy-mm-dd')
+			<if test="zona!=''">
+				and u.zona = #{zona}
+			</if>
+		</if>
+		<if test="!fechaInicio.equals(fechaFin)">
+			where to_char(a.creada, 'yyyy-mm-dd') &gt;= to_char(DATE '${fechaInicio}', 'yyyy-mm-dd') and to_char(a.creada, 'yyyy-mm-dd') &lt;= to_char(DATE '${fechaFin}', 'yyyy-mm-dd')
+			<if test="zona!=''">
+				and u.zona = #{zona}
+			</if>
+		</if>
+		
+		group by a.usuario_id
+		order by a.usuario_id
+
+		)t1
+		
+		right join usuario u on (t1.usuario_id = u.id)
+		
+		where u.region = #{idRegion}
+		<if test="zona!=''">
+			and u.zona = #{zona}
+		</if>
+		group by u.region, u.zona
+		order by u.region, u.zona
+	</select>
+	
+	<select id="concentrado4Secciones" resultType="hashmap" parameterType="hashmap">
+		select
+		u.region, u.id_municipio, u.municipio, u.zona, u.seccion, sum(t1.count) count,
+		(select count(*) from usuario where region = u.region and id_municipio = u.id_municipio and zona = u.zona and seccion = u.seccion) usuarios_registrados,
+		sum(case when t1.con_resp&gt;=10 then 1 else 0 end)mas_de_10,
+		
+		coalesce(round(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) * 100)::numeric / NULLIF((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)),0)),2),0) por_mas_de_10,
+		
+		sum(case when t1.con_resp&lt;10 then 1 else 0 end)menos_de_10,
+		
+		coalesce(round(((sum(case when t1.con_resp&lt;10 then 1 else 0 end) * 100)::numeric / NULLIF((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)),0)),2),0) por_menos_de_10,
+		
+		(sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) total_uconectados,
+		coalesce(sum(t1.con_resp),0) con_resp,
+		
+		coalesce(round(((sum(t1.con_resp)*100)/NULLIF((sum(t1.con_resp) + sum(t1.sin_resp)),0)),2),0) por_con_resp,
+		
+		coalesce(sum(t1.sin_resp),0) sin_resp,
+		
+		coalesce(round(((sum(t1.sin_resp)*100)/NULLIF((sum(t1.con_resp) + sum(t1.sin_resp)),0)),2),0) por_sin_resp,
+		
+		coalesce((sum(t1.con_resp) + sum(t1.sin_resp)),0) total_enc_sincronizadas,
+		coalesce(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) * 25),0) de_usuarios_conectados
+		from(
+
+		select a.usuario_id, count(*),
+		sum(case when (a.codigo_resultado = 1 or (a.codigo_resultado = 8 and a.tiene_ine = 1)) then 1 else 0 end)con_resp,
+		sum(case when (a.codigo_resultado in (2,3,4,5,6,7) or (a.codigo_resultado = 8 and a.tiene_ine !=1)) then 1 else 0 end)sin_resp
+		from encuesta a
+		left join usuario u on (a.usuario_id = u.id)
+		<if test="zona!=''">
+			where u.zona = #{zona}
+		</if>
+		<if test="municipio!=''">
+			where u.id_municipio = #{municipio}
+		</if>
+		group by a.usuario_id
+		order by a.usuario_id
+
+		)t1
+		right join usuario u on (t1.usuario_id = u.id)
+		where u.region = #{idRegion}
+		<if test="zona!=''">
+			and u.zona = #{zona}
+		</if>
+		<if test="municipio!=''">
+			and u.id_municipio = #{municipio}
+		</if>
+		group by u.region, u.id_municipio, u.municipio, u.zona, u.seccion
+		order by u.region, u.id_municipio, u.municipio, u.zona, u.seccion
+	</select>
+	
+	
+	<select id="concentrado4SeccionesFecha" resultType="hashmap" parameterType="hashmap">
+		select
+		u.region, u.id_municipio, u.municipio, u.zona, u.seccion, sum(t1.count) count,
+		(select count(*) from usuario where region = u.region and id_municipio = u.id_municipio and zona = u.zona and seccion = u.seccion) usuarios_registrados,
+		sum(case when t1.con_resp&gt;=10 then 1 else 0 end)mas_de_10,
+		
+		coalesce(round(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) * 100)::numeric / NULLIF((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)),0)),2),0) por_mas_de_10,
+		
+		sum(case when t1.con_resp&lt;10 then 1 else 0 end)menos_de_10,
+		
+		coalesce(round(((sum(case when t1.con_resp&lt;10 then 1 else 0 end) * 100)::numeric / NULLIF((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)),0)),2),0) por_menos_de_10,
+		
+		(sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) total_uconectados,
+		coalesce(sum(t1.con_resp),0) con_resp,
+		
+		coalesce(round(((sum(t1.con_resp)*100)/NULLIF((sum(t1.con_resp) + sum(t1.sin_resp)),0)),2),0) por_con_resp,
+		
+		coalesce(sum(t1.sin_resp),0) sin_resp,
+		
+		coalesce(round(((sum(t1.sin_resp)*100)/NULLIF((sum(t1.con_resp) + sum(t1.sin_resp)),0)),2),0) por_sin_resp,
+		
+		coalesce((sum(t1.con_resp) + sum(t1.sin_resp)),0) total_enc_sincronizadas,
+		coalesce(((sum(case when t1.con_resp&gt;=10 then 1 else 0 end) + sum(case when t1.con_resp&lt;10 then 1 else 0 end)) * 25),0) de_usuarios_conectados
+		from(
+
+		select a.usuario_id, count(*),
+		sum(case when (a.codigo_resultado = 1 or (a.codigo_resultado = 8 and a.tiene_ine = 1)) then 1 else 0 end)con_resp,
+		sum(case when (a.codigo_resultado in (2,3,4,5,6,7) or (a.codigo_resultado = 8 and a.tiene_ine !=1)) then 1 else 0 end)sin_resp
+		from encuesta a
+		left join usuario u on (a.usuario_id = u.id)
+		<if test="fechaInicio.equals(fechaFin)">
+			where to_char(a.creada, 'yyyy-mm-dd') = to_char(DATE '${fechaInicio}', 'yyyy-mm-dd')
+			<if test="zona!=''">
+				and u.zona = #{zona}
+			</if>
+			<if test="municipio!=''">
+				and u.id_municipio = #{municipio}
+			</if>
+		</if>
+		<if test="!fechaInicio.equals(fechaFin)">
+			where to_char(a.creada, 'yyyy-mm-dd') &gt;= to_char(DATE '${fechaInicio}', 'yyyy-mm-dd') and to_char(a.creada, 'yyyy-mm-dd') &lt;= to_char(DATE '${fechaFin}', 'yyyy-mm-dd')
+			<if test="zona!=''">
+				and u.zona = #{zona}
+			</if>
+			<if test="municipio!=''">
+				and u.id_municipio = #{municipio}
+			</if>
+		</if>
+		group by a.usuario_id
+		order by a.usuario_id
+
+		)t1
+		right join usuario u on (t1.usuario_id = u.id)
+		where u.region = #{idRegion}
+		<if test="zona!=''">
+			and u.zona = #{zona}
+		</if>
+		<if test="municipio!=''">
+			and u.id_municipio = #{municipio}
+		</if>
+		group by u.region, u.id_municipio, u.municipio, u.zona, u.seccion
+		order by u.region, u.id_municipio, u.municipio, u.zona, u.seccion
+	</select>
+	
+	
+	
+	
+	<!-- 1.- ¿Cuenta usted con credencial de elector vigente? -->
+	<select id="pg1" resultType="hashmap">
+		SELECT case when b.texto is null then 'S/R' else b.texto end texto, count(*)
+  		FROM encuesta a
+  		left join catsnnc b on (a.tiene_ine = b.id)
+  		where a.tiene_ine is not null
+  		group by b.texto
+	</select>
+	
+	<!-- 3. ¿Cómo califica la situación actual del país respecto a la existente el año pasado en lo económico? -->
+	<select id="pg3" resultType="hashmap">
+		SELECT case when b.texto is null then 'S/R' else b.texto end texto, count(*)
+  		FROM encuesta a
+ 		left join catmpinn b on (a.actual_economico = b.id)
+ 		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 4. ¿Cómo califica la situación actual del país respecto a la existente el año pasado en lo político? -->
+	<select id="pg4" resultType="hashmap">
+		SELECT case when b.texto is null then 'S/R' else b.texto end texto, count(*)
+  		FROM encuesta a
+  		left join catmpinn b on (a.actual_politico = b.id)
+  		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 5. ¿Cómo cree que será la situación del país para el año próximo respecto a la actual en lo económico? -->
+	<select id="pg5" resultType="hashmap">
+		SELECT case when b.texto is null then 'S/R' else b.texto end texto, count(*)
+		FROM encuesta a
+		left join catmpinn b on (a.futuro_economico = b.id)
+		where a.tiene_ine is not null  
+		group by b.texto
+	</select>
+	
+	<!-- 6. ¿Cómo cree que será la situación del país para el año próximo respecto a la actual en lo político? -->
+	<select id="pg6" resultType="hashmap">
+		SELECT case when b.texto is null then 'S/R' else b.texto end texto, count(*)
+  		FROM encuesta a
+  		left join catmpinn b on (a.futuro_politico = b.id)
+  		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 7. ¿Cuál es el medio por el que usted generalmente se entera de las noticias? -->
+	<select id="pg7" resultType="hashmap">
+		SELECT case when c.texto is null then 'S/R' else c.texto end texto, count(*)
+  		FROM encuesta a
+  		left join medios b on (a.id = b.encuesta_id)  
+  		left join catmedio c on (b.medio_id = c.id)
+  		where a.tiene_ine is not null
+  		group by c.texto
+	</select>
+	
+	<!-- 8. ¿Cuáles son los medios de comunicación que usted utiliza? -->
+	<select id="_8" resultType="hashmap">
+		SELECT c.texto, count(*)
+  		FROM encuesta a
+  		left join comunicacion b on (a.id = b.encuesta_id)  
+  		left join catcomunicacion c on (b.comunicacion_id = c.id)
+  		where a.tiene_ine is not null
+  		group by c.texto
+	</select>
+	
+	<!-- 9. Independientemente de por quién ha votado, ¿Con qué partido se identifica usted más? -->
+	<select id="_9" resultType="hashmap">
+		SELECT c.texto, count(*)
+  		FROM encuesta a
+  		left join simpatizapartido b on (a.id = b.encuesta_id)  
+  		left join catpartido c on (b.partido_id = c.id)
+  		where a.tiene_ine is not null
+  		group by c.texto
+	</select>
+	
+	<!-- 10. ¿A usted le gustaría que el Estado de México fuera gobernado por un partido diferente al PRI? -->
+	<select id="_10" resultType="hashmap">
+		SELECT b.texto, count(*)
+  		FROM encuesta a
+  		left join catsnnc b on (a.gob_estatal_dif_pri = b.id)
+  		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 11. ¿Cuál es el partido por el que usted nunca votaría? -->
+	<select id="_11" resultType="hashmap">
+		SELECT b.texto, count(*)
+  		FROM encuesta a
+  		left join catpartido b on (a.no_votaria_por = b.id)
+  		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 12. Si tuviera que votar en este momento para elegir Gobernador del Estado de México, ¿Por cuál partido político votaría usted? -->
+	<select id="_12" resultType="hashmap">
+		SELECT b.texto, count(*)
+  		FROM encuesta a
+  		left join catpartido b on (a.votaria_por_estatal = b.id)
+  		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 13. Si tuviera que votar en este momento para elegir Gobernador del Estado de México y sólo pudiera elegir entre el PRI y el PAN, ¿Por cuál partido político votaría usted? -->
+	<select id="_13" resultType="hashmap">
+		SELECT b.texto, count(*)
+  		FROM encuesta a
+  		left join catpri_pan b on (a.voto_pri_pan_estatal = b.id)
+  		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 14. Si tuviera que votar en este momento para elegir Gobernador del Estado de México y sólo pudiera elegir entre el PRI y el PRD, ¿Por cuál partido político votaría usted? -->
+	<select id="_14">
+		SELECT b.texto, count(*)
+  		FROM encuesta a
+  		left join catpri_prd b on (a.voto_pri_prd_estatal = b.id)
+  		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 15. ¿Recibe usted apoyos o beneficios de algún programa social del gobierno federal? -->
+	<select id="_15" resultType="hashmap">
+		SELECT b.texto, count(*)
+  		FROM encuesta a
+  		left join catsnnc b on (a.benef_programa_social = b.id)
+  		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 16. ¿Siente que el gobierno del Presidente Enrique Peña Nieto está cumpliendo su promesa de apoyar el bienestar de usted y el de su familia? -->
+	<select id="_16">
+		SELECT b.texto, count(*)
+  		FROM encuesta a
+  		left join catmapn b on (a.calif_epn = b.id)
+  		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 17. ¿Qué tan satisfecho se siente con el apoyo que recibe del Gobierno del Presidente Enrique Peña Nieto? -->
+	<select id="_17" resultType="hashmap">
+		SELECT b.texto, count(*) --(Pendiente)
+  		FROM encuesta a
+  		left join catmapn b on (a.calif_gob_epn = b.id)
+  		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 18. ¿Los apoyos que recibe del Gobierno del Presidente Enrique Peña Nieto han mejorado su ingreso familiar? -->
+	<select id="_18" resultType="hashmap">
+		SELECT b.texto, count(*)
+  		FROM encuesta a
+  		left join catmapn b on (a.calif_ingreso_fam_epn = b.id)
+  		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 20. ¿Le gustaría recibir información de los programas federales? -->
+	<select id="_20" parameterType="hashmap">
+		SELECT b.texto, count(*)
+  		FROM encuesta a
+  		left join catsnnc b on (a.recibir_info_prog = b.id)
+  		where a.tiene_ine is not null  
+  		group by b.texto
+	</select>
+	
+	<!-- 22. En una escala del 0 al 10, donde 0 es el valor mínimo y 10 es el valor máximo, ¿Usted qué calificación le asignaría al desempeño del gobierno encabezado por el…? -->
+	<!-- Presidente de Mexico -->
+	<select id="_22_1" parameterType="hashmap">
+		SELECT a.calif_num_presidente, count(*)
+  		FROM encuesta a
+  		where a.tiene_ine is not null
+  		group by a.calif_num_presidente
+  		rder by a.calif_num_presidente
+	</select>
+	<!-- Gobernador -->
+	<select id="_22_2" parameterType="hashmap">
+		SELECT a.calif_num_gobernador, count(*)
+  		FROM encuesta a
+  		where a.tiene_ine is not null
+  		group by a.calif_num_gobernador
+  		order by a.calif_num_gobernador
+	</select>
+	<!-- Preseidente Municipal -->
+	<select id="_22_3" parameterType="hashmap">
+		SELECT a.calif_num_pres_municip, count(*)
+  		FROM encuesta a
+  		where a.tiene_ine is not null
+  		group by a.calif_num_pres_municip
+  		order by a.calif_num_pres_municip
+	</select>
+
+</mapper>

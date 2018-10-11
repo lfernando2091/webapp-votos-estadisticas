@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="content">
+
+		<div >
+			<div class="Container100">
+				<h:form>
+
+				<p:panel styleClass="companyHeaderGrid" style="min-height: 500px;background:#71CC8D;border-radius: 20px;background-image: url('resources/imagenes/acceso_directo/Fondo_3.svg'); -webkit-background-size: cover;-moz-background-size: cover; -o-background-size: cover;background-size: cover;">
+					<table class="box">
+					<tr>
+					<sec:authorize ifAllGranted="ROLE_ESTRUCTURAS">
+					<td>
+					<p:link href="/app/catalogos/elecciones/mexico"><IMG alt="" src="resources/imagenes/acceso_directo/ICN_EstadoMex2017 (2).svg" width="140" height="140"/></p:link>
+					</td>
+					</sec:authorize>
+					<sec:authorize ifAllGranted="ROLE_ESTRUCTURAS">
+					<td>
+					<p:link href="/app/estructuras/reportes/estructura2018"><IMG alt="" src="resources/imagenes/acceso_directo/ICN_EstrOper2018 (2).svg" width="140" height="140"/></p:link>
+					</td>
+					</sec:authorize>
+					<sec:authorize ifAllGranted="ROLE_IMJUVE_ENCUESTAS">
+					<td>
+					
+					<p:link href="/app/encuestas/imjuve/edicion_encuesta"><IMG alt="" src="resources/imagenes/acceso_directo/ICN_Imjuve.svg" width="140" height="140"/></p:link>
+					
+					</td>
+					</sec:authorize>
+					<sec:authorize ifAllGranted="ROLE_MDM">
+					<td>
+					
+					<p:link href="/app/mdm/perfiles"><IMG alt="" src="resources/imagenes/acceso_directo/ICN_Buscar.svg" width="140" height="140"/></p:link>
+					</td>
+					</sec:authorize>
+					</tr>
+					<tr>
+					<sec:authorize ifAllGranted="ROLE_ESTRUCTURAS">
+					<td>
+					<p:link href="/app/estructuras/reportes/estatal"><IMG alt="" src="resources/imagenes/acceso_directo/ICN_DirNacional (2).svg" width="140" height="140"/></p:link>
+					</td>
+					</sec:authorize>
+					<sec:authorize ifAllGranted="ROLE_CRONOGRAMA">
+					<td>
+					<p:link href="/app/cronograma/timeline"><IMG alt="" src="resources/imagenes/acceso_directo/ICN_Timeline.svg" width="140" height="140"/></p:link>
+					</td>
+					</sec:authorize>
+					<sec:authorize ifAllGranted="ROLE_EVENTOS">
+					<td>
+					<p:link href="/app/eventos"><IMG alt="" src="resources/imagenes/acceso_directo/ICN_Eventos.svg" width="140" height="140"/></p:link>
+					</td>
+					</sec:authorize>
+					<sec:authorize ifAllGranted="ROLE_ENCUESTAS">
+					<td>
+					<p:link href="/app/encuestas/admin"><IMG alt="" src="resources/imagenes/acceso_directo/ICN_Encuestas.svg" width="140" height="140"/></p:link>
+					</td>
+					</sec:authorize>
+					</tr>
+					<tr>
+					<sec:authorize ifAllGranted="ROLE_ESTADISTICAS">
+					<td>
+					<p:link href="/app/estadisticas/reportes"><IMG alt="" src="resources/imagenes/acceso_directo/ICN_Estadisticas.svg" width="140" height="140"/></p:link>
+					</td>
+					</sec:authorize>
+					<sec:authorize access="hasAnyRole('ROLE_ENCUESTA_EDOMEX','ROLE_ENCUESTAS_SUPERVISOR_EDOMEX','ROLE_ENCUESTAS_EDOMEX_CALL_CENTER','ROLE_ENCUESTAS_EDOMEX_CALL_CENTER_CAPTURISTA')">
+					<td>
+					<p:link href="/app/encuestas/edomex2017"><IMG alt="" src="resources/imagenes/acceso_directo/ICN_EncuestaEDOMEX2017-21.svg" width="140" height="140"/></p:link>
+					</td>
+					</sec:authorize>
+					</tr>
+					</table>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+					<h:outputStylesheet>
+.box {
+  	margin-top: 50;
+    margin-left: auto;
+  	margin-right: auto;
+    padding-top: 70px;
+  vertical-align: middle !important;
+   
+}
+.box td {
+  	
+    padding: 20px;
+ 
+   
+}
+.companyHeaderGrid {
+     border-style: hidden !important;
+    padding-top: 2%;
+    
+}     		</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

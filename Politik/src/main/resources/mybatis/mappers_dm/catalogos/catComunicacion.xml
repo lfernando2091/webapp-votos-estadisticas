@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="catalogos.catComunicacion">
+
+	<cache/>
+	
+	<resultMap type="CatComunicacionEO" id="catComunicacion">
+		<id column="CatComunicacionEO_id" property="id" javaType="Integer"/>
+		<result column="CatComunicacionEO_texto" property="texto" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			CatComunicacionEO.id		CatComunicacionEO_id, 
+			CatComunicacionEO.texto		CatComunicacionEO_texto
+  		FROM catcomunicacion CatComunicacionEO
+	</sql>
+	
+	<select id="listado" resultMap="catComunicacion">
+		<include refid="query"/>
+	</select>
+
+</mapper>

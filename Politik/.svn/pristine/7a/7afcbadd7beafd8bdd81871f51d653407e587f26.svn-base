@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.edomex2017.encuestadoresConectados">
+	
+	<resultMap type="Edomex2017EncuestadoresConectadosEO" id="encuestadoresConectados">
+		<id 			column="id" 						property="id" 							javaType="Integer"/>
+		<result 		column="municipio" 					property="municipioProspera" 			javaType="String"/>
+		<association 	column="nick" 						property="usuario" 						select="administracion.usuarios.porNick"/>
+	</resultMap>
+	
+	<select id="listado" resultMap="encuestadoresConectados" parameterType="hashmap">
+		SELECT row_number() OVER (ORDER BY nombre) AS id,
+		nombre, primer_apellido, segundo_apellido, nick, municipio_prospera municipio
+	  FROM estructuras_edomex.visitadores
+	  WHERE programa=#{programa} AND nick IN (
+	  <foreach collection="usuarios" item="item" separator=",">
+	  	#{item}
+	  </foreach>
+	  )
+	</select>
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.hermanos.captura">
+
+	<resultMap type="HermanosEncuestaEO" id="entrevistaHermanos">
+		<id column="HermanosEncuestaEO_id" 						property="id" 				javaType="Integer" />
+		<result column="HermanosEncuestaEO_idContacto"			property="idContacto" 		javaType="String" />
+		<result column="HermanosEncuestaEO_r1" 					property="r1"				javaType="com.saganet.politik.dominios.SiNoNSNCDO" />
+		<result column="HermanosEncuestaEO_r2" 					property="r2"				javaType="com.saganet.politik.dominios.PartidosEleccionEdomex2017DO" />
+		<result column="HermanosEncuestaEO_r3" 					property="r3"   			javaType="com.saganet.politik.dominios.CandidatosEdomex2017DO" />
+		<result column="HermanosEncuestaEO_r4" 					property="r4"				javaType="com.saganet.politik.dominios.SiNoNSNCDO" />
+		<result column="HermanosEncuestaEO_estatus"				property="resultado"		javaType="com.saganet.politik.dominios.ResultadoEncuestaEdomexDO" />
+		<result column="HermanosEncuestaEO_nick" 				property="nick"				javaType="String" />
+		<result column="HermanosEncuestaEO_encuestador" 		property="encuestador"		javaType="String" />
+		<result column="HermanosEncuestaEO_fecha" 				property="fecha"			javaType="java.sql.Timestamp" />
+		<result column="HermanosEncuestaEO_nombre" 				property="nombre"			javaType="String" />	
+		<result column="HermanosEncuestaEO_paterno" 			property="paterno"			javaType="String" />
+		<result column="HermanosEncuestaEO_materno" 			property="materno"			javaType="String" />
+		<result column="HermanosEncuestaEO_fechaNacimiento" 	property="fechaNacimiento"	javaType="String" />
+		<result column="HermanosEncuestaEO_genero" 				property="genero"			javaType="com.saganet.politik.dominios.GenerosDO" />
+		<result column="HermanosEncuestaEO_email" 				property="email"			javaType="String" />
+		<result column="HermanosEncuestaEO_tel" 				property="tel"				javaType="String" />
+	</resultMap>
+	
+	<sql id="query">	
+	SELECT HermanosEncuestaEO.pkey 			HermanosEncuestaEO_id,
+		HermanosEncuestaEO.id_contacto 		HermanosEncuestaEO_idContacto,
+		HermanosEncuestaEO._1 				HermanosEncuestaEO_r1,
+		HermanosEncuestaEO._2 				HermanosEncuestaEO_r2,
+		HermanosEncuestaEO._3 				HermanosEncuestaEO_r3,
+		HermanosEncuestaEO._4 				HermanosEncuestaEO_r4,
+		
+		HermanosEncuestaEO.estatus 			HermanosEncuestaEO_estatus,
+		HermanosEncuestaEO.encuestador	 	HermanosEncuestaEO_encuestador,
+		
+		HermanosEncuestaEO.nick 			HermanosEncuestaEO_nick,	
+		HermanosEncuestaEO.fecha 			HermanosEncuestaEO_fecha,
+		HermanosEncuestaEO.nombre 			HermanosEncuestaEO_nombre,
+		HermanosEncuestaEO.paterno 			HermanosEncuestaEO_paterno,
+		HermanosEncuestaEO.materno 			HermanosEncuestaEO_materno,
+		HermanosEncuestaEO.fecha_nacimiento HermanosEncuestaEO_fechaNacimiento,
+		HermanosEncuestaEO.sexo 			HermanosEncuestaEO_genero,
+		HermanosEncuestaEO.email 			HermanosEncuestaEO_email,
+		HermanosEncuestaEO.tel 				HermanosEncuestaEO_tel
+	FROM hermanos.e_edomex 			HermanosEncuestaEO
+	</sql>
+	
+	
+	<select id="buscarPorId" parameterType="HermanosEntrevistadoEO" resultMap="entrevistaHermanos">
+		<include refid="query" />
+		where HermanosEncuestaEO.id_contacto::integer=#{idInterno}
+	</select>
+	<insert id="insertar" parameterType="hashmap">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('hermanos.e_edomex_pkey_seq')
+		</selectKey>
+		INSERT INTO hermanos.e_edomex(
+		pkey, id_contacto, _1, _2, _3, _4,estatus, nick, encuestador, nombre, paterno, materno, fecha_nacimiento, sexo, tel, email, version_captura)
+		VALUES (#{id}, #{encuesta.idContacto}, #{encuesta.r1}, #{encuesta.r2}, #{encuesta.r3}, #{encuesta.r4}, #{encuesta.resultado},
+		#{encuesta.nick},'${encuesta.encuestador}',#{entrevistado.nombre},#{entrevistado.apellidoPaterno},#{entrevistado.apellidoMaterno},#{entrevistado.fechaNacimiento},#{entrevistado.sexo}, #{encuesta.tel}, #{encuesta.email},1)
+
+	</insert>
+
+	<update id="actualizarEstatus" parameterType="hashmap">
+		update hermanos.encuesta_edomex set estatus = #{encuesta.resultado} where id_interno= #{entrevistado.idInterno}
+	</update>
+	
+	
+	<update id="actualizarEncuesta" parameterType="hashmap">
+		UPDATE hermanos.e_edomex
+		SET _1=#{encuesta.r1}, _2=#{encuesta.r2}, _3=#{encuesta.r3}, _4=#{encuesta.r4},  estatus = #{encuesta.resultado},encuestador='${encuesta.encuestador}',
+		nombre=#{entrevistado.nombre}, paterno = #{entrevistado.apellidoPaterno}, materno = #{entrevistado.apellidoMaterno}, fecha_nacimiento = #{entrevistado.fechaNacimiento}, sexo =#{entrevistado.sexo}, tel=#{encuesta.tel}, email=#{encuesta.email}, nick_actualizacion=#{encuesta.nickActualizacion}, fecha_actualizacion=now(), version_captura=version_captura + 1
+		WHERE id_contacto = #{encuesta.idContacto}
+	</update>
+	
+</mapper>

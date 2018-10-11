@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventos.benericiarios">
+	<cache />
+
+	<resultMap type="BeneficiarioEO" id="beneficiario">
+		<id column="BeneficiarioEO_id" property="id" javaType="Integer" />
+		<association column="BeneficiarioEO_id_evento_social" property="evento" select="eventos.eventos.buscarID"/>
+		<association column="BeneficiarioEO_id_persona" property="persona" select="mdm.personas.buscarPorIdPersona" />
+		<association column="BeneficiarioEO_id_ejercicio" property="ejercicio" select="catalogos.programasEjercicios.buscarID" />	
+	</resultMap>
+
+	<sql id="queryReg">
+		SELECT 
+			BeneficiarioEO.pkey 					BeneficiarioEO_id, 
+			BeneficiarioEO.id_evento_social 		BeneficiarioEO_id_evento_social, 
+			BeneficiarioEO.id_persona 				BeneficiarioEO_id_persona,
+			BeneficiarioEO.id_ejercicio				BeneficiarioEO_id_ejercicio
+ 	  FROM eventos_sociales.beneficiarios			BeneficiarioEO
+	</sql>
+	
+	<select id="listado" resultMap="beneficiario">
+		<include refid="queryReg"/>
+			ORDER BY BeneficiarioEO.pkey 
+	</select>
+	
+	<select id="buscarPorId" resultMap="beneficiario" parameterType="Integer">
+		<include refid="queryReg"/>
+			WHERE BeneficiarioEO.pkey = #{value}
+			ORDER BY BeneficiarioEO.pkey 
+	</select>
+	
+	<select id="listadoPorEvento" resultMap="beneficiario" parameterType="Integer">
+		<include refid="queryReg"/>
+		WHERE BeneficiarioEO.id_evento_social =#{value}
+		ORDER BY  BeneficiarioEO.pkey 
+	</select>
+	
+	<select id="nextID" resultType="Integer">
+		SELECT nextval('eventos_sociales.beneficiarios_pkey_seq')
+	</select>
+	
+	<insert id="insertar" parameterType="BeneficiarioEO">
+	   INSERT INTO 
+	   eventos_sociales.beneficiarios(pkey, id_evento_social, id_persona, id_ejercicio )
+	   VALUES (#{id}, #{evento.id}, #{persona.id}, #{ejercicio.id})
+	</insert>
+	
+	<delete id="eliminar" parameterType="BeneficiarioEO">
+		DELETE FROM eventos_sociales.beneficiarios
+		WHERE pkey=#{id}
+	</delete>
+	
+</mapper>

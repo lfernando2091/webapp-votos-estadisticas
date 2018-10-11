@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.fuerzaCiudadana.entrevistado">
+<resultMap type="FuerzaCiudadanaEntrevistadoEO" id="entrevistadofuerzaCiudadana">
+<id column="FuerzaCiudadanaEntrevistadoEO_id" 							property="id" 					javaType="Integer"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_entidad" 				property="entidad" 				javaType="Integer"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_region_edomex_2017" 	property="regionEdomex2017" 	javaType="Integer"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_nombre_region" 		property="nombreRegion" 		javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_municipio" 			property="municipio" 			javaType="Integer"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_nombre_municipio" 	property="nombreMunicipio" 		javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_localidad" 			property="localidad" 			javaType="Integer"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_nombre_localidad" 	property="nombreLocalidad" 		javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_seccion" 				property="seccion" 				javaType="Integer"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_manzana" 				property="manzana" 				javaType="Integer"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_id_interno" 			property="idInterno" 			javaType="Integer"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_clave_elector" 		property="claveElector" 		javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_apellido_paterno" 	property="apellidoPaterno" 		javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_apellido_materno" 	property="apellidoMaterno" 		javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_nombre" 				property="nombre" 				javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_fecha_nacimiento" 	property="fechaNacimiento" 		javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_lugar_nacimiento" 	property="lugarNacimiento" 		javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_sexo" 				property="sexo" 				javaType="com.saganet.politik.dominios.GenerosDO"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_ocupacion" 			property="ocupacion" 			javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_calle" 				property="calle" 				javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_num_exterior" 		property="numExterior" 			javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_num_interior" 		property="numInterior" 			javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_colonia"				property="colonia" 				javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_codigo_postal" 		property="codigoPostal" 		javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_programa_todo" 		property="programaTodo" 		javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_programa_general" 	property="programaGeneral" 		javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_estatus" 				property="estatus" 				javaType="String"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_folio" 				property="folio" 				javaType="Integer"/>
+ 	<result column="FuerzaCiudadanaEntrevistadoEO_duplicado" 			property="duplicado" 			javaType="boolean"/>
+ 	
+</resultMap>
+
+<sql id="query">
+	select
+		FuerzaCiudadanaEntrevistadoEO.entidad FuerzaCiudadanaEntrevistadoEO_entidad,
+		FuerzaCiudadanaEntrevistadoEO.region_edomex_2017 FuerzaCiudadanaEntrevistadoEO_region_edomex_2017,
+		FuerzaCiudadanaEntrevistadoEO.nombre_region FuerzaCiudadanaEntrevistadoEO_nombre_region,
+		FuerzaCiudadanaEntrevistadoEO.municipio FuerzaCiudadanaEntrevistadoEO_municipio,
+		FuerzaCiudadanaEntrevistadoEO.nombre_municipio FuerzaCiudadanaEntrevistadoEO_nombre_municipio,
+		FuerzaCiudadanaEntrevistadoEO.localidad FuerzaCiudadanaEntrevistadoEO_localidad,
+		FuerzaCiudadanaEntrevistadoEO.nombre_localidad FuerzaCiudadanaEntrevistadoEO_nombre_localidad,
+		FuerzaCiudadanaEntrevistadoEO.seccion FuerzaCiudadanaEntrevistadoEO_seccion,
+		FuerzaCiudadanaEntrevistadoEO.manzana FuerzaCiudadanaEntrevistadoEO_manzana,
+		FuerzaCiudadanaEntrevistadoEO.id_interno FuerzaCiudadanaEntrevistadoEO_id_interno,
+		FuerzaCiudadanaEntrevistadoEO.clave_elector FuerzaCiudadanaEntrevistadoEO_clave_elector,
+		FuerzaCiudadanaEntrevistadoEO.apellido_paterno FuerzaCiudadanaEntrevistadoEO_apellido_paterno,
+		FuerzaCiudadanaEntrevistadoEO.apellido_materno FuerzaCiudadanaEntrevistadoEO_apellido_materno,
+		FuerzaCiudadanaEntrevistadoEO.nombre FuerzaCiudadanaEntrevistadoEO_nombre,
+		FuerzaCiudadanaEntrevistadoEO.fecha_nacimiento FuerzaCiudadanaEntrevistadoEO_fecha_nacimiento,
+		FuerzaCiudadanaEntrevistadoEO.lugar_nacimiento FuerzaCiudadanaEntrevistadoEO_lugar_nacimiento,
+		FuerzaCiudadanaEntrevistadoEO.sexo FuerzaCiudadanaEntrevistadoEO_sexo,
+		FuerzaCiudadanaEntrevistadoEO.ocupacion FuerzaCiudadanaEntrevistadoEO_ocupacion,
+		FuerzaCiudadanaEntrevistadoEO.calle FuerzaCiudadanaEntrevistadoEO_calle,
+		FuerzaCiudadanaEntrevistadoEO.num_exterior FuerzaCiudadanaEntrevistadoEO_num_exterior,
+		FuerzaCiudadanaEntrevistadoEO.num_interior FuerzaCiudadanaEntrevistadoEO_num_interior,
+		FuerzaCiudadanaEntrevistadoEO.colonia FuerzaCiudadanaEntrevistadoEO_colonia,
+		FuerzaCiudadanaEntrevistadoEO.codigo_postal FuerzaCiudadanaEntrevistadoEO_codigo_postal,
+		FuerzaCiudadanaEntrevistadoEO.programa_todo FuerzaCiudadanaEntrevistadoEO_programa_todo,
+		FuerzaCiudadanaEntrevistadoEO.programa_general FuerzaCiudadanaEntrevistadoEO_programa_general,
+		FuerzaCiudadanaEntrevistadoEO.estatus FuerzaCiudadanaEntrevistadoEO_estatus,
+		FuerzaCiudadanaEntrevistadoEO.grupo FuerzaCiudadanaEntrevistadoEO_grupo,
+		FuerzaCiudadanaEntrevistadoEO.folio FuerzaCiudadanaEntrevistadoEO_folio,
+		FuerzaCiudadanaEntrevistadoEO.duplicado FuerzaCiudadanaEntrevistadoEO_duplicado
+	from fuerza_ciudadana.encuesta_edomex FuerzaCiudadanaEntrevistadoEO
+</sql>
+
+<select id="buscarId" parameterType="hashmap" resultMap="entrevistadofuerzaCiudadana">
+<include refid="query"/>
+		where FuerzaCiudadanaEntrevistadoEO.folio=#{folio} limit 1
+</select>
+
+
+<select id="duplicados" parameterType="hashmap" resultMap="entrevistadofuerzaCiudadana">
+<include refid="query"/>
+		where FuerzaCiudadanaEntrevistadoEO.folio=#{folio} 
+</select>
+<select id="buscarIdInterno" parameterType="hashmap" resultMap="entrevistadofuerzaCiudadana">
+<include refid="query"/>
+		where FuerzaCiudadanaEntrevistadoEO.id_interno=#{folio} 
+</select>
+
+
+
+
+
+</mapper>

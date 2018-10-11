@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="buscar">
+		<on-entry>
+			<set name="viewScope.folioBusqueda" value="''"/>
+		</on-entry>
+		<transition on="buscar" to="capturaEncuesta">
+			<evaluate expression="Edomex2017Captura.buscarId(folioBusqueda)"
+				result="requestScope.contacto" />
+		</transition>
+	</view-state>
+	
+	<view-state id="capturaEncuesta">
+		<on-entry>
+			<set name="viewScope.contacto" value="requestScope.contacto" />
+			<set name="viewScope.encuesta" value="Edomex2017Captura.nuevo(viewScope.contacto.get('id_interno'),viewScope.contacto.get('estatus'))"/>
+			<set name="viewScope.sino" value="DominiosModelosC.sino()"/>
+			<set name="viewScope.muchoRegularNada" value="DominiosModelosC.muchoRegularNada()"/>
+			<set name="viewScope.buenaRegularNada" value="DominiosModelosC.buenaRegularNada()"/>
+		</on-entry>
+		<transition on="guardar" to="salirCaptura">
+		<evaluate expression="Edomex2017Captura.guardar(viewScope.encuesta)"/>
+		</transition>
+		<transition on="actualizar" to="salirCaptura">
+		<evaluate expression="Edomex2017Captura.actualizar(viewScope.encuesta)"/>
+		</transition>
+		<transition on="salir" to="salirCaptura"/>
+	</view-state>
+	<end-state id="salirCaptura"/>
+</flow>

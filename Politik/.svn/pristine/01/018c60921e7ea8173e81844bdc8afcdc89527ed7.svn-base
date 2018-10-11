@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.tiposClave">
+	<cache />
+	
+	<resultMap type="TipoClaveEO" id="tipoClave">
+		<id column="TipoClaveEO_id" property="id" javaType="Integer"/>
+		<result column="TipoClaveEO_nombre" property="nombre" javaType="String"/>
+	</resultMap>
+	
+	<select id="listado" resultMap="tipoClave">
+		SELECT 
+			TipoClaveEO.id_tipo_clave 	TipoClaveEO_id,
+			TipoClaveEO.tipo_clave 		TipoClaveEO_nombre
+		FROM catalogos.tipos_clave TipoClaveEO
+		ORDER BY TipoClaveEO.id_tipo_clave
+	</select>
+</mapper>

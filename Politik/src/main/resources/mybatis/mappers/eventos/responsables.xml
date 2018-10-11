@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventos.responsables">
+	<cache />
+
+	<resultMap type="ResponsableEO" id="responsable">
+		<id column="ResponsableEO_id" property="id" javaType="Integer" />
+		<result column="ResponsableEO_cargo" property="cargo" javaType="String" />
+		<association property="evento" column="ResponsableEO_id_evento_social" select="eventos.eventos.buscarID"/>
+		<association property="dependencia" column="ResponsableEO_id_dependencia" select="catalogos.dependencias.dependenciaById"/>
+		<association property="persona" column="ResponsableEO_id_persona" select="mdm.personas.buscarPorIdPersona"/>
+	</resultMap>
+
+	<sql id="query">
+		SELECT
+		ResponsableEO.pkey ResponsableEO_id,
+		ResponsableEO.id_evento_social ResponsableEO_id_evento_social,
+		ResponsableEO.id_persona ResponsableEO_id_persona,
+		ResponsableEO.id_dependencia ResponsableEO_id_dependencia,
+		ResponsableEO.cargo ResponsableEO_cargo
+		FROM eventos_sociales.responsables ResponsableEO
+	</sql>
+	
+	<select id="listado" resultMap="responsable">
+		<include refid="query"/>
+		ORDER BY ResponsableEO.pkey,ResponsableEO.id_evento_social
+	</select>
+	
+	
+	<select id="buscarPorEvento" resultMap="responsable" parameterType="Integer">
+		<include refid="query"/>
+		WHERE ResponsableEO.id_evento_social=#{value}
+		ORDER BY ResponsableEO.pkey, ResponsableEO.id_evento_social
+	</select>
+	
+	
+	<select id="buscarPorID" resultMap="responsable" parameterType="Integer">
+		<include refid="query"/>
+		WHERE ResponsableEO.pkey=#{value}
+		ORDER BY ResponsableEO.pkey, ResponsableEO.id_evento_social
+	</select>
+	
+	
+	<select id="nuevoID" resultType="Integer">
+		SELECT nextval('eventos_sociales.responsables_pkey_seq')
+	</select>
+	
+	<insert id="agregar" parameterType="ResponsableEO">
+		INSERT INTO eventos_sociales.responsables(pkey, id_evento_social, id_persona, cargo, id_dependencia)
+    	VALUES (#{id}, #{evento.id}, #{persona.id}, #{cargo}, #{dependencia.id})
+	</insert>
+
+	<delete id="eliminar" parameterType="ResponsableEO">
+			DELETE FROM eventos_sociales.responsables WHERE pkey=#{id}
+	</delete>
+	
+	<delete id="eliminarDeEvento" parameterType="EventoSocialEO">
+			DELETE FROM eventos_sociales.responsables WHERE id_evento_social=#{id}
+	</delete>
+	
+</mapper>

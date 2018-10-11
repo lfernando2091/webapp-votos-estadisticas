@@ -1,0 +1,232 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+	<ui:define name="head">
+		<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyCv60kiiu8HUPsm7SIm8dFUmVzpigHUCAs"></script>
+	</ui:define>
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				 <p:growl id="growl" life="3000" />
+ 
+					<p:panel header="Datos del Contacto">
+					<p:panelGrid columns="4">
+					<p:outputLabel value="Folio:"/>
+					<p:outputLabel value="${respuestasEncuestas.get('pkey')}"/>
+					<p:outputLabel value="Nombre: "/>
+					<p:outputLabel value="${respuestasEncuestas.get('nombre_c')} ${respuestasEncuestas.get('paterno_c')} ${respuestasEncuestas.get('materno_c')}"/>
+					<p:outputLabel value="Dirección"/>
+					<p:outputLabel value="${respuestasEncuestas.get('calle')} ${respuestasEncuestas.get('num_exterior')} ${respuestasEncuestas.get('num_interior')} ${respuestasEncuestas.get('colonia')} ${respuestasEncuestas.get('cp')}"/>
+					<p:outputLabel value="Territorio "/>
+					<p:outputLabel value="${respuestasEncuestas.get('llave_territorio')}"/>
+					<p:outputLabel value="Fecha"/>
+					<p:outputLabel value="${respuestasEncuestas.get('inicio_encuesta')} / ${respuestasEncuestas.get('fin_encuesta')}"/>
+					<p:outputLabel value="Usuario "/>
+					<p:outputLabel value="${respuestasEncuestas.get('id_usuario')}"/>
+					</p:panelGrid>
+					</p:panel>
+					<p:separator/>
+					
+					<p:panelGrid styleClass="topAlign,topAlign">
+					<p:row>
+					<p:column style="width: 50%">
+					<p:panel header="Encuesta" style="width: 99%">
+					<p:panelGrid columns="2" >
+					<p:outputLabel value="¿En este hogar  hogar vive alguna persona de entre 15 y 30 años?"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_1')}"/>
+					<p:outputLabel value="¿Cuantos?"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_2')}"/>
+					<p:outputLabel value="¿Recibe actuamente algún apoyo del Gobierno (Municipal)?"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_173')}"/>
+					<p:outputLabel value="¿Como calificariá el apoyo que recibe?"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_174')}"/>
+					<p:outputLabel value="¿Recibe actualmente algun apoyo del Gobierno (Estatal)?"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_175')}"/>
+					<p:outputLabel value="¿Como calificariá el apoyo que recibe?"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_176')}"/>
+					<p:outputLabel value="¿Recibe actualmente algún apoyo del Gobierno (Federal)?"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_177')}"/>
+					<p:outputLabel value="¿Como calificariá el apoyo que recibe?"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_178')}"/>
+					<p:outputLabel value="Resultado de la entrevista"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_179')}"/>
+					<p:outputLabel value="Animo de la entrevista"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_180')}"/>
+					<p:outputLabel value="¿Capturado con tableta?"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_181')}"/>
+					<p:outputLabel value="¿Se requirió formato adicional?"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_182')}"/>
+					<p:outputLabel value="¿Se hicieron correcciones al formato?"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_183')}"/>
+					<p:outputLabel value="¿Segunda vuelta?"/>
+					<p:outputLabel value="${respuestasEncuestas.get('p_184')}"/>
+					</p:panelGrid>
+					</p:panel>
+					</p:column>
+					<p:column>
+			<p:panel header="Mapa Captura" >	
+    <p:gmap id="gmap" center="${respuestasEncuestas.get('longitud_encuesta')}, ${respuestasEncuestas.get('latitud_encuesta')}" zoom="17" type="ROADMAP" style="width:100%;height:300px" model="#{mapaSyncDM.mapa(respuestasEncuestas.get('longitud_encuesta'), respuestasEncuestas.get('latitud_encuesta'))}">
+      
+    </p:gmap>
+    </p:panel>	
+					</p:column>
+					</p:row>
+					</p:panelGrid>
+					
+					
+					
+					<p:separator/>
+					<p:panel header="Personas ${modeloPersonas.listado.size()}">
+					<p:dataTable value="${modeloPersonas.listado}" var="f" selection="${modeloPersonas.seleccionado}" selectionMode="single" rowKey="${f.id}">
+					<p:ajax event="rowSelect" update="@form"/>
+					<p:column headerText="Id">
+					<p:outputLabel value="${f.id}" />
+					</p:column>
+					<p:column headerText="Nombre">
+					<p:outputLabel value="${f.nombre} ${f.paterno} ${f.materno}" />
+					</p:column>
+					<p:column headerText="Género">
+					<p:outputLabel value="${f.sexo}" />
+					</p:column>
+					<p:column headerText="No.Celular">
+					<p:outputLabel value="${f.noCelular}" />
+					</p:column>
+					<p:column headerText="Donado A:">
+					<p:outputLabel value="${f.donado}" />
+					</p:column>
+					<p:column headerText="Saldo">
+					<p:outputLabel value="${f.saldo}" />
+					</p:column>
+					</p:dataTable>
+					<f:facet name="footer">
+					<p:commandButton value="Agregar" rendered="${modeloPersonas.listado.size()&lt;=10?'true':'false'}" action="agregarPersona"  onclick="PF('dlgPersona').show();" update="pnPersona"/>
+					<p:commandButton action="eliminar" value="Eliminar">
+					<p:confirm header="Confirmación Eliminar Persona" message="¿Está realmente seguro de eliminar a la persona seleccionada?" icon="ui-icon-alert" />
+					</p:commandButton>
+					<p:commandButton type="button" value="Detalle" onclick="PF('dlgDetallePersona').show();"></p:commandButton>
+					 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				        <p:commandButton value="SI" type="button" onclick="comandoEliminar()" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				        <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				    </p:confirmDialog>
+				    <p:remoteCommand name="comandoEliminar" action="eliminar" immediate="true"/>
+					</f:facet>
+					</p:panel>
+					<p:separator/>
+					<p:commandButton value="Nueva Busqueda" action="salir" immediate="true"/>
+					
+					
+					<p:dialog id="dlgPersona" widgetVar="dlgPersona" header="Datos de la Persona" modal="true">
+					<p:panelGrid columns="2" id="pnPersona">
+					<p:outputLabel value="Nombre"/>
+					<p:inputText value="${persona.nombre}"/>
+					<p:outputLabel value="Apellido Paterno"/>
+					<p:inputText value="${persona.paterno}"/>
+					<p:outputLabel value="Apellido Materno"/>
+					<p:inputText value="${persona.materno}"/>
+					<p:outputLabel value="Sexo"/>
+					<p:selectOneMenu value="${persona.sexo}">
+					<f:selectItems value="${modeloSexo.listado}" var="f" itemLabel="${f.respuestaC}" itemValue="${f.respuestaC}"/>
+					</p:selectOneMenu>
+					<p:outputLabel value="Edad"/>
+					<p:inputText value="${persona.edad}"/>
+					<p:outputLabel value="Nivel de Estudios"/>
+					<p:selectOneMenu value="${persona.nivelEstudios}">
+					<f:selectItems value="${modeloNivelEstudios.listado}" var="f" itemLabel="${f.respuestaC}" itemValue="${f.respuestaC}"/>
+					</p:selectOneMenu>
+					<p:outputLabel value="Actualmente Estudia"/>
+					<p:selectOneMenu value="${persona.estudia}">
+					<f:selectItems value="${modeloEstudia.listado}" var="f" itemLabel="${f.respuestaC}" itemValue="${f.respuestaC}"/>
+					</p:selectOneMenu>
+					<p:outputLabel value="Ocupación"/>
+					<p:selectOneMenu value="${persona.ocupacion}">
+					<f:selectItems value="${modeloOcupacion.listado}" var="f" itemLabel="${f.respuestaC}" itemValue="${f.respuestaC}"/>
+					</p:selectOneMenu>
+					<p:outputLabel value="Afiliado a servicio de Salud"/>
+					<p:selectOneMenu value="${persona.afiliado}">
+					<f:selectItems value="${modeloAfiliado.listado}" var="f" itemLabel="${f.respuestaC}" itemValue="${f.respuestaC}"/>
+					</p:selectOneMenu>
+					<p:outputLabel value="Estado Civil"/>
+					<p:selectOneMenu value="${persona.estado}">
+					<f:selectItems value="${modeloEstado.listado}" var="f" itemLabel="${f.respuestaC}" itemValue="${f.respuestaC}"/>
+					</p:selectOneMenu>
+					<p:outputLabel value="Fecha Nacimiento"/>
+					<p:inputText value="${persona.fechaNacimiento}"/>
+					<p:outputLabel value="Es el jefe o jefa de familia"/>
+					<p:selectOneMenu value="${persona.jefe}">
+					<f:selectItems value="${modeloJefe.listado}" var="f" itemLabel="${f.respuestaC}" itemValue="${f.respuestaC}"/>
+					</p:selectOneMenu>
+					<p:outputLabel value="No. de celular"/>
+					<p:inputText value="${persona.noCelular}"/>
+					<p:outputLabel value="Donado A"/>
+					<p:selectOneMenu value="${persona.donado}">
+					<f:selectItems value="${modeloDonado.listado}" var="f" itemLabel="${f.respuestaC}" itemValue="${f.respuestaC}"/>
+					</p:selectOneMenu>
+					<p:outputLabel value="Celular"/>
+					<p:inputText value="${persona.celular}"/>
+					<p:outputLabel value="Saldo Asignado"/>
+					<p:inputText value="${persona.saldo}"/>
+					<p:commandButton value="Guardar" action="guardarPersona" oncomplete="PF('dlgPersona').hide();"/>
+					<p:commandButton value="Cancelar" onclick="PF('dlgPersona').hide();"/>
+					</p:panelGrid>
+					</p:dialog>
+					
+					<p:dialog widgetVar="dlgDetallePersona" header="Vista Detalle" modal="true">
+					<p:panelGrid columns="2">
+					<p:outputLabel value="Nombre"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.nombre}"/>
+					<p:outputLabel value="Apellido Paterno"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.paterno}"/>
+					<p:outputLabel value="Apellido Materno"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.materno}"/>
+					<p:outputLabel value="Sexo"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.sexo}"/>
+					<p:outputLabel value="Edad"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.edad}"/>
+					<p:outputLabel value="Nivel de Estudios"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.nivelEstudios}"/>
+					<p:outputLabel value="Actualmente Estudia"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.estudia}"/>
+					<p:outputLabel value="Ocupación"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.ocupacion}"/>
+					<p:outputLabel value="Afiliado a servicio de Salud"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.afiliado}"/>
+					<p:outputLabel value="Estado Civil"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.estado}"/>
+					<p:outputLabel value="Fecha Nacimiento"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.fechaNacimiento}"/>
+					<p:outputLabel value="Es el jefe o jefa de familia"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.jefe}"/>
+					<p:outputLabel value="No. de celular"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.noCelular}"/>
+					<p:outputLabel value="Donado A"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.donado}"/>
+					<p:outputLabel value="Celular"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.celular}"/>
+					<p:outputLabel value="Saldo Asignado"/>
+					<p:outputLabel value="${modeloPersonas.seleccionado.saldo}"/>
+
+						
+					</p:panelGrid>
+					
+					</p:dialog>
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+							
+						}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

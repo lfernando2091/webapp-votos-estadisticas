@@ -1,0 +1,317 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Resultados Encuestas">
+						<h:panelGrid columns="2">
+							<f:facet name="header">
+								<pe:timer widgetVar="timerGenerar" timeout="5" forward="true" singleRun="true" autoStart="false"
+									ontimercomplete="PF('dialogoGenerarReporte').hide()" />
+							</f:facet>
+								
+							<p:outputLabel value="Fecha Inicio: " />
+							<p:calendar value="${fInicio}" pattern="dd/MM/yyyy" mask="true"/>
+							<p:outputLabel value="Fecha Fin: " />
+							<p:calendar value="${fFin}" pattern="dd/MM/yyyy" mask="true"/>
+							
+							<p:commandButton action="generar" value="Generar Reporte Filtrado" update="linkDescarga" 
+								onstart="PF('dialogoGenerarReporte').show()"
+								oncomplete="PF('timerGenerar').start()"/>
+								
+								
+							<p:commandButton action="generarCompleto" value="Generar Reporte Completo" update="linkDescarga" 
+								onstart="PF('dialogoGenerarReporte').show()"
+								oncomplete="PF('timerGenerar').start()"/>
+								
+							<p:commandButton value="Consultar" action="actualizar" update="@form" style="width:100%"/>
+				
+							<p:button id="linkDescarga" target="_blank"  style="width:100%"
+									href="/resources/reportesGenerados/${archivoDescarga}"
+									value="Descargar" disabled="${archivoDescarga == null}" />
+							
+						</h:panelGrid>
+						<p:dataTable id="dtRG" var="fila" value="${tabla.listado}"
+							paginator="true" rows="15" paginatorPosition="bottom" paginatorAlwaysVisible="false"
+							scrollable="true" scrollWidth="100%" >
+<!-- 							<p:column headerText="ID" style="width:100px" sortable="true" sortBy="${fila.id}"> -->
+							<p:column headerText="ID" style="width:100px">
+								<h:outputText value="${fila.id}" />
+							</p:column>
+<!-- 							<p:column headerText="FECHA" style="width:100px" sortable="true" sortBy="${fila.fechaEnc}"> -->
+							<p:column headerText="FECHA" style="width:100px">
+								<h:outputText value="${fila.fechaEnc}"/>
+							</p:column>
+<!-- 							<p:column headerText="VALIDADOR" style="width:350px" sortable="true" sortBy="${fila.validador}"> -->
+							<p:column headerText="VALIDADOR" style="width:350px">
+								<h:outputText value="${fila.validador}"/>
+							</p:column>
+<!-- 							<p:column headerText="REGION" style="width:80px" sortable="true" sortBy="${fila.region}"> -->
+							<p:column headerText="REGION" style="width:80px">
+								<h:outputText value="${fila.region}"/>
+							</p:column>
+<!-- 							<p:column headerText="DTTO" style="width:80px" sortable="true" sortBy="${fila.dtto}"> -->
+							<p:column headerText="DTTO" style="width:80px">
+								<h:outputText value="${fila.dtto}"/>
+							</p:column>
+<!-- 							<p:column headerText="ZONA" style="width:80px" sortable="true" sortBy="${fila.zona}"> -->
+							<p:column headerText="ZONA" style="width:80px" >
+								<h:outputText value="${fila.zona}"/>
+							</p:column>
+<!-- 							<p:column headerText="SECC" style="width:80px" sortable="true" sortBy="${fila.secc}"> -->
+							<p:column headerText="SECC" style="width:80px">
+								<h:outputText value="${fila.secc}"/>
+							</p:column>
+<!-- 							<p:column headerText="PROGRAMA" style="width:120px" sortable="true" sortBy="${fila.programa}"> -->
+							<p:column headerText="PROGRAMA" style="width:120px">
+								<h:outputText value="${fila.programa}"/>
+							</p:column>
+<!-- 							<p:column headerText="EDAD" style="width:80px" sortable="true" sortBy="${fila.edad}"> -->
+							<p:column headerText="EDAD" style="width:80px">
+								<h:outputText value="${fila.edad}"/>
+							</p:column>
+<!-- 							<p:column headerText="MPIO" style="width:350px" sortable="true" sortBy="${fila.mpio}"> -->
+							<p:column headerText="MPIO" style="width:350px">
+								<h:outputText value="${fila.mpio}"/>
+							</p:column>
+<!-- 							<p:column headerText="SEXO" style="width:80px" sortable="true" sortBy="${fila.sexo}"> -->
+							<p:column headerText="SEXO" style="width:80px">
+								<h:outputText value="${fila.sexo}"/>
+							</p:column>
+<!-- 							<p:column headerText="SE ENC?" style="width:200px" sortable="true" sortBy="${fila.seEnc}"> -->
+							<p:column headerText="SE ENC?" style="width:200px">
+								<h:outputText value="${fila.seEnc}"/>
+							</p:column>
+<!-- 							<p:column headerText="1 CRED ELEC" style="width:120px" sortable="true" sortBy="${fila._1CredElec}"> -->
+							<p:column headerText="1 CRED ELEC" style="width:120px">
+								<h:outputText value="${fila._1CredElec}"/>
+							</p:column>
+<!-- 							<p:column headerText="2 PAÍS" style="width:300px" sortable="true" sortBy="${fila._2País}"> -->
+							<p:column headerText="2 PAÍS" style="width:300px">
+								<h:outputText value="${fila._2País}"/>
+							</p:column>
+<!-- 							<p:column headerText="2 EDO MEX" style="width:300px" sortable="true" sortBy="${fila._2EdoMex}"> -->
+							<p:column headerText="2 EDO MEX" style="width:300px" >
+								<h:outputText value="${fila._2EdoMex}"/>
+							</p:column>
+<!-- 							<p:column headerText="2 MPIO" style="width:300px" sortable="true" sortBy="${fila._2Mpio}"> -->
+							<p:column headerText="2 MPIO" style="width:300px">
+								<h:outputText value="${fila._2Mpio}"/>
+							</p:column>
+<!-- 							<p:column headerText="3 CALF ECON ACT" style="width:150px" sortable="true" sortBy="${fila._3CalfEconAct}"> -->
+							<p:column headerText="3 CALF ECON ACT" style="width:150px">
+								<h:outputText value="${fila._3CalfEconAct}"/>
+							</p:column>
+<!-- 							<p:column headerText="4 CALF POL ACT" style="width:150px" sortable="true" sortBy="${fila._4CalfPolAct}"> -->
+							<p:column headerText="4 CALF POL ACT" style="width:150px">
+								<h:outputText value="${fila._4CalfPolAct}"/>
+							</p:column>
+<!-- 							<p:column headerText="5 SIT ECON PRX" style="width:150px" sortable="true" sortBy="${fila._5SitEconPrx}"> -->
+							<p:column headerText="5 SIT ECON PRX" style="width:150px">
+								<h:outputText value="${fila._5SitEconPrx}"/>
+							</p:column>
+<!-- 							<p:column headerText="6 SIT POL PRX" style="width:150px" sortable="true" sortBy="${fila._6SitPolPrx}"> -->
+							<p:column headerText="6 SIT POL PRX" style="width:150px">
+								<h:outputText value="${fila._6SitPolPrx}"/>
+							</p:column>
+<!-- 							<p:column headerText="7 MED NOT" style="width:200px" sortable="true" sortBy="${fila._7MedNot}"> -->
+							<p:column headerText="7 MED NOT" style="width:200px">
+								<h:outputText value="${fila._7MedNot}"/>
+							</p:column>
+<!-- 							<p:column headerText="8 MED UTILZ" style="width:200px" sortable="true" sortBy="${fila._8MedUtilz}"> -->
+							<p:column headerText="8 MED UTILZ" style="width:200px">
+								<h:outputText value="${fila._8MedUtilz}"/>
+							</p:column>
+<!-- 							<p:column headerText="9 PART IDENTF" style="width:150px" sortable="true" sortBy="${fila._9PartIdentf}"> -->
+							<p:column headerText="9 PART IDENTF" style="width:150px">
+								<h:outputText value="${fila._9PartIdentf}"/>
+							</p:column>
+<!-- 							<p:column headerText="10 GEM DIF" style="width:120px" sortable="true" sortBy="${fila._10GemDif}"> -->
+							<p:column headerText="10 GEM DIF" style="width:120px">
+								<h:outputText value="${fila._10GemDif}"/>
+							</p:column>
+<!-- 							<p:column headerText="11 PART NUNC VOT" style="width:150px" sortable="true" sortBy="${fila._11PartNuncVot}"> -->
+							<p:column headerText="11 PART NUNC VOT" style="width:150px">
+								<h:outputText value="${fila._11PartNuncVot}"/>
+							</p:column>
+<!-- 							<p:column headerText="12 GEM VOT" style="width:120px" sortable="true" sortBy="${fila._12GemVot}"> -->
+							<p:column headerText="12 GEM VOT" style="width:120px">
+								<h:outputText value="${fila._12GemVot}"/>
+							</p:column>
+<!-- 							<p:column headerText="13 GEM PRI-PAN" style="width:150px" sortable="true" sortBy="${fila._13GemPRI_PAN}"> -->
+							<p:column headerText="13 GEM PRI-PAN" style="width:150px">
+								<h:outputText value="${fila._13GemPRI_PAN}"/>
+							</p:column>
+<!-- 							<p:column headerText="14 GEM PRI-PRD" style="width:150px" sortable="true" sortBy="${fila._14GemPRI_PRD}"> -->
+							<p:column headerText="14 GEM PRI-PRD" style="width:150px">
+								<h:outputText value="${fila._14GemPRI_PRD}"/>
+							</p:column>
+<!-- 							<p:column headerText="15 APY GFED" style="width:120px" sortable="true" sortBy="${fila._15ApyGfed}"> -->
+							<p:column headerText="15 APY GFED" style="width:120px">
+								<h:outputText value="${fila._15ApyGfed}"/>
+							</p:column>
+<!-- 							<p:column headerText="16 EPN CUMP" style="width:120px" sortable="true" sortBy="${fila._16EPNcump}"> -->
+							<p:column headerText="16 EPN CUMP" style="width:120px">
+								<h:outputText value="${fila._16EPNcump}"/>
+							</p:column>
+<!-- 							<p:column headerText="17 SATFAPY EPN" style="width:150px" sortable="true" sortBy="${fila._17SatfapyEPN}"> -->
+							<p:column headerText="17 SATFAPY EPN" style="width:150px">
+								<h:outputText value="${fila._17SatfapyEPN}"/>
+							</p:column>
+<!-- 							<p:column headerText="18 APY MEJING" style="width:150px" sortable="true" sortBy="${fila._18ApyMejIng}"> -->
+							<p:column headerText="18 APY MEJING" style="width:150px">
+								<h:outputText value="${fila._18ApyMejIng}"/>
+							</p:column>
+<!-- 							<p:column headerText="19 SOLC OTR APY" style="width:150px" sortable="true" sortBy="${fila._19SolcOtrApy}"> -->
+							<p:column headerText="19 SOLC OTR APY" style="width:150px">
+								<h:outputText value="${fila._19SolcOtrApy}"/>
+							</p:column>
+<!-- 							<p:column headerText="20 INF PRO GFED" style="width:150px" sortable="true" sortBy="${fila._20InfProgFed}"> -->
+							<p:column headerText="20 INF PRO GFED" style="width:150px">
+								<h:outputText value="${fila._20InfProgFed}"/>
+							</p:column>
+<!-- 							<p:column headerText="21 CEL" style="width:100px" sortable="true" sortBy="${fila._21Cel}"> -->
+							<p:column headerText="21 CEL" style="width:100px">
+								<h:outputText value="${fila._21Cel}"/>
+							</p:column>
+<!-- 							<p:column headerText="21 CORREO" style="width:200px" sortable="true" sortBy="${fila._21Correo}"> -->
+							<p:column headerText="21 CORREO" style="width:200px">
+								<h:outputText value="${fila._21Correo}"/>
+							</p:column>
+<!-- 							<p:column headerText="22 PTE MX" style="width:100px" sortable="true" sortBy="${fila._22PteMx}"> -->
+							<p:column headerText="22 PTE MX" style="width:100px">
+								<h:outputText value="${fila._22PteMx}"/>
+							</p:column>
+<!-- 							<p:column headerText="22 GOB" style="width:100px" sortable="true" sortBy="${fila._22Gob}"> -->
+							<p:column headerText="22 GOB" style="width:100px">
+								<h:outputText value="${fila._22Gob}"/>
+							</p:column>
+<!-- 							<p:column headerText="22 PTE MPAL" style="width:110px" sortable="true" sortBy="${fila._22PteMpal}"> -->
+							<p:column headerText="22 PTE MPAL" style="width:110px">
+								<h:outputText value="${fila._22PteMpal}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 ANAVP ESC" style="width:120px" sortable="true" sortBy="${fila._23AnavpEsc}"> -->
+							<p:column headerText="23 ANAVP ESC" style="width:120px">
+								<h:outputText value="${fila._23AnavpEsc}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 ANAVP OPIN" style="width:150px" sortable="true" sortBy="${fila._23AnavpOpin}"> -->
+							<p:column headerText="23 ANAVP OPIN" style="width:150px">
+								<h:outputText value="${fila._23AnavpOpin}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 AENCINR ESC" style="width:150px" sortable="true" sortBy="${fila._23AencinrEsc}"> -->
+							<p:column headerText="23 AENCINR ESC" style="width:150px">
+								<h:outputText value="${fila._23AencinrEsc}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 AENCINR OPIN" style="width:150px" sortable="true" sortBy="${fila._23AencinrOpin}"> -->
+							<p:column headerText="23 AENCINR OPIN" style="width:150px">
+								<h:outputText value="${fila._23AencinrOpin}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 ENEMA ESC" style="width:150px" sortable="true" sortBy="${fila._23EnemaEsc}"> -->
+							<p:column headerText="23 ENEMA ESC" style="width:150px">
+								<h:outputText value="${fila._23EnemaEsc}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 ENEMA OPIN" style="width:150px" sortable="true" sortBy="${fila._23EnemaOpin}"> -->
+							<p:column headerText="23 ENEMA OPIN" style="width:150px">
+								<h:outputText value="${fila._23EnemaOpin}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 JVZQZM ESC" style="width:150px" sortable="true" sortBy="${fila._23JvzqzmEsc}"> -->
+							<p:column headerText="23 JVZQZM ESC" style="width:150px">
+								<h:outputText value="${fila._23JvzqzmEsc}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 JVZQZM OPIN" style="width:150px" sortable="true" sortBy="${fila._23JvzqzmOpin}"> -->
+							<p:column headerText="23 JVZQZM OPIN" style="width:150px">
+								<h:outputText value="${fila._23JvzqzmOpin}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 JMANZQ ESC" style="width:150px" sortable="true" sortBy="${fila._23JmanzqEsc}"> -->
+							<p:column headerText="23 JMANZQ ESC" style="width:150px">
+								<h:outputText value="${fila._23JmanzqEsc}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 JMANZQ OPIN" style="width:150px" sortable="true" sortBy="${fila._23JmanzqOpin}"> -->
+							<p:column headerText="23 JMANZQ OPIN" style="width:150px">
+								<h:outputText value="${fila._23JmanzqOpin}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 YPOLVNK ESC" style="width:150px" sortable="true" sortBy="${fila._23YpolvnkEsc}"> -->
+							<p:column headerText="23 YPOLVNK ESC" style="width:150px">
+								<h:outputText value="${fila._23YpolvnkEsc}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 YPOLVNK OPIN" style="width:150px" sortable="true" sortBy="${fila._23YpolvnkOpin}"> -->
+							<p:column headerText="23 YPOLVNK OPIN" style="width:150px">
+								<h:outputText value="${fila._23YpolvnkOpin}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 LVIDGY ESC" style="width:150px" sortable="true" sortBy="${fila._23LvidgyEsc}"> -->
+							<p:column headerText="23 LVIDGY ESC" style="width:150px">
+								<h:outputText value="${fila._23LvidgyEsc}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 LVIDGY OPIN" style="width:150px" sortable="true" sortBy="${fila._23LvidgyOpin}"> -->
+							<p:column headerText="23 LVIDGY OPIN" style="width:150px">
+								<h:outputText value="${fila._23LvidgyOpin}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 AMAZOM ESC" style="width:150px" sortable="true" sortBy="${fila._23AmazomEsc}"> -->
+							<p:column headerText="23 AMAZOM ESC" style="width:150px">
+								<h:outputText value="${fila._23AmazomEsc}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 AMAZOM OPIN" style="width:150px" sortable="true" sortBy="${fila._23AmazomOpin}"> -->
+							<p:column headerText="23 AMAZOM OPIN" style="width:150px">
+								<h:outputText value="${fila._23AmazomOpin}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 ALILHA ESC" style="width:150px" sortable="true" sortBy="${fila._23AlilhaEsc}"> -->
+							<p:column headerText="23 ALILHA ESC" style="width:150px">
+								<h:outputText value="${fila._23AlilhaEsc}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 ALILHA OPIN" style="width:150px" sortable="true" sortBy="${fila._23AlilhaOpin}"> -->
+							<p:column headerText="23 ALILHA OPIN" style="width:150px">
+								<h:outputText value="${fila._23AlilhaOpin}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 CARMM ESC" style="width:150px" sortable="true" sortBy="${fila._23CarmmEsc}"> -->
+							<p:column headerText="23 CARMM ESC" style="width:150px">
+								<h:outputText value="${fila._23CarmmEsc}"/>
+							</p:column>
+<!-- 							<p:column headerText="23 CARMM OPIN" style="width:150px" sortable="true" sortBy="${fila._23CarmmOpin}"> -->
+							<p:column headerText="23 CARMM OPIN" style="width:150px">
+								<h:outputText value="${fila._23CarmmOpin}"/>
+							</p:column>
+						</p:dataTable>
+						
+						<f:facet name="footer">
+							<p:outputLabel value="SOLO SE VISUALIZAN 1,000 REGISTROS SI DESEA VER EL LISTADO COMPLETO DE CLICK EN DESCARGAR"/>
+<!-- 							<h:commandLink> -->
+<!-- 								<p:graphicImage value="/resources/botones/DESCARGAR.png" /> -->
+<!-- 								<p:dataExporter type="xls" target="dtRG" fileName="resultados_ensuestas" /> -->
+<!-- 							</h:commandLink> -->
+						</f:facet>
+					</p:panel>
+					
+					<p:dialog widgetVar="dialogoGenerarReporte"
+						header="Generando Reporte" closeOnEscape="false" closable="false"
+						modal="true" appendTo="@(body)"
+						onHide="PF('timerGenerar').stop(true)">
+						<p:panelGrid columns="1">
+							<p:outputLabel value="Se está Generando el Reporte." />
+							<p:outputLabel
+								value="Esta operación puede tardar, por favor espere." />
+							<p:outputLabel
+								value="No refresque la página ni oprima el botón atrás del explorador." />
+						</p:panelGrid>
+					</p:dialog>
+					
+					
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

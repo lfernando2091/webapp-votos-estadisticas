@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<package name="com.saganet.politik.database" />
+	</typeAliases>
+	
+	<typeHandlers>
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.saganet.politik.dominios.MesDO" />
+		<typeHandler handler="org.apache.ibatis.type.EnumTypeHandler"
+			javaType="com.saganet.politik.dominios.TiposCampoDO" />
+		<typeHandler handler="org.apache.ibatis.type.EnumTypeHandler"
+			javaType="com.saganet.politik.dominios.OperadoresDO" />
+		<typeHandler handler="org.apache.ibatis.type.EnumTypeHandler"
+			javaType="com.saganet.politik.dominios.EstatusVariableDO" />
+<!-- 		<typeHandler handler="org.apache.ibatis.type.EnumTypeHandler" -->
+<!-- 			javaType="com.saganet.politik.dominios.TiposImportacionesDO" /> -->
+<!-- 		<typeHandler handler="org.apache.ibatis.type.EnumTypeHandler" -->
+<!-- 			javaType="com.saganet.politik.dominios.EstatusImportacionDO" /> -->
+		<typeHandler handler="org.apache.ibatis.type.EnumTypeHandler"
+			javaType="com.saganet.politik.dominios.TiposPreguntaDO" />
+		<typeHandler handler="org.apache.ibatis.type.EnumTypeHandler"
+			javaType="com.saganet.politik.dominios.TiposReglasDO" />
+		<typeHandler handler="org.apache.ibatis.type.EnumTypeHandler"
+			javaType="com.saganet.politik.dominios.EstatusCuestionarioDO" />
+		<typeHandler handler="org.apache.ibatis.type.EnumTypeHandler"
+			javaType="com.saganet.politik.dominios.NivelesDependenciasDO" />
+		<typeHandler handler="org.apache.ibatis.type.EnumTypeHandler"
+			javaType="com.saganet.politik.dominios.TiposInversionDO" />
+	</typeHandlers>
+	
+</configuration>

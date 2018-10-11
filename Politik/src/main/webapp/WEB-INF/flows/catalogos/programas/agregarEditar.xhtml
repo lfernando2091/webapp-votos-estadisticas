@@ -1,0 +1,84 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Programas"  url="/app/catalogos/programas"/>
+						<p:menuitem value="Agregar Programa"/>
+					</p:breadCrumb>
+					<p:panel header="Agregar Programa">
+					
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Dependencia: " />
+							<p:selectOneMenu value="${idDependencia}" filter="true"
+								filterMatchMode="contains" converter="ObjectConverter">
+								<f:selectItems value="${modeloDependencias.listado}" var="fila"
+									itemLabel="${fila.dependencia}" itemValue="${fila.id}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Nombre del Programa:" />
+							<p:inputTextarea value="${programa.programa}" required="true"
+								requiredMessage="Nombre: es requerido" />
+							<p:outputLabel value="Descripción: " />
+							<p:inputTextarea value="${programa.descripcion}" required="true" requiredMessage="Descripción: requerido"/>
+							<p:outputLabel value="Observaciones: " />
+							<p:inputTextarea value="${programa.observaciones}"></p:inputTextarea>
+
+							<p:outputLabel value="¿Es estrategia?" />
+							<p:selectOneMenu value="${programa.estrategia}">
+							<p:ajax event="change" immediate="true" update="btnGuardarSimple btnGuardarEstrategia" />
+								<f:selectItem itemLabel="NO" itemValue="0" />
+								<f:selectItem itemLabel="SI" itemValue="1" />
+
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<p:spacer height="10px" />
+						
+						<f:facet name="footer">
+							<p:messages autoUpdate="true" />
+
+							<!-- 							<p:commandButton icon="fa fa-save" value="Guardar" -->
+							<!-- 								title="Guardar nuevo programa" action="guardar" /> -->
+
+							<p:commandLink title="Guardar nuevo programa" action="guardar" id="btnGuardarSimple">
+								<p:graphicImage value="/resources/botones/SIGUIENTE.png" rendered="#{programa.estrategia==1?false:true}" />
+							</p:commandLink>
+							<p:commandLink title="Guardar nuevo programa con estrategia" action="guardar" id="btnGuardarEstrategia">
+								<p:graphicImage value="/resources/botones/SIGUIENTE.png" rendered="#{programa.estrategia==1?true:false}" />
+							</p:commandLink>
+
+							<!-- 							<p:commandButton icon="fa fa-close" value="Cancel" -->
+							<!-- 								title="Cancelar nuevo" immediate="true" action="cancelar" /> -->
+							<p:commandLink title="Cancelar Nuevo" immediate="true"
+								action="cancelar">
+								<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+						</f:facet>
+					</p:panel>
+					
+
+					<p:remoteCommand name="nuevoPoblacion" action="nuevoPoblacion"
+						onstart="PF('dlgNuevoPoblacion').show();" />
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

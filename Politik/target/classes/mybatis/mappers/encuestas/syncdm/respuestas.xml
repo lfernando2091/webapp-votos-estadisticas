@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.syncdm.respuestas">
+
+	<resultMap type="SyncDMRespuestaEO" id="respuesta">
+		<id column="RespuestaEO_id" property="id" javaType="Integer" />
+		<result column="RespuestaEO_respuesta_c" property="respuestaC"
+			javaType="String" />
+		<result column="RespuestaEO_tipo_accion" property="tipoAccion"
+			javaType="com.saganet.politik.dominios.syncdm.TipoAccionDO" />
+		<result column="RespuestaEO_valor_accion" property="valorAccion"
+			javaType="String" />
+		<association column="RespuestaEO_id_encuesta_estatus"
+			property="idEncuestaEstatus" select="encuestas.syncdm.estatusEncuesta.buscarPorId" />
+	</resultMap>
+
+	<sql id="query">
+		SELECT RespuestaEO.pkey RespuestaEO_id,
+		RespuestaEO.id_pregunta RespuestaEO_id_pregunta,
+		RespuestaEO.respuesta_c RespuestaEO_respuesta_c,
+		upper(RespuestaEO.tipo_accion) RespuestaEO_tipo_accion,
+		RespuestaEO.valor_accion RespuestaEO_valor_accion,
+		RespuestaEO.id_encuesta_estatus RespuestaEO_id_encuesta_estatus
+		FROM encuestas_dm.encuestas_preguntas_respuestas RespuestaEO
+
+	</sql>
+
+	<select id="listado" parameterType="Integer" resultMap="respuesta">
+		<include refid="query" />
+		where RespuestaEO.id_pregunta = #{value}
+	</select>
+
+</mapper>

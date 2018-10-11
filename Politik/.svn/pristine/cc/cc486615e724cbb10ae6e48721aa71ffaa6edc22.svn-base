@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="warehouse.eMails">
+	<cache />
+
+	<resultMap type="EMailEO" id="eMail">
+		<id column="EMailEO_id" property="id" javaType="Integer" />
+		<result column="EMailEO_eMail" property="eMail" javaType="String" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			EMailEO.id_email 	EMailEO_id, 
+			EMailEO.email 		EMailEO_eMail
+  		FROM warehouse.emails EMailEO
+	</sql>
+	
+	<select id="buscarPorPersona" parameterType="PersonaEO" resultMap="eMail">
+		<include refid="query" />
+		WHERE EMailEO.id_entidad_nac = #{entidadNacimiento.id} AND EMailEO.id_persona = #{id}
+		ORDER BY EMailEO.id_email
+	</select>
+
+	<insert id="insertar" parameterType="hashmap">
+		<selectKey keyProperty="eMail.id" resultType="Integer" order="BEFORE">
+			SELECT NEXTVAL('warehouse.emails_id_email_seq')
+		</selectKey>
+		INSERT INTO warehouse.emails(id_email, id_persona, id_entidad_nac, email)
+    	VALUES(#{eMail.id}, #{persona.id}, #{persona.entidadNacimiento.id}, #{eMail.eMail})
+	</insert>
+</mapper>

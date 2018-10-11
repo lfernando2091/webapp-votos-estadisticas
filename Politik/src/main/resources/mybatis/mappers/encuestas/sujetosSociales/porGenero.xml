@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.sujetosSociales.porGenero">
+	
+	<resultMap type="EncuestaSujetosSocialesV2ReporteGeneroEO" id="reportePorGenero">
+		<id 		column="ReportePorGenero_id" 					property="id" 							javaType="Integer"/>
+		<result 	column="ReportePorGenero_region" 				property="idRegion" 					javaType="Integer"/>
+		<result 	column="ReportePorGenero_nombre_region" 		property="nombreRegion" 				javaType="String"/>
+		<result 	column="ReportePorGenero_municipio" 			property="idMunicipio" 					javaType="Integer"/>
+		<result 	column="ReportePorGenero_nombre_municipio" 		property="nombreMunicipio" 				javaType="String"/>
+		<result 	column="ReportePorGenero_seccion" 				property="seccion" 						javaType="Integer"/>
+				
+		
+		<result 	column="exitosas_hombres_en_contra" 			property="hombresEnContra" 				javaType="Integer"/>
+		<result 	column="exitosas_hombres_indeciso_en_contra" 	property="hombresIndecisoEnContra" 		javaType="Integer"/>
+		<result 	column="exitosas_hombres_indeciso" 				property="hombresIndeciso" 				javaType="Integer"/>
+		<result 	column="exitosas_hombres_indeciso_a_favor" 		property="hombresIndecisoAFavor" 		javaType="Integer"/>
+		<result 	column="exitosas_hombres_a_favor" 				property="hombresAFavor" 				javaType="Integer"/>
+		<result 	column="exitosas_hombres" 						property="hombresExitosas" 				javaType="Integer"/>
+		
+		<result 	column="exitosas_mujeres_en_contra" 			property="mujeresEnContra" 				javaType="Integer"/>
+		<result 	column="exitosas_mujeres_indeciso_en_contra" 	property="mujeresIndecisoEnContra" 		javaType="Integer"/>
+		<result 	column="exitosas_mujeres_indeciso" 				property="mujeresIndeciso" 				javaType="Integer"/>
+		<result 	column="exitosas_mujeres_indeciso_a_favor" 		property="mujeresIndecisoAFavor" 		javaType="Integer"/>
+		<result 	column="exitosas_mujeres_a_favor" 				property="mujeresAFavor" 				javaType="Integer"/>
+		<result 	column="exitosas_mujeres" 						property="mujeresExitosas" 				javaType="Integer"/>
+		
+	</resultMap>
+	
+	<select id="listado" resultMap="reportePorGenero" parameterType="hashmap">
+	SELECT
+			row_number() OVER (ORDER BY t.entidad)::INTEGER AS 			ReportePorGenero_id,  
+			t.entidad													ReportePorGenero_entidad, 
+			t.region													ReportePorGenero_region,
+			t.nombre_region												ReportePorGenero_nombre_region, 
+			<if test="nivel=='MUNICIPIO' or nivel=='SECCION'">
+				t.municipio												ReportePorGenero_municipio,
+				t.nombre_municipio										ReportePorGenero_nombre_municipio, 
+			</if>
+			<if test="nivel=='REGION'">
+				0::INTEGER												ReportePorGenero_municipio,
+				''::TEXT												ReportePorGenero_nombre_municipio, 
+			</if>
+			<if test="nivel=='SECCION'">
+				t.seccion												ReportePorGenero_seccion,
+			</if>
+			<if test=" nivel=='REGION' or nivel=='MUNICIPIO'">
+				0::INTEGER										ReportePorGenero_seccion,
+			</if>	
+			<![CDATA[
+			SUM(CASE 
+				WHEN t.sexo='H' THEN 1
+				ELSE 0
+			END) exitosas_hombres,		
+			SUM(CASE 
+				WHEN t.sexo='H' and
+				     c.calificacion='En contra'
+				THEN 1
+				ELSE 0
+			END) exitosas_hombres_en_contra,
+			SUM(CASE 
+				WHEN t.sexo='H' and
+				     c.calificacion='Indeciso en contra'
+				THEN 1
+				ELSE 0
+			END) exitosas_hombres_indeciso_en_contra,
+			SUM(CASE 
+				WHEN t.sexo='H' and
+				     c.calificacion='Indeciso'
+				THEN 1
+				ELSE 0
+			END) exitosas_hombres_indeciso,
+			SUM(CASE 
+				WHEN t.sexo='H' and
+				     c.calificacion='Indeciso a favor'
+				THEN 1
+				ELSE 0
+			END) exitosas_hombres_indeciso_a_favor,
+			SUM(CASE 
+				WHEN t.sexo='H' and
+				     c.calificacion='A favor'
+				THEN 1
+				ELSE 0
+			END) exitosas_hombres_a_favor,
+	
+			SUM(CASE 
+				WHEN t.sexo='M' THEN 1
+				ELSE 0
+			END) exitosas_mujeres,
+			SUM(CASE 
+				WHEN t.sexo='M' and
+				     c.calificacion='En contra'
+				THEN 1
+				ELSE 0
+			END) exitosas_mujeres_en_contra,
+			SUM(CASE 
+				WHEN t.sexo='M' and
+				     c.calificacion='Indeciso en contra'
+				THEN 1
+				ELSE 0
+			END) exitosas_mujeres_indeciso_en_contra,
+			SUM(CASE 
+				WHEN t.sexo='M' and
+				     c.calificacion='Indeciso'
+				THEN 1
+				ELSE 0
+			END) exitosas_mujeres_indeciso,
+			SUM(CASE 
+				WHEN t.sexo='M' and
+				     c.calificacion='Indeciso a favor'
+				THEN 1
+				ELSE 0
+			END) exitosas_mujeres_indeciso_a_favor,
+			SUM(CASE 
+				WHEN t.sexo='M' and
+				     c.calificacion='A favor'
+				THEN 1
+				ELSE 0
+			END) exitosas_mujeres_a_favor
+		]]>
+			FROM
+		(
+			SELECT 
+				b.entidad, 
+				b.region_edomex_2017 region, b.nombre_region, 
+				b.municipio, b.nombre_municipio, 
+				b.seccion, 
+				b.fecha_nacimiento, b.sexo,
+				a.id_contacto, 
+				case when _2 = 'SI' then '1' when _2 = 'NO' then '2' else '3' end || case when _3 in ('PRI', 'PVEM', 'PES', 'PANAL') then '1' when _3 in ('PAN', 'PRD', 'PT', 'MORENA', 'INDEPENDIENTE') then '2' else '3' end || case when _4 = 'ALFREDO_DEL_MAZO_MAZA' then '1' when _4 in ('JOSEFINA_VAZQUEZ_MOTA', 'JUAN_ZEPEDA_HERNANDEZ', 'DELFINA_GOMEZ_ALVAREZ', 'OSCAR_GONZALEZ_YANEZ', 'ISIDRO_PASTOR_MEDRANO') then '2' else '3' end codigo 
+			FROM sujetos_sociales.e_edomex a 
+			JOIN sujetos_sociales.encuesta_edomex b ON (a.id_contacto::INTEGER = b.id_interno) 
+			WHERE a.estatus = 'EXITOSO' 
+				AND b.programa_general = #{programa}
+		 ) t
+		 JOIN sujetos_sociales.codigos_calificacion c ON (t.codigo = c.codigo)
+		GROUP BY t.entidad,
+				t.region, 
+				t.nombre_region
+				<if test="nivel=='MUNICIPIO' or nivel=='SECCION'">
+					,
+					t.municipio	, 
+					t.nombre_municipio
+					<if test="nivel=='SECCION'">
+						,
+						t.seccion
+					</if>
+				</if>
+		 ORDER BY t.entidad ,
+				t.region, 
+				t.nombre_region
+				<if test="nivel=='MUNICIPIO' or nivel=='SECCION'">
+					,
+					t.municipio	, 
+					t.nombre_municipio
+					<if test="nivel=='SECCION'">
+						,
+						t.seccion
+					</if>
+				</if>
+	</select>
+	
+</mapper>

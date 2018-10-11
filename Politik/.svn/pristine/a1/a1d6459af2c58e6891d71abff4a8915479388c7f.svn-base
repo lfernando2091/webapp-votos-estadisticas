@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="eventos.eventosReportes">
+	
+	<cache/>
+	
+	<select id="reportePorMes" resultType="hashmap" parameterType="hashmap">
+		select 
+		id_particion, particion,
+		<foreach collection="dias" item="item" separator=",">
+			string_agg(${item.alias},',') ${item.alias}
+		</foreach>
+		from(
+		
+		select 
+		a.id_particion,particion, b.id_geozona_particion, c.municipio,b.llave,
+		<foreach collection="dias" item="item" separator=",">
+			(select string_agg(cc.siglas,',') from eventos_sociales.territorios_evento aa join eventos_sociales.eventos_sociales bb on (aa.id_evento_social=bb.pkey) join catalogos.dependencias cc on (bb.id_dependencia=cc.pkey) where aa.llave=b.llave and  to_char(bb.fecha, 'dd-MM-yyyy')::DATE &lt;= '${item.dia}'::DATE AND to_char(bb.fecha_fin, 'dd-MM-yy')::DATE &gt;= '${item.dia}'::DATE) ${item.alias}
+		</foreach>
+		from
+		catalogos.geozonas_particiones a
+		left join catalogos.geozonas_llaves b on (a.pkey=b.id_geozona_particion)
+		left join catalogos.municipios c on (b.llave=c.id_entidad::text||'-'||c.id_municipio::text)
+		
+		where a.id_geozona=4
+		order by a.pkey
+		
+		) t
+		group by id_particion, particion
+		order by id_particion, particion
+	</select>
+	
+</mapper>

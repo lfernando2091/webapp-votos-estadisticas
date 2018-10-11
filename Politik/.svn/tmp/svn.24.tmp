@@ -1,0 +1,62 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panelGrid >
+
+						<p:row>
+							<p:column style="width: 50%">
+								<p:panel header="Asignar Usuarios">
+									<p:panelGrid colums="2">
+										<p:outputLabel value="Seleccione el Nick: " />
+										<p:selectOneMenu value="${nuevo.nick}" required="true"
+											requiredMessage="Nick es requierido">
+											<f:selectItem itemValue="" itemLabel="Seleccione un Nick" />
+											<f:selectItems value="${modeloUsuarios.listado}" var="f"
+												itemLabel="${f.nick}" itemValue="${f.nick}" />
+										</p:selectOneMenu>
+										
+									</p:panelGrid>
+									<f:facet name="footer">
+									<p:commandButton action="nuevo" value="Nuevo" rendered="${nuevo.idCampania==null?true:false}" immediate="true" update="@form"/>
+										<p:commandButton value="Asignar" action="asignar" rendered="${nuevo.idCampania==null?false:true}"
+											title="Asigar el usuario seleccionado a la campania"
+											icon="fa fa-hand-o-right" udate="@form" />
+										<p:commandButton value="Salir" action="cancelar"
+											icon="fa fa-mail-reply" immediate="true" />
+									</f:facet>
+								</p:panel>
+							</p:column>
+							<p:column>
+								<p:panel
+									header="Usuarios asignados a: ${modeloCampaniaSeleccionada.nombre}">
+									<p:dataTable value="${modeloCampaniaUsuarios.listado}"
+										var="lista" rowKey="${fila.nick}"
+										 paginator="true"
+										paginatorAlwaysVisible="false" paginatorPosition="bottom">
+										<p:column headerText="Nick">
+                 ${lista.nick}				
+				</p:column>
+									</p:dataTable>
+									
+								</p:panel>
+							</p:column>
+						</p:row>
+
+
+					</p:panelGrid>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

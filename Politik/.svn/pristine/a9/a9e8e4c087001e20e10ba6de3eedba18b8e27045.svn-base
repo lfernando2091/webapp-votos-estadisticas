@@ -1,0 +1,71 @@
+package com.saganet.politik.database.encuestas.admin;
+
+import java.io.Serializable;
+
+import com.saganet.politik.modelos.JavaBeanT;
+
+public class ReglaEncuestaEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 8491399991080921099L;
+	
+	private Integer id;
+	private Integer idEncuesta;
+	private String regla;
+	private String descripcion;
+	private String tipo;
+	private String nick;
+	
+	@Override
+	public String toString() {
+		return "ReglaEncuestaEO [id=" + id + ", idEncuesta=" + idEncuesta + ", regla=" + regla + ", descripcion="
+				+ descripcion + ", tipo=" + tipo + ", nick=" + nick + "]";
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getIdEncuesta() {
+		return idEncuesta;
+	}
+
+	public void setIdEncuesta(Integer idEncuesta) {
+		this.idEncuesta = idEncuesta;
+	}
+
+	public String getRegla() {
+		return regla;
+	}
+
+	public void setRegla(String regla) {
+		this.regla = regla;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+	public String getNick() {
+		return nick;
+	}
+
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+
+}

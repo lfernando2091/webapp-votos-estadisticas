@@ -1,0 +1,112 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:growl autoUpdate="true" life="4000" showDetail="true" />
+					
+					<p:panel header="Sección">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Municipio :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="#{municipios.seleccionado}" converter="ObjectConverter" style="width:300px" filter="true" filterMatchMode="contains">
+										<p:ajax event="itemSelect" oncomplete="actualizarSeccion()"/>
+										<f:selectItems value="#{municipios.listado}" var="fila" itemLabel="#{fila.idMunicipio}- #{fila.nombre}" itemValue="#{fila}"/>
+									</p:selectOneMenu>								
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Sección :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="#{secciones.seleccionado}" converter="ObjectConverter" style="width:300px" filter="true" filterMatchMode="startsWith">
+										<p:ajax event="itemSelect" oncomplete="actualizar()"/>
+										<f:selectItems value="#{secciones.listado}" var="fila" itemLabel="#{fila.idSeccion}" itemValue="#{fila}"/>
+									</p:selectOneMenu>								
+							</p:column>
+						</p:panelGrid>
+				    </p:panel>
+					<p:panel header="Incidencias" id="incidenciasCasillas">
+						<p:dataTable value="${modelo.listado}" var="fila" selectionMode="single" rowKey="${fila.id}" selection="${modelo.seleccionado}"  
+								paginator="true" rows="10" emptyMessage="No se han encontrado resultados">
+								
+								<p:column headerText="Casilla" width="5%">
+									<p:outputLabel value="${fila.casilla}" />
+								</p:column>
+								<p:column headerText="Nombre Reporto" width="10%">
+									<p:outputLabel value="${fila.nombre}" />
+								</p:column>
+								<p:column headerText="Telefono reporto" width="8%">
+									<p:outputLabel value="${fila.telefono}" />
+								</p:column>
+								<p:column headerText="Prioridad" width="7%">
+									<p:graphicImage value="/resources/iconos/ICN_${fila.prioridad}.png" />
+								</p:column>
+								<p:column headerText="Tipo" width="15%">
+									<p:outputLabel value="${fila.tipo.descripcion}" />
+								</p:column>
+								<p:column headerText="Observaciones" width="33%">
+									<p:outputLabel value="${fila.observaciones}" />
+								</p:column>
+								<p:column headerText="Fecha" width="8%">
+									<p:outputLabel value="${fila.fechaS}" />
+								</p:column>
+								<p:column headerText="Estatus" width="7%">
+									<p:commandLink  action="actualizar"  rendered="${fila.estatus=='RESUELTO'}" update="@form"  onstart="PF('dlg1').show()" oncomplete="PF('dlg1').hide()">
+										<p:graphicImage value="/resources/iconos/BTN_Apendiente.png" />
+										<f:setPropertyActionListener target="${modelo.seleccionado}" value="${fila}" for="estatus"/>
+										<p:confirm header="Confirmación" message="¿Esta Seguro Que Deseas Cambiar El Estatus A Pendiente?" icon="ui-icon-alert" />
+									</p:commandLink>
+									<p:commandLink  action="actualizar"  rendered="${fila.estatus=='PENDIENTE'}" update="@form"  onstart="PF('dlg1').show()" oncomplete="PF('dlg1').hide()">
+										<p:graphicImage value="/resources/iconos/ICN_Resolver.png" />
+										<f:setPropertyActionListener target="${modelo.seleccionado}" value="${fila}" for="estatus2"/>
+									</p:commandLink>
+									<p:outputLabel value="${fila.estatus.nombre}" rendered="${fila.estatus=='XINFORMATIVA'}"/>
+								</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregar"/>
+						</f:facet>
+					</p:panel>	
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandLink  styleClass="ui-confirmdialog-yes">
+								<p:graphicImage value="/resources/botones/SI.png" />
+						</p:commandLink>
+					 	<p:commandLink  styleClass="ui-confirmdialog-no">
+								<p:graphicImage value="/resources/botones/NO.png" />
+						</p:commandLink>
+					</p:confirmDialog>
+					
+					<p:dialog header="Actualizando..." widgetVar="dlg1" minHeight="200"  modal="true">
+					    <h:outputText value="Espere Mientras Se Actualiza" />
+					    <p:graphicImage value="/resources/spark-layout/images/preloader.gif" />
+					</p:dialog>
+					
+					
+					<p:remoteCommand name="actualizarSeccion" action="actualizarSeccion" update="@form"/>
+					<p:remoteCommand name="actualizar" action="actualizarModelo" update="@form"/>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				
+				<h:outputStylesheet>
+					.ui-button.botonResolver{
+					    color: #ffffff;
+					    background: #d11b0d;
+					    border-color: #d11b0d;
+					}
+				</h:outputStylesheet>
+				
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

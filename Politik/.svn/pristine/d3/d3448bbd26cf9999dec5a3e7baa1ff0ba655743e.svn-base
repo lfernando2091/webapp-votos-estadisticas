@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.supervisor.encuestador">
+
+	<resultMap type="Edomex2017SupervisorEncuestadorEO" id="encuestador">
+		<id 	column="Edomex2017SupervisorEncuestadorEO_id" 						property="id" 					javaType="Integer"/>
+		<result column="Edomex2017SupervisorEncuestadorEO_nombre" 					property="nombre" 				javaType="String"/>
+		<result column="Edomex2017SupervisorEncuestadorEO_primer_apellido" 			property="primerApellido" 		javaType="String"/>
+		<result column="Edomex2017SupervisorEncuestadorEO_segundo_apellido" 		property="segundoApellido" 		javaType="String"/>
+		<result column="Edomex2017SupervisorEncuestadorEO_email" 					property="email" 				javaType="String"/>
+		<result column="Edomex2017SupervisorEncuestadorEO_movil" 					property="movil" 				javaType="String"/>		
+		<result column="Edomex2017SupervisorEncuestadorEO_progama" 					property="progama" 				javaType="com.saganet.politik.dominios.ProgramasEdoMexDO"/>
+		<association column="Edomex2017SupervisorEncuestadorEO_llave_municipio" 	property="municipio" 			select="catalogos.municipios.buscarPorLlave"/>
+		<association column="Edomex2017SupervisorEncuestadorEO_usuario" 			property="usuario" 				select="administracion.usuarios.porNick"/>
+		<association column="Edomex2017SupervisorEncuestadorEO_supervisor" 			property="supervisor" 			select="encuestas.supervisor.supervisor.buscarPorId"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			Edomex2017SupervisorEncuestadorEO.pkey 								Edomex2017SupervisorEncuestadorEO_id, 
+			Edomex2017SupervisorEncuestadorEO.nombre							Edomex2017SupervisorEncuestadorEO_nombre, 
+			Edomex2017SupervisorEncuestadorEO.primer_apellido					Edomex2017SupervisorEncuestadorEO_primer_apellido, 
+			Edomex2017SupervisorEncuestadorEO.segundo_apellido					Edomex2017SupervisorEncuestadorEO_segundo_apellido, 
+			Edomex2017SupervisorEncuestadorEO.email								Edomex2017SupervisorEncuestadorEO_email, 
+			Edomex2017SupervisorEncuestadorEO.movil								Edomex2017SupervisorEncuestadorEO_movil, 
+		    Edomex2017SupervisorEncuestadorEO.progama							Edomex2017SupervisorEncuestadorEO_progama, 
+		    '15-'||Edomex2017SupervisorEncuestadorEO.id_municipio::text   		Edomex2017SupervisorEncuestadorEO_llave_municipio, 
+		    Edomex2017SupervisorEncuestadorEO.usuario							Edomex2017SupervisorEncuestadorEO_usuario, 
+		    Edomex2017SupervisorEncuestadorEO.supervisor						Edomex2017SupervisorEncuestadorEO_supervisor, 
+		    Edomex2017SupervisorEncuestadorEO.call_center						Edomex2017SupervisorEncuestadorEO_call_center
+		FROM encuestas.encuesta_edomex_encuestadores							Edomex2017SupervisorEncuestadorEO
+	</sql>
+	
+	<select id="buscarPorSupervisor" parameterType="String" resultMap="encuestador">
+		<include refid="query"/>
+		WHERE Edomex2017SupervisorEncuestadorEO.supervisor = #{value}
+	</select>
+	<select id="buscarPorNick" parameterType="String" resultMap="encuestador">
+		<include refid="query"/>
+		WHERE Edomex2017SupervisorEncuestadorEO.usuario = #{value}
+	</select>
+	
+	<insert id="insertarEncuestadores" parameterType="Edomex2017SupervisorEncuestadorEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+				SELECT NEXTVAL('encuestas.encuesta_edomex_encuestadores_pkey_seq')
+		</selectKey>
+		<if test="supervisor!=null">
+			INSERT INTO encuestas.encuesta_edomex_encuestadores(pkey, nombre, primer_apellido,  segundo_apellido, email, movil,  progama, supervisor)
+		    VALUES (#{id}, upper(#{nombre}), upper(#{primerApellido}), upper(#{segundoApellido}), #{email}, #{movil}, #{supervisor.progama},  #{supervisor.usuario.nick})
+	    </if>
+	    <if test="usuario!=null">
+			INSERT INTO encuestas.encuesta_edomex_encuestadores(pkey, nombre, primer_apellido,  segundo_apellido, email, movil,  progama, id_municipio, usuario)
+		    VALUES (#{id}, #{nombre}, #{primerApellido}, #{segundoApellido}, #{email}, #{movil}, #{progama}, #{municipio.idMunicipio}, #{usuario.nick})
+	    </if>
+	</insert>
+	
+	<delete id="eliminarEncuestadores"  parameterType="Edomex2017SupervisorEncuestadorEO">
+		DELETE FROM encuestas.encuesta_edomex_encuestadores WHERE pkey=#{id}
+	</delete>
+</mapper>

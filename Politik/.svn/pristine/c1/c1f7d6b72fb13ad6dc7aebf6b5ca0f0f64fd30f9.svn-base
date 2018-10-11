@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructuras.legislaturas">
+	<cache />
+	
+	<resultMap type="LegislaturaEO" id="legislatura">
+		<id column="LegislaturaEO_id" property="id" javaType="Integer"/>
+		<result column="LegislaturaEO_nivel" property="nivel" javaType="com.saganet.politik.dominios.NivelesDO"/>
+		<result column="LegislaturaEO_llave" property="llave" javaType="String"/>
+		<result column="LegislaturaEO_fechaInicio" property="fechaInicio" javaType="java.sql.Date"/>
+		<result column="LegislaturaEO_fechaTermino" property="fechaTermino" javaType="java.sql.Date"/>
+		<result column="LegislaturaEO_nombre" property="nombre" javaType="String"/>
+		<result column="LegislaturaEO_numero" property="numero" javaType="Integer"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+		LegislaturaEO.id_legislatura 	LegislaturaEO_id, 
+		LegislaturaEO.nivel 			LegislaturaEO_nivel, 
+		LegislaturaEO.llave 			LegislaturaEO_llave, 
+		LegislaturaEO.fecha_inicio 		LegislaturaEO_fechaInicio, 
+		LegislaturaEO.fecha_termino 	LegislaturaEO_fechaTermino, 
+		LegislaturaEO.legislatura 		LegislaturaEO_nombre, 
+		LegislaturaEO.numero 			LegislaturaEO_numero
+  		FROM estructuras.legislaturas LegislaturaEO
+	</sql>
+	
+	<sql id="orderBy">
+		ORDER BY LegislaturaEO.nivel, LegislaturaEO.llave::integer, LegislaturaEO.numero desc
+	</sql>
+	
+	<select id="listado" resultMap="legislatura">
+		<include refid="query" />
+		<include refid="orderBy" />
+	</select>
+	
+	<insert id="insertar" parameterType="LegislaturaEO">
+		INSERT INTO estructuras.legislaturas(nivel, llave, fecha_inicio, fecha_termino, legislatura, numero)
+    	VALUES (#{nivel}, #{llave}, #{fechaInicio}, #{fechaTermino}, #{nombre}, #{numero})
+	</insert>
+</mapper>

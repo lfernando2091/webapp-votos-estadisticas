@@ -1,0 +1,75 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="head">
+		<script type="text/javascript"
+			src="https://maps.google.com/maps/api/js?key=AIzaSyCv60kiiu8HUPsm7SIm8dFUmVzpigHUCAs" />
+	</ui:define>
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Avance Cartográfico">
+						<p:panelGrid columns="4">
+							<p:outputLabel value="Nivel" />
+							<p:selectOneMenu value="${modeloNiveles.seleccionado}"
+								style="width:300px">
+								<p:ajax event="itemSelect" onsuccess="actualizar()" />
+								<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" itemDisabled="${fila=='SECCION'}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Entrevista" />
+							<p:selectOneMenu value="${modeloProgramas.seleccionado}" style="width:300px">
+								<p:ajax event="itemSelect" onsuccess="actualizar()" />
+								<f:selectItems value="${modeloProgramas.listado}" var="fila" itemLabel="${fila.nombre2}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<p:separator />
+						<p:dataTable id="tablaDatos" value="${modeloDatos.listado}"
+							var="fila" paginator="true" rows="15"
+							paginatorAlwaysVisible="false" paginatorPosition="bottom">
+							<p:columns var="c" value="${columnas}" width="120">
+								<f:facet name="header">
+									<p:outputLabel value="${c.header}"
+										style="font-weight: bold !important;" />
+								</f:facet>
+								<p:outputLabel value="${fila[c.propiedad]}"
+									rendered="${c.tipo == 'TEXTO'}" />
+								<p:outputLabel value="${fila[c.propiedad]}"
+									rendered="${c.tipo == 'ENTERO'}">
+									<f:convertNumber integerOnly="true" type="number" />
+								</p:outputLabel>
+								<p:outputLabel value="${fila[c.propiedad]}"
+									rendered="${c.tipo == 'PORCENTAJE'}">
+									<f:convertNumber type="percent" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:columns>
+						</p:dataTable>
+						<p:separator />
+						<p:panel id="panelMapa" header="Mapa" style="width: 510px;">
+							<p:gmap widgetVar="mapaWV" model="${modeloMapa}" fitBounds="true"
+								type="terrain" style="width:${width}px; height:${height}px;" />
+						</p:panel>
+					</p:panel>
+
+					<p:remoteCommand name="actualizar" action="actualizar" />
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

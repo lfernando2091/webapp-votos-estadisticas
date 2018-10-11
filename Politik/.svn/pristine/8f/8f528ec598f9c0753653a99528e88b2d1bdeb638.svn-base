@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Estructuras" />
+						<p:menuitem value="Estructuras" url="/app/estructuras/estructuras" />
+						<p:menuitem
+							value="${estructura.id == null ? 'Agregar' : 'Editar'} Estructura" />
+					</p:breadCrumb>
+					<p:panel
+						header="${estructura.id == null ? 'Agregar' : 'Editar'} Estructura">
+						<p:focus />
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Nivel" />
+							<p:selectOneMenu value="${estructura.nivel}"
+								converter="ObjectConverter" style="width: 150px;">
+								<f:selectItems value="${modeloNiveles.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Ámbito" />
+							<p:selectOneMenu value="${estructura.ambito}"
+								converter="ObjectConverter" style="width: 150px;">
+								<f:selectItems value="${modeloAmbitos.listado}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Nombre" />
+							<p:inputText value="${estructura.nombre}" size="40" />
+							<p:outputLabel value="Observaciones" />
+							<p:inputText value="${estructura.observaciones}" size="70" />
+							<f:facet name="footer">
+								<p:commandButton value="Siguiente" action="siguiente" />
+								<p:commandButton value="Cancelar" action="cancelar" immediate="true" />
+							</f:facet>
+						</p:panelGrid>
+					</p:panel>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,102 @@
+package com.saganet.politik.beans.seguridad;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
+
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.DependenciaEO;
+import com.saganet.politik.dominios.ProgramasEdoMexDO;
+import com.saganet.politik.modelos.JavaBeanT;
+
+public class UsuariosServicio extends JdbcDaoImpl {
+
+	private Usuario usuario;
+
+	private SqlSession sqlSession;
+	
+	public UsuariosServicio() {
+		super();
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		User user;
+		user = (User) super.loadUserByUsername(username);
+		usuario = new Usuario(user.getUsername(), user.getPassword(), user.isEnabled(), user.isAccountNonExpired(),
+				user.isCredentialsNonExpired(), user.isAccountNonLocked(), user.getAuthorities());		
+		//Implementacion propia
+		usuario.setUsuario(porNick(usuario.getUsername()));
+		return usuario;
+	}
+	
+	public UsuarioEO porNick(String nick) {
+		UsuarioEO usuario;
+		usuario = sqlSession.selectOne("administracion.usuarios.porNick", nick);
+		cargarTerritorios(usuario);
+		cargarDependencias(usuario);
+		cargarPrograma(usuario);
+		return usuario;
+	}
+
+	public void cargarTerritorios(UsuarioEO usuario) {
+		List<JavaBeanT> territorios;
+		territorios = null;
+		switch (usuario.getNivel()) {
+		case DFEDERAL:
+			territorios = sqlSession.selectList("catalogos.dFederales.listadoPorUsuario", usuario);
+			break;
+		case DLOCAL:
+			territorios = sqlSession.selectList("catalogos.dLocales.listadoPorUsuario", usuario);
+			break;
+		case ENTIDAD:
+			territorios = sqlSession.selectList("catalogos.entidades.listadoPorUsuario", usuario);
+			break;
+		case GEOZONA:
+			territorios = sqlSession.selectList("catalogos.geozonas.listadoParticionesPorUsuario", usuario);
+			break;
+		case LOCALIDAD:
+			break;
+		case MANZANA:
+			break;
+		case MUNICIPIO:
+			territorios = sqlSession.selectList("catalogos.municipios.listadoPorUsuario", usuario);
+			break;
+		case NACIONAL:
+			break;
+		case SECCION:
+			break;
+		}
+
+		if (territorios == null)
+			usuario.setTerritorios(new ArrayList<JavaBeanT>());
+		else
+			usuario.setTerritorios(territorios);
+	}
+	
+	public void cargarPrograma(UsuarioEO usuario) {	
+		List<ProgramasEdoMexDO> programas=sqlSession.selectList("administracion.usuariosProgramas.usuarioPrograma", usuario.getNick());
+		usuario.setProgamas(programas);
+	}
+	
+	public void cargarDependencias(UsuarioEO usuario){
+		List<DependenciaEO> listado;
+		listado = sqlSession.selectList("catalogos.dependencias.listadoPorUsuario", usuario);
+		usuario.setDependencias(listado);
+	}
+
+	public void setSqlSession(SqlSession sqlSession) {
+		this.sqlSession = sqlSession;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+}

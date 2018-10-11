@@ -1,0 +1,84 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:panelGrid columns="2" columnClasses="topAlign,topAlign">
+					<p:panel header="Dependencias">
+						<p:dataTable value="${modeloDependencias.listado}" var="fila"
+							rowKey="${fila.id}"
+							selection="${modeloDependencias.seleccionado}"
+							selectionMode="single" paginator="true"
+							paginatorAlwaysVisible="false" rows="10">
+							<p:ajax event="rowSelect" update="#{p:component('pnlTerritorios')}"/>
+														<p:column headerText="Dependencia Padre" sortable="true" sortBy="${fila.dependenciaPadre.dependencia}">
+${fila.dependenciaPadre.dependencia}
+</p:column>
+							<p:column headerText="Dependencia" sortable="true" sortBy="${fila.dependencia}" filterable="true" filterBy="${fila.dependencia}">
+${fila.dependencia} ${fila.siglas}
+</p:column> 
+							<p:column headerText="Nivel Geográfico" sortBy="${fila.nivelGeografico}">
+${fila.nivelGeografico}
+</p:column>
+							<p:column headerText="Nivel Dependencia" sortBy="${fila.nivelDependencia}">
+${fila.nivelDependencia} 
+</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" icon="fa fa-plus-circle"
+								action="agregar"
+								rendered="${sec:areAllGranted('ROLE_CATALOGO_DEPENDENCIAS_EDITAR')}" />
+								<p:commandButton value="Agregar Sub-Nivel" icon="fa fa-plus-circle"
+								action="agregarSubnivel"
+								rendered="${sec:areAllGranted('ROLE_CATALOGO_DEPENDENCIAS_EDITAR')}" />
+							<p:commandButton value="Editar" icon="fa fa-edit" action="editar"
+								rendered="false" />
+						</f:facet>
+					</p:panel>
+					
+					<p:panel id="pnlTerritorios" header="Territorios - ${modeloDependencias.seleccionado.nivelGeografico}">
+					<p:dataTable value="${modeloDependencias.seleccionado.territorios}" var="t" id="tblTerritorios"
+					rowKey="${t.id}" selection="${modeloDependencias.seleccionado}" selectionMode="single"
+					paginator="true" rows="10" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+					<p:column headerText="Descripción" filterable="true">
+					<c:if test="#{modeloDependencias.seleccionado.nivelGeografico eq 'Entidad'}">
+					<p:outputLabel value="${t.id} ${t.nombre}"/>
+					</c:if>
+					<c:if test="#{modeloDependencias.seleccionado.nivelGeografico eq 'Municipio'}">
+					<p:outputLabel value="${t.llave}  ${t.entidad.nombre} - ${t.nombre}"/>
+					</c:if>
+					<c:if test="#{modeloDependencias.seleccionado.nivelGeografico eq 'Distrito Federal'}">
+					<p:outputLabel value="${t.llave}  ${t.entidad.nombre} - ${t.nombre}"/>
+					</c:if>
+					<c:if test="#{modeloDependencias.seleccionado.nivelGeografico eq 'Distrito Local'}">
+					<p:outputLabel value="${t.llave}  ${t.entidad.nombre} - ${t.nombre}"/>
+					</c:if>
+					<c:if test="#{modeloDependencias.seleccionado.nivelGeografico eq 'Sección'}">
+					<p:outputLabel value="${t.llave}  ${t.entidad.nombre} - ${t.id}"/>
+					</c:if>
+					</p:column>
+					</p:dataTable>
+					</p:panel>
+</p:panelGrid>
+<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

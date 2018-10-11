@@ -1,0 +1,33 @@
+package com.saganet.politik.database.encuestas.admin;
+
+import java.util.List;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+
+
+
+
+@Component("ParametrosEstadisticas")
+@Scope(value="session", proxyMode=ScopedProxyMode.TARGET_CLASS)
+public class ParametrosEstadisticas {
+	
+	CampaniaEO campania;
+
+	public CampaniaEO getCampania() {
+		return campania;
+	}
+
+	public void setCampania(CampaniaEO campania) {
+		this.campania = campania;
+	}
+	
+	
+	
+	
+
+	
+	
+	
+}

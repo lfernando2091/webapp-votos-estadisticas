@@ -1,0 +1,102 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Tablas Warehouse" action="cancelar" />
+						<p:menuitem value="Agregar" action="regresar" />
+						<p:menuitem value="Agregar Particiones" />
+					</p:breadCrumb>
+
+					<p:panel header="Agregar Nueva Tabla">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Nombre" />
+							<p:outputLabel value="${nuevo.tabla}" />
+							<p:outputLabel value="Descripcion" />
+							<p:outputLabel value="${nuevo.descripcion}" />
+							<p:outputLabel value="Tabla Particionada?" />
+							<p:outputLabel value="${nuevo.particionada}" />
+							<p:outputLabel value="Campo de Particion" />
+							<p:outputLabel value="${nuevo.campoParticion}" />
+						</p:panelGrid>
+					</p:panel>
+					<p:panel header="Agregar Particiones">
+						<p:panelGrid columns="3">
+							<p:outputLabel value="Plantillas" />
+							<p:selectOneMenu value="${modeloPlantillas.seleccionado}" converter="ObjectConverter" style="width: 150px;">
+								<f:selectItems value="${modeloPlantillas.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:commandLink action="aplicarPlantilla" update="tablaParticiones">
+									<p:graphicImage value="/resources/botones/APLICAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Aplicar" action="aplicarPlantilla" update="tablaParticiones" /> -->
+						</p:panelGrid>
+						<p:dataTable id="tablaParticiones" value="${nuevo.particiones}" var="fila" paginator="true" rows="15" paginatorAlwaysVisible="false">
+							<p:column headerText="Valor" width="50">${fila.idParticion}</p:column>
+							<p:column headerText="Nombre">${fila.particion}</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandLink onstart="PF('dialogoAgregarParticionWV').show();">
+									<p:graphicImage value="/resources/botones/AGREGAR.png" />
+							</p:commandLink>
+							<p:commandLink action="regresar" immediate="true">
+									<p:graphicImage value="/resources/botones/REGRESAR.png" />
+							</p:commandLink>
+							<p:commandLink action="guardar">
+									<p:graphicImage value="/resources/botones/GUARDAR.png" />
+							</p:commandLink>
+							<p:commandLink action="cancelar" immediate="true">
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Agregar" onstart="PF('dialogoAgregarParticionWV').show();"/> -->
+<!-- 							<p:commandButton value="Regresar" action="regresar" -->
+<!-- 								immediate="true" /> -->
+<!-- 							<p:commandButton value="Siguiente" action="guardar" /> -->
+<!-- 							<p:commandButton value="Cancelar" action="cancelar" -->
+<!-- 								immediate="true" /> -->
+						</f:facet>
+					</p:panel>
+					
+					<p:dialog id="dialogoAgregarParticion"
+						widgetVar="dialogoAgregarParticionWV" header="Agregar Partición"
+						modal="true" visible="false">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Valor" />
+							<p:inputText value="${particion.idParticion}" style="width: 50px;" />
+							<p:outputLabel value="Nombre" />
+							<p:inputText value="${particion.particion}" style="width: 200px;" />
+							<f:facet name="footer">
+								<p:commandLink action="guardarParticion"
+									oncomplete="PF('dialogoAgregarParticionWV').hide();"
+									update="#{p:component('tablaParticiones')}, #{p:component('dialogoAgregarParticion')}" >
+									<p:graphicImage value="/resources/botones/GUARDAR.png" />
+								</p:commandLink>
+								<p:commandLink  immediate="true" onclick="PF('dialogoAgregarParticionWV').hide();" >
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+								</p:commandLink>
+<!-- 								<p:commandButton value="Guardar" action="guardarParticion" -->
+<!-- 									oncomplete="PF('dialogoAgregarParticionWV').hide();" -->
+<!-- 									update="#{p:component('tablaParticiones')}, #{p:component('dialogoAgregarParticion')}" /> -->
+<!-- 								<p:commandButton value="Cancelar" immediate="true" -->
+<!-- 									onclick="PF('dialogoAgregarParticionWV').hide();" /> -->
+							</f:facet>
+						</p:panelGrid>
+					</p:dialog>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

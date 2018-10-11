@@ -1,0 +1,143 @@
+package com.saganet.politik.database.encuestas.edomex2017.v2;
+
+import java.io.Serializable;
+import java.sql.Timestamp;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.database.estructurasEdoMex.VisitadorEO;
+import com.saganet.politik.dominios.CandidatosEdomex2017DO;
+import com.saganet.politik.dominios.GenerosDO;
+import com.saganet.politik.dominios.PartidosEleccionEdomex2017DO;
+import com.saganet.politik.dominios.ResultadoEncuestaEdomexDO;
+import com.saganet.politik.dominios.SiNoNSNCDO;
+import com.saganet.politik.modelos.JavaBeanT;
+@Alias("Edomex2017V2EncuestaEO")
+public class EncuestaEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 1210639510035054948L;
+private Integer id;
+private Integer idContacto;
+private ResultadoEncuestaEdomexDO resultado;
+private String nick;
+private Timestamp fecha;
+private VisitadorEO encuestador;
+private SiNoNSNCDO r1;
+private SiNoNSNCDO r2;
+private PartidosEleccionEdomex2017DO r3;
+private CandidatosEdomex2017DO r4;
+private SiNoNSNCDO r5;
+private String nombre;
+private String paterno;
+private String materno;
+private String fechaNacimiento;
+private GenerosDO genero;
+@Override
+public String toString() {
+	return "EncuestaEO [id=" + id + ", idContacto=" + idContacto + ", resultado=" + resultado + ", nick=" + nick
+			+ ", fecha=" + fecha + ", encuestador=" + encuestador + ", r1=" + r1 + ", r2=" + r2 + ", r3=" + r3 + ", r4="
+			+ r4 + ", r5=" + r5 + ", nombre=" + nombre + ", paterno=" + paterno + ", materno=" + materno
+			+ ", fechaNacimiento=" + fechaNacimiento + ", genero=" + genero + "]";
+}
+public Integer getId() {
+	return id;
+}
+public void setId(Integer id) {
+	this.id = id;
+}
+public Integer getIdContacto() {
+	return idContacto;
+}
+public void setIdContacto(Integer idContacto) {
+	this.idContacto = idContacto;
+}
+public ResultadoEncuestaEdomexDO getResultado() {
+	return resultado;
+}
+public void setResultado(ResultadoEncuestaEdomexDO resultado) {
+	this.resultado = resultado;
+}
+public String getNick() {
+	return nick;
+}
+public void setNick(String nick) {
+	this.nick = nick;
+}
+public Timestamp getFecha() {
+	return fecha;
+}
+public void setFecha(Timestamp fecha) {
+	this.fecha = fecha;
+}
+public VisitadorEO getEncuestador() {
+	return encuestador;
+}
+public void setEncuestador(VisitadorEO encuestador) {
+	this.encuestador = encuestador;
+}
+public SiNoNSNCDO getR1() {
+	return r1;
+}
+public void setR1(SiNoNSNCDO r1) {
+	this.r1 = r1;
+}
+public SiNoNSNCDO getR2() {
+	return r2;
+}
+public void setR2(SiNoNSNCDO r2) {
+	this.r2 = r2;
+}
+public PartidosEleccionEdomex2017DO getR3() {
+	return r3;
+}
+public void setR3(PartidosEleccionEdomex2017DO r3) {
+	this.r3 = r3;
+}
+public CandidatosEdomex2017DO getR4() {
+	return r4;
+}
+public void setR4(CandidatosEdomex2017DO r4) {
+	this.r4 = r4;
+}
+public SiNoNSNCDO getR5() {
+	return r5;
+}
+public void setR5(SiNoNSNCDO r5) {
+	this.r5 = r5;
+}
+public String getNombre() {
+	return nombre;
+}
+public void setNombre(String nombre) {
+	this.nombre = nombre;
+}
+public String getPaterno() {
+	return paterno;
+}
+public void setPaterno(String paterno) {
+	this.paterno = paterno;
+}
+public String getMaterno() {
+	return materno;
+}
+public void setMaterno(String materno) {
+	this.materno = materno;
+}
+public String getFechaNacimiento() {
+	return fechaNacimiento;
+}
+public void setFechaNacimiento(String fechaNacimiento) {
+	this.fechaNacimiento = fechaNacimiento;
+}
+public GenerosDO getGenero() {
+	return genero;
+}
+public void setGenero(GenerosDO genero) {
+	this.genero = genero;
+} 
+
+
+
+
+
+
+}

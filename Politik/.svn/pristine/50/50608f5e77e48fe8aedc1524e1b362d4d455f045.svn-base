@@ -1,0 +1,41 @@
+package com.saganet.politik.components.match;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.match.MatchEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("MatchC")
+public class MatchC {
+	
+	private static final Logger logger = LoggerFactory.getLogger(MatchC.class);
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	public Modelo<MatchEO> modelo(){
+		Modelo<MatchEO> modelo;
+		List<MatchEO> listado;
+		
+		listado = sqlSession.selectList("match.Match.listado");
+		logger.debug("Listado de Match: {}", listado);
+		
+		modelo = new Modelo<>();
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Modelo de Match: {}", modelo);
+		
+		return modelo;
+	}
+	
+}

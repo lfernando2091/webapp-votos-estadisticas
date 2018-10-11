@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Eventos" />
+					</p:breadCrumb>
+					<p:panel header="Eventos">
+						<p:dataTable id="tablaEventos" value="${tabla.listado}" var="fila" rowKey="${fila.id}" selection="${tabla.seleccionado}"
+							selectionMode="single" paginator="true" rows="15" paginatorPosition="bottom">
+							<p:ajax event="rowSelect" update="@form"/>
+							<p:column headerText="Nombre" >
+								${fila.nombre}
+							</p:column>
+							<p:column headerText="Descripción" >
+								${fila.descripcionLogistica}
+							</p:column>
+							<p:column headerText="Fecha" style="width:9%">
+								${fila.fechaFormateada}-${fila.fechaFinFormateada}
+							</p:column>
+							<p:column headerText="Tipo" style="width:10%">
+								${fila.tipo}
+							</p:column>
+							<p:column headerText="Nivel" style="width:10%">
+								${fila.nivel}
+							</p:column>
+							<p:column headerText="Asistentes"  style="width:7%">
+								${fila.numeroAsistentes}
+							</p:column>
+							<p:column headerText="Descripción Lugar" >
+								${fila.descripcionLugar}
+							</p:column>
+							
+							<p:column headerText="Lugar" rendered="${fila.territorios[0]!=null}">
+								<ui:repeat value="${fila.territorios}" var="value">
+									     #{value.llave} - #{value.nombre} <br />
+								</ui:repeat>
+							</p:column>
+							<p:column headerText="Lugar" rendered="${fila.territorios[0]==null}">
+							</p:column>
+						</p:dataTable>
+
+						<f:facet name="footer">	
+							<p:commandLink action="listadoProgramas" id="botonProgramas" rendered="${tabla.seleccionado.tipo.nombre=='Programas' and tabla.seleccionado!=null?true:false}">
+								<p:graphicImage value="/resources/botones/PROGRAMAS.png"/>
+							
+							</p:commandLink>
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

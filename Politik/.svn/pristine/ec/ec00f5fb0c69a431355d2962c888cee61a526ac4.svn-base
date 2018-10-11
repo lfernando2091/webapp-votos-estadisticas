@@ -1,0 +1,117 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Reporte de Levantamiento">
+						<p:panelGrid columns="2" id="panelCombos">
+							<p:column>
+								<p:outputLabel value="Nivel :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloNiveles.seleccionado}" style="width:300px">
+										<p:ajax event="itemSelect" onsuccess="actualizar()" update="panelCombos" />
+					            		<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+									</p:selectOneMenu>
+							</p:column>
+							<p:column rendered="${modeloNiveles.seleccionado=='REGION'}">
+								<p:outputLabel value="Region :"/>
+							</p:column>
+							<p:column rendered="${modeloNiveles.seleccionado=='REGION'}">
+									<p:selectOneMenu value="${modeloRegiones.seleccionado}" style="width:300px" converter="ObjectConverter">
+										<p:ajax event="itemSelect" onsuccess="actualizar()" />
+					            		<f:selectItems value="${modeloRegiones.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+									</p:selectOneMenu>
+							</p:column>
+						</p:panelGrid>
+						<p:panel id="gridEncuestas">
+							<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}" summary="true"
+									selectionMode="single" paginator="true" rows="15" id="tablaResultados" paginatorPosition="bottom">
+									
+									
+									<p:columnGroup type="header">
+										<p:row>
+						                	<p:column colspan="1"/>
+						                	<p:column colspan="2" headerText="Abby-PH" />
+						                	<p:column colspan="2" headerText="Fitz-HP"/>
+						                	<p:column colspan="2" headerText="Rowan-JAL"/>
+						                	<p:column colspan="2" headerText="TOTAL"/>
+						                </p:row>
+							            <p:row>
+											<p:column/>
+											<p:column headerText="#" />
+											<p:column headerText="%" />
+											<p:column headerText="#" />
+											<p:column headerText="%" />
+											<p:column headerText="#" />
+											<p:column headerText="%" />
+											<p:column headerText="#" />
+											<p:column headerText="%" />
+							             </p:row>
+									</p:columnGroup>
+									
+									
+									<p:column  width="150">
+										<p:outputLabel value="${fila.nombre}"/>
+									</p:column>
+									<p:column headerText="Abby-PH #"  width="100" style="text-align:right">
+										<p:outputLabel value="${fila.cantidadProspera}"/>
+									</p:column>
+									<p:column headerText="Abby-PH %"  width="100" style="text-align:right">
+										<p:outputLabel value="${fila.porcentajeProspera!=null?fila.porcentajeProspera:'0.00%'}"/>
+									</p:column>
+									<p:column headerText="Fitz-HP #" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.cantidadLiconsa}"/>
+									</p:column>
+									<p:column headerText="Fitz-HP %" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.porcentajeLiconsa!=null?fila.porcentajeLiconsa:'0.00%'}"/>
+									</p:column>
+									<p:column headerText="Rowan-JAL #" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.cantidadGem}"/>
+									</p:column>
+									<p:column headerText="Rowan-JAL %" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.porcentajeGem!=null?fila.porcentajeGem:'0.00%'}"/>
+									</p:column>
+									<p:column headerText="Total #" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.cantidadTotal}"/>
+									</p:column>
+									<p:column headerText="Total %" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.porcentajeTotal!=null?fila.porcentajeTotal:'0.00%'}"/>
+									</p:column>
+									
+									<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tablaResultados" fileName="ReporteLevantamiento"/>
+										</h:commandLink>
+									</f:facet>
+							</p:dataTable>
+						</p:panel>
+					</p:panel>	
+					
+					<p:remoteCommand name="actualizar" action="actualizar" update="gridEncuestas"/>
+					
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

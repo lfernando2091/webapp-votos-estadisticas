@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Administración" />
+						<p:menuitem value="Usuarios" url="/app/administracion/usuarios" />
+						<p:menuitem value="Usuarios Conectados" action="refresh" />
+					</p:breadCrumb>
+					<p:panel header="Usuarios Conectados al Sistema">
+						<p:dataTable id="tablaUsuarios" value="${mapaUsuarios.listado}" var="fila"
+							rowKey="${fila.nick}" selection="${mapaUsuarios.seleccionado}"
+							selectionMode="single" paginator="true" rows="15" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+							<p:column headerText="nick" width="125">${fila.nick}</p:column>
+							<p:column headerText="nombre">${fila.nombre}</p:column>
+							<p:column headerText="Último Acceso" width="120">${fila.ultimoAcceso}</p:column>
+							<p:column headerText="Conectado" width="80">${fila.estatus ? 'Si' : 'No'}</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandLink  action="terminarSesion" update="tablaUsuarios" >
+									<p:graphicImage value="/resources/botones/TERMINAR SESIÓN.png" />
+							</p:commandLink>
+<!-- 							<p:commandButton value="Terminar Sesión" action="terminarSesion" update="tablaUsuarios" /> -->
+						</f:facet>
+					</p:panel>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

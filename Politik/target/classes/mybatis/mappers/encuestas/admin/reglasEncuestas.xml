@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.admin.reglasEncuestas">
+	<cache />
+	
+	<resultMap type="ReglaEncuestaEO" id="reglaEncuesta">
+	
+		<id column="ReglaEncuestaEO_id" property="id" javaType="Integer" />
+		
+		<result column="ReglaEncuestaEO_idEncuesta" property="idEncuesta" javaType="Integer"/>
+		<result column="ReglaEncuestaEO_regla" property="regla" javaType="String"/>
+		<result column="ReglaEncuestaEO_script" property="script" javaType="String"/>
+		<result column="ReglaEncuestaEO_descripcion" property="descripcion" javaType="String"/>
+		<result column="ReglaEncuestaEO_tipo" property="tipo" javaType="String"/>
+		<result column="ReglaEncuestaEO_nick" property="nick" javaType="String"/>
+		<result column="ReglaEncuestaEO_fecha" property="fecha" javaType="String"/>
+		
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			pkey										ReglaEncuestaEO_id, 
+			id_encuesta									ReglaEncuestaEO_idEncuesta, 
+			regla										ReglaEncuestaEO_regla,
+			script										ReglaEncuestaEO_script, 
+			descripcion									ReglaEncuestaEO_descripcion, 
+			tipo										ReglaEncuestaEO_tipo, 
+			nick										ReglaEncuestaEO_nick, 
+			to_char(fecha, 'YYYY-MM-DD HH12:MI:SS')		ReglaEncuestaEO_fecha
+  		FROM encuestas.reglas_encuestas
+	</sql>
+	
+	<select id="listado" resultMap="reglaEncuesta" parameterType="EncuestaEO">
+		<include refid="query" />
+		where id_encuesta = #{id}
+		ORDER BY pkey
+	</select>
+	
+	<select id="listadoById" resultMap="reglaEncuesta" parameterType="Integer">
+		<include refid="query" />
+		where id_encuesta = #{value}
+		ORDER BY pkey
+	</select>
+	
+	<insert id="insertar" parameterType="ReglaEncuestaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('encuestas.reglas_encuestas_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas.reglas_encuestas(pkey, id_encuesta, regla, script, descripcion, tipo, nick)
+    	VALUES (#{id}, #{idEncuesta}, #{regla}, #{script}, #{descripcion}, #{tipo}, #{nick});
+	</insert>
+	
+	<select id="validarScript" parameterType="String" resultType="hashmap">
+		${_parameter}
+	</select>
+	
+</mapper>

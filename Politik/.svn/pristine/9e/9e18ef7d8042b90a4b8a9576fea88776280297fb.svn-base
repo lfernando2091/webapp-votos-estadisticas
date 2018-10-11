@@ -1,0 +1,250 @@
+package com.saganet.politik.components.utilidades;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.dominios.TiposRepresentanteDO;
+import com.saganet.politik.dominios.TiposSenadorDO;
+import com.saganet.politik.dominios.AmbitosDO;
+import com.saganet.politik.dominios.CargosComisionCongresoUnionDO;
+import com.saganet.politik.dominios.CargosDependenciaDO;
+import com.saganet.politik.dominios.EstructurasEdoMexDO;
+import com.saganet.politik.dominios.EstructurasReportesDO;
+import com.saganet.politik.dominios.FiguraAtributosDO;
+import com.saganet.politik.dominios.MesDO;
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.dominios.PlantillasParticionDO;
+import com.saganet.politik.dominios.SigTiposReporteDO;
+import com.saganet.politik.dominios.TiposCampoDO;
+import com.saganet.politik.dominios.TiposEleccionDO;
+import com.saganet.politik.modelos.Modelo;
+
+
+@Component("UtilidadesDominiosC")
+public class DominiosC {
+	private static final Logger logger = LoggerFactory.getLogger(DominiosC.class);
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	public Modelo<EstructurasEdoMexDO> modeloEstructurasEdoMex(EstructurasEdoMexDO estructura) {
+		Modelo<EstructurasEdoMexDO> modelo=new Modelo<>(Arrays.asList(EstructurasEdoMexDO.values()));
+		logger.debug("Estructura : {}",estructura);
+		if (estructura!=null) {
+			modelo.setSeleccionado(estructura);
+		}
+		return modelo;
+	}
+	
+	
+	public Modelo<TiposEleccionDO> modeloTiposEleccion(){
+		Modelo<TiposEleccionDO> modelo;
+		List<TiposEleccionDO> listado;
+		modelo = new Modelo<TiposEleccionDO>();
+		listado = Arrays.asList(TiposEleccionDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		logger.debug("Se obtiene listado TiposEleccionDO: {}", listado);
+		return modelo;
+	}
+	
+	public Modelo<TiposRepresentanteDO> modeloTiposRepresentante(){
+		Modelo<TiposRepresentanteDO> modelo;
+		List<TiposRepresentanteDO> listado;
+		
+		modelo = new Modelo<TiposRepresentanteDO>();
+		
+		listado = Arrays.asList(TiposRepresentanteDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado TipoRepresentanteDO: {}", listado);
+		return modelo;
+	}
+	
+	public Modelo<MesDO> modeloMeses(){
+		Modelo<MesDO> modelo;
+		List<MesDO> listado;
+		
+		modelo = new Modelo<MesDO>();
+		
+		listado = Arrays.asList(MesDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado MesesDO: {}", listado);
+		return modelo;
+	}
+	
+	public Modelo<NivelesDO> modeloNiveles(){
+		Modelo<NivelesDO> modelo;
+		List<NivelesDO> listado;
+		
+		modelo = new Modelo<NivelesDO>();
+		
+		listado = Arrays.asList(NivelesDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado NivelesDO: {}", listado);
+		return modelo;
+	}
+	
+	public Modelo<AmbitosDO> modeloAmbitos(){
+		Modelo<AmbitosDO> modelo;
+		List<AmbitosDO> listado;
+		
+		modelo = new Modelo<AmbitosDO>();
+		
+		listado = Arrays.asList(AmbitosDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado AmbitosDO: {}", listado);
+		return modelo;
+	}
+	
+	public Modelo<PlantillasParticionDO> modeloPlantillasPaticion(){
+		Modelo<PlantillasParticionDO> modelo;
+		List<PlantillasParticionDO> listado;
+		
+		modelo = new Modelo<PlantillasParticionDO>();
+		
+		listado = Arrays.asList(PlantillasParticionDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado PlantillasParticionDO: {}", listado);
+		return modelo;
+	}
+	
+	public Modelo<TiposCampoDO> modeloTiposCampo(){
+		Modelo<TiposCampoDO> modelo;
+		List<TiposCampoDO> listado;
+		
+		modelo = new Modelo<TiposCampoDO>();
+		
+		listado = Arrays.asList(TiposCampoDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado TiposCampoDO: {}", listado);
+		return modelo;
+	}
+	
+	public Modelo<CargosDependenciaDO> modeloCargosDependencia(){
+		Modelo<CargosDependenciaDO> modelo;
+		List<CargosDependenciaDO> listado;
+		
+		modelo = new Modelo<CargosDependenciaDO>();
+		
+		listado = Arrays.asList(CargosDependenciaDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado CargosDependenciaDO: {}", listado);
+		return modelo;
+	}
+	
+	public Modelo<FiguraAtributosDO> modeloFiguraAtributos(){
+		Modelo<FiguraAtributosDO> modelo;
+		List<FiguraAtributosDO> listado;
+		
+		modelo = new Modelo<FiguraAtributosDO>();
+		
+		listado = Arrays.asList(FiguraAtributosDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado FiguraAtributosDO: {}", listado);
+		return modelo;
+	}
+	
+	public Modelo<EstructurasReportesDO> modeloEstructurasReportes(){
+		Modelo<EstructurasReportesDO> modelo;
+		List<EstructurasReportesDO> listado;
+		
+		modelo = new Modelo<EstructurasReportesDO>();
+		
+		listado = Arrays.asList(EstructurasReportesDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado EstructurasReportesDO: {}", listado);
+		return modelo;
+	}
+	
+	public Modelo<TiposSenadorDO> modeloTiposSenador(){
+		Modelo<TiposSenadorDO> modelo;
+		List<TiposSenadorDO> listado;
+		
+		modelo = new Modelo<TiposSenadorDO>();
+		
+		listado = Arrays.asList(TiposSenadorDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado TiposSenadorDO: {}", listado);
+		return modelo;
+	}
+	
+	public Modelo<CargosComisionCongresoUnionDO> modeloCargosComisionCongresoUnion(){
+		Modelo<CargosComisionCongresoUnionDO> modelo;
+		List<CargosComisionCongresoUnionDO> listado;
+		
+		modelo = new Modelo<CargosComisionCongresoUnionDO>();
+		
+		listado = Arrays.asList(CargosComisionCongresoUnionDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado CargosComisionCongresoUnionDO: {}", listado);
+		return modelo;
+	}
+	
+	public Modelo<SigTiposReporteDO> modeloSigTiposReporte(){
+		Modelo<SigTiposReporteDO> modelo;
+		List<SigTiposReporteDO> listado;
+		
+		modelo = new Modelo<SigTiposReporteDO>();
+		
+		listado = Arrays.asList(SigTiposReporteDO.values());
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Se obtiene listado SigTiposReporteDO: {}", listado);
+		return modelo;
+	}
+}

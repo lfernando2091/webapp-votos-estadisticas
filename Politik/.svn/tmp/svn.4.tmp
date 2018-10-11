@@ -1,0 +1,115 @@
+package com.saganet.politik.components.biblioteca;
+
+import com.saganet.politik.components.catalogos.DFederalesC;
+import com.saganet.politik.database.biblioteca.BibliotecaEO;
+import com.saganet.politik.database.biblioteca.ReportesParametros;
+import com.saganet.politik.modelos.ModeloT;
+import com.saganet.politik.modelos.biblioteca.BibliotecaT;
+import com.saganet.politik.utilidades.FilePolitik;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+
+@Component("BibliotecaC")
+
+public class BibliotecaC {
+
+	private static final Logger logger = LoggerFactory.getLogger(BibliotecaC.class);
+	
+	@Autowired
+	private ReportesParametros reportesParametros;
+	
+	public BibliotecaT tabla(String ruta){
+		BibliotecaT tabla;
+		List<BibliotecaEO> listado;
+		BibliotecaEO biblioteca;
+		int registro;
+		
+		
+		tabla = new BibliotecaT();
+		File directorio = new File(ruta);
+		listado = new ArrayList<>();
+		registro = 0;
+		logger.debug("_Despues de crear opbjeto {}", ruta);
+		File[] archivosLista = directorio.listFiles();
+		
+		for(File archivo : archivosLista){
+			registro++;
+			biblioteca = new BibliotecaEO();
+			biblioteca.setArchivo(archivo);
+		    biblioteca.setId(registro);
+			//archivo.getParentFile().getAbsolutePath()
+			listado.add(biblioteca);
+			logger.debug("Ruta completa del archivo: {}", archivo.getParentFile().getName());
+		}
+		logger.debug("Tamanio de la lista: {}", listado.size());
+		tabla.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			tabla.setSeleccionado(listado.get(0));
+		}
+		
+		return tabla;
+		
+		
+	}
+	
+	public void descargaArchivo(File archivo){
+		FacesContext fC = FacesContext.getCurrentInstance();
+		  ExternalContext externalContext = fC.getExternalContext();
+		try {
+		 reportesParametros.setAr(archivo);
+			//fC.getExternalContext().redirect("../app/descargaArchivo.html?adescargar=");
+			externalContext.redirect(externalContext.getRequestContextPath() + "/app/descargaArchivo.saga");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void mensajeDescarga(){
+		 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Para descargar el archivo, favor de dar click en el incono de descarga!", "Aviso"));
+	}
+	
+   public void director(File archivo){
+	   if(archivo.isDirectory()){
+		   this.tabla(archivo.getAbsolutePath());
+		   logger.debug("Valor entrado en director:{} ", archivo.getAbsolutePath());
+	   }
+	   if(archivo.isFile()){
+		   this.mensajeDescarga();
+	   }
+   }
+   
+   public void crearCarpeta(String ruta, String nombre){
+	 
+	   logger.debug("Datos recibidos: {}", ruta, nombre);
+	   
+	   File file = new File(ruta+"\\"+nombre);
+       if (!file.exists()) {
+           if (file.mkdir()) {
+        	   FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "La carpeta" + nombre + " se ha creado con exito", "Aviso"));
+               
+           } else {
+        	   FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "La carpeta" + nombre + " no se ha creado con exito, revise el nombre nuevamente", "Aviso"));
+               
+           }
+       }
+       
+     
+	   
+   }
+}

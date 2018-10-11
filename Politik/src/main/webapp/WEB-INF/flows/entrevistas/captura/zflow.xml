@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	
+<!-- 	<action-state id="selecionaCampania"> -->
+	
+<!-- 	</action-state> -->
+	
+	<action-state id="validarRegistros">
+		<evaluate expression="CuestionarioC.validaContactosDisponibles()" />
+		<transition on="SI" to="cuestionario" />
+		<transition on="NO" to="noRegistros" />
+		<transition on="NO_ASIGNADO" to="noAsignado" />
+	</action-state>
+
+	<view-state id="cuestionario">
+		<on-entry>
+			<evaluate expression="CuestionarioC.cuestionarioByNick()"
+				result="viewScope.cuestionario" />
+			<evaluate expression="CuestionarioC.estatusCuestionario()"
+				result="viewScope.estatusCuestionario" />
+		</on-entry>
+		<transition on="insertar" to="fin">
+			<evaluate expression="CuestionarioC.guardarCuestionario(viewScope.cuestionario)" />
+		</transition>
+
+		<transition on="cancelar" to="fin">
+			<evaluate
+				expression="CuestionarioC.cancelarCuestionario(viewScope.cuestionario.contacto)" />
+		</transition>
+	</view-state>
+
+	<view-state id="noRegistros"/>
+	<view-state id="noAsignado"/>
+
+	<end-state id="fin"></end-state>
+</flow>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="diaD.reportes.metasMovilizados">
+	<resultMap type="DiaDReportesMetasMovilizadosEO" id="metaMovilizado">
+		<id column="id" property="id" javaType="Integer" />
+		<result column="id_region" property="idRegion" javaType="Integer" />
+		<result column="nombre_region" property="region" javaType="String" />
+		<result column="id_municipio" property="idMunicipio" javaType="Integer" />
+		<result column="nombre_municipio" property="municipio"
+			javaType="String" />
+		<result column="seccion" property="seccion" javaType="Integer" />
+		<result column="meta" property="meta" javaType="Integer" />
+		<result column="capturados" property="capturados" javaType="Integer" />
+		<result column="porcentaje" property="porcentaje" javaType="String" />
+	</resultMap>
+
+	<select id="listado" parameterType="hashmap" resultMap="metaMovilizado">
+		select
+		<if test="nivel=='general'">
+		sum(contactos) contactos, 
+		sum(meta) meta, case when sum(avance) is null then 0 else sum(avance) end capturados, case when sum(avance) is null then '0%' else round((sum(avance)/sum(meta))*100)||'%' end porcentaje
+		</if>
+		<if test="nivel=='estatal'">
+		region_edomex_2017 id_region,nombre_region,
+		sum(contactos) contactos, 
+		sum(meta) meta, case when sum(avance) is null then 0 else sum(avance) end capturados, case when sum(avance) is null then '0%' else round((sum(avance)/sum(meta))*100)||'%' end porcentaje
+		</if>
+		<if test="nivel=='region'">
+		region_edomex_2017 id_region,nombre_region,municipio id_municipio,nombre_municipio,
+		sum(contactos) contactos, 
+		sum(meta) meta, case when sum(avance) is null then 0 else sum(avance) end capturados, case when sum(avance) is null then '0%' else round((sum(avance)/sum(meta))*100)||'%' end porcentaje
+		</if>
+		<if test="nivel=='municipio'">
+		region_edomex_2017 id_region,nombre_region,municipio id_municipio,nombre_municipio,t.seccion,
+		sum(contactos) contactos, 
+		sum(meta) meta, case when sum(avance) is null then 0 else sum(avance) end capturados, case when sum(avance) is null then '0%' else round((sum(avance)/sum(meta))*100)||'%' end porcentaje
+		</if>
+		<if test="nivel=='seccion'">
+		region_edomex_2017 id_region,nombre_region,municipio id_municipio,nombre_municipio,t.seccion,
+		contactos, 
+		meta, case when avance is null then 0 else avance end capturados, case when avance is null then '0%' else round((avance/meta)*100)||'%' end porcentaje
+		</if>
+		from
+		(
+			select 
+			region_edomex_2017,nombre_region,municipio,nombre_municipio,seccion, count(*) contactos, round(count(*)) meta
+			from dia_d.movilizables a
+			where grupo_movilizacion=#{programa.nombre2}
+			group by region_edomex_2017,nombre_region,municipio,nombre_municipio,seccion
+		
+		) t
+		 left join 
+		(
+			select b.seccion, count(a.pkey) avance
+			from dia_d.movilizados a
+			join dia_d.movilizadores b on (a.id_movilizador = b.pkey)
+			where programa = #{programa} 
+			 group by b.seccion 
+		)u
+		on u.seccion=t.seccion
+		<if test="nivel=='estatal'">
+		 group by region_edomex_2017,nombre_region
+		</if>
+		<if test="nivel=='region'">
+		 where region_edomex_2017=#{region.seleccionado.idParticion}
+		 group by region_edomex_2017,nombre_region,municipio,nombre_municipio
+		</if>
+		
+		<if test="nivel=='municipio'">
+		 where municipio=#{municipio.seleccionado.idMunicipio}
+		group by region_edomex_2017,nombre_region,municipio,nombre_municipio, t.seccion
+		</if>
+		<if test="nivel=='seccion'">
+		 where t.seccion=#{seccion.seleccionado.idSeccion}
+		</if>
+	</select>
+</mapper>

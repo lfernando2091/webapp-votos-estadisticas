@@ -1,0 +1,327 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:panel header="Estadisticas Avance">
+				<p:messages autoUpdate="true"/>
+				<p:panelGrid>
+				<p:row>
+								<p:column>
+									<p:outputLabel value="Nivel: " />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu value="${nivel}" style="width:200px">
+										<p:ajax event="change" update="@form" />
+										<f:selectItem itemLabel="Seleccione..." itemValue="0"/>
+										<f:selectItem itemLabel="Por Región" itemValue="1" />
+										<f:selectItem itemLabel="Por Municipio" itemValue="2" />
+										<f:selectItem itemLabel="Por Zona" itemValue="3" />
+										<f:selectItem itemLabel="Por Sección" itemValue="4" />
+										<f:selectItem itemLabel="Por Usuario" itemValue="5" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+				<p:row rendered="${nivel ne 1?'true':'false'}">
+								<p:column>
+									<p:outputLabel value="Región:" />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu value="${region}" style="width:200px" required="true" requiredMessage="Región: es requerido">
+										<p:ajax event="change" update="@form" />
+										<f:selectItem itemLabel="Seleccione..." itemValue="0"/>
+										<f:selectItems var="r" value="${regiones}"
+											itemLabel="${r.nombre}" itemValue="${r.id}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Semana: " />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu value="${semana}" style="width:200px" required="true" requiredMessage="Semana: es requerido">
+										<p:ajax event="change" update="@form" />
+										<f:selectItem itemLabel="Seleccione..." itemValue="''"/>
+										<f:selectItems var="r" value="${semanas}"
+											itemLabel="${r.get('semana_descripcion')}" itemValue="${r.get('semana')}" pattern="yyyy/MM/dd"  />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+				</p:panelGrid>
+				<p:separator/>
+				<h:commandLink action="listadoContestadas" title="Filtrar">
+							<p:graphicImage value="/resources/botones/CONSULTAR.png" />
+						</h:commandLink>
+				<p:separator/>
+					<p:tabView>
+<!-- 					<p:ajax event="tabChange" onstart="cambiaSinContestar();" update="dtContestadas" /> -->
+						<p:tab title="Contestadas" >
+				<p:dataTable value="${listadoContestadas}" var="l" id="dtContestadas" scrollable="true" scrollHeight="450"
+							reflow="true" sortBy="${l.llave}" rendered="#{listadoContestadas eq null?'false':'true'}">
+				<p:column headerText="Región" style="width: 5%">
+				<p:outputLabel value="${l.region}"/>
+				</p:column>
+				<p:column headerText="Municipio" style="width: 15%" rendered="${nivel eq 2  or nivel eq 3  or nivel eq 4 or nivel eq 5?'true':'false'}">
+				<p:outputLabel value="${l.municipio}"/>
+				</p:column>
+				<p:column headerText="Zona" style="width: 5%" rendered="${nivel eq 3  or nivel eq 4 or nivel eq 5?'true':'false'}">
+				<p:outputLabel value="${l.zona}"/>
+				</p:column>
+				<p:column headerText="Sección" style="width: 7%" rendered="${nivel eq 4 or nivel eq 5?'true':'false'}">
+				<p:outputLabel value="${l.seccion}"/>
+				</p:column>
+				<p:column headerText="IdUsuario" style="width: 7%" rendered="${nivel eq 5?'true':'false'}">
+				<p:outputLabel value="${l.id_usuario}"/>
+				</p:column>
+				<p:column headerText="Nick" style="width: 7%" rendered="${nivel eq 5?'true':'false'}">
+				<p:outputLabel value="#{l.usuario}"/>
+				</p:column>
+				<p:column headerText="Nombre Completo" style="width: 20%" rendered="${nivel eq 5?'true':'false'}">
+				<p:outputLabel value="#{l.nombre_completo eq null ? 'NO ASIGNADO':l.nombre_completo}"/>
+				</p:column>
+				<p:column headerText="Lunes" style="width: 5%">
+				<p:outputLabel value="${l.c_lunes}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Martes" style="width: 5%">
+				<p:outputLabel value="${l.c_martes}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Miercoles" style="width: 10%">
+				<p:outputLabel value="${l.c_miercoles}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Jueves" style="width: 5%">
+				<p:outputLabel value="${l.c_jueves}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Viernes" style="width: 5%">
+				<p:outputLabel value="${l.c_viernes}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Sábado" style="width: 5%">
+				<p:outputLabel value="${l.c_sabado}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Domingo" style="width: 5%">
+				<p:outputLabel value="${l.c_domingo}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Total" style="width: 5%">
+				<p:outputLabel value="${l.c_total}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				
+				<p:summaryRow >
+				<p:column colspan="${nivel eq 5?nivel+2:nivel}"
+									style="text-align:right">
+									<h:outputText value="Totales: " />
+								</p:column>
+					<p:column headerText="Lunes" style="width: 5%">
+				<p:outputLabel value="${totalesContestados.tc_lunes}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Martes" style="width: 5%">
+				<p:outputLabel value="${totalesContestados.tc_martes}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Miercoles" style="width: 10%">
+				<p:outputLabel value="${totalesContestados.tc_miercoles}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Jueves" style="width: 5%">
+				<p:outputLabel value="${totalesContestados.tc_jueves}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Viernes" style="width: 5%">
+				<p:outputLabel value="${totalesContestados.tc_viernes}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Sábado" style="width: 5%">
+				<p:outputLabel value="${totalesContestados.tc_sabado}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Domingo" style="width: 5%">
+				<p:outputLabel value="${totalesContestados.tc_domingo}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Total" style="width: 5%">
+				<p:outputLabel value="${totalesContestados.tc_total}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				</p:summaryRow>
+				<f:facet name="footer">
+								<h:commandLink>
+									<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+									<p:dataExporter type="xls" target="dtContestadas"
+										fileName="Entrevistas Usuario (Region${region}_${semana})" />
+								</h:commandLink>
+							</f:facet>
+				</p:dataTable>
+				<p:remoteCommand name="cambiaSinContestar" action="cambiaSinContestar" update="@form"/>
+				</p:tab>
+				
+						<p:tab title="Sin Respuesta" id="tbsr">
+				<p:dataTable value="${listadoNoContestadas}" var="t" id="dtNoContestadas" scrollable="true" scrollHeight="450"
+							reflow="true" sortBy="${t.llave}" rendered="#{listadoNoContestadas eq null?'false':'true'}">
+				<p:column headerText="Región" style="width: 5%">
+				<p:outputLabel value="${t.region}"/>
+				</p:column>
+				<p:column headerText="Municipio" style="width: 15%" rendered="${nivel eq 2  or nivel eq 3  or nivel eq 4 or nivel eq 5?'true':'false'}">
+				<p:outputLabel value="${t.municipio}"/>
+				</p:column>
+				<p:column headerText="Zona" style="width: 5%" rendered="${nivel eq 3  or nivel eq 4 or nivel eq 5?'true':'false'}">
+				<p:outputLabel value="${t.zona}"/>
+				</p:column>
+				<p:column headerText="Sección" style="width: 7%" rendered="${nivel eq 4 or nivel eq 5?'true':'false'}">
+				<p:outputLabel value="${t.seccion}"/>
+				</p:column>
+				<p:column headerText="IdUsuario" style="width: 7%" rendered="${nivel eq 5?'true':'false'}">
+				<p:outputLabel value="${t.id_usuario}"/>
+				</p:column>
+				<p:column headerText="Nick" style="width: 7%" rendered="${nivel eq 5?'true':'false'}">
+				<p:outputLabel value="#{t.usuario}"/>
+				</p:column>
+				<p:column headerText="Nombre Completo" style="width: 20%" rendered="${nivel eq 5?'true':'false'}">
+				<p:outputLabel value="#{t.nombre_completo eq null ? 'NO ASIGNADO':l.nombre_completo}"/>
+				</p:column>
+				<p:column headerText="Lunes" style="width: 5%">
+				<p:outputLabel value="${t.nc_lunes}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Martes" style="width: 5%">
+				<p:outputLabel value="${t.nc_martes}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Miercoles" style="width: 10%">
+				<p:outputLabel value="${t.nc_miercoles}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Jueves" style="width: 5%">
+				<p:outputLabel value="${t.nc_jueves}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Viernes" style="width: 5%">
+				<p:outputLabel value="${t.nc_viernes}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Sábado" style="width: 5%">
+				<p:outputLabel value="${t.nc_sabado}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Domingo" style="width: 5%">
+				<p:outputLabel value="${t.nc_domingo}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Total" style="width: 5%">
+				<p:outputLabel value="${t.nc_total}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				
+				<p:summaryRow >
+				<p:column colspan="${nivel eq 5?nivel+2:nivel}"
+									style="text-align:right">
+									<h:outputText value="Totales: " />
+								</p:column>
+					<p:column headerText="Lunes" style="width: 5%">
+				<p:outputLabel value="${totalesNoContestados.tc_lunes}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Martes" style="width: 5%">
+				<p:outputLabel value="${totalesNoContestados.tc_martes}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Miercoles" style="width: 10%">
+				<p:outputLabel value="${totalesNoContestados.tc_miercoles}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Jueves" style="width: 5%">
+				<p:outputLabel value="${totalesNoContestados.tc_jueves}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Viernes" style="width: 5%">
+				<p:outputLabel value="${totalesNoContestados.tc_viernes}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Sábado" style="width: 5%">
+				<p:outputLabel value="${totalesNoContestados.tc_sabado}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Domingo" style="width: 5%">
+				<p:outputLabel value="${totalesNoContestados.tc_domingo}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				<p:column headerText="Total" style="width: 5%">
+				<p:outputLabel value="${totalesNoContestados.tc_total}">
+				<f:convertNumber maxFractionDigits="3" />
+				</p:outputLabel>
+				</p:column>
+				</p:summaryRow>
+				<f:facet name="footer">
+								<h:commandLink>
+									<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+									<p:dataExporter type="xls" target="dtNoContestadas"
+										fileName="Entrevistas Usuario No (Region${region}_${semana})" />
+								</h:commandLink>
+							</f:facet>
+				</p:dataTable>
+				</p:tab>
+				</p:tabView>
+				</p:panel>
+				
+				
+				<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

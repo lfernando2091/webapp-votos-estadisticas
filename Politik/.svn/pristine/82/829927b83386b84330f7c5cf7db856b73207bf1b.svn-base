@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<secured attributes="ROLE_EVENTOS"/>
+	
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="EventosSocialesC.tablaEventosSocialesRealizados(flowScope.evento)" result="viewScope.tabla"/>
+		</on-entry>
+		<transition on="detalleProgramas" to="detalleProgramas">
+			<set name="flowScope.evento" value="viewScope.tabla.seleccionado"/>
+		</transition>
+		
+	</view-state>
+	
+	<view-state id="detalleProgramas">
+		<on-entry>
+			<evaluate expression="EventosProgramasC.tabla(flowScope.evento)" result="viewScope.tabla"/>
+		</on-entry>
+		<transition on="presidium" to="listadoPresidium"/>
+		<transition on="responsable" to="listadoResponsable"/>
+		<transition on="regresar" to="listado"/>
+		<transition on="listadoAsistentes" to="listadoAsistentes"/>
+		<transition on="listadoBeneficiarios" to="listadoBeneficiarios"/>
+		
+	</view-state>
+	
+	<view-state id="listadoPresidium">
+		<on-entry>
+			<evaluate expression="PresidiumC.tablaPresidium(flowScope.evento, flowScope.miembroPresidium)" result="viewScope.tabla"/>
+		</on-entry>
+		<transition on="regresar" to="detalleProgramas">
+			<set name="flowScope.miembroPresidium" value="null"/>
+			<set name="flowScope.persona" value="null"/>
+		</transition>
+		<transition on="agregar" to="buscadorPresidium">
+			<set name="flowScope.persona" value="null"/>
+		</transition>
+		<transition on="regresarlistado" to="listado">
+			<set name="flowScope.miembroPresidium" value="null"/>
+			<set name="flowScope.persona" value="null"/>	
+		</transition>
+		<transition on="eliminar" to="listadoPresidium">
+			<evaluate expression="PresidiumC.eliminarMiembroPresidium(viewScope.tabla.seleccionado)"/>	
+			<set name="flowScope.miembroPresidium" value="null"/>
+			<set name="flowScope.persona" value="null"/>	
+		</transition>
+		<transition on="perfilPresidium" to="perfilPresidium">
+			<set name="flowScope.miembroPresidium" value="viewScope.tabla.seleccionado"/>
+			<evaluate expression="MDMPersonasC.completarPersona(flowScope.miembroPresidium.persona)" />
+			<set name="conversationScope.persona" value="flowScope.miembroPresidium.persona"/>
+		</transition>
+	</view-state>
+	
+	
+	<subflow-state id="perfilPresidium" subflow="mdm/perfiles">
+		<input name="flagPerfil" value="true"/>
+		<transition on="fin" to="listadoPresidium"/>
+	</subflow-state>
+	
+	<subflow-state id="buscadorPresidium" subflow="mdm/buscadores/personas">
+		<input name="flag" value="true"/>
+		<transition on="personaLocalizada" to="agregarPresidium">
+			<set name="flowScope.persona" value="conversationScope.persona" />
+		</transition>
+		<transition on="personaNoLocalizada" to="listadoPresidium"/>
+	</subflow-state>
+	
+	<view-state id="agregarPresidium">
+		<on-entry>
+			<evaluate expression="PresidiumC.crearMiembroPresidium(flowScope.evento, flowScope.persona)" result="flowScope.miembroPresidium"/>
+			<evaluate expression="EventosProgramasC.modelo()" result="viewScope.tablaDependencias"/>
+		</on-entry>
+		<transition on="regresar" to="listadoPresidium">
+			<set name="flowScope.miembroPresidium" value="null"/>
+			<set name="flowScope.persona" value="null"/>
+		</transition>
+		<transition on="regresarDetalle" to="detalleProgramas">
+			<set name="flowScope.miembroPresidium" value="null"/>
+			<set name="flowScope.persona" value="null"/>
+		</transition>
+		<transition on="regresarlistado" to="listado">
+			<set name="flowScope.miembroPresidium" value="null"/>
+			<set name="flowScope.persona" value="null"/>	
+		</transition>
+		<transition on="volverBuscar" to="buscadorPresidium">
+			<set name="flowScope.miembroPresidium" value="null"/>
+			<set name="flowScope.persona" value="null"/>
+		</transition>
+		<transition on="guardar" to="listadoPresidium">
+			<set name="flowScope.persona" value="null"/>
+			<evaluate expression="PresidiumC.nuevoMiembroPresidium(flowScope.miembroPresidium)" result="flowScope.miembroPresidium"/>
+		</transition>
+	</view-state>
+	
+	
+<!-- 	Responsable -->
+	
+	
+	<view-state id="listadoResponsable">
+		<on-entry>
+			<evaluate expression="ResponsableC.tablaResponsable(flowScope.evento, flowScope.responsable)" result="viewScope.tabla"/>
+		</on-entry>
+		<transition on="regresar" to="detalleProgramas">
+			<set name="flowScope.responsable" value="null"/>
+			<set name="flowScope.persona" value="null"/>
+		</transition>
+		<transition on="agregar" to="buscadorResponsable">
+			<set name="flowScope.persona" value="null"/>
+		</transition>
+		<transition on="regresarlistado" to="listado">
+			<set name="flowScope.responsable" value="null"/>
+			<set name="flowScope.persona" value="null"/>	
+		</transition>
+		<transition on="eliminar" to="listadoResponsable">
+			<evaluate expression="ResponsableC.eliminarResponsableEvento(viewScope.tabla.seleccionado)"/>	
+			<set name="flowScope.responsable" value="null"/>
+			<set name="flowScope.persona" value="null"/>	
+		</transition>
+		<transition on="perfilResponsable" to="perfilResponsable">
+			<set name="flowScope.responsable" value="viewScope.tabla.seleccionado"/>
+			<evaluate expression="MDMPersonasC.completarPersona(flowScope.responsable.persona)" />
+			<set name="conversationScope.persona" value="flowScope.responsable.persona"/>
+		</transition>
+	</view-state>
+	
+	<subflow-state id="perfilResponsable" subflow="mdm/perfiles">
+		<input name="flagPerfil" value="true"/>
+		<transition on="fin" to="listadoResponsable"/>
+	</subflow-state>
+	
+	<subflow-state id="buscadorResponsable" subflow="mdm/buscadores/personas">
+		<input name="flag" value="true"/>
+		<transition on="personaLocalizada" to="agregarResponsable">
+			<set name="flowScope.persona" value="conversationScope.persona" />
+		</transition>
+		<transition on="personaNoLocalizada" to="listadoResponsable"/>
+	</subflow-state>
+	
+	<view-state id="agregarResponsable">
+		<on-entry>
+			<evaluate expression="ResponsableC.crearResponsableEvento(flowScope.evento, flowScope.persona)" result="flowScope.responsable"/>
+			<evaluate expression="EventosProgramasC.modelo()" result="viewScope.tablaDependencias"/>
+		</on-entry>
+		<transition on="regresar" to="listadoResponsable">
+			<set name="flowScope.responsable" value="null"/>
+			<set name="flowScope.persona" value="null"/>
+		</transition>
+		<transition on="regresarDetalle" to="detalleProgramas">
+			<set name="flowScope.responsable" value="null"/>
+			<set name="flowScope.persona" value="null"/>
+		</transition>
+		<transition on="regresarlistado" to="listado">
+			<set name="flowScope.responsable" value="null"/>
+			<set name="flowScope.persona" value="null"/>	
+		</transition>
+		<transition on="volverBuscar" to="buscadorResponsable">
+			<set name="flowScope.responsable" value="null"/>
+			<set name="flowScope.persona" value="null"/>
+		</transition>
+		<transition on="guardar" to="listadoResponsable">
+			<set name="flowScope.persona" value="null"/>
+			<evaluate expression="ResponsableC.nuevoResponsableEvento(flowScope.responsable)" result="flowScope.responsable"/>
+		</transition>
+	</view-state>
+	
+	<view-state id="listadoAsistentes">
+		<on-entry>
+			<evaluate expression="AsistentesC.tablaAsistentes(flowScope.evento, flowScope.asistente)" result="flowScope.tablaAsistente"/>
+		</on-entry>
+		<transition on="burcarPersona" to="buscador"/>
+		<transition on="regresarEvento" to="detalleProgramas"/>
+		<transition on="intervenciones" to="listadoIntervenciones">
+			<set name="flowScope.asistente" value="flowScope.tablaAsistente.seleccionado"/>
+		</transition>
+		<transition on="perfil" to="perfilAsistente">
+			<set name="flowScope.asistente" value="flowScope.tablaAsistente.seleccionado"/>
+				<evaluate expression="MDMPersonasC.completarPersona(flowScope.asistente.persona)" />
+			<set name="conversationScope.persona" value="flowScope.asistente.persona"/>
+		</transition>
+		<transition on="eliminar" to="listadoAsistentes">
+			<evaluate expression="AsistentesC.eliminarAsistente(flowScope.tablaAsistente.seleccionado)"/>
+		</transition>
+	</view-state>
+	
+	<subflow-state id="buscador" subflow="mdm/buscadores/personas">
+		<input name="flag" value="true"/>
+			<transition on="personaLocalizada" to="listadoAsistentes">
+				<set name="flowScope.persona" value="conversationScope.persona"/>
+				<evaluate expression="AsistentesC.crearAsistente(flowScope.evento, flowScope.persona)"  result="flowScope.nuevoAsistente"/>
+				<evaluate expression="AsistentesC.nuevoAsistente(flowScope.nuevoAsistente)"/>			
+			</transition>	
+			<transition on="personaNoLocalizada" to="listadoAsistentes"/>
+	</subflow-state>
+	
+	<subflow-state id="perfilAsistente" subflow="mdm/perfiles">
+		<input name="flagPerfil" value="true"/>	
+		<transition on="fin" to="listadoAsistentes"/>
+	</subflow-state>
+	
+	<view-state id="listadoIntervenciones">
+			<on-entry>
+				<evaluate expression="AsistentesC.tablaIntervenciones(flowScope.asistente)" result="flowScope.tablaIntervenciones" />
+			</on-entry>	
+			<transition on="agregarIntervenciones" to="agregarIntervenciones"/>
+			<transition on="menciones" to="listadoMenciones">
+				<set name="flowScope.intervencion" value="flowScope.tablaIntervenciones.seleccionado"/>
+			</transition>
+			<transition on="regresar" to="listadoAsistentes"/>
+			<transition on="eliminar" to="listadoIntervenciones">
+				<evaluate expression="AsistentesC.eliminarIntervenciones(flowScope.tablaIntervenciones.seleccionado)"/>
+			</transition>
+	</view-state>
+	
+	<view-state id="agregarIntervenciones">
+		<on-entry>
+			<evaluate expression="AsistentesC.crearIntervencion(flowScope.asistente)" result="viewScope.nuevoIntervencion"/>
+		</on-entry>
+		<transition on="cancelar" to="listadoIntervenciones"/>
+		<transition on="guardar" to="listadoIntervenciones">
+			<evaluate expression="AsistentesC.nuevoIntervencion(viewScope.nuevoIntervencion)"/>
+		</transition>
+	</view-state>
+	
+	<view-state id="listadoMenciones">
+		<on-entry>
+			<evaluate expression="AsistentesC.tablaMenciones(flowScope.intervencion)" result="flowScope.tablaMenciones"/>
+			
+		</on-entry>
+		<transition on="regresar"  to="listadoIntervenciones"/>
+		<transition on="agregarMenciones"  to="agregarMenciones"/>
+		<transition on="eliminar" to="listadoMenciones">
+				<evaluate expression="AsistentesC.eliminarMenciones(flowScope.tablaMenciones.seleccionado)"/>
+		</transition>
+	</view-state>
+	
+	<view-state id="agregarMenciones">
+		<on-entry>
+			<evaluate expression="AsistentesC.crearMencion(flowScope.intervencion)" result="viewScope.nuevoMencion"/>
+			<evaluate expression="AsistentesC.listadoPosturas()" result="viewScope.listadoPosturas"/>
+		</on-entry>
+		<transition on="cancelar" to="listadoMenciones"/>
+		<transition on="guardar" to="listadoMenciones">
+			<evaluate expression="AsistentesC.nuevoMencion(viewScope.nuevoMencion)"/>
+		</transition>
+	</view-state>
+	
+	<view-state id="listadoBeneficiarios">
+		<on-entry>
+			<evaluate expression="BenefiriariosC.tablaBeneficiarios(flowScope.evento, flowScope.beneficiario)" result="flowScope.tablaBeneficiarios"/>
+		</on-entry>
+		<transition on="burcarPersona" to="buscadorB"/>
+		<transition on="regresarEvento" to="detalleProgramas"/>
+		<transition on="perfil" to="perfilBeneficiario">
+			<set name="flowScope.beneficiario" value="flowScope.tablaBeneficiarios.seleccionado"/>
+				<evaluate expression="MDMPersonasC.completarPersona(flowScope.beneficiario.persona)" />
+			<set name="conversationScope.persona" value="flowScope.beneficiario.persona"/>
+		</transition>
+	</view-state>
+	
+	<subflow-state id="perfilBeneficiario" subflow="mdm/perfiles">
+		<input name="flagPerfil" value="true"/>	
+		<transition on="fin" to="listadoBeneficiarios"/>
+	</subflow-state>
+	
+	<subflow-state id="buscadorB" subflow="mdm/buscadores/personas">
+		<input name="flag" value="true"/>
+			<transition on="personaLocalizada" to="agregarBeneficiarios">
+				<set name="flowScope.persona" value="conversationScope.persona"/>			
+			</transition>	
+			<transition on="personaNoLocalizada" to="listadoBeneficiarios"/>
+	</subflow-state>
+	
+	<view-state id="agregarBeneficiarios">
+	 	<on-entry>
+			<evaluate expression="BenefiriariosC.listadoEjercicios(flowScope.evento)" result="viewScope.listadoEjercicios"/>	
+	 		<evaluate expression="BenefiriariosC.crearBeneficiario(flowScope.evento, flowScope.persona)" result="viewScope.nuevoBeneficiario"/>
+	 	</on-entry>
+
+		<transition on="guardar" to="listadoBeneficiarios">
+			<evaluate expression="BeneficiariosC.nuevoBeneficiario(viewScope.nuevoBeneficiario)"/>
+		</transition>
+		<transition on="cancelar" to="listadoBeneficiarios"/>
+	</view-state>	
+	<end-state id="fin"/>
+</flow>

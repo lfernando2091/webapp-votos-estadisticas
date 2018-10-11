@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panelGrid>
+
+						<p:row>
+							<p:column>
+								<p:panel header="Asignar Usuarios">
+									<p:panelGrid colums="2">
+										<p:outputLabel value="Selecciones" />
+										<p:selectOneMenu value="nuevo.nick" required="true"
+											requiredMessage="Nick es requierido">
+											<f:selectItem itemValue="" itemLabel="Seleccione un Nick" />
+											<f:selectItems value="${modeloUsuarios.listado}" var="f"
+												itemLabel="${f.nick}" itemValue="${f.nick}" />
+										</p:selectOneMenu>
+										<p:commandButton value="Asignar" action="insertar"
+											icon="fa fa-save" />
+										<p:commandButton value="Salir" action="cancelar"
+											icon="fa fa-reply" />
+									</p:panelGrid>
+								</p:panel>
+							</p:column>
+							<p:column>
+								<p:panel
+									header="Usuarios asignados a: ${modeloCampaniaSeleccionada.nombre}">
+									<p:dataTable value="${modeloCampaniaUsuarios.listado}"
+										var="lista" rowKey="${fila.nick}"
+										selection="${modeloCampaniaUsuarios.seleccionado}"
+										selectionMode="single" paginator="true"
+										paginatorAlwaysVisible="false" paginatorPosition="bottom">
+										<p:column headerText="Nick">
+                 ${fila.nick}				
+				</p:column>
+									</p:dataTable>
+									<f:facet name="footer">
+										<p:commandButton value="Asignar" action="asignar"
+											title="Asigar el usuario seleccionado a la campania"
+											icon="fa fa-hand-o-right" udate="@form" />
+										<p:commandButton value="Salir" action="salir"
+											icon="fa fa-mail-reply" />
+									</f:facet>
+								</p:panel>
+							</p:column>
+						</p:row>
+
+
+					</p:panelGrid>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,86 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:messages autoUpdate="true"/>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Importación" action="end" />
+						<p:menuitem value="Mapeo"/>
+					</p:breadCrumb>
+					<p:panel header="Nueva Importación">
+						<p:panelGrid columns="2">
+							<p:column>
+								Nombre Archivo:
+							</p:column>
+							<p:column>
+								Nombre de la Tabla:
+							</p:column>
+							<p:column>
+								${mapeo.archivo.getName()}
+							</p:column>
+							<p:column>
+								${mapeo.nombreTablaImportacion}
+<!-- 								<p:inputText value="${mapeo.nombreTablaImportacion}" required="true" readonly="ture" size="40" validatorMessage="Formato invalido">  -->
+<!-- 											<f:validateRegex pattern="^[a-zA-Z1-9-_]+$" /> -->
+<!-- 								</p:inputText> -->
+							</p:column>
+						</p:panelGrid>
+						
+						<p:panelGrid columns="4"> 
+							<p:dataTable value="${mapeo.tablaImportacion}" var="fila" rowKey="${fila.nombreOriginal}" 
+							selectionMode="single" tableStyle="width:auto"
+							editable="true"  emptyMessage="No se han encontrado resultados">
+								<p:ajax event="rowEdit" listener="#{ImportacionC.onRowEdit}" />
+								<p:ajax event="rowEditCancel" listener="#{ImportacionC.onRowCancel}"/>
+								<p:column headerText="Nombre Archivo">
+									<p:outputLabel value="${fila.nombreOriginal}" />
+								</p:column>
+								<p:column headerText="Nombre Tabla">
+										<p:cellEditor>
+											<f:facet name="output">
+												<p:outputLabel value="${fila.nombreTabla}"/> 
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText id="inputNombre" required="true" validatorMessage="Formato invalido" value="${fila.nombreTabla}" onkeypress="return justNumbers(event);">
+													<f:validateRegex pattern="^[a-z,A-Z,1-9,_]+$"/>
+												</p:inputText>
+												<p:message for="inputNombre" />
+<!-- 												<p:inputText value="${fila.nombreTabla}" required="true" onkeypress="return justNumbers(event);"/> -->
+											</f:facet>
+										</p:cellEditor>
+								</p:column>
+								<p:column headerText="Tipo de datos">
+									<p:cellEditor>
+											<f:facet name="output">
+												<p:outputLabel value="${fila.tipoDatoTabla}"/> 
+											</f:facet>
+											<f:facet name="input">
+												<p:selectOneMenu value="${fila.tipoDatoTabla}" style="width: 100px;">
+					            					<f:selectItems value="${listadoTiposCampo}" var="fila2" itemLabel="${fila2.nombre}" itemValue="${fila2}" />
+					            				</p:selectOneMenu>
+											</f:facet>
+										</p:cellEditor>
+		            			</p:column>
+								<p:column headerText="Editar" style="width:32px">
+									<p:rowEditor />
+								</p:column>
+							</p:dataTable>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton action="guardar" value="Guardar"/>
+							<p:commandButton action="cancelar" value="Cancelar"  immediate="true"/>
+						</f:facet>
+					</p:panel>
+				</h:form>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

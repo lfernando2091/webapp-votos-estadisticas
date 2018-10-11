@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+<secured attributes="ROLE_ENCUESTA_EDOMEX_ENTREVISTADORES" />	
+	<view-state id="capturaEncuesta">
+		<on-entry>
+			<evaluate expression="EncuestaTelefonica2C.listadoContacto()" result="viewScope.contacto"/>
+			<evaluate expression="EncuestaTelefonica2C.nuevo(viewScope.contacto)" result="viewScope.nuevo"/>
+		</on-entry>
+		<transition on="guardar" to="capturaEncuesta">
+			<evaluate expression="EncuestaTelefonica2C.guardar(viewScope.nuevo)"/>
+		</transition>
+		<transition on="siguiente" to="capturaEncuesta">
+			<evaluate expression="EncuestaTelefonica2C.actualizarVuelta(viewScope.contacto)"/>
+		</transition>
+	</view-state>
+	<end-state id="fin"/>
+</flow>

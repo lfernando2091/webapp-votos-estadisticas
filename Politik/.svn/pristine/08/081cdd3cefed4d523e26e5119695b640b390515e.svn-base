@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="administracion.usuariosTerritorios">
+	
+	<select id="usuarioRegiones" parameterType="String" resultType="String">
+		SELECT string_agg(region::text,',')
+  		FROM administracion.usuarios_regiones
+  		where nick = '${value}'
+	</select>
+	
+	<select id="usuarioZona" parameterType="String" resultType="hashmap">
+		SELECT region, zona
+  		FROM administracion.usuarios_zonas
+  		where nick = '${value}'
+	</select>
+	
+	<select id="usuarioMunicipio" parameterType="String" resultType="hashmap">
+		SELECT region, id_municipio, municipio
+  		FROM administracion.usuarios_municipios
+  		where nick = '${value}'
+	</select>
+	
+</mapper>

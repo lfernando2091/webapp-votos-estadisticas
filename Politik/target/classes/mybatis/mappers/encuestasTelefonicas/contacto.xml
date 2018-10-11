@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestasTelefonicas.contacto">
+
+<resultMap type="Contacto2EO" id="contacto">
+	<id 	column="Contacto2EO_id" 				property="id" 				javaType="Integer"/>
+ 	<result column="Contacto2EO_nombre" 			property="nombre" 			javaType="String"/>
+ 	<result column="Contacto2EO_primerApellido" 	property="primerApellido" 	javaType="String"/>
+ 	<result column="Contacto2EO_segunoApellido" 	property="segundoApellido" 	javaType="String"/>
+ 	<result column="Contacto2EO_telefono1" 			property="telefono1" 		javaType="String"/>
+	<result column="Contacto2EO_estatus" 			property="estatus" 			javaType="String"/>
+	<result column="Contacto2EO_vuelta" 			property="vuelta" 			javaType="Integer"/>
+</resultMap>
+
+<sql id="query">
+	SELECT 
+		Contacto2EO.pkey 					Contacto2EO_id, 
+		Contacto2EO.nombre 					Contacto2EO_nombre, 
+		Contacto2EO.primer_apellido 		Contacto2EO_primerApellido, 
+		Contacto2EO.segundo_apellido 		Contacto2EO_segunoApellido, 
+		Contacto2EO.email 					Contacto2EO_email, 
+		Contacto2EO.telefono1 				Contacto2EO_telefono1, 
+	    Contacto2EO.estatus 				Contacto2EO_estatus,
+	    Contacto2EO.vuelta 					Contacto2EO_vuelta
+  	FROM encuestas_telefonicas.contactos 	Contacto2EO
+</sql>
+
+
+<select id="listado" resultMap="contacto">
+<include refid="query"/>
+		where estatus='PENDIENTE'
+		ORDER BY RANDOM()
+		LIMIT 1
+</select>
+
+<select id="buscarPorId"  parameterType="Integer" resultMap="contacto">
+	WHERE Contacto2EO.pkey= #{value}
+</select>
+
+<update id="actualizarEstado" parameterType="Integer">
+	UPDATE encuestas_telefonicas.contactos
+   		SET estatus='EXITOSO'
+ 	WHERE pkey=#{pkey}
+</update>
+
+<update id="actualizarVuelta" parameterType="Integer">
+	UPDATE encuestas_telefonicas.contactos
+		SET vuelta=vuelta+1
+   	WHERE  pkey=#{pkey}
+</update>
+
+</mapper>

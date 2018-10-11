@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Avance de Promoción">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Municipio" />
+							<p:selectOneMenu value="${modeloMunicipios.seleccionado}"
+								converter="ObjectConverter" style="width: 250px;">
+								<p:ajax event="itemSelect" onstart="actualizarTabla()" />
+								<f:selectItems value="${modeloMunicipios.listado}" var="m"
+									itemLabel="${m.nombre}" itemValue="${m}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<p:separator />
+						<p:dataTable id="tablaMetas" value="${modeloMetas.listado}" var="fila" rows="15" paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+							<p:column headerText="Sección" width="75">${fila.seccion}</p:column>
+							<p:column headerText="Meta" width="75">${fila.meta}</p:column>
+							<p:column headerText="Registrados" width="75">${fila.registrados}</p:column>
+							<p:column headerText="No Registrados" width="75">${fila.no_registrados}</p:column>
+							<p:column headerText="Avance" width="75">
+								<p:outputLabel value="${fila.registrados / fila.meta}">
+									<f:convertNumber type="percent" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+					
+					<p:remoteCommand name="actualizarTabla" action="actualizarTabla" update="${p:component('tablaMetas')}" />
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

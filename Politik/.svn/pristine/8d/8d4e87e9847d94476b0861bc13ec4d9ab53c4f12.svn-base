@@ -1,0 +1,95 @@
+package com.saganet.politik.database.catalogos;
+
+import java.io.Serializable;
+import java.util.List;
+
+import org.apache.ibatis.type.Alias;
+
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("DependenciaEO")
+public class DependenciaEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = -8485203518844737855L;
+	
+	private Integer id;
+	private String dependencia;
+	private String siglas;
+	private String nivelGeografico;
+	private String nivelDependencia;
+	private Integer idDependenciaPadre;
+	private DependenciaEO dependenciaPadre;
+	
+	private List<JavaBeanT> territorios;
+	
+	@Override
+	public String toString() {
+		return "DependenciaEO [id=" + id + ", dependencia=" + dependencia + ", siglas=" + siglas + ", nivelGeografico="
+				+ nivelGeografico + ", nivelDependencia=" + nivelDependencia + ", idDependenciaPadre="
+				+ idDependenciaPadre + ", dependenciaPadre=" + dependenciaPadre + ", territorios=" + territorios + "]";
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getDependencia() {
+		return dependencia;
+	}
+
+	public void setDependencia(String dependencia) {
+		this.dependencia = dependencia;
+	}
+
+	public String getSiglas() {
+		return siglas;
+	}
+
+	public void setSiglas(String siglas) {
+		this.siglas = siglas;
+	}
+
+	public String getNivelGeografico() {
+		return nivelGeografico;
+	}
+
+	public void setNivelGeografico(String nivelGeografico) {
+		this.nivelGeografico = nivelGeografico;
+	}
+
+	public String getNivelDependencia() {
+		return nivelDependencia;
+	}
+
+	public void setNivelDependencia(String nivelDependencia) {
+		this.nivelDependencia = nivelDependencia;
+	}
+
+	public Integer getIdDependenciaPadre() {
+		return idDependenciaPadre;
+	}
+
+	public void setIdDependenciaPadre(Integer idDependenciaPadre) {
+		this.idDependenciaPadre = idDependenciaPadre;
+	}
+
+	public DependenciaEO getDependenciaPadre() {
+		return dependenciaPadre;
+	}
+
+	public void setDependenciaPadre(DependenciaEO dependenciaPadre) {
+		this.dependenciaPadre = dependenciaPadre;
+	}
+
+	public List<JavaBeanT> getTerritorios() {
+		return territorios;
+	}
+
+	public void setTerritorios(List<JavaBeanT> territorios) {
+		this.territorios = territorios;
+	}
+	
+}

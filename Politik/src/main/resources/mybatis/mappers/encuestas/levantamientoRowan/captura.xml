@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.levantamientoRowan.captura">
+
+	<resultMap type="levantamientoRowanEncuestaEO" id="entrevistalevantamientoRowan">
+		<id column="levantamientoRowanEncuestaEO_id" 						property="id" 				javaType="Integer" />
+		<result column="levantamientoRowanEncuestaEO_idContacto"			property="idContacto" 		javaType="String" />
+		<result column="levantamientoRowanEncuestaEO_r1" 					property="r1"				javaType="com.saganet.politik.dominios.SiNoNSNCDO" />
+		<result column="levantamientoRowanEncuestaEO_r2" 					property="r2"				javaType="com.saganet.politik.dominios.SiNoNSNCDO" />
+		<result column="levantamientoRowanEncuestaEO_r3" 					property="r3"   			javaType="com.saganet.politik.dominios.HorariosDO" />
+		<result column="levantamientoRowanEncuestaEO_r4" 					property="r4"				javaType="com.saganet.politik.dominios.SiNoNSNCDO" />
+		<result column="levantamientoRowanEncuestaEO_r5" 					property="r5"				javaType="com.saganet.politik.dominios.SiNoNSNCDO" />
+		<result column="levantamientoRowanEncuestaEO_r6" 					property="r6"				javaType="com.saganet.politik.dominios.SiNoNSNCDO" />
+		<result column="levantamientoRowanEncuestaEO_r7" 					property="r7"				javaType="com.saganet.politik.dominios.CandidatosEdomex2017DO" />
+		<result column="levantamientoRowanEncuestaEO_r8" 					property="r8"				javaType="com.saganet.politik.dominios.SiNoNSNCDO" />
+		<result column="levantamientoRowanEncuestaEO_estatus"				property="resultado"		javaType="com.saganet.politik.dominios.ResultadoEncuestaEdomexDO" />
+		<result column="levantamientoRowanEncuestaEO_nick" 					property="nick"				javaType="String" />
+		<result column="levantamientoRowanEncuestaEO_encuestador" 			property="encuestador"		javaType="String" />
+		<result column="levantamientoRowanEncuestaEO_fecha" 				property="fecha"			javaType="java.sql.Timestamp" />
+		<result column="levantamientoRowanEncuestaEO_nombre" 				property="nombre"			javaType="String" />	
+		<result column="levantamientoRowanEncuestaEO_paterno" 				property="paterno"			javaType="String" />
+		<result column="levantamientoRowanEncuestaEO_materno" 				property="materno"			javaType="String" />
+		<result column="levantamientoRowanEncuestaEO_fechaNacimiento" 		property="fechaNacimiento"	javaType="String" />
+		<result column="levantamientoRowanEncuestaEO_genero" 				property="genero"			javaType="com.saganet.politik.dominios.GenerosDO" />
+		<result column="levantamientoRowanEncuestaEO_email" 				property="email"			javaType="String" />
+		<result column="levantamientoRowanEncuestaEO_tel" 					property="tel"				javaType="String" />
+
+	</resultMap>
+	
+	<sql id="query">	
+	SELECT LevantamientoRowanEncuestaEO.pkey 			LevantamientoRowanEncuestaEO_id,
+		LevantamientoRowanEncuestaEO.id_contacto 		LevantamientoRowanEncuestaEO_idContacto,
+		LevantamientoRowanEncuestaEO._1 				LevantamientoRowanEncuestaEO_r1,
+		LevantamientoRowanEncuestaEO._2 				LevantamientoRowanEncuestaEO_r2,
+		LevantamientoRowanEncuestaEO._3 				LevantamientoRowanEncuestaEO_r3,
+		LevantamientoRowanEncuestaEO._4 				LevantamientoRowanEncuestaEO_r4,
+		LevantamientoRowanEncuestaEO._5 				LevantamientoRowanEncuestaEO_r5,
+		LevantamientoRowanEncuestaEO._6 				LevantamientoRowanEncuestaEO_r6,
+		LevantamientoRowanEncuestaEO._7 				LevantamientoRowanEncuestaEO_r7,
+		LevantamientoRowanEncuestaEO._8 				LevantamientoRowanEncuestaEO_r8,
+		
+		LevantamientoRowanEncuestaEO.estatus 			LevantamientoRowanEncuestaEO_estatus,
+		LevantamientoRowanEncuestaEO.encuestador	 	LevantamientoRowanEncuestaEO_encuestaLevantamientoRowan,		
+		LevantamientoRowanEncuestaEO.nick 				LevantamientoRowanEncuestaEO_nick,	
+		LevantamientoRowanEncuestaEO.fecha 				LevantamientoRowanEncuestaEO_fecha,
+		LevantamientoRowanEncuestaEO.nombre 			LevantamientoRowanEncuestaEO_nombre,
+		LevantamientoRowanEncuestaEO.paterno 			LevantamientoRowanEncuestaEO_paterno,
+		LevantamientoRowanEncuestaEO.materno 			LevantamientoRowanEncuestaEO_materno,
+		LevantamientoRowanEncuestaEO.fecha_nacimiento 	LevantamientoRowanEncuestaEO_fechaNacimiento,
+		LevantamientoRowanEncuestaEO.sexo 				LevantamientoRowanEncuestaEO_genero,
+		LevantamientoRowanEncuestaEO.email 				LevantamientoRowanEncuestaEO_email,
+		LevantamientoRowanEncuestaEO.tel 				LevantamientoRowanEncuestaEO_tel	
+	FROM levantamiento_rowan.e_edomex 			LevantamientoRowanEncuestaEO
+	</sql>
+	
+	
+	<select id="buscarPorId" parameterType="LevantamientoRowanEntrevistadoEO" resultMap="entrevistalevantamientoRowan">
+		<include refid="query" />
+		where LevantamientoRowanEncuestaEO.id_contacto::integer=#{idInterno}
+	</select>
+	<insert id="insertar" parameterType="hashmap">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('levantamiento_rowan.e_edomex_pkey_seq')
+		</selectKey>
+		INSERT INTO levantamiento_rowan.e_edomex(
+		pkey, id_contacto, _1, _2, _3, _4, _5, _6, _7, _8, estatus, nick, encuestador, nombre, paterno, materno, fecha_nacimiento, sexo, tel, email, version_captura)
+		VALUES (#{id}, #{encuesta.idContacto}, #{encuesta.r1}, #{encuesta.r2}, #{encuesta.r3}, #{encuesta.r4}, #{encuesta.r5}, #{encuesta.r6}, #{encuesta.r7}, #{encuesta.r8}, #{encuesta.resultado},
+		#{encuesta.nick},'${encuesta.encuestador}',#{entrevistado.nombre},#{entrevistado.apellidoPaterno},#{entrevistado.apellidoMaterno},#{entrevistado.fechaNacimiento},#{entrevistado.sexo}, #{encuesta.tel}, #{encuesta.email},1)
+
+	</insert>
+
+	<update id="actualizarEstatus" parameterType="hashmap">
+		update levantamiento_rowan.encuesta_edomex set estatus = #{encuesta.resultado} where id_interno= #{entrevistado.idInterno}
+	</update>
+	
+	
+	<update id="actualizarEncuesta" parameterType="hashmap">
+		UPDATE levantamiento_rowan.e_edomex
+		SET _1=#{encuesta.r1}, _2=#{encuesta.r2}, _3=#{encuesta.r3}, _4=#{encuesta.r4},  _5=#{encuesta.r5},  _6=#{encuesta.r6},  _7=#{encuesta.r7},  _8=#{encuesta.r8},  estatus = #{encuesta.resultado},encuestador='${encuesta.encuestador}',
+		nombre=#{entrevistado.nombre}, paterno = #{entrevistado.apellidoPaterno}, materno = #{entrevistado.apellidoMaterno}, fecha_nacimiento = #{entrevistado.fechaNacimiento}, sexo =#{entrevistado.sexo}, tel=#{encuesta.tel}, email=#{encuesta.email}, 
+		nick_actualizacion=#{encuesta.nickActualizacion}, fecha_actualizacion=now(), version_captura=version_captura + 1
+		WHERE id_contacto = #{encuesta.idContacto}
+	</update>
+	
+</mapper>

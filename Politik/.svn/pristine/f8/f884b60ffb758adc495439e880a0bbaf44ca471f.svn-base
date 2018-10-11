@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventos.menciones">
+	<cache />
+	<resultMap type="MencionEO" id="mencion">
+		<id column="MencionEO_id" property="id" javaType="Integer" />
+		<result column="MencionEO_descripcion" property="descripcion" javaType="String" />
+		<result column="MencionEO_personaje" property="personaje" javaType="String" />
+		<result column="MencionEO_postura" property="postura" javaType="com.saganet.politik.dominios.PosturaDO" />
+		<association property="intervencion" select="eventos.intervenciones.buscarPorId" column="MencionEO_id_intervencion"/>
+	</resultMap>
+
+	<sql id="query">
+		SELECT
+		MencionEO.pkey 						MencionEO_id,
+		MencionEO.descripcion 				MencionEO_descripcion,
+		MencionEO.postura 					MencionEO_postura,
+		MencionEO.id_intervencion 			MencionEO_id_intervencion,
+		MencionEO.personaje 				MencionEO_personaje
+		FROM eventos_sociales.menciones 	MencionEO
+	</sql>
+
+	<select id="listado" resultMap="mencion">
+		<include refid="query" />
+		ORDER BY MencionEO.id_intervencion, MencionEO.pkey
+	</select>
+	
+	
+	<select id="listadoPorIntervencion" resultMap="mencion" parameterType="IntervencionEO">
+		<include refid="query" />
+		WHERE MencionEO.id_intervencion=#{id}
+		ORDER BY MencionEO.pkey
+	</select>
+	
+	<select id="buscarPorId" resultMap="mencion" parameterType="Integer">
+		<include refid="query" />
+		WHERE MencionEO.pkey=#{value}
+		ORDER BY MencionEO.pkey
+	</select>
+
+	<insert id="insertar" parameterType="MencionEO">
+		INSERT INTO
+		eventos_sociales.menciones(id_intervencion, descripcion, personaje, postura)
+		VALUES (#{intervencion.id},#{descripcion},#{personaje},#{postura});
+	</insert>
+
+	<delete id="eliminar" parameterType="MencionEO">
+		DELETE FROM eventos_sociales.menciones WHERE pkey=#{id}
+	</delete>
+	
+	<delete id="eliminarIntervencion" parameterType="IntervencionEO">
+		DELETE FROM eventos_sociales.menciones WHERE id_intervencion=#{id}
+	</delete>
+	
+	<delete id="eliminarAsistenteEO" parameterType="AsistenteEO">
+		DELETE FROM eventos_sociales.menciones 
+		WHERE id_intervencion in 
+		(SELECT id_intervencion  FROM eventos_sociales.intervenciones WHERE id_asistente=#{id})
+	</delete>
+	
+	<delete id="eliminarEventoSocialEOA" parameterType="EventoSocialEO">
+	DELETE FROM eventos.menciones WHERE pkey in (
+		SELECT  a.pkey FROM eventos.menciones a
+		left JOIN eventos_sociales.intervenciones b on (a.id_intervencion=b.pkey)
+		left JOIN eventos_sociales.asistentes c ON (b.id_asistente=c.id_pkey) WHERE id_evento_social=#{id})
+	</delete>
+	
+</mapper>

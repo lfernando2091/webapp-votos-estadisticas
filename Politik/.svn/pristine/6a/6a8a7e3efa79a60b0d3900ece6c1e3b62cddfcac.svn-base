@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="diaD.registroUsuarios">
+	<resultMap type="RegistroMovilizadorEO" id="registroMovilizador">
+		<id 			column="RegistroMovilizadorEO_pkey" 						property="id" 					javaType="Integer" />
+		<result 		column="RegistroMovilizadorEO_region" 						property="region"				javaType="Integer"/>
+		<result  		column="RegistroMovilizadorEO_nombreRegion"					property="nombreRegion" 		javaType="String"/>
+		<result  		column="RegistroMovilizadorEO_idMunicipio"					property="idMunicipio" 			javaType="Integer"/>
+		<result  		column="RegistroMovilizadorEO_nombreMunicipio"				property="nombreMunicipio" 		javaType="String"/>
+		<result  		column="RegistroMovilizadorEO_codigoAlfanumerico"			property="codigoAlfanumerico" 	javaType="String"/>
+		<result 		column="RegistroMovilizadorEO_programa" 					property="programa"				javaType="com.saganet.politik.dominios.ProgramasEdoMexDO"/>
+	</resultMap>
+	
+
+	<sql id="query">
+		SELECT pkey, region, nombre_region, id_municipio, municipio, programa, codigo_alfanumerico
+ 		 FROM dia_d.registro_movilizadores
+	</sql>
+	
+	
+	<select id="validarCodigo" parameterType="hashmap"  resultMap="registroMovilizador">
+	select count(*) from  dia_d.registro_movilizadores where codigo_alfanumerico = #{codigo} 
+	</select>
+	
+	<select id="conteoUsuario" resultType="Integer">
+	select nextval('encuestas.encuesta_edomex_usuarios_seq')
+	</select>
+	
+	
+</mapper>

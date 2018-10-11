@@ -1,0 +1,62 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Eventos" action="regresar" />
+						<p:menuitem value="Programas" />
+					</p:breadCrumb>
+					<p:panel header="Programas">
+						<p:panelGrid columns="2">
+							<p:column>
+								Nombre Evento:
+							</p:column>
+							<p:column>
+								${evento.nombre}
+							</p:column>
+							<p:column>
+								Descripción Evento
+							</p:column>
+							<p:column>
+								${evento.descripcionLogistica}
+							</p:column>
+						</p:panelGrid>
+						<p:dataTable value="${tabla.listado}" var="fila" paginator="true" rows="10" paginatorPosition="bottom" emptyMessage="Sin Resultados">
+							<p:column headerText="Dependencia" >
+								${fila.programaEjercicio.programa.dependencia.dependencia}
+							</p:column>
+							<p:column headerText="Programa" >
+								${fila.programaEjercicio.programa.programa}
+							</p:column>
+							<p:column headerText="Ejercicio"  style="width:25%">
+								${fila.programaEjercicio.fechaInicio} - ${fila.programaEjercicio.fechaTermino}
+							</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandLink action="presidium" immediate="true" >
+									<p:graphicImage value="/resources/botones/PRESIDIUM.png" />
+							</p:commandLink>
+							<p:commandLink action="responsable" immediate="true" >
+									<p:graphicImage value="/resources/botones/DETALLE.png" />
+							</p:commandLink>
+							<p:commandLink action="regresar" immediate="true" >
+									<p:graphicImage value="/resources/botones/REGRESAR.png" />
+							</p:commandLink>
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

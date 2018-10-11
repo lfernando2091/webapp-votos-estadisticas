@@ -1,0 +1,155 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					
+					<p:panel header="Datos de la encuesta">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Encuesta: " />
+							<p:outputLabel
+								value="${modeloEncuestaSeleccionada.id} - ${modeloEncuestaSeleccionada.descripcion}" />
+							<p:outputLabel value="Tipo Regla: " />
+							<p:selectOneMenu value="${nuevaRegla.tipo}">
+						
+								<f:selectItems value="${tiposReglas}" var="fila"
+									itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Nombre: " />
+							<p:inputTextarea value="${nuevaRegla.descripcion}"
+								required="true"
+								requiredMessage="Es necesario proporcionar la descripcion de la regla" />
+						</p:panelGrid>
+
+
+						<p:spacer />
+
+						<p:panelGrid style="width:100%">
+							<p:row style="topAlign">
+								<p:column style="width:50%">
+									<p:panelGrid>
+										<p:row>
+											<p:column>
+												<p:panel header="Preguntas">
+													<p:dataTable value="${modeloPreguntas.listado}" var="fila"
+														selectionMode="single"
+														selection="${modeloPreguntas.seleccionado}"
+														rowKey="${fila.id}" paginator="true"
+														paginatorAlwaysVisible="false" paginatorPosition="bottom"
+														rows="15" reflow="true">
+														<p:ajax event="rowSelect"
+															onstart="comandoLlenarRespuestasCerradas()" />
+														<p:column headerText="Tipo Pregunta" width="15%">
+					${fila.tipoPregunta}
+					</p:column>
+														<p:column id="cPregunta" headerText="Pregunta">
+															<p:outputLabel id="lblPregunta" title="${fila.pregunta}"
+																value="Pregunta_${fila.consecutivoPregunta}" />
+															<p:tooltip for="lblPregunta" />
+														</p:column>
+
+													</p:dataTable>
+												</p:panel>
+											</p:column>
+										</p:row>
+										<p:row styleClass="topAlign">
+											<p:column>
+												<p:panel header="Respuestas Cerradas">
+													<p:dataTable id="dtlPreguntasCerradas"
+														value="${modeloRespuestasCerradas.listado}" var="fila"
+														rowKey="${fila.id}" selectionMode="single"
+														selection="${modeloRespuestasCerradas.seleccionado}"
+														paginator="true" paginatorAlwaysVisible="false"
+														paginatorPosition="bottom" rows="15" reflow="true">
+														<p:column headerText="Respuesta">
+					${fila.respuesta}
+					</p:column>
+													</p:dataTable>
+												</p:panel>
+											</p:column>
+										</p:row>
+									</p:panelGrid>
+								</p:column>
+								<p:column width="50%" styleClass="topAlign">
+									<p:panel header="Condiciones">
+										<p:toolbar>
+											<f:facet name="left">
+												<p:commandButton value="=" />
+												<p:commandButton value="&gt;" />
+												<p:commandButton value="&lt;" />
+												<p:commandButton value="&lt;&gt;" />
+												<p:separator />
+												<p:commandButton value="AND" />
+												<p:commandButton value="OR" />
+												<p:separator />
+												<p:commandButton value="(" />
+												<p:commandButton value=")" />
+											</f:facet>
+										</p:toolbar>
+										<p:spacer height="20" />
+
+										<p:inputTextarea id="taCondicion" value="${nuevaRegla.regla}"
+											rows="5" style="width:95%">
+											
+										</p:inputTextarea>
+										<p:spacer height="20" />
+										<p:outputLabel value="*IMPORTANTE: Si usted selecciono el tipo de regla 'Combinada' debe capturar la condición requerida; Si usted selecciono el tipo de regla 'Simple' debe ingresar una sola pregunta con la cual se rezalizara el conteo po las preguntas cerradas." style="font-weight: bold !important;"/>
+										<p:spacer height="20" />
+										
+										
+										<p:spacer height="20" />
+										
+										
+										<p:spacer height="10" />
+										<p:panelGrid columns="2">
+											<p:outputLabel value="Aplica" />
+											<p:inputText value="${nuevaRegla.aplica}" required="true" requiredMessage="Es necesario capturar el valor en caso de aplicar" />
+											<p:outputLabel value="No Aplica" />
+											<p:inputText value="${nuevaRegla.noAplica}" required="true" requiredMessage="Es necesario capturar el valor de no aplica" />
+										</p:panelGrid>
+										<p:spacer height="20" />
+										<p:commandButton action="validarCondicion" icon="fa fa-play" value="Validar Sentencia" update="@form"/>
+										<p:spacer height="20" />
+										<p:messages id="mensajeValidacion" autoUpdate="true"/>
+											<f:facet name="footer">
+							<p:commandButton action="siguiente" id="btnSiguiente" icon="fa fa-long-arrow-right"
+								value="siguiente" rendered="${validado==1?true:false}"/>
+							<p:commandButton type="bottom" action="cancelar"
+								icon="fa fa-level-up" value="Cancelar" immediate="true" />
+						</f:facet>
+									</p:panel>
+								</p:column>
+							</p:row>
+
+
+
+						</p:panelGrid>
+						<p:remoteCommand name="comandoLlenarRespuestasCerradas"
+							action="respuestasCerradas" update="@form" immediate="true" />
+
+					</p:panel>
+
+
+
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+							
+						}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

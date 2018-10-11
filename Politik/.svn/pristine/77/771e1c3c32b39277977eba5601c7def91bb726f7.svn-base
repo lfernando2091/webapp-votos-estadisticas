@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="filtro">
+		<on-entry>
+			<set name="viewScope.programa" value="''" />
+			<set name="viewScope.pregunta" value="''" />
+			<evaluate expression="DominiosModelosC.programasEdoMex2()"
+				result="flowScope.modeloProgramas" />
+		</on-entry>
+		<transition on="mostrarEncuesta" to="r1">
+			<set name="requestScope.pregunta" value="viewScope.pregunta" />
+			<set name="requestScope.programa" value="viewScope.programa" />
+		</transition>
+	</view-state>
+	<view-state id="r1">
+		<on-entry>
+			<set name="viewScope.pregunta" value="requestScope.pregunta" />
+			<set name="viewScope.programa" value="requestScope.programa" />
+			<evaluate
+				expression="Edomex2017EncuestasRespuestasC.modeloPregunta(null,viewScope.pregunta, viewScope.programa)"
+				result="viewScope.modeloDatos" />
+				<evaluate
+				expression="Edomex2017EncuestasRespuestasC.subtotal(viewScope.modeloDatos.actual, viewScope.pregunta)"	result="viewScope.mapaSubto" />
+		</on-entry>
+		<transition on="actualizar">
+			<evaluate
+				expression="Edomex2017EncuestasRespuestasC.modeloPregunta(viewScope.modeloDatos.actual.seleccionado,viewScope.pregunta, viewScope.programa)"
+				result="viewScope.modeloDatos" />
+				<evaluate
+				expression="Edomex2017EncuestasRespuestasC.subtotal(viewScope.modeloDatos.actual, viewScope.pregunta)"
+				result="viewScope.mapaSubto" />
+		</transition>
+		<transition on="volver" to="salir">
+		</transition>
+	</view-state>
+	<end-state id="salir" />
+</flow>

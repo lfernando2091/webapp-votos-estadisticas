@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+			
+				<p:toolbar>
+				 <f:facet name="left">
+				<p:commandButton icon="fa fa-plus-circle" value="Encuesta" action="agregarEncuesta"/><p:separator />
+				</f:facet>
+				</p:toolbar>
+					<p:panelGrid>
+					<p:row styleClass="topAlign">
+					<p:column>
+						<p:panel header="Encuestas" >
+							<p:dataTable value="${modeloEncuestas.listado}" var="fila"
+								rowKey="${fila.id}" selection="${modeloEncuestas.seleccionado}"
+								selectionMode="single" paginator="true" rows="15"
+								paginatorAlwaysVisible="false" paginatorPosition="bottom"
+								reflow="true" >
+								<p:ajax event="rowSelect" onstart="comandollenarCampanias()" />
+								<p:column headerText="ID" width="10%">
+									${fila.id}
+								</p:column>
+								<p:column headerText="Descripcion" width="70%">
+									${fila.descripcion}
+								</p:column>
+								<p:column headerText="Opciones" width="20%">
+									<p:commandLink action="preguntasEncuesta" ajax="false">
+										<p:graphicImage
+											value="/resources/spark-layout/images/preguntas.svg"
+											alt="Preguntas de la encuesta seleccionada" width="25px" />
+									</p:commandLink>
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+						</p:column>
+						<p:column>
+						<p:panel header="Campañas">
+							<p:dataTable value="${modeloCampanias.listado}" var="fila"
+								rowKey="${fila.id}" selectionMode="single"
+								selection="${modeloCampanias.seleccionado}" paginator="true"
+								rows="15" paginatorAlwaysVisible="false" reflow="true"
+								paginatorPosition="bottom">
+								<p:column headerText="ID" width="10%">
+								${fila.id}
+								</p:column>
+								<p:column headerText="Nombre de la Campaña">
+								${fila.nombre}
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+						</p:column>
+</p:row>
+					</p:panelGrid>
+<p:remoteCommand name="comandollenarCampanias"	action="campaniasEncuesta" partialSubmit="true" update="@form" />
+					<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+							
+						}
+					</h:outputStylesheet>
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

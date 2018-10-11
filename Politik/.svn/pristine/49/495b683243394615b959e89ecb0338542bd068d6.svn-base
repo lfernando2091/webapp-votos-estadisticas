@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:messages id="mensajes"></p:messages>
+					<p:panel header="E-mails">
+						<p:panelGrid columns="2" columnClasses="alignTop, alignTop">
+							<p:panel header="Agregar">
+								<p:panelGrid columns="2">
+									<h:outputText value="Nombre:" />
+									<h:outputText value="${persona.id} - ${persona.nombre} ${persona.primerApellido} ${persona.segundoApellido}" />
+									<h:outputText value="Entidad Nacimiento: " />
+									<h:outputText value="${persona.entidadNacimiento.nombre}" />
+									<p:outputLabel value="E-mail" />
+									<p:inputText value="${email.email}" required="true"
+										validatorMessage="Valor incorrecto"
+										requiredMessage="Valor requerido">
+										<f:validateRegex pattern="^[_a-z0-9-]+(.[_a-z0-9-]+)*@[a-z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,4})$" />
+									</p:inputText>
+								</p:panelGrid>
+								<f:facet name="footer">
+									<p:commandLink  action="regresarValor">
+											<p:graphicImage value="/resources/botones/AGREGAR.png" />
+									</p:commandLink>
+									<p:commandLink  action="cancelar" immediate="true">
+											<p:graphicImage value="/resources/botones/CANCELAR.png" />
+									</p:commandLink>
+<!-- 									<p:commandButton value="Agregar" action="regresarValor"/> -->
+<!-- 									<p:commandButton value="Salir" action="cancelar" immediate="true"/> -->
+								</f:facet>
+							</p:panel>
+							<p:panel header="Listado">
+								<p:dataTable var="t" value="#{emailPersonaTabla.listado}">
+									<p:column headerText="Email">
+										<h:outputText value="#{t.email}" />
+									</p:column>
+								</p:dataTable>
+							</p:panel>
+						</p:panelGrid>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+		<h:outputStylesheet>
+			.alignTop { vertical-align: top; }
+		</h:outputStylesheet>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="mencuestas.edomex2017.respuestas.otros.respuestas">
+	
+	<select id="listadoRegion" resultType="hashmap">
+	<if test="tipo!='PERSONA'">
+	select 
+*
+from 
+(
+	${listado}
+) x
+left join 
+(
+	select
+	<if test="tipo=='REGION'">region_edomex_2017,</if>
+	<if test="tipo=='MUNICIPIO'">region_edomex_2017,municipio,</if>
+	<if test="tipo=='SECCION'">region_edomex_2017,municipio,seccion,</if>
+	<if test="pregunta==1">
+	sum(case when _1 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,sum(case when _1 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, sum(case when _1 = 'NC' then 1 else 0 end) nc_total,
+	sum(case when _1 = 'MUCHO' and b.sexo ='H' then 1 else 0 end) mucho_hombres,sum(case when _1 = 'MUCHO' and b.sexo ='M' then 1 else 0 end) mucho_mujeres, sum(case when _1 = 'MUCHO' then 1 else 0 end) mucho_total,
+	sum(case when _1 = 'REGULAR' and b.sexo ='H' then 1 else 0 end) regular_hombres,sum(case when _1 = 'REGULAR' and b.sexo ='M' then 1 else 0 end) regular_mujeres, sum(case when _1 = 'REGULAR' then 1 else 0 end) regular_total,
+	sum(case when _1 = 'NADA' and b.sexo ='H' then 1 else 0 end) nada_hombres,sum(case when _1 = 'NADA' and b.sexo ='M' then 1 else 0 end) nada_mujeres, sum(case when _1 = 'NADA' then 1 else 0 end) nada_total,
+	</if>
+	<if test="pregunta==2">
+	sum(case when _2 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,sum(case when _2 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, sum(case when _2 = 'NC' then 1 else 0 end) nc_total,
+	sum(case when _2 = 'MUCHO' and b.sexo ='H' then 1 else 0 end) mucho_hombres,sum(case when _2 = 'MUCHO' and b.sexo ='M' then 1 else 0 end) mucho_mujeres, sum(case when _2 = 'MUCHO' then 1 else 0 end) mucho_total,
+	sum(case when _2 = 'REGULAR' and b.sexo ='H' then 1 else 0 end) regular_hombres,sum(case when _2 = 'REGULAR' and b.sexo ='M' then 1 else 0 end) regular_mujeres, sum(case when _2 = 'REGULAR' then 1 else 0 end) regular_total,
+	sum(case when _2 = 'NADA' and b.sexo ='H' then 1 else 0 end) nada_hombres,sum(case when _2 = 'NADA' and b.sexo ='M' then 1 else 0 end) nada_mujeres, sum(case when _2 = 'NADA' then 1 else 0 end) nada_total,
+	</if>
+	<if test="pregunta==3">
+	sum(case when _3 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,sum(case when _3 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, sum(case when _3 = 'NC' then 1 else 0 end) nc_total,
+	sum(case when _3 = 'MUCHO' and b.sexo ='H' then 1 else 0 end) mucho_hombres,sum(case when _3 = 'MUCHO' and b.sexo ='M' then 1 else 0 end) mucho_mujeres, sum(case when _3 = 'MUCHO' then 1 else 0 end) mucho_total,
+	sum(case when _3 = 'REGULAR' and b.sexo ='H' then 1 else 0 end) regular_hombres,sum(case when _3 = 'REGULAR' and b.sexo ='M' then 1 else 0 end) regular_mujeres, sum(case when _3 = 'REGULAR' then 1 else 0 end) regular_total,
+	sum(case when _3 = 'NADA' and b.sexo ='H' then 1 else 0 end) nada_hombres,sum(case when _3 = 'NADA' and b.sexo ='M' then 1 else 0 end) nada_mujeres, sum(case when _3 = 'NADA' then 1 else 0 end) nada_total,
+	</if>
+	<if test="pregunta==4">
+	sum(case when _4 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,sum(case when _4 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, sum(case when _4 = 'NC' then 1 else 0 end) nc_total,
+	sum(case when _4 = 'MUCHO' and b.sexo ='H' then 1 else 0 end) mucho_hombres,sum(case when _4 = 'MUCHO' and b.sexo ='M' then 1 else 0 end) mucho_mujeres, sum(case when _4 = 'MUCHO' then 1 else 0 end) mucho_total,
+	sum(case when _4 = 'REGULAR' and b.sexo ='H' then 1 else 0 end) regular_hombres,sum(case when _4 = 'REGULAR' and b.sexo ='M' then 1 else 0 end) regular_mujeres, sum(case when _4 = 'REGULAR' then 1 else 0 end) regular_total,
+	sum(case when _4 = 'NADA' and b.sexo ='H' then 1 else 0 end) nada_hombres,sum(case when _4 = 'NADA' and b.sexo ='M' then 1 else 0 end) nada_mujeres, sum(case when _4 = 'NADA' then 1 else 0 end) nada_total,
+	</if>
+	<if test="pregunta==5">
+	sum(case when _5 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,sum(case when _5 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, sum(case when _5 = 'NC' then 1 else 0 end) nc_total,
+	sum(case when _5 = 'SI' and b.sexo ='H' then 1 else 0 end) si_hombres,sum(case when _5 = 'SI' and b.sexo ='M' then 1 else 0 end) si_mujeres, sum(case when _5 = 'SI' then 1 else 0 end) si_total,
+	sum(case when _5 = 'NO' and b.sexo ='H' then 1 else 0 end) no_hombres,sum(case when _5 = 'NO' and b.sexo ='M' then 1 else 0 end) no_mujeres, sum(case when _5 = 'NO' then 1 else 0 end) no_total,
+	</if>
+	sum(case when b.sexo = 'H' then 1 else 0 end) hombres, sum(case when b.sexo = 'M' then 1 else 0 end) mujeres,count(*) total
+	from encuestas_resultados.e_edomex a
+	join encuestas.encuesta_edomex b on (a.id_contacto::integer = b.id_interno) 
+	 where
+	<if test="programa!='TODOS'">
+	programa_general = upper('${programa}')
+	</if>
+	<if test="programa=='TODOS'">
+	1 = 1
+	</if>
+	
+	<if test="nivel=='Geozona'">
+	and region_edomex_2017 in 
+	<foreach item="item" collection="territorios" open="(" separator="," close=")">
+		'${item.idParticion}'
+	</foreach>
+	</if>
+	<if test="nivel=='Municipio'">
+	and municipio in 
+	<foreach item="item" collection="territorios" open="(" separator="," close=")">
+		'${item.idMunicipio}'
+	</foreach>
+	</if>
+	<if test="tipo=='REGION'">group by  region_edomex_2017</if>
+	<if test="tipo=='MUNICIPIO'">group by  region_edomex_2017,municipio</if>
+	<if test="tipo=='SECCION'">group by  region_edomex_2017,municipio,seccion</if>
+) y on
+ (x.id = <if test="tipo=='REGION'">y.region_edomex_2017</if> <if test="tipo=='MUNICIPIO'">y.municipio</if> <if test="tipo=='SECCION'">y.seccion</if>)
+  <if test="tipo!='SECCION'">order by x.id</if>
+   <if test="tipo=='SECCION'">order by total</if>
+ </if>
+ <if test="tipo=='PERSONA'">
+ select
+	region_edomex_2017,municipio,seccion,id_interno id,nombre||' '||apellido_paterno||' '||apellido_materno nombre,
+	<if test="pregunta=='1'">
+	(case when _1 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,(case when _1 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, (case when _1 = 'NC' then 1 else 0 end) nc_total,
+	(case when _1 = 'MUCHO' and b.sexo ='H' then 1 else 0 end) mucho_hombres,(case when _1 = 'MUCHO' and b.sexo ='M' then 1 else 0 end) mucho_mujeres, (case when _1 = 'MUCHO' then 1 else 0 end) mucho_total,
+	(case when _1 = 'REGULAR' and b.sexo ='H' then 1 else 0 end) regular_hombres,(case when _1 = 'REGULAR' and b.sexo ='M' then 1 else 0 end) regular_mujeres, (case when _1 = 'REGULAR' then 1 else 0 end) regular_total,
+	(case when _1 = 'NADA' and b.sexo ='H' then 1 else 0 end) nada_hombres,(case when _1 = 'NADA' and b.sexo ='M' then 1 else 0 end) nada_mujeres, (case when _1 = 'NADA' then 1 else 0 end) nada_total,
+		</if>
+	<if test="pregunta==2">
+	(case when _2 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,(case when _2 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, (case when _2 = 'NC' then 1 else 0 end) nc_total,
+	(case when _2 = 'MUCHO' and b.sexo ='H' then 1 else 0 end) mucho_hombres,(case when _2 = 'MUCHO' and b.sexo ='M' then 1 else 0 end) mucho_mujeres, (case when _2 = 'MUCHO' then 1 else 0 end) mucho__total,
+	(case when _2 = 'REGULAR' and b.sexo ='H' then 1 else 0 end) regular_hombres,(case when _2 = 'REGULAR' and b.sexo ='M' then 1 else 0 end) regular_mujeres, (case when _2 = 'REGULAR' then 1 else 0 end) regular_total,
+	(case when _2 = 'NADA' and b.sexo ='H' then 1 else 0 end) nada_hombres,(case when _2 = 'NADA' and b.sexo ='M' then 1 else 0 end) nada_mujeres, (case when _2 = 'NADA' then 1 else 0 end) nada_total,
+	</if>
+	<if test="pregunta==3">
+	(case when _3 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,(case when _3 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, (case when _3 = 'NC' then 1 else 0 end) nc_total,
+	(case when _3 = 'MUCHO' and b.sexo ='H' then 1 else 0 end) mucho_hombres,(case when _3 = 'MUCHO' and b.sexo ='M' then 1 else 0 end) mucho_mujeres, (case when _3 = 'MUCHO' then 1 else 0 end) mucho__total,
+	(case when _3 = 'REGULAR' and b.sexo ='H' then 1 else 0 end) regular_hombres,(case when _3 = 'REGULAR' and b.sexo ='M' then 1 else 0 end) regular_mujeres, (case when _3 = 'REGULAR' then 1 else 0 end) regular_total,
+	(case when _3 = 'NADA' and b.sexo ='H' then 1 else 0 end) nada_hombres,(case when _3 = 'NADA' and b.sexo ='M' then 1 else 0 end) nada_mujeres, (case when _3 = 'NADA' then 1 else 0 end) nada_total,
+	</if>
+	<if test="pregunta==4">
+	(case when _4 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,(case when _4 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, (case when _4 = 'NC' then 1 else 0 end) nc_total,
+	(case when _4 = 'MUCHO' and b.sexo ='H' then 1 else 0 end) mucho_hombres,(case when _4 = 'MUCHO' and b.sexo ='M' then 1 else 0 end) mucho_mujeres, (case when _4 = 'MUCHO' then 1 else 0 end) mucho__total,
+	(case when _4 = 'REGULAR' and b.sexo ='H' then 1 else 0 end) regular_hombres,(case when _4 = 'REGULAR' and b.sexo ='M' then 1 else 0 end) regular_mujeres, (case when _4 = 'REGULAR' then 1 else 0 end) regular_total,
+	(case when _4 = 'NADA' and b.sexo ='H' then 1 else 0 end) nada_hombres,(case when _4 = 'NADA' and b.sexo ='M' then 1 else 0 end) nada_mujeres, (case when _4 = 'NADA' then 1 else 0 end) nada_total,
+		</if>
+	<if test="pregunta=='5'">
+	(case when _5 = 'NC' and b.sexo ='H' then 1 else 0 end) nc_hombres,(case when _5 = 'NC' and b.sexo ='M' then 1 else 0 end) nc_mujeres, (case when _5 = 'NC' then 1 else 0 end) nc_total,
+	(case when _5 = 'SI' and b.sexo ='H' then 1 else 0 end) si_hombres,(case when _5 = 'SI' and b.sexo ='M' then 1 else 0 end) si_mujeres, (case when _5 = 'SI' then 1 else 0 end) si_total,
+	(case when _5 = 'NO' and b.sexo ='H' then 1 else 0 end) no_hombres,(case when _5 = 'NO' and b.sexo ='M' then 1 else 0 end) no_mujeres, (case when _5 = 'NO' then 1 else 0 end) no_total,
+	
+	</if>
+	(case when b.sexo = 'H' then 1 else 0 end) hombres, (case when b.sexo = 'M' then 1 else 0 end) mujeres,1 total
+	from encuestas_resultados.e_edomex a
+	join encuestas.encuesta_edomex b on (a.id_contacto::integer = b.id_interno) 
+	where b.seccion ='${seccion}'
+	<if test="programa!='TODOS'">
+	and programa_todo = upper('${programa}')
+	</if>
+	
+ </if>
+	</select>
+</mapper>

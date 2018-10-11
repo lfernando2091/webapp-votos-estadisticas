@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="warehouse.telefonos">
+	<cache />
+	<resultMap type="TelefonoEO" id="telefono">
+		<id column="TelefonoEO_id" property="id" javaType="Integer" />
+		<result column="TelefonoEO_telefono" property="telefono" javaType="String" />
+		<result column="TelefonoEO_ext" property="ext" javaType="String" />
+		<result column="TelefonoEO_observaciones" property="observaciones" javaType="String" />
+		<association property="tipo" resultMap="catalogos.tiposTelefonos.tipoTelefono" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			TelefonoEO.id_telefono 				TelefonoEO_id,
+			TelefonoEO.telefono 				TelefonoEO_telefono,
+			TelefonoEO.ext 						TelefonoEO_ext,
+			TelefonoEO.observaciones 			TelefonoEO_observaciones,
+			TipoTelefonoEO.id_tipo_telefono 	TipoTelefonoEO_id, 
+			TipoTelefonoEO.tipo_telefono 		TipoTelefonoEO_nombre
+  		FROM warehouse.telefonos TelefonoEO
+  		JOIN catalogos.tipos_telefonos TipoTelefonoEO on (TelefonoEO.id_tipo_telefono = TipoTelefonoEO.id_tipo_telefono)
+	</sql>
+	
+	<select id="buscarPorPersona" parameterType="PersonaEO" resultMap="telefono">
+		<include refid="query" />
+		WHERE TelefonoEO.id_entidad_nac = #{entidadNacimiento.id} AND TelefonoEO.id_persona = #{id}
+		ORDER BY TelefonoEO.id_telefono
+	</select>
+	
+	<insert id="insertar" parameterType="hashmap">
+		<selectKey keyProperty="telefono.id" resultType="Integer" order="BEFORE">
+			SELECT nextval('warehouse.telefonos_id_telefono_seq'::regclass)
+		</selectKey>
+		INSERT INTO warehouse.telefonos(id_telefono, id_persona, id_entidad_nac, id_tipo_telefono, telefono, ext, observaciones)
+    	VALUES (#{telefono.id}, #{persona.id}, #{persona.entidadNacimiento.id}, #{telefono.tipo.id}, #{telefono.telefono}, #{telefono.ext}, #{telefono.observaciones})
+	</insert>
+</mapper>

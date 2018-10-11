@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+	
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="EstructurasEstructurasC.modelo()" result="viewScope.modeloEstructuras" />
+		</on-entry>
+		
+		<transition on="agregar"  to="agregarEditar">
+			<evaluate expression="EstructurasEstructurasC.nuevo()" result="flowScope.estructura" />
+		</transition>
+	</view-state>
+	
+	<view-state id="agregarEditar">
+		<on-entry>
+			<evaluate expression="UtilidadesDominiosC.modeloNiveles()" result="viewScope.modeloNiveles" />
+			<evaluate expression="UtilidadesDominiosC.modeloAmbitos()" result="viewScope.modeloAmbitos" />
+		</on-entry>
+		
+		<transition on="siguiente" to="crearDiagrama" />
+		<transition on="cancelar" to="cancelarAgregarEditar" />
+	</view-state>
+	
+	<action-state id="necesitaLlaves">
+		<evaluate expression="EstructurasEstructurasC.necesitaLlaves(flowScope.estructura)" />
+		<transition on="yes" to="asignarLlaves" />
+		<transition on="no" to="necesitaElecciones" />
+	</action-state>
+	
+	<view-state id="asignarLlaves">
+		<on-entry>
+			<evaluate expression="CatalogosEntidadesC.tablaBuscadorSimple()" result="viewScope.listadoEntidades" />
+			<evaluate expression="CatalogosDFederalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDFederales" />
+			<evaluate expression="CatalogosDLocalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDLocales" />
+			<evaluate expression="CatalogosMunicipiosC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoMunicipios" />
+		</on-entry>
+		<transition on="actualizarCombos">
+			<evaluate expression="CatalogosDFederalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDFederales" />
+			<evaluate expression="CatalogosDLocalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDLocales" />
+			<evaluate expression="CatalogosMunicipiosC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoMunicipios" />
+		</transition>
+		<transition on="siguiente" to="necesitaElecciones">
+			<evaluate expression="EstructurasEstructurasC.listadoTerritorios(flowRequestContext)" result="flowScope.listadoTerritorios" />
+		</transition>
+		<transition on="cancelar" to="cancelarAgregarEditar" />
+		<transition on="regresar" to="agregarEditar" />
+	</view-state>
+	
+	<action-state id="necesitaElecciones">
+		<evaluate expression="EstructurasEstructurasC.necesitaElecciones(flowScope.estructura)" />
+		<transition on="yes" to="asignarElecciones" />
+		<transition on="no" to="crearDiagrama" />
+	</action-state>
+	
+	<view-state id="asignarElecciones">
+		<on-entry>
+			<evaluate expression="CatalogosEleccionesC.tablaModeloDual()" result="viewScope.modeloElecciones" />
+		</on-entry>
+		<transition on="siguiente" to="crearDiagrama">
+			<set name="flowScope.listadoElecciones" value="viewScope.modeloElecciones.modeloDual.target" />
+		</transition>
+		<transition on="regresar" to="agregarEditar" />
+		<transition on="cancelar" to="cancelarAgregarEditar" />
+	</view-state>
+	
+	<view-state id="crearDiagrama">
+		<var name="DiagramaBean" class="com.saganet.politik.beans.estructuras.DiagramaB"/>
+		<on-entry>
+			<evaluate expression="EstructurasFigurasC.modelo()" result="viewScope.modeloFiguras" />
+		</on-entry>
+		
+		<transition on="regresar" to="agregarEditar" />
+		<transition on="guardar" to="estructuraAgregada">
+			<evaluate expression="EstructurasEstructurasC.insertar(flowScope.estructura, DiagramaBean.diagrama)" />
+		</transition> 
+		<transition on="cancelar" to="cancelarAgregarEditar" />
+	</view-state>
+	
+	<end-state id="cancelarAgregarEditar" />
+	
+	<end-state id="estructuraAgregada" />
+</flow>

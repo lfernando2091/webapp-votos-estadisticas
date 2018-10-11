@@ -1,0 +1,315 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:messages autoUpdate="true" />
+					<p:panel header="Dependencia" id="pnlDependencia">
+						<p:panelGrid>
+						<p:row rendered="#{tipoAgregar==1?true:false}">
+								<p:column>
+									<p:outputLabel
+										value="Dependencia:  " />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu value="${dependencia.dependenciaBase}"
+										required="true" requiredMessage="Dependencia: requerido"
+										converter="ObjectConverter">
+										<p:ajax event="change" immediate="true"
+											 />
+										<f:selectItems value="${usuarioLogeado.dependencias}"  var="fila"
+											itemLabel="${fila.dependencia}" itemValue="${fila}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row rendered="#{tipoAgregar==2?true:false}">
+								<p:column>
+									<p:outputLabel
+										value="Dependencia Padre:  " />
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="${dependencia.dependenciaPadre.dependencia}" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel
+										value="Nivel Geográfico: " />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu value="${dependencia.nivelGeografico}"
+										required="true" requiredMessage="Nivel Geográfico: requerido"
+										converter="ObjectConverter">
+										<p:ajax event="change" immediate="true"
+											update="pnlDependencia rowEntidades rowGeozonas rowParticiones"
+											onstart="llenarModeloGeozonas()" />
+										<f:selectItem itemLabel="Seleccione..." itemValue="" />
+										<f:selectItems value="${nivelesGeograficos}" var="fila"
+											itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row
+								rendered="#{dependencia.nivelGeografico eq null or dependencia.nivelGeografico eq 'Nacional' or dependencia.nivelGeografico eq 'Geozona'?false:true}"
+								id="rowEntidades">
+								<p:column>
+									<p:outputLabel value="Entidad(s): " />
+								</p:column>
+								<p:column>
+									<p:selectCheckboxMenu id="entidades"
+										value="${modeloEntidades.seleccionMultiple}"
+										converter="ObjectConverter" label="Entidades"
+										style="width: 215px;" filter="true" filterMatchMode="contains"
+										required="true" requiredMessage="Entidad(es): requerido">
+										<!-- antes <p:ajax event="change" update="display panelBotones" para llenar el datalist ahora <p:ajax event="change" update="panelBotones" -->
+										<!-- 										<p:ajax event="change"  -->
+										<!-- 											onstart="llenarModeloDFederales();llenarModeloDLocales()"  /> -->
+										<p:ajax event="change"
+											onstart="#{dependencia.nivelGeografico eq 'Entidad'?'llenarModeloEntidades()':dependencia.nivelGeografico eq 'Distrito Federal'?'llenarModeloDFederales()':dependencia.nivelGeografico eq 'Distrito Local'?'llenarModeloDLocales()':dependencia.nivelGeografico eq 'Municipio'?'llenarModeloMunicipios()'
+:dependencia.nivelGeografico eq 'Sección'?'llenarModeloSecciones()':null}" />
+										<p:ajax event="toggleSelect"
+											onstart="#{dependencia.nivelGeografico eq 'Entidad'?'llenarModeloEntidades()':dependencia.nivelGeografico eq 'Distrito Federal'?'llenarModeloDFederales()':dependencia.nivelGeografico eq 'Distrito Local'?'llenarModeloDLocales()':dependencia.nivelGeografico eq 'Municipio'?'llenarModeloMunicipios()'
+:dependencia.nivelGeografico eq 'Sección'?'llenarModeloSecciones()':null}" />
+										<f:selectItems value="${modeloEntidades.listado}" var="fila"
+											itemLabel="${fila.id} - ${fila.nombre}" itemValue="${fila}" />
+									</p:selectCheckboxMenu>
+								</p:column>
+							</p:row>
+							<p:row
+								rendered="#{dependencia.nivelGeografico eq 'Distrito Federal'?true:false}">
+								<p:column>
+									<p:outputLabel value="Distritos(s) Federal(es): " />
+								</p:column>
+								<p:column>
+									<p:selectCheckboxMenu id="dfederales"
+										value="${modeloLlaves.seleccionMultiple}"
+										converter="ObjectConverter" label="Distritos Federales"
+										style="width: 215px;" required="true"
+										requiredMessage="Distrito(s) Federal(es): requerido"
+										filter="true" filterMatchMode="contains">
+
+										<f:selectItems value="${modeloDFederales.listado}" var="fila"
+											itemLabel="${fila.id} - ${fila.nombre}" itemValue="${fila}" />
+									</p:selectCheckboxMenu>
+								</p:column>
+							</p:row>
+							<p:row
+								rendered="#{dependencia.nivelGeografico eq 'Distrito Local'?true:false}">
+								<p:column>
+									<p:outputLabel value="Distritos(s) DLocales(es): " />
+								</p:column>
+								<p:column>
+									<p:selectCheckboxMenu id="dlocales"
+										value="${modeloLlaves.seleccionMultiple}"
+										converter="ObjectConverter" label="Distritos Locales"
+										style="width: 215px;" filter="true" filterMatchMode="contains"
+										required="true"
+										requiredMessage="Distrito(s) Local(es): requerido">
+
+										<f:selectItems value="${modeloDLocales.listado}" var="fila"
+											itemLabel="${fila.id} - ${fila.nombre}" itemValue="${fila}" />
+									</p:selectCheckboxMenu>
+								</p:column>
+							</p:row>
+							<p:row
+								rendered="#{dependencia.nivelGeografico eq 'Municipio'?true:false}">
+								<p:column>
+									<p:outputLabel value="Municipio(s): " />
+								</p:column>
+								<p:column>
+									<p:selectCheckboxMenu id="municipios"
+										value="${modeloLlaves.seleccionMultiple}"
+										converter="ObjectConverter" label="Municipios"
+										style="width: 215px;" filter="true" filterMatchMode="contains"
+										required="true" requiredMessage="Municipio(s): requerido">
+
+										<f:selectItems value="${modeloMunicipios.listado}" var="fila"
+											itemLabel="${fila.idMunicipio} - ${fila.nombre}"
+											itemValue="${fila}" />
+									</p:selectCheckboxMenu>
+								</p:column>
+							</p:row>
+							<p:row
+								rendered="#{dependencia.nivelGeografico eq 'Sección'?true:false}">
+								<p:column>
+									<p:outputLabel value="Secciones: " />
+								</p:column>
+								<p:column>
+									<p:selectCheckboxMenu id="secciones"
+										value="${modeloLlaves.seleccionMultiple}"
+										converter="ObjectConverter" label="Secciones"
+										style="width: 215px;" filter="true" filterMatchMode="contains"
+										required="true" requiredMessage="Sección(es): requerido">
+
+										<f:selectItems value="${modeloSecciones.listado}" var="fila"
+											itemLabel="${fila.entidad.nombre} - ${fila.id}"
+											itemValue="${fila}" />
+									</p:selectCheckboxMenu>
+								</p:column>
+							</p:row>
+							<p:row
+								rendered="#{dependencia.nivelGeografico eq 'Geozona'?true:false}"
+								id="rowGeozonas">
+								<p:column>
+									<p:outputLabel value="GeoZona: " />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu id="geozonas" label="GeoZonas"
+										value="${modeloGeozonas.seleccionado}"
+										converter="ObjectConverter" filter="true"
+										filterMatchMode="contains">
+										<p:ajax event="itemSelect" update="@form" />
+										<f:selectItems value="${modeloGeozonas.listado}" var="fila"
+											itemLabel="${fila.nombre}" itemValue="${fila}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+
+							<p:row
+								rendered="#{dependencia.nivelGeografico eq 'Geozona'?true:false}"
+								id="rowParticiones">
+								<p:column>
+									<p:outputLabel value="Particiones:" />
+								</p:column>
+								<p:column>
+									<p:selectCheckboxMenu value="${modeloLlaves.seleccionMultiple}"
+										label="Gozona Partición" converter="ObjectConverter"
+										id="particiones">
+										<f:selectItems
+											value="${modeloGeozonas.seleccionado.particiones}" var="fila"
+											itemLabel="${fila.nombre}" itemValue="${fila}" />
+									</p:selectCheckboxMenu>
+								</p:column>
+							</p:row>
+
+
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Nivel Dependencia: " />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu value="${dependencia.nivelDependencia}">
+										<f:selectItems value="${nivelesDependencias}" var="fila"
+											itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Dependencia: " />
+								</p:column>
+								<p:column>
+									<p:inputTextarea value="${dependencia.dependencia}"
+										required="true" requiredMessage="Dependencia: es requerido" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Siglas: " />
+								</p:column>
+								<p:column>
+									<p:inputText value="${dependencia.siglas}" required="true"
+										requiredMessage="Siglas: es requerido" />
+								</p:column>
+							</p:row>
+							<!-- 							<p:row> -->
+							<!-- 								<p:column> -->
+							<!-- 									<p:outputLabel value="Dependencia Padre:" /> -->
+							<!-- 								</p:column> -->
+							<!-- 								<p:column> -->
+							<!-- 									<p:selectOneMenu value="${dependencia.idDependenciaPadre}" filter="true" filterMatchMode="contains" style="width:200px"> -->
+							<!-- 									<f:selectItem itemLabel="Ninguno" itemValue="0"/> -->
+							<!-- 										<f:selectItems value="${modeloDependencias.listado}" -->
+							<!-- 											var="fila" itemLabel="${fila.dependencia} ${fila.siglas}" -->
+							<!-- 											itemValue="${fila.id}" /> -->
+							<!-- 									</p:selectOneMenu> -->
+							<!-- 								</p:column> -->
+							<!-- 							</p:row> -->
+							<p:remoteCommand name="llenarModeloEntidades" immediate="true"
+								action="llenarModeloEntidades"
+								onstart="PF('cargandoResultados').show()"
+								oncomplete="PF('cargandoResultados').hide()" />
+							<p:remoteCommand name="llenarModeloDFederales"
+								update="dfederales" immediate="true"
+								action="llenarModeloDFederales"
+								onstart="PF('cargandoResultados').show()"
+								oncomplete="PF('cargandoResultados').hide()" />
+							<p:remoteCommand name="llenarModeloDLocales" update="dlocales"
+								immediate="true" action="llenarModeloDLocales"
+								onstart="PF('cargandoResultados').show()"
+								oncomplete="PF('cargandoResultados').hide()" />
+							<p:remoteCommand name="llenarModeloMunicipios"
+								update="pnlDependencia municipios" immediate="true"
+								action="llenarModeloMunicipios"
+								onstart="PF('cargandoResultados').show()"
+								oncomplete="PF('cargandoResultados').hide()" />
+							<p:remoteCommand name="llenarModeloSecciones" update="secciones"
+								immediate="true" action="llenarModeloSecciones"
+								onstart="PF('cargandoResultados').show()"
+								oncomplete="PF('cargandoResultados').hide()" />
+							<p:remoteCommand name="llenarModeloGeozonas"
+								update="geozonas particiones rowParticiones" immediate="true"
+								action="llenarModeloGeozonas"
+								onstart="PF('cargandoResultados').show()"
+								oncomplete="PF('cargandoResultados').hide()" />
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandLink title="Guardar" action="insertar"
+								rendered="#{dependencia.nivelGeografico ne 'Entidad'?true:false}">
+								<p:graphicImage value="/resources/botones/GUARDAR.png" />
+							</p:commandLink>
+							<p:commandLink title="Guardar" action="insertarEntidad"
+								rendered="#{dependencia.nivelGeografico eq 'Entidad'?true:false}">
+								<p:graphicImage value="/resources/botones/GUARDAR.png" />
+							</p:commandLink>
+
+
+							<p:commandButton value="Actualizar" action="actualizar"
+								icon="fa fa-refresh" rendered="false" />
+
+
+							<p:commandLink immediate="true"
+								title="Cancelar y volver a listado" action="cancelar">
+								<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+						</f:facet>
+					</p:panel>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+
+
+					<p:dialog widgetVar="cargandoResultados"
+						header="Cargando Resultados" closeOnEscape="false"
+						closable="false" modal="true" appendTo="@(body)">
+						<p:panelGrid columns="1">
+							<p:outputLabel value="Se están cargando los resultados." />
+							<p:outputLabel
+								value="Esta operación puede tardar, por favor espere." />
+							<p:outputLabel
+								value="No refresque la página ni oprima el botón atrás del explorador." />
+							<!-- <p:graphicImage name="cargando.gif" /> -->
+						</p:panelGrid>
+					</p:dialog>
+
+
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

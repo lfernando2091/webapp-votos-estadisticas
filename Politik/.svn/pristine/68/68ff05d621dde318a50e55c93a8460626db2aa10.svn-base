@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="importaciones.logs">
+	<cache />
+	
+	<resultMap type="ImportacionesLogEO" id="log">
+		<id column="ImportacionesLogEO_id" property="id" javaType="Integer"/>
+		<result column="ImportacionesLogEO_idImportacion" property="idImportacion" javaType="Integer"/>
+		<result column="ImportacionesLogEO_descripcion" property="descripcion" javaType="String"/>
+		<result column="ImportacionesLogEO_fecha" property="fecha" javaType="java.sql.Timestamp" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			ImportacionesLogEO.pkey 	ImportacionesLogEO_id,
+			ImportacionesLogEO.id_importacion	ImportacionesLogEO_idImportacion,
+			ImportacionesLogEO.descripcion	ImportacionesLogEO_descripcion,
+			ImportacionesLogEO.fecha			ImportacionesLogEO_fecha
+		FROM importaciones.logs ImportacionesLogEO
+	</sql>
+
+	<select id="listadoPorIdImportacion" resultMap="log" parameterType="ImportacionesEO">
+		<include refid="query" />
+		WHERE ImportacionesLogEO.id_importacion = #{id}
+		ORDER BY ImportacionesLogEO.fecha desc
+	</select>
+	
+	<insert id="insertar" parameterType="ImportacionesLogEO">
+		INSERT INTO importaciones.logs(id_importacion, descripcion)
+		VALUES(#{idImportacion}, #{descripcion})
+	</insert>
+</mapper>

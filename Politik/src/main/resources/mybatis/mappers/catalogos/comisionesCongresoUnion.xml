@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.comisionesCongresoUnion">
+	<cache />
+	
+	<resultMap type="ComisionCongresoUnionEO" id="comision">
+		<id column="ComisionCongresoUnionEO_id" property="id" javaType="Integer"/>
+		<result column="ComisionCongresoUnionEO_nombre" property="nombre" javaType="String"/>
+		<result column="ComisionCongresoUnionEO_tipo" property="tipo" javaType="com.saganet.politik.dominios.TiposComisionCongresoUnionDO"/>
+		<result column="ComisionCongresoUnionEO_diputados" property="diputados" javaType="Boolean"/>
+		<result column="ComisionCongresoUnionEO_senadores" property="senadores" javaType="Boolean"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			ComisionCongresoUnionEO.id_comision_congreso_union 	ComisionCongresoUnionEO_id, 
+			ComisionCongresoUnionEO.comision_congreso_union 	ComisionCongresoUnionEO_nombre, 
+			ComisionCongresoUnionEO.tipo_comision 				ComisionCongresoUnionEO_tipo, 
+			ComisionCongresoUnionEO.diputados 					ComisionCongresoUnionEO_diputados, 
+			ComisionCongresoUnionEO.senadores 					ComisionCongresoUnionEO_senadores
+  		FROM catalogos.comisiones_congreso_union ComisionCongresoUnionEO
+	</sql>
+	
+	<sql id="orderBy">
+		ORDER BY ComisionCongresoUnionEO.tipo_comision, ComisionCongresoUnionEO.comision_congreso_union 
+	</sql>
+	
+	<select id="listado" resultMap="comision" parameterType="hashmap">
+		<include refid="query" />
+		<where>
+			<if test="diputados != null">
+				ComisionCongresoUnionEO.diputados = #{diputados}
+			</if>
+			<if test="senadores != null">
+				AND ComisionCongresoUnionEO.senadores = #{senadores}
+			</if>
+			<if test="tipo != null">
+				ComisionCongresoUnionEO.tipo_comision = #{tipo}
+			</if>
+		</where>
+		<include refid="orderBy" />
+	</select>
+	
+	<select id="porId" parameterType="Integer" resultMap="comision">
+		<include refid="query" />
+		WHERE ComisionCongresoUnionEO.id_comision_congreso_union = #{value}
+		<include refid="orderBy" />
+	</select>
+</mapper>

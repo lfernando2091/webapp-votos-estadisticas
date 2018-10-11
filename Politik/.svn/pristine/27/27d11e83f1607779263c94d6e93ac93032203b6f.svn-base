@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="sig.poligonos">
+	<cache />
+	
+	<select id="obtenerLlaves" parameterType="hashmap" resultType="String">
+		SELECT ${columnaLlave}
+		FROM ${tabla}
+		WHERE cargada = false
+	</select>
+	
+	<select id="poligonosPuntosPorLlave" parameterType="hashmap" resultType="hashmap">
+		select (dump).path[1] path1, (dump).path[2] path2, (dump).path[3] path3, ST_X((dump).geom) lon, ST_Y((dump).geom) lat
+		from (
+			select ${columnaLlave}, ST_DumpPoints(geom) dump
+			from ${tabla}
+			where ${columnaLlave} = #{llave}
+		) t
+		order by path1, path2, path3
+	</select>
+
+</mapper>

@@ -1,0 +1,140 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="head">
+		<script type="text/javascript"
+			src="https://maps.google.com/maps/api/js?key=AIzaSyCv60kiiu8HUPsm7SIm8dFUmVzpigHUCAs" />
+	</ui:define>
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Avance de Movilización">
+						<p:panelGrid columns="4" id="panelFiltros">
+							<p:outputLabel value="Grupo" />
+							<p:selectOneMenu value="${grupo}" style="width:150px">
+								<p:ajax event="itemSelect" onstart="actualizarTabla()" />
+								<f:selectItems value="${modeloGrupos.listado}" var="g" itemLabel="${g.nombre2}" itemValue="${g.nombre2}" />
+								<f:selectItem itemLabel="Todos" itemValue="Todos" />
+							</p:selectOneMenu>
+
+							<p:outputLabel value="Nivel" />
+							<p:selectOneMenu value="${modeloNiveles.seleccionado}" style="width:200px" converter="ObjectConverter">
+								<p:ajax event="itemSelect" onstart="actualizarTabla()" update="${p:component('panelFiltros')} ${p:component('botonMunicipio')}" />
+								<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre2}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							
+							<p:outputLabel value="Región"
+								rendered="${modeloNiveles.seleccionado.name() ne 'GENERAL' and modeloNiveles.seleccionado.name() ne 'ESTATAL'}" />
+							<p:selectOneMenu value="${modeloRegiones.seleccionado}"
+								converter="ObjectConverter" style="width: 250px;"
+								rendered="${modeloNiveles.seleccionado.name() ne 'GENERAL' and modeloNiveles.seleccionado.name() ne 'ESTATAL'}" >
+								<p:ajax event="itemSelect" onstart="actualizarMunicipios()" />
+								<f:selectItems value="${modeloRegiones.listado}" var="r"
+									itemLabel="${r.nombre}" itemValue="${r}" />
+							</p:selectOneMenu>
+							
+							<p:outputLabel value="Municipio"
+								rendered="${modeloNiveles.seleccionado.name() ne 'GENERAL' and modeloNiveles.seleccionado.name() ne 'ESTATAL' and modeloNiveles.seleccionado.name() ne 'REGION'}" />
+							<p:selectOneMenu value="${modeloMunicipios.seleccionado}"
+								converter="ObjectConverter" style="width: 250px;"
+								rendered="${modeloNiveles.seleccionado.name() ne 'GENERAL' and modeloNiveles.seleccionado.name() ne 'ESTATAL' and modeloNiveles.seleccionado.name() ne 'REGION'}" >
+								<p:ajax event="itemSelect" onstart="actualizarSecciones()" />
+								<f:selectItems value="${modeloMunicipios.listado}" var="m"
+									itemLabel="${m.nombre}" itemValue="${m}" />
+							</p:selectOneMenu>
+							
+							<p:outputLabel value="Sección"
+								rendered="${modeloNiveles.seleccionado.name() ne 'GENERAL' and modeloNiveles.seleccionado.name() ne 'ESTATAL' and modeloNiveles.seleccionado.name() ne 'REGION' and modeloNiveles.seleccionado.name() ne 'MUNICIPIO'}" />
+							<p:selectOneMenu value="${modeloSecciones.seleccionado}"
+								converter="ObjectConverter" style="width: 250px;"
+								rendered="${modeloNiveles.seleccionado.name() ne 'GENERAL' and modeloNiveles.seleccionado.name() ne 'ESTATAL' and modeloNiveles.seleccionado.name() ne 'REGION' and modeloNiveles.seleccionado.name() ne 'MUNICIPIO'}" >
+								<p:ajax event="itemSelect" onstart="actualizarTabla()" />
+								<f:selectItems value="${modeloSecciones.listado}" var="s"
+									itemLabel="${s.idSeccion}" itemValue="${s}" />
+							</p:selectOneMenu>
+							
+							
+						</p:panelGrid>
+						<p:separator />
+						<p:commandButton id="botonMunicipio" value="Todos los Municipios" action="listadoMunicipios"
+							update="${p:component('panelMetas')}"
+							disabled="${modeloNiveles.seleccionado.name() ne 'REGION'}" />
+							
+						<p:separator />
+						<p:panelGrid id="panelMetas" columns="2" columnClasses="topAlign, topAlign">
+							<p:chart type="pie" model="${mapa.modeloPie}" style="width:250px; height:350px"/>
+						
+							<p:dataTable value="${mapa.modeloMetas.listado}"
+								var="fila" rows="25" paginator="true"
+								paginatorAlwaysVisible="false" paginatorPosition="bottom"
+								rowIndexVar="rowIndex" rowKey="${fila.pkey}"
+								selection="${mapa.seleccionado}" selectionMode="single"
+								disabledSelection="${modeloNiveles.seleccionado.name() ne 'MUNICIPIO' and modeloNiveles.seleccionado.name() ne 'REGION'}">
+								<p:columns value="${mapa.columnas}" var="col" width="100">
+									<f:facet name="header">${col.header}</f:facet>
+
+									<p:outputLabel value="${fila[col.propiedad]}"
+										rendered="${col.tipo.name() == 'TEXTO' and ((rowIndex) ne 0)}" />
+									<p:outputLabel value="${fila[col.propiedad]}"
+										rendered="${col.tipo.name() == 'ENTERO' and ((rowIndex) ne 0)}">
+										<f:convertNumber integerOnly="true" />
+									</p:outputLabel>
+
+									<p:outputLabel value="${fila[col.propiedad]}"
+										style="font-weight: bold !important; color: red;"
+										rendered="${col.tipo.name() == 'TEXTO' and ((rowIndex) eq 0)}" />
+									<p:outputLabel value="${fila[col.propiedad]}"
+										style="font-weight: bold !important; color: red;"
+										rendered="${col.tipo.name() == 'ENTERO' and ((rowIndex) eq 0)}">
+										<f:convertNumber integerOnly="true" />
+									</p:outputLabel>
+
+								</p:columns>
+
+								<p:column headerText="Avance" width="75">
+									<p:progressBar
+										value="${fila.meta==0?0:((fila.registrados / fila.meta)*100)}"
+										labelTemplate="${fila.meta==0?0:((fila.registrados / fila.meta)*100).intValue()} %"
+										displayOnly="true" />
+								</p:column>
+							</p:dataTable>
+						</p:panelGrid>
+						<f:facet name="footer">
+								<p:commandLink  onclick="actualizarMunicipioReporte();" id="botonDescarga">
+									<p:button target="_balnk" href="/app/reportes/municipiosPendientes.pdf"  value="Descargar Listado"  rendered="${modeloNiveles.seleccionado.name() eq 'MUNICIPIO' or modeloNiveles.seleccionado.name() eq 'REGION'?grupo!='Todos':false}"/>
+								</p:commandLink>
+						</f:facet>
+					</p:panel>
+					
+					<p:remoteCommand name="actualizarMunicipioReporte" 	action="actualizarMunicipioReporte"	 /> 
+					
+					<p:remoteCommand name="actualizarTabla" action="actualizarTabla" update="${p:component('panelMetas')}, ${p:component('botonDescarga')}" />
+					<p:remoteCommand name="actualizarMunicipios" action="actualizarMunicipios" onsuccess="actualizarTabla()" update="${p:component('panelFiltros')}" />
+					<p:remoteCommand name="actualizarSecciones" action="actualizarSecciones" onsuccess="actualizarTabla()" update="${p:component('panelFiltros')}" />
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+		
+		<h:outputStylesheet>
+			.ui-progressbar-label{
+				color: black;
+			}
+			
+			.topAlign{
+				vertical-align: top;
+			}
+			
+		</h:outputStylesheet>
+
+	</ui:define>
+
+</ui:composition>

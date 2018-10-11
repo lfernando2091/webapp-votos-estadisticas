@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estructuras.reportes">
+	<cache />
+	
+	<select id="atributos" parameterType="hashmap" resultType="hashmap">
+		SELECT *
+		FROM warehouse.estructura_${idEstructura} a
+		LEFT JOIN warehouse.estructura_${idEstructura}_atributos b on (a.id_politik = b.id_politik_padre)
+		WHERE a.id_politik = #{idPolitik}
+	</select>
+	
+	<select id="gobernadorPorEntidad" parameterType="EntidadEO" resultType="hashmap">
+		SELECT 
+			a.id_politik,
+			a.id_persona, 
+			a.id_entidad_nacimiento
+		FROM warehouse.estructura_26 a
+		LEFT JOIN warehouse.estructura_26_atributos b on (a.id_politik = b.id_politik_padre)
+		WHERE a.llave = #{llave} and b.tipo_atributo = 'PERIODO' and b.dato01_int = 1
+		LIMIT 1
+	</select>
+	
+	<select id="exGobernadoresPorEntidad" parameterType="EntidadEO" resultType="hashmap">
+		SELECT 
+			a.id_politik, a.id_persona, a.id_entidad_nacimiento
+		FROM warehouse.estructura_26 a
+		LEFT JOIN warehouse.estructura_26_atributos b on (a.id_politik = b.id_politik_padre)
+		WHERE a.llave = #{llave} and b.tipo_atributo = 'PERIODO' and b.dato01_int = 0
+		group by a.id_politik, a.id_persona, a.id_entidad_nacimiento
+	</select>
+	
+	<select id="senadoresMRPorEntidad" parameterType="EntidadEO" resultType="hashmap">
+		SELECT 
+			a.id_politik, a.id_persona, a.id_entidad_nacimiento
+		FROM warehouse.estructura_27 a
+		LEFT JOIN warehouse.estructura_27_atributos b on (a.id_politik = b.id_politik_padre)
+		WHERE a.llave = #{llave} and b.tipo_atributo = 'LEGISLATURA' and b.dato01_int in (1,2)
+		group by a.id_politik, a.id_persona, a.id_entidad_nacimiento
+	</select>
+	
+	<select id="senadoresRPPorEntidad" parameterType="EntidadEO" resultType="hashmap">
+		SELECT 
+			a.id_politik, a.id_persona, a.id_entidad_nacimiento
+		FROM warehouse.estructura_28 a
+		LEFT JOIN warehouse.estructura_28_atributos b on (a.id_politik = b.id_politik_padre)
+		WHERE a.llave = #{llave} and b.tipo_atributo = 'LEGISLATURA' and b.dato01_int in (1,2)
+		group by a.id_politik, a.id_persona, a.id_entidad_nacimiento
+	</select>
+	
+	<select id="diputadosMRPorEntidad" parameterType="EntidadEO" resultType="hashmap">
+		SELECT 
+			a.id_politik, a.id_persona, a.id_entidad_nacimiento
+		FROM warehouse.estructura_29 a
+		LEFT JOIN warehouse.estructura_29_atributos b on (a.id_politik = b.id_politik_padre)
+		WHERE a.llave like '${llave}-%' and b.tipo_atributo = 'LEGISLATURA' and b.dato01_int in (2)
+		group by a.id_politik, a.id_persona, a.id_entidad_nacimiento
+	</select>
+	
+	<select id="presidentesMunicipalesPorEntidad" parameterType="EntidadEO" resultType="hashmap">
+		SELECT 
+			a.id_politik, a.id_persona, a.id_entidad_nacimiento, a.llave
+		FROM warehouse.estructura_31 a
+		LEFT JOIN warehouse.estructura_31_atributos b on (a.id_politik = b.id_politik_padre)
+		WHERE a.llave like '${llave}-%' and b.tipo_atributo = 'PERIODO' and b.dato01_int = 1
+		group by a.id_politik, a.id_persona, a.id_entidad_nacimiento, a.llave
+		order by a.llave
+	</select>
+	
+</mapper>

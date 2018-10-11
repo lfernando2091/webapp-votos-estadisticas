@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="estadisticas.reportes">
+	<cache />
+	
+	<select id="nacional" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		<foreach collection="campos" separator="," item="tipo" index="campo">
+			sum(${campo})::integer ${campo}
+		</foreach>
+		FROM estadisticas.entidades
+	</select>
+
+	<select id="entidades" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		<foreach collection="campos" separator="," item="tipo" index="campo">
+			${campo}
+		</foreach>
+		FROM estadisticas.entidades
+		JOIN catalogos.entidades USING (id_entidad)
+		<where>
+			<foreach collection="entidades" open="id_entidad in (" separator="," close=")" item="entidad">
+				#{entidad.id}
+			</foreach>
+		</where>
+		ORDER BY id_entidad
+	</select>
+	
+	<select id="entidadesGeozona" parameterType="hashmap" resultType="hashmap">
+		SELECT Geozonas.geozona, GeozonasParticiones.particion,
+		<foreach collection="campos" separator="," item="tipo" index="campo">
+			<choose>
+				<when test="agruparTerritorios">
+					sum(${campo}) ${campo}
+				</when>
+				<otherwise>
+					${campo}
+				</otherwise>
+			</choose>
+		</foreach>
+		FROM estadisticas.entidades EstadisticasEntidades
+		JOIN catalogos.entidades USING (id_entidad)
+		JOIN catalogos.geozonas_llaves GeozonasLlaves on (EstadisticasEntidades.id_entidad = GeozonasLlaves.llave::integer)
+		JOIN catalogos.geozonas_particiones GeozonasParticiones on (GeozonasLlaves.id_geozona_particion = GeozonasParticiones.pkey)
+		JOIN catalogos.geozonas Geozonas on (GeozonasParticiones.id_geozona = Geozonas.id_geozona)
+		<where>
+			Geozonas.id_geozona = #{geozona.id}
+		</where>
+		<if test="agruparTerritorios">
+			GROUP BY Geozonas.geozona, GeozonasParticiones.particion
+		</if>
+		ORDER BY GeozonasParticiones.particion
+	</select>
+	
+	<select id="dFederales" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		<foreach collection="campos" separator="," item="tipo" index="campo">
+			${campo}
+		</foreach>
+		FROM estadisticas.dfederales
+		JOIN catalogos.dfederales USING (id_entidad, id_dfederal)
+		JOIN catalogos.entidades USING (id_entidad)
+		<where>
+			<foreach collection="dFederales" open="llave in (" separator="," close=")" item="dFederal">
+				#{dFederal.llave}
+			</foreach>
+		</where>
+		ORDER BY id_entidad, id_dfederal
+	</select>
+	
+	<select id="dLocales" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		<foreach collection="campos" separator="," item="tipo" index="campo">
+			${campo}
+		</foreach>
+		FROM estadisticas.dlocales
+		JOIN catalogos.dlocales USING (id_entidad, id_dlocal)
+		JOIN catalogos.entidades USING (id_entidad)
+		<where>
+			<foreach collection="dLocales" open="llave in (" separator="," close=")" item="dLocal">
+				#{dLocal.llave}
+			</foreach>
+		</where>
+		ORDER BY id_entidad, id_dlocal
+	</select>
+	
+	<select id="municipios" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		<foreach collection="campos" separator="," item="tipo" index="campo">
+			${campo}
+		</foreach>
+		FROM estadisticas.municipios
+		JOIN catalogos.municipios USING (id_entidad, id_municipio)
+		JOIN catalogos.entidades USING (id_entidad)
+		<where>
+			<foreach collection="municipios" open="llave in (" separator="," close=")" item="municipio">
+				#{municipio.llave}
+			</foreach>
+		</where>
+		ORDER BY id_entidad, id_municipio
+	</select>
+	
+	<select id="municipiosGeozona" parameterType="hashmap" resultType="hashmap">
+		SELECT Geozonas.geozona, GeozonasParticiones.particion,
+		<foreach collection="campos" separator="," item="tipo" index="campo">
+			<choose>
+				<when test="agruparTerritorios">
+					sum(${campo}) ${campo}
+				</when>
+				<otherwise>
+					${campo}
+				</otherwise>
+			</choose>
+		</foreach>
+		FROM estadisticas.municipios EstadisticasMunicipios
+		JOIN catalogos.municipios CatalogosMunicipios USING (id_entidad, id_municipio)
+		JOIN catalogos.entidades USING (id_entidad)
+		JOIN catalogos.geozonas_llaves GeozonasLlaves on (CatalogosMunicipios.llave = GeozonasLlaves.llave)
+		JOIN catalogos.geozonas_particiones GeozonasParticiones on (GeozonasLlaves.id_geozona_particion = GeozonasParticiones.pkey)
+		JOIN catalogos.geozonas Geozonas on (GeozonasParticiones.id_geozona = Geozonas.id_geozona)
+		<where>
+			Geozonas.id_geozona = #{geozona.id}
+		</where>
+		<if test="agruparTerritorios">
+			GROUP BY Geozonas.geozona, GeozonasParticiones.particion
+		</if>
+		ORDER BY GeozonasParticiones.particion
+	</select>
+	
+	<select id="secciones" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		<foreach collection="campos" separator="," item="tipo" index="campo">
+			${campo}
+		</foreach>
+		FROM estadisticas.secciones EstadisticasSecciones
+		JOIN catalogos.entidades CatalogosEntidades ON (EstadisticasSecciones.id_entidad = CatalogosEntidades.id_entidad)
+		JOIN catalogos.secciones CatalogosSecciones ON (EstadisticasSecciones.id_entidad = CatalogosSecciones.id_entidad AND EstadisticasSecciones.id_seccion = CatalogosSecciones.id_seccion)
+		JOIN catalogos.dfederales CatalogosDFederales ON (EstadisticasSecciones.id_entidad = CatalogosDFederales.id_entidad AND EstadisticasSecciones.id_dfederal = CatalogosDFederales.id_dfederal)
+		JOIN catalogos.dlocales CatalogosDLocales ON (EstadisticasSecciones.id_entidad = CatalogosDLocales.id_entidad AND EstadisticasSecciones.id_dlocal = CatalogosDLocales.id_dlocal)
+		JOIN catalogos.municipios CatalogosMunicipios ON (EstadisticasSecciones.id_entidad = CatalogosMunicipios.id_entidad AND EstadisticasSecciones.id_municipio = CatalogosMunicipios.id_municipio)
+		<where>
+			<foreach collection="entidades" open="EstadisticasSecciones.id_entidad in (" separator="," close=")" item="entidad">
+				#{entidad.id}
+			</foreach>
+			<foreach collection="dFederales" open="and CatalogosDFederales.llave in (" separator="," close=")" item="dFederal">
+				#{dFederal.llave}
+			</foreach>
+			<foreach collection="dLocales" open="and CatalogosDLocales.llave in (" separator="," close=")" item="dLocal">
+				#{dLocal.llave}
+			</foreach>
+			<foreach collection="municipios" open="and CatalogosMunicipios.llave in (" separator="," close=")" item="municipio">
+				#{municipio.llave}
+			</foreach>
+		</where>
+		ORDER BY EstadisticasSecciones.id_entidad, EstadisticasSecciones.id_seccion
+	</select>
+	
+	<select id="localidades" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		<foreach collection="campos" separator="," item="tipo" index="campo">
+			${campo}
+		</foreach>
+		FROM estadisticas.localidades EstadisticasLocalidades
+		JOIN catalogos.localidades CatalogosLocalidades ON (EstadisticasLocalidades.id_entidad = CatalogosLocalidades.id_entidad AND EstadisticasLocalidades.id_municipio = CatalogosLocalidades.id_municipio AND EstadisticasLocalidades.id_localidad = CatalogosLocalidades.id_localidad)
+		LEFT JOIN catalogos.entidades CatalogosEntidades ON (EstadisticasLocalidades.id_entidad = CatalogosEntidades.id_entidad)
+		LEFT JOIN catalogos.municipios CatalogosMunicipios ON (EstadisticasLocalidades.id_entidad = CatalogosMunicipios.id_entidad AND EstadisticasLocalidades.id_municipio = CatalogosMunicipios.id_municipio)
+		<where>
+			<foreach collection="entidades" open="EstadisticasLocalidades.id_entidad in (" separator="," close=")" item="entidad">
+				#{entidad.id}
+			</foreach>
+			<if test="municipios != null">
+				<foreach collection="municipios" open="and CatalogosMunicipios.llave in (" separator="," close=")" item="municipio">
+					#{municipio.llave}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY EstadisticasLocalidades.id_entidad, EstadisticasLocalidades.id_municipio, EstadisticasLocalidades.id_localidad
+	</select>
+	
+	<select id="manzanas" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		<foreach collection="campos" separator="," item="tipo" index="campo">
+			${campo}
+		</foreach>
+		FROM estadisticas.manzanas EstadisticasManzanas
+		JOIN catalogos.manzanas CatalogosManzanas on (EstadisticasManzanas.id_entidad = CatalogosManzanas.id_entidad and EstadisticasManzanas.id_municipio = CatalogosManzanas.id_municipio and EstadisticasManzanas.id_seccion = CatalogosManzanas.id_seccion and EstadisticasManzanas.id_localidad = CatalogosManzanas.id_localidad and EstadisticasManzanas.id_manzana = CatalogosManzanas.id_manzana)
+		LEFT JOIN catalogos.entidades CatalogosEntidades ON (EstadisticasManzanas.id_entidad = CatalogosEntidades.id_entidad)
+		LEFT JOIN catalogos.municipios CatalogosMunicipios ON (EstadisticasManzanas.id_entidad = CatalogosMunicipios.id_entidad AND EstadisticasManzanas.id_municipio = CatalogosMunicipios.id_municipio)
+		LEFT JOIN catalogos.localidades CatalogosLocalidades ON (EstadisticasManzanas.id_entidad = CatalogosLocalidades.id_entidad AND EstadisticasManzanas.id_municipio = CatalogosLocalidades.id_municipio AND EstadisticasManzanas.id_localidad = CatalogosLocalidades.id_localidad)
+		LEFT JOIN catalogos.secciones CatalogosSecciones ON (EstadisticasManzanas.id_entidad = CatalogosSecciones.id_entidad AND EstadisticasManzanas.id_seccion = CatalogosSecciones.id_seccion)
+		LEFT JOIN catalogos.dfederales CatalogosDFederales ON (CatalogosSecciones.id_entidad = CatalogosDFederales.id_entidad AND CatalogosSecciones.id_dfederal = CatalogosDFederales.id_dfederal)
+		LEFT JOIN catalogos.dlocales CatalogosDLocales ON (CatalogosSecciones.id_entidad = CatalogosDLocales.id_entidad AND CatalogosSecciones.id_dlocal = CatalogosDLocales.id_dlocal)
+		<where>
+			<foreach collection="entidades" open="EstadisticasManzanas.id_entidad in (" separator="," close=")" item="entidad">
+				#{entidad.id}
+			</foreach>
+			<if test="dFederales != null">
+				<foreach collection="dFederales" open="and CatalogosDFederales.llave in (" separator="," close=")" item="dFederal">
+					#{dFederal.llave}
+				</foreach>
+			</if>
+			<if test="dLocales != null">
+				<foreach collection="dLocales" open="and CatalogosDLocales.llave in (" separator="," close=")" item="dLocal">
+					#{dLocal.llave}
+				</foreach>
+			</if>
+			<if test="municipios != null">
+				<foreach collection="municipios" open="and CatalogosMunicipios.llave in (" separator="," close=")" item="municipio">
+					#{municipio.llave}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY EstadisticasManzanas.id_entidad, EstadisticasManzanas.id_municipio, EstadisticasManzanas.id_seccion, EstadisticasManzanas.id_localidad, EstadisticasManzanas.id_manzana
+	</select>
+</mapper>

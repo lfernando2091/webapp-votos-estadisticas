@@ -1,0 +1,187 @@
+package com.saganet.politik.components.encuestas.admin;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.encuestas.admin.CampaniaEO;
+import com.saganet.politik.database.encuestas.admin.EncuestaEO;
+import com.saganet.politik.database.encuestas.admin.ParametrosEstadisticas;
+import com.saganet.politik.database.encuestas.admin.PreguntaEO;
+import com.saganet.politik.database.encuestas.admin.TablaContactoEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("CampaniasC")
+public class CampaniasC {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	@Autowired
+	ParametrosEstadisticas parametrosEstadisticas;
+	
+	private static final Logger logger = LoggerFactory.getLogger(CampaniasC.class);
+	
+	public Modelo<CampaniaEO> modelo(EncuestaEO encuesta){
+		Modelo<CampaniaEO> modelo;
+		List<CampaniaEO> listado;
+		
+		modelo = new Modelo<>();
+		listado = sqlSession.selectList("encuestas.admin.campania.listado",encuesta);
+		
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+			
+			for(CampaniaEO campania:listado){
+				campania.setEncuesta(encuesta);
+			}
+		}
+		
+		return modelo;
+	}
+	
+	public CampaniaEO nuevo(EncuestaEO encuesta) {
+		CampaniaEO nuevo = new CampaniaEO();
+		nuevo.setEncuesta(encuesta);
+		nuevo.setNick("admin");
+		return nuevo;
+	}
+	
+	public void insertar(CampaniaEO nuevo, TablaContactoEO tablaContacto){
+		nuevo.setTablaContactos(tablaContacto.getTabla());
+		sqlSession.insert("encuestas.admin.campania.insertar", nuevo);
+		crearTablaCampania(nuevo);
+	}
+	
+	public void crearTablaCampania(CampaniaEO campania){
+		HashMap<String, Object> params;
+		List<PreguntaEO> preguntas;
+		StringBuilder idPreguntas;
+		
+		
+		preguntas = sqlSession.selectList("encuestas.admin.preguntas.listado2", campania.getEncuesta());
+		
+		idPreguntas = new StringBuilder(); 
+		
+		for(PreguntaEO pregunta: preguntas){
+			idPreguntas.append("_");
+			idPreguntas.append(pregunta.getConsecutivoPregunta().toString());
+			idPreguntas.append(" TEXT");
+			idPreguntas.append(",");
+		}
+		
+		params = new HashMap<>();
+		
+		params.put("idCampania", campania.getId());
+		params.put("idPreguntas", idPreguntas);
+		
+		sqlSession.update("encuestas.admin.campania.createTable", params);
+		
+	}
+	
+	public CampaniaEO campaniaCompetaByNick(String nick){
+		CampaniaEO campaniaCompleta = new CampaniaEO();
+		campaniaCompleta = sqlSession.selectOne("encuestas.admin.campania.campaniaCompletaByNick",nick);
+		return campaniaCompleta;
+	}
+	
+	public void liberarContactos(CampaniaEO campania){
+		sqlSession.update("encuestas.admin.campania.liberarContactos", campania.getTablaContactos());
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Se liberaron los contactos correctamente!", "Campaña: "+campania.getNombre()));
+	}
+	
+	public List<HashMap<String, Object>> avanceEncuesta(CampaniaEO campania){
+		List<HashMap<String, Object>> listado;
+		listado = new ArrayList<>();
+		
+		listado = sqlSession.selectList("encuestas.admin.campania.avanceEncuesta", campania.getTablaContactos());
+		
+		logger.debug("listadoInicial: {}",listado);
+		
+		for(HashMap<String, Object> mapa : listado){
+			mapa.put("total", 
+					(Integer)mapa.get("ocupado") + 
+					(Integer)mapa.get("encuestado") +
+					(Integer)mapa.get("no_contestan") +
+					(Integer)mapa.get("numero_fuera_de_servicio") +
+					(Integer)mapa.get("llamar_mas_tarde") +
+					(Integer)mapa.get("no_quiso_contestar") +
+					(Integer)mapa.get("modem_fax") +
+					(Integer)mapa.get("numero_repetido") +
+					(Integer)mapa.get("menor_de_edad") +
+					(Integer)mapa.get("contestador_automatico") +
+					(Integer)mapa.get("numero_de_empresa") +
+					(Integer)mapa.get("se_corto_la_llamada") 
+					);
+		}
+		
+		logger.debug("listadoFinal: {}",listado);
+		
+		return listado;
+		
+	}
+	
+	public void crearNuevaVuelta(CampaniaEO campania){
+		//Se_obtiene_el_nick_del_usuario
+		String nick;
+		nick = "admin";
+		
+		//Se_refrescan_valores_para_la_nueva_vuelta
+		sqlSession.update("encuestas.admin.campania.crearNuevaVuelta", campania.getTablaContactos());
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Se liberaron los contactos correctamente!", "Campaña: "+campania.getNombre()));
+		
+		//Obtenemos_los_registros_de_cada_vuelta
+		List<HashMap<String, Object>> litadoVueltas;
+		litadoVueltas = new ArrayList<>();
+		litadoVueltas = sqlSession.selectList("encuestas.admin.campania.listadoVueltas", campania.getTablaContactos());
+		
+		//Se_guarda_el_registro_de_la_nueva_vuelta_generada
+		HashMap<String, Object> params;
+		params = new HashMap<>();
+		params.put("idCampania", campania.getId());
+		params.put("vuelta", litadoVueltas.get(litadoVueltas.size()-1).get("vuelta"));
+		params.put("encuestado", litadoVueltas.get(litadoVueltas.size()-1).get("encuestados"));
+		params.put("noEncuestado", litadoVueltas.get(litadoVueltas.size()-1).get("no_contactados"));
+		params.put("nick", nick);
+		
+		logger.debug("Parametros para guardar registro de vueltas: {}", params);
+		
+		sqlSession.insert("encuestas.admin.campania.guardarRegistroVueltas", params);
+		
+		logger.debug("Se guardo el registro de vueltas");
+		
+	}
+	
+	public List<HashMap<String, Object>> listadoVueltas(CampaniaEO campania){
+		List<HashMap<String, Object>> listado;
+		listado = new ArrayList<>();
+		
+		HashMap<String, Object> params;
+		params = new HashMap<>();
+		
+		params.put("tablaContactos", campania.getTablaContactos());
+		params.put("idCampania", campania.getId());
+		
+		listado = sqlSession.selectList("encuestas.admin.campania.listadoVueltas", params);
+		
+		logger.debug("ListadoVueltas: {}", listado);
+		
+		return listado;
+	}
+	
+	public Integer conteoContactados(CampaniaEO campania){
+		return sqlSession.selectOne("encuestas.admin.campania.conteoContactados", campania.getTablaContactos());
+	}
+	
+}

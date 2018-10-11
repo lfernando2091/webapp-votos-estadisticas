@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.dLocales">
+	<cache />
+	
+	<resultMap type="DLocalEO" id="DLocal">
+		<id column="DLocalEO_id" property="id" javaType="Integer"/>
+		<result column="DLocalEO_idDLocal" property="idDLocal" javaType="Integer"/>
+		<result column="DLocalEO_nombre" property="nombre" javaType="String"/>
+		<result column="DLocalEO_llave" property="llave" javaType="String"/>
+		<association property="entidad" resultMap="catalogos.entidades.entidad" />
+	</resultMap>
+	
+	<select id="listado" resultMap="DLocal" parameterType="EntidadEO">
+		SELECT 
+			DLocalEO.pkey 			DLocalEO_id,
+			DLocalEO.id_dlocal 		DLocalEO_idDLocal,
+			DLocalEO.dlocal			DLocalEO_nombre,
+			DLocalEO.llave 			DLocalEO_llave,
+			EntidadEO.id_entidad 	EntidadEO_id,
+			EntidadEO.entidad 		EntidadEO_nombre
+		FROM catalogos.dlocales DLocalEO
+		JOIN catalogos.entidades EntidadEO on (DLocalEO.id_entidad = EntidadEO.id_entidad)
+		<where>
+			<if test="id != null">
+				DLocalEO.id_entidad = #{id}
+			</if>
+		</where>
+		ORDER BY DLocalEO.id_dlocal
+	</select>
+	
+	<select id="listadoPorEntidades" resultMap="DLocal" parameterType="list">
+		SELECT 
+			DLocalEO.pkey 			DLocalEO_id,
+			DLocalEO.id_dLocal 		DLocalEO_idDLocal,
+			DLocalEO.dLocal			DLocalEO_nombre,
+			DLocalEO.llave 			DLocalEO_llave,
+			EntidadEO.id_entidad 	EntidadEO_id,
+			EntidadEO.entidad 		EntidadEO_nombre
+		FROM catalogos.dlocales DLocalEO
+		JOIN catalogos.entidades EntidadEO on (DLocalEO.id_entidad = EntidadEO.id_entidad)
+		<where>
+			<if test="list != null">
+				DLocalEO.id_entidad in 
+				<foreach collection="list" open="(" separator="," close=")" item="item" index="index">
+					${item.id}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY DLocalEO.id_entidad, DLocalEO.id_dlocal
+	</select>
+	
+	<select id="listadoPorEleccionLlave" resultMap="DLocal" parameterType="EleccionEO">
+		SELECT 
+			DLocalEO.pkey 			DLocalEO_id,
+			DLocalEO.id_dLocal 		DLocalEO_idDLocal,
+			DLocalEO.dLocal			DLocalEO_nombre,
+			DLocalEO.llave 			DLocalEO_llave,
+			EntidadEO.id_entidad 	EntidadEO_id,
+			EntidadEO.entidad 		EntidadEO_nombre
+		FROM catalogos.dlocales DLocalEO
+		JOIN catalogos.entidades EntidadEO on (DLocalEO.id_entidad = EntidadEO.id_entidad)
+		<where>
+			DLocalEO.llave in (
+				SELECT EleccionesLlaves.llave 
+				FROM catalogos.elecciones_llaves EleccionesLlaves 
+				WHERE EleccionesLlaves.id_eleccion = #{id}
+			)
+		</where> 
+		ORDER BY DLocalEO.id_entidad, DLocalEO.id_dlocal
+	</select>
+</mapper>

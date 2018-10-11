@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="EstructurasProgramasPromocionC.modelo()" result="viewScope.modeloProgramas" />
+		</on-entry>
+		
+		<transition on="agregar" to="agregarEditar">
+			<evaluate expression="EstructurasProgramasPromocionC.nuevoPrograma()" result="flowScope.programaCRUD" />
+		</transition>
+		
+		<transition on="editar" to="agregarEditar">
+			<set name="flowScope.programaCRUD" value="viewScope.modeloProgramas.seleccionado" />
+		</transition>
+	</view-state>
+	
+	<view-state id="agregarEditar">
+		<transition on="guardar" to="programaGuardado">
+			<evaluate expression="EstructurasProgramasPromocionC.guardar(flowScope.programaCRUD)" />
+			<set name="flowScope.programaCRUD" value="null" />
+		</transition>
+		
+		<transition on="cancelar" to="guardadoCancelado">
+			<set name="flowScope.programaCRUD" value="null" />
+		</transition>
+	</view-state>
+	
+	<end-state id="programaGuardado" />
+	<end-state id="guardadoCancelado" />
+</flow>

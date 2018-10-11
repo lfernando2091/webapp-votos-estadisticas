@@ -1,0 +1,75 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="head">
+		<h:outputScript library="openlayers" name="ol.js" />
+		<h:outputStylesheet library="openlayers" name="ol.css" />
+		<h:outputScript library="openlayers" name="politikMapas.js" />
+	</ui:define>
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Entidades Federativas" />
+					</p:breadCrumb>
+					<p:panel header="Entidades Federativas">
+						<p:panelGrid columns="2" columnClasses="topAlign, topAlign">
+							<p:dataTable value="${tablaEntidades.listado}" var="fila"
+								rowKey="${fila.id}" selection="${tablaEntidades.seleccionado}"
+								selectionMode="single" paginator="true" rows="15">
+								<p:ajax event="rowSelect" update="panelRefreshMap"
+									oncomplete="refreshMap();" />
+								<p:column headerText="Id" width="50">
+								${fila.id}
+							</p:column>
+								<p:column headerText="Nombre">
+								${fila.nombre}
+							</p:column>
+							</p:dataTable>
+							<h:panelGroup id="panelMapa" layout="block"
+								style="width:400px; height: 400px;" />
+						</p:panelGrid>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputScript>
+					iniciarMapa(
+						[${tablaEntidades.seleccionado.geoData.bounds}],
+						'', 
+						'politik:entidades', 
+						'id_entidad = ${tablaEntidades.seleccionado.id}',
+						'#{p:component('panelMapa')}'
+					);
+				</h:outputScript>
+				
+				<h:panelGroup id="panelRefreshMap">
+					<h:outputScript>
+						function refreshMap(){
+							actualizarCapa(1, 'id_entidad = ${tablaEntidades.seleccionado.id}');
+							actualizarMapa([${tablaEntidades.seleccionado.geoData.bounds}]);
+						}
+					</h:outputScript>
+				</h:panelGroup>
+				
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

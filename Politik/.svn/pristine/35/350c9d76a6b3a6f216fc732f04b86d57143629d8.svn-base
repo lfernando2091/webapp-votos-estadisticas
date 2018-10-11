@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+        
+	<secured attributes="ROLE_REPORTES_DM" />
+	
+	<view-state id="estadisticas">
+		<on-entry>
+			<set name="viewScope.region" value="1"/>
+			<set name="viewScope.regionC2" value="1"/>
+			<set name="viewScope.regionC3" value="1"/>
+			<set name="viewScope.regionC4" value="1"/>
+			<set name="viewScope.usuario" value="''"/>
+			<set name="viewScope.nombre" value="''"/>
+			<set name="viewScope.imei" value="''"/>
+			<set name="viewScope.fInicio" value="EstadisticasSincronizacionC.getFecha()"/>
+			<set name="viewScope.fFin" value="EstadisticasSincronizacionC.getFecha()"/>
+			<set name="viewScope.fInicioConcentrado1" value="EstadisticasSincronizacionC.getFecha()"/>
+			<set name="viewScope.fFinConcentrado1" value="EstadisticasSincronizacionC.getFecha()"/>
+			<set name="viewScope.fInicioConcentrado2" value="EstadisticasSincronizacionC.getFecha()"/>
+			<set name="viewScope.fFinConcentrado2" value="EstadisticasSincronizacionC.getFecha()"/>
+			<set name="viewScope.fInicioConcentrado3" value="EstadisticasSincronizacionC.getFecha()"/>
+			<set name="viewScope.fFinConcentrado3" value="EstadisticasSincronizacionC.getFecha()"/>
+			<set name="viewScope.fInicioConcentrado4" value="EstadisticasSincronizacionC.getFecha()"/>
+			<set name="viewScope.fFinConcentrado4" value="EstadisticasSincronizacionC.getFecha()"/>
+			<set name="viewScope.totalEncuestas" value="0"/>
+			<set name="viewScope.totalEncuestasPorFechas" value="0"/>
+			<evaluate expression="EstadisticasSincronizacionC.regiones()" result="viewScope.regiones"/>
+			<evaluate expression="EstadisticasSincronizacionC.listadoPorUsuarioRegion(viewScope.region, viewScope.usuario, viewScope.nombre, viewScope.imei)" result="viewScope.listadoPorUsuarioRegion"/>
+			<evaluate expression="EstadisticasSincronizacionC.listadoPorFechas(EstadisticasSincronizacionC.combierteDateToString(viewScope.fInicio), EstadisticasSincronizacionC.combierteDateToString(viewScope.fFin))" result="viewScope.listadoPorFechas"/>
+			<evaluate expression="EstadisticasSincronizacionC.calculaTotalEncuestas(viewScope.listadoPorFechas)" result="viewScope.totalEncuestasPorFechas"/>
+			<evaluate expression="EstadisticasSincronizacionC.listadoPorRegiones()" result="viewScope.listadoPorRegiones"/>
+			<evaluate expression="EstadisticasSincronizacionC.calculaTotalEncuestas(viewScope.listadoPorRegiones)" result="viewScope.totalEncuestas"/>
+			
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.concentrado1()" result="viewScope.concentrado1"/> -->
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado1)" result="viewScope.concentrado1Totales"/> -->
+			<evaluate expression="EstadisticasSincronizacionC.concentrado1PorFecha(EstadisticasSincronizacionC.combierteDateToString(viewScope.fInicioConcentrado1), EstadisticasSincronizacionC.combierteDateToString(viewScope.fFinConcentrado1))" result="viewScope.concentrado1"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado1)" result="viewScope.concentrado1Totales"/>
+			
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.concentrado2Municipios(viewScope.regionC2)" result="viewScope.concentrado2Municipios"/> -->
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado2Municipios)" result="viewScope.concentrado2Totales"/> -->
+			<evaluate expression="EstadisticasSincronizacionC.concentrado2MunicipiosFecha(viewScope.regionC2,EstadisticasSincronizacionC.combierteDateToString(viewScope.fInicioConcentrado2), EstadisticasSincronizacionC.combierteDateToString(viewScope.fFinConcentrado2))" result="viewScope.concentrado2Municipios"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado2Municipios)" result="viewScope.concentrado2Totales"/>
+			
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.concentrado3Zonas(viewScope.regionC3)" result="viewScope.concentrado3Zonas"/> -->
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado3Zonas)" result="viewScope.concentrado3Totales"/> -->
+			<evaluate expression="EstadisticasSincronizacionC.concentrado3ZonasFecha(viewScope.regionC3,EstadisticasSincronizacionC.combierteDateToString(viewScope.fInicioConcentrado3), EstadisticasSincronizacionC.combierteDateToString(viewScope.fFinConcentrado3))" result="viewScope.concentrado3Zonas"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado3Zonas)" result="viewScope.concentrado3Totales"/>
+			
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.concentrado4Secciones(viewScope.regionC4)" result="viewScope.concentrado4Secciones"/> -->
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado4Secciones)" result="viewScope.concentrado4Totales"/> -->
+			<evaluate expression="EstadisticasSincronizacionC.concentrado4SeccionesFecha(viewScope.regionC4,EstadisticasSincronizacionC.combierteDateToString(viewScope.fInicioConcentrado4), EstadisticasSincronizacionC.combierteDateToString(viewScope.fFinConcentrado4))" result="viewScope.concentrado4Secciones"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado4Secciones)" result="viewScope.concentrado4Totales"/>
+			
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.pg1()" result="viewScope.pg1"/> -->
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.pg3()" result="viewScope.pg3"/> -->
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.pg4()" result="viewScope.pg4"/> -->
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.pg5()" result="viewScope.pg5"/> -->
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.pg6()" result="viewScope.pg6"/> -->
+<!-- 			<evaluate expression="EstadisticasSincronizacionC.pg7()" result="viewScope.pg7"/> -->
+			
+		</on-entry>
+		<transition on="buscarUsuariosPorRegion">
+			<evaluate expression="EstadisticasSincronizacionC.listadoPorUsuarioRegion(viewScope.region, viewScope.usuario, viewScope.nombre, viewScope.imei)" result="viewScope.listadoPorUsuarioRegion"/>
+		</transition>
+		<transition on="buscarPorFecha">
+			<evaluate expression="EstadisticasSincronizacionC.listadoPorFechas(EstadisticasSincronizacionC.combierteDateToString(viewScope.fInicio), EstadisticasSincronizacionC.combierteDateToString(viewScope.fFin))" result="viewScope.listadoPorFechas"/>
+			<evaluate expression="EstadisticasSincronizacionC.calculaTotalEncuestas(viewScope.listadoPorFechas)" result="viewScope.totalEncuestasPorFechas"/>
+		</transition>
+		<transition on="actualizarRegiones">
+			<evaluate expression="EstadisticasSincronizacionC.listadoPorRegiones()" result="viewScope.listadoPorRegiones"/>
+			<evaluate expression="EstadisticasSincronizacionC.calculaTotalEncuestas(viewScope.listadoPorRegiones)" result="viewScope.totalEncuestas"/>
+		</transition>
+		<transition on="actualizarConcentrado1">
+			<evaluate expression="EstadisticasSincronizacionC.concentrado1PorFecha(EstadisticasSincronizacionC.combierteDateToString(viewScope.fInicioConcentrado1), EstadisticasSincronizacionC.combierteDateToString(viewScope.fFinConcentrado1))" result="viewScope.concentrado1"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado1)" result="viewScope.concentrado1Totales"/>
+		</transition>
+		<transition on="reiniciarConcentrado1">
+			<evaluate expression="EstadisticasSincronizacionC.concentrado1()" result="viewScope.concentrado1"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado1)" result="viewScope.concentrado1Totales"/>
+		</transition>
+		<transition on="actualizarConcentrado2PorRegion">
+			<evaluate expression="EstadisticasSincronizacionC.concentrado2Municipios(viewScope.regionC2)" result="viewScope.concentrado2Municipios"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado2Municipios)" result="viewScope.concentrado2Totales"/>
+		</transition>
+		<transition on="reiniciaConcentrado2">
+			<evaluate expression="EstadisticasSincronizacionC.concentrado2MunicipiosFecha(viewScope.regionC2,EstadisticasSincronizacionC.combierteDateToString(viewScope.fInicioConcentrado2), EstadisticasSincronizacionC.combierteDateToString(viewScope.fFinConcentrado2))" result="viewScope.concentrado2Municipios"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado2Municipios)" result="viewScope.concentrado2Totales"/>
+		</transition>
+		<transition on="actualizarConcentrado3Zonas">
+			<evaluate expression="EstadisticasSincronizacionC.concentrado3Zonas(viewScope.regionC3)" result="viewScope.concentrado3Zonas"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado3Zonas)" result="viewScope.concentrado3Totales"/>
+		</transition>
+		<transition on="reiniciaConcentrado3">
+			<evaluate expression="EstadisticasSincronizacionC.concentrado3ZonasFecha(viewScope.regionC3,EstadisticasSincronizacionC.combierteDateToString(viewScope.fInicioConcentrado3), EstadisticasSincronizacionC.combierteDateToString(viewScope.fFinConcentrado3))" result="viewScope.concentrado3Zonas"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado3Zonas)" result="viewScope.concentrado3Totales"/>
+		</transition>
+		<transition on="actualizarConcentrado4Secciones">
+			<evaluate expression="EstadisticasSincronizacionC.concentrado4Secciones(viewScope.regionC4)" result="viewScope.concentrado4Secciones"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado4Secciones)" result="viewScope.concentrado4Totales"/>
+		</transition>
+		<transition on="reiniciaConcentrado4">
+			<evaluate expression="EstadisticasSincronizacionC.concentrado4SeccionesFecha(viewScope.regionC4,EstadisticasSincronizacionC.combierteDateToString(viewScope.fInicioConcentrado4), EstadisticasSincronizacionC.combierteDateToString(viewScope.fFinConcentrado4))" result="viewScope.concentrado4Secciones"/>
+			<evaluate expression="EstadisticasSincronizacionC.totalesConcentrados(viewScope.concentrado4Secciones)" result="viewScope.concentrado4Totales"/>
+		</transition>
+	</view-state>
+	
+</flow>

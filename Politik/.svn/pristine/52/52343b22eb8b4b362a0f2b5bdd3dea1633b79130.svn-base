@@ -1,0 +1,92 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:messages autoUpdate="true"/>
+				<p:focus for="capturaRegistro"></p:focus>
+					<p:panel header="Agregar Dispositivo">
+						<p:panelGrid id="panelAgregar" columns="2"
+							columnClasses="topAlign">
+							<p:column>Numero de  Registro</p:column>
+							<p:column>
+								<p:inputText id="capturaRegistro" value="${nuevo.idRegistro}"
+									style="width:300px" required="true" requiredMessage="Numero Registro: es requerido">
+									
+									
+									</p:inputText>
+							</p:column>
+							<p:column>Numero de Serie ${validacion}</p:column>
+							<p:column>
+								<p:inputText value="${nuevo.serie}"
+									style="width:300px" required="true" requiredMessage="Número de Serie: es requerido" >
+									
+									</p:inputText>
+							</p:column>
+							<p:column>Imei1</p:column>
+							<p:column>
+								<p:inputText value="${nuevo.imei1}"
+									style="width:300px" required="true" requiredMessage="Imei1: requerido"/>
+							</p:column>
+							<p:column>Imei2</p:column>
+							<p:column>
+								<p:inputText value="${nuevo.imei2}"
+									style="width:300px" />
+							</p:column>
+							<p:column>Modelo</p:column>
+							<p:column>
+								<p:selectOneMenu value="${nuevo.modelo}" 	style="width: 300px;" converter="ObjectConverter">
+									<f:selectItems value="${listadoModelo}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>Estatus</p:column>
+							<p:column>
+								<p:selectOneMenu value="${nuevo.estatus}" style="width: 300px;" converter="ObjectConverter">
+									<f:selectItems value="${listadoEstatus}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+							<p:column>Precarga</p:column>
+							<p:column>
+								<p:selectOneMenu value="${nuevo.precarga}" style="width: 300px;" converter="ObjectConverter">
+									<f:selectItems value="${listadoPrecarga}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+								</p:selectOneMenu>
+							</p:column>
+							
+							
+						</p:panelGrid>
+						<f:facet name="footer">
+						<p:remoteCommand name="validaDispositivo" immediate="true" partialSubmit="true"
+						action="validaDispositivo" update="@form"/>
+							<p:commandLink action="guardar" rendered="${nuevo.id!=null?'false':'true'}" id="clGuardar">
+									<p:graphicImage value="/resources/botones/GUARDAR.png"/>
+							</p:commandLink>
+							
+							<p:commandLink action="actualizar" update="@form" rendered="${nuevo.id!=null?'true':'false'}">
+									<p:graphicImage value="/resources/botones/ACTUALIZAR.png" id="clActualizar"/>
+							</p:commandLink>
+							<p:commandLink action="cancelar" immediate="true">
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink>
+						</f:facet>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+				<h:outputStylesheet>
+					.topAlign{
+						width:200px;
+					}
+					.topAlign2{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

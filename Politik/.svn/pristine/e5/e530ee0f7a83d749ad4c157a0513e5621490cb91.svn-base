@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="estadisticas.estadisticasEstadoEncuesta">
+	
+	<select id="concentradoRegion" resultType="hashmap">
+		select
+		<if test="tipoBusqueda==1">
+			region,			
+		</if>
+		<if test="tipoBusqueda==2">
+			region, municipio,		
+		</if>
+		<if test="tipoBusqueda==3">
+			region, zona,			
+		</if>
+		<if test="tipoBusqueda==4">
+			region,	municipio, zona, seccion,		
+		</if>
+		<if test="tipoBusqueda==5">
+			region,	municipio, zona, seccion, usuario,		
+		</if> 
+		sum(completa) completa, sum(imcompleta) incompleta, sum(nego_dar_informacion) nego_dar_informacion,
+		sum(no_tiene_credencial) no_tiene_credencial, sum(no_se_encontro_persona) no_se_encontro_persona, sum(no_se_encontro_vivienda) no_se_encontro_vivienda,sum(no_hubo_quien_respondiera) no_hubo_quien_respondiera, sum(sin_estado) sin_estado
+		from(
+		select 
+		region, municipio, zona, seccion,usuario, 
+		case when codigo_resultado=1 then 1 else 0 end completa,
+		case when codigo_resultado=2 then 1 else 0 end imcompleta,
+		case when codigo_resultado=3 then 1 else 0 end nego_dar_informacion,
+		case when codigo_resultado=4 then 1 else 0 end no_tiene_credencial,
+		case when codigo_resultado=5 then 1 else 0 end no_se_encontro_persona,
+		case when codigo_resultado=6 then 1 else 0 end no_se_encontro_vivienda,
+		case when codigo_resultado=7 then 1 else 0 end no_hubo_quien_respondiera,
+		case when codigo_resultado=8 then 1 else 0 end sin_estado
+		from encuesta a
+		join usuario c on (a.usuario_id = c.id)
+		<if test="region != 0">
+			where c.region = #{region}
+		</if>
+		) t
+		<if test="tipoBusqueda==1">
+			group by region
+			order by region
+		</if>
+		<if test="tipoBusqueda==2">
+			group by region, municipio
+			order by region, municipio	
+		</if>
+		<if test="tipoBusqueda==3">
+			group by region, zona
+			order by region, zona
+		</if>
+		<if test="tipoBusqueda==4">
+			group by region, municipio, zona, seccion
+			order by region, municipio, zona, seccion
+		</if>
+		<if test="tipoBusqueda==5">
+			group by region, municipio, zona, seccion, usuario
+			order by region, municipio, zona, seccion, usuario
+		</if>
+	</select>
+	
+</mapper>

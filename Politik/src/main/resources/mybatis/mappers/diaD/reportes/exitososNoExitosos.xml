@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="diaD.reportes.exitososNoExitosos">
+<resultMap type="DiaDReportesExitosoNoExitoso" id="exitosoNoExitoso">
+<id column="DiaDReportesExitosoNoExitoso_id" property="id" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_programa" property="programa" javaType="com.saganet.politik.dominios.ProgramasEdoMexDO"/>
+<result column="DiaDReportesExitosoNoExitoso_id_region" property="idRegion" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_region" property="region" javaType="String"/>
+<result column="DiaDReportesExitosoNoExitoso_id_municipio" property="idMunicipio" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_nombre_municipio" property="municipio" javaType="String"/>
+<result column="DiaDReportesExitosoNoExitoso_seccion" property="seccion" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_contactos" property="contactos" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_a_favor" property="aFavor" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_a_favor_indeciso" property="aFavorIndeciso" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_indeciso" property="indeciso" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_indeciso_en_contra" property="indecisoEnContra" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_en_contra" property="enContra" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_totalExitosas" property="totalExitosas" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_dne" property="dne" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_nhqc" property="nhqc" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_me" property="me" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_nqc" property="nqc" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_nva" property="nva" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_f" property="f" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_o" property="o" javaType="Integer"/>
+<result column="DiaDReportesExitosoNoExitoso_totalNoExitosas" property="totalNoExitosas" javaType="Integer"/>
+</resultMap>
+
+<select id="listado" parameterType="hashmap" resultMap="exitosoNoExitoso">
+select 
+<if test="nivel.nombre=='Estatal'">
+region_edomex_2017 DiaDReportesExitosoNoExitoso_id_region, nombre_region DiaDReportesExitosoNoExitoso_region,
+</if>
+<if test="nivel.nombre=='Región'">
+region_edomex_2017 DiaDReportesExitosoNoExitoso_id_region,
+nombre_region DiaDReportesExitosoNoExitoso_region,
+municipio DiaDReportesExitosoNoExitoso_id_municipio, 
+nombre_municipio DiaDReportesExitosoNoExitoso_nombre_municipio,
+</if>
+<if test="nivel.nombre=='Municipio'">
+region_edomex_2017 DiaDReportesExitosoNoExitoso_id_region,
+nombre_region DiaDReportesExitosoNoExitoso_region,
+municipio DiaDReportesExitosoNoExitoso_id_municipio, 
+nombre_municipio DiaDReportesExitosoNoExitoso_nombre_municipio,
+seccion DiaDReportesExitosoNoExitoso_seccion,
+</if>
+
+count(id_interno) DiaDReportesExitosoNoExitoso_contactos,
+sum(a_favor) DiaDReportesExitosoNoExitoso_a_favor,
+sum(indeciso) DiaDReportesExitosoNoExitoso_indeciso,
+sum(en_contra) DiaDReportesExitosoNoExitoso_en_contra,
+sum(total_exitosos) DiaDReportesExitosoNoExitoso_totalExitosas,
+sum(me) DiaDReportesExitosoNoExitoso_me,
+sum(f) DiaDReportesExitosoNoExitoso_f,
+sum(o) DiaDReportesExitosoNoExitoso_o,
+sum(nva) DiaDReportesExitosoNoExitoso_nva,
+sum(nqc) DiaDReportesExitosoNoExitoso_nqc,
+sum(nhqc) DiaDReportesExitosoNoExitoso_nhqc,
+sum(dne) DiaDReportesExitosoNoExitoso_dne,
+sum(total_no_exitosos) DiaDReportesExitosoNoExitoso_totalNoExitosas
+from
+(
+	select
+        b.grupo_movilizacion,
+	b.region_edomex_2017,nombre_region,municipio, nombre_municipio, seccion,
+	b.id_interno,
+	(case when a.estatus='EXITOSO' and calificacion3_nueva='A favor' then 1 else 0 end) a_favor,
+	(case when a.estatus='EXITOSO' and calificacion3_nueva='Indeciso' then 1 else 0 end) indeciso,
+	(case when a.estatus='EXITOSO' and calificacion3_nueva='En contra' then 1 else 0 end) en_contra,
+        case when a.estatus='EXITOSO' then 1 else 0 end total_exitosos,
+	case when a.estatus='MENOR_DE_EDAD' then 1 else 0 end me,
+	case when a.estatus='FINADO' then 1 else 0 end f,
+	case when a.estatus='OTRO' then 1 else 0 end o,
+	case when a.estatus='NO_VIVE_AHI' then 1 else 0 end nva,
+	case when a.estatus='NO_QUISIERON_CONTESTAR' then 1 else 0 end nqc,
+	case when a.estatus='NO_HUBO_QUIEN_CONTESTARA' then 1 else 0 end nhqc,
+	case when a.estatus='DOMICILIO_NO_ENCONTRADO' then 1 else 0 end dne,
+	case when a.estatus!='EXITOSO'  then 1 else 0 end total_no_exitosos
+	from encuestas_edomex.e_edomex a
+	 join dia_d.movilizables b on (a.id_contacto::integer=b.id_interno  ) 
+       
+) t
+where grupo_movilizacion =#{programa}
+<if test="nivel.nombre=='Región'">
+ and region_edomex_2017=#{region.seleccionado.idParticion}
+</if>
+<if test="nivel.nombre=='Municipio'">
+ and municipio=#{municipio.seleccionado.idMunicipio}
+</if>
+<if test="nivel.nombre=='Sección'">
+ and seccion=#{seccion.seleccionado.idSeccion}
+</if>
+
+<if test="nivel.nombre!='General' and nivel.nombre!='Sección'">
+ group by 
+</if>
+
+
+<if test="nivel.nombre=='Estatal'">
+ region_edomex_2017,nombre_region,t.grupo_movilizacion
+</if>
+
+
+<if test="nivel.nombre=='Región'">
+ region_edomex_2017,nombre_region,municipio, nombre_municipio,t.grupo_movilizacion
+</if>
+<if test="nivel.nombre=='Municipio'">
+region_edomex_2017,nombre_region,municipio, nombre_municipio, seccion,t.grupo_movilizacion
+</if>
+</select>
+</mapper>

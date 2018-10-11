@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+	
+	<ui:repeat var="mapaDatos" value="${datos}">
+		<p:panelGrid columns="2">
+			<p:outputLabel value="Dependencia" />
+			<p:outputLabel value="${mapaDatos['dependencia'].dependencia}" />
+			<p:outputLabel value="Siglas" />
+			<p:outputLabel value="${mapaDatos['dependencia'].siglas}" />
+			<p:outputLabel value="Nivel Geográfico" />
+			<p:outputLabel value="${mapaDatos['dependencia'].nivelGeografico.nombre}" />
+			<p:outputLabel value="Tipo" />
+			<p:outputLabel value="${mapaDatos['dependencia'].nivelDependencia.nombre}" />
+			<p:outputLabel value="Cargo" />
+			<p:outputLabel value="${mapaDatos['cargoEnum'].nombre}" />
+			<p:outputLabel value="Fecha de Inicio" />
+			<p:outputLabel value="${mapaDatos['fecha_inicio']}">
+				<f:convertDateTime pattern="dd/MM/yyyy" />
+			</p:outputLabel>
+			<p:outputLabel value="Fecha de Término" />
+			<p:outputLabel value="${mapaDatos['fecha_termino']}">
+				<f:convertDateTime pattern="dd/MM/yyyy" />
+			</p:outputLabel>
+			<p:outputLabel value="Cargo Vigente?" />
+			<p:outputLabel value="${mapaDatos['vigente'] == 'TRUE' ? 'Si' : 'No'}" />
+		</p:panelGrid>
+		<p:separator />
+	</ui:repeat>
+</ui:composition>

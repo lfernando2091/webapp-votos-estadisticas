@@ -1,0 +1,282 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Resultados Entrevistas">
+						<p:panelGrid columns="2" id="gridFiltros">
+							<p:column>
+								<p:outputLabel value="Nivel :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloNiveles.seleccionado}" style="width:350px">
+										<p:ajax event="itemSelect"  update="gridFiltros" />
+					            		<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+									</p:selectOneMenu>
+							</p:column>
+							<p:column  rendered="${modeloNiveles.seleccionado!='ESTATAL'}">
+								<p:outputLabel value="Region " style="width:150px;"/>
+							</p:column>
+							<p:column rendered="${modeloNiveles.seleccionado!='ESTATAL'}">
+								<p:selectOneMenu value="${listadoRegiones.seleccionado}"  converter="ObjectConverter" style="width:350px;" filter="true" filterMatchMode="startsWith" >
+									<p:ajax onstart="mpioActualizar();" event="itemSelect"/>
+									<f:selectItems value="${listadoRegiones.listado}" var="fila" itemLabel="${fila.nombre}"  itemValue="${fila}"  />													
+								</p:selectOneMenu>
+							</p:column>
+							<p:column rendered="${modeloNiveles.seleccionado=='MUNICIPIO'}">
+								<p:outputLabel value="Municipio"  style="width:150px;"/>
+							</p:column>
+							<p:column rendered="${modeloNiveles.seleccionado=='MUNICIPIO'}">
+								<p:selectOneMenu id="comboMpio" value="${listadoMunicipios.seleccionado}"  converter="ObjectConverter"  style="width:350px;"  filter="true" filterMatchMode="startsWith">
+									<f:selectItems value="${listadoMunicipios.listado}" var="fila" itemLabel="${fila.nombre}"  itemValue="${fila}" />							
+								</p:selectOneMenu>	
+							</p:column>	
+							<p:column>
+								<p:outputLabel value="Pregunta"  style="width:150px;"/>
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="${pregunta}" style="width:350px;" filter="true" filterMatchMode="startsWith">
+									<f:selectItem itemLabel="A FAVOR - 1. ¿Va a ir a Votar?" itemValue="1"/>	
+									<f:selectItem itemLabel="A FAVOR - 2. ¿Conoce la ubicación de la Casilla donde votará?" itemValue="2"/>	
+									<f:selectItem itemLabel="A FAVOR - 3. ¿En qué horario prefiere ir a votar?" itemValue="3"/>		
+									<f:selectItem itemLabel="A FAVOR - 4. ¿Le gustaría ser Movilizador?" itemValue="4"/>			
+									<f:selectItem itemLabel="A FAVOR - 5. No Localizado" itemValue="9"/>		
+									<f:selectItem itemLabel="INDECISOS - 1. ¿Piensa ir a votar este 4 de Marzo?" itemValue="5"/>	
+									<f:selectItem itemLabel="INDECISOS - 2. ¿Conoce usted a Alfredo del Mazo?" itemValue="6"/>		
+									<f:selectItem itemLabel="INDECISOS - 3. ¿Por que Candidato Votará?" itemValue="7"/>		
+									<f:selectItem itemLabel="INDECISOS - 4. Le gustaría ser Movilizador" itemValue="8"/>		
+									<f:selectItem itemLabel="INDECISOS - 5. No Localizado" itemValue="9"/>						
+								</p:selectOneMenu>	
+							</p:column>	
+							<p:column>
+								<p:commandButton value="Consultar" action="actualizar" update="gridEncuestas, gridFiltros"/>
+							</p:column>		
+						</p:panelGrid>
+						<p:separator/>
+						<p:panelGrid id="gridEncuestas">
+							<p:row>
+								<p:column rendered="${pregunta!=9 and pregunta!=3 and pregunta!=7}"  style="width:150px" styleClass="column">
+									<p:outputLabel value="SI" styleClass="outlabel"/>
+								</p:column>
+								<p:column rendered="${pregunta!=9 and pregunta!=3 and pregunta!=7}" style="width:150px" styleClass="column">
+									<p:outputLabel value="NO"  styleClass="outlabel"/>
+								</p:column>
+								<p:column rendered="${pregunta!=9 and pregunta!=3 and pregunta!=7}" style="width:150px" styleClass="column">
+									<p:outputLabel value="NS-NC" styleClass="outlabel"/>
+								</p:column>
+								
+								
+								<p:column rendered="${pregunta==3}" style="width:150px" styleClass="column">
+									<p:outputLabel value="PRIMER CORTE" styleClass="outlabel"/>
+								</p:column>
+								<p:column rendered="${pregunta==3}"  style="width:150px" styleClass="column">
+									<p:outputLabel value="SEGUNDO CORTE" styleClass="outlabel"/>
+								</p:column>
+								<p:column rendered="${pregunta==3}" style="width:150px" styleClass="column">
+									<p:outputLabel value="TERCER CORTE"  styleClass="outlabel"/>
+								</p:column>
+								
+								<p:column rendered="${pregunta==7}" style="width:150px" styleClass="column">
+									<p:outputLabel value="ALFREDO DEL MAZO MAZA" styleClass="outlabel"/>
+								</p:column>								
+								<p:column rendered="${pregunta==7}" style="width:150px" styleClass="column">
+									<p:outputLabel value="JOSEFINA VAZQUEZ MOTA" styleClass="outlabel"/>
+								</p:column>								
+								<p:column rendered="${pregunta==7}" style="width:150px" styleClass="column">
+									<p:outputLabel value="DELFINA GOMEZ ALVAREZ" styleClass="outlabel"/>
+								</p:column>								
+								<p:column rendered="${pregunta==7}" style="width:150px" styleClass="column">
+									<p:outputLabel value="OSCAR GONZALEZ YANEZ" styleClass="outlabel"/>
+								</p:column>								
+								<p:column rendered="${pregunta==7}" style="width:150px" styleClass="column">
+									<p:outputLabel value="JUAN ZEPEDA HERNANDEZ" styleClass="outlabel"/>
+								</p:column>								
+								<p:column rendered="${pregunta==7}" style="width:150px" styleClass="column">
+									<p:outputLabel value="ISIDRO PASTOR MEDRANO" styleClass="outlabel"/>
+								</p:column>								
+								<p:column rendered="${pregunta==7}" style="width:150px" styleClass="column">
+									<p:outputLabel value="OTRO" styleClass="outlabel"/>
+								</p:column>								
+								<p:column rendered="${pregunta==7}" style="width:150px" styleClass="column">
+									<p:outputLabel value="NS NC" styleClass="outlabel"/>
+								</p:column>
+								
+								
+														
+								<p:column rendered="${pregunta==9}" style="width:150px" styleClass="column">
+									<p:outputLabel value="FINADO" styleClass="outlabel"/>
+								</p:column>		
+								<p:column rendered="${pregunta==9}" style="width:150px" styleClass="column">
+									<p:outputLabel value="MENOR_DE_EDAD" styleClass="outlabel"/>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px" styleClass="column">
+									<p:outputLabel value="NO_VIVE_AHI" styleClass="outlabel"/>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px" styleClass="column">
+									<p:outputLabel value="NO_QUISIERON_CONTESTAR" styleClass="outlabel"/>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px" styleClass="column">
+									<p:outputLabel value="NO_HUBO_QUIEN_CONTESTARA" styleClass="outlabel"/>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px" styleClass="column">
+									<p:outputLabel value="NO_LOCALIZADO" styleClass="outlabel"/>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px" styleClass="column">
+									<p:outputLabel value="DOMICILIO_NO_ENCONTRADO" styleClass="outlabel"/>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px" styleClass="column">
+									<p:outputLabel value="OTRO" styleClass="outlabel"/>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column rendered="${pregunta!=9 and pregunta!=3 and pregunta!=7}"  style="width:150px">
+									<p:outputLabel value="${resultado.get('si')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta!=9 and pregunta!=3 and pregunta!=7}" style="width:150px">
+									<p:outputLabel value="${resultado.get('r_no')}">
+							      	<f:convertNumber pattern="###,###"/>
+							      </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta!=9 and pregunta!=3 and pregunta!=7}" style="width:150px">
+									<p:outputLabel value="${resultado.get('ns_nc')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								
+								<p:column rendered="${pregunta==3}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_3_primer_corte')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==3}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_3_segundo_corte')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==3}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_3_tercer_corte')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								
+								
+								<p:column rendered="${pregunta==7}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_7_alfredo')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==7}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_7_josefina')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==7}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_7_delfina')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==7}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_7_oscar')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==7}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_7_juan')}"/>
+								</p:column>
+								<p:column rendered="${pregunta==7}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_7_isidro')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==7}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_7_otro')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==7}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_7_ns_nc')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								
+								
+								<p:column rendered="${pregunta==9}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_9_finado')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_9_menor')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_9_no_vive')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_9_no_quisieron')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_9_no_hubo')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_9_no_localizado')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_9_domicilio')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+								<p:column rendered="${pregunta==9}" style="width:150px">
+									<p:outputLabel value="${resultado.get('_9_otro')}">
+								      	<f:convertNumber pattern="###,###"/>
+								    </p:outputLabel>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+					</p:panel>	
+					
+					<p:remoteCommand name="mpioActualizar" 	action="actualizaComboMpios" update="gridFiltros" /> 
+					
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+							.column{
+								background: #3ac162;
+								align: center;
+							}
+							.outlabel{
+								color: white;
+    							font-weight: bold;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

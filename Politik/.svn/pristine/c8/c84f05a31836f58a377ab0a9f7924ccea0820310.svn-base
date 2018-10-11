@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="catalogos.manzanas">
+
+	<resultMap type="ManzanaEO" id="manzana">
+		<id column="ManzanaEO_id" property="id" javaType="Integer"/>
+		<result column="ManzanaEO_id_manzana" property="idManzana" javaType="Integer"/>
+		<result column="ManzanaEO_nombre" property="nombre" javaType="String"/>
+		<result column="ManzanaEO_llave" property="llave" javaType="String"/>
+
+		<association column="ManzanaEO_llave_entidad" property="entidad" select="catalogos.entidades.buscarPorLlave" />
+<!-- 		<association column="ManzanaEO_llave_localidad" property="localidad" select="catalogos.localidades.buscarPorLlave"/> -->
+<!-- 		<association column="ManzanaEO_llave_municipio" property="municipio" select="catalogos.municipios.buscarPorLlave"/> -->
+<!-- 		<association column="ManzanaEO_llave_seccion" property="seccion" select="catalogos.secciones.buscarPorLlave"/> -->
+	</resultMap>
+	
+	<sql id="query">
+		SELECT  ManzanaEO.id									ManzanaEO_id,
+		 		ManzanaEO.id_manzana							ManzanaEO_id_manzana,
+		  		ManzanaEO.manzana								ManzanaEO_nombre,
+		   		ManzanaEO.llave_entidad							ManzanaEO_llave_entidad,
+		     	ManzanaEO.llave_localidad						ManzanaEO_llave_localidad, 
+		        ManzanaEO.llave_municipio						ManzanaEO_llave_municipio,
+		        ManzanaEO.llave_seccion							ManzanaEO_llave_seccion,
+		        ManzanaEO.llave_manzana							ManzanaEO_llave
+		  FROM catalogos.manzanas ManzanaEO
+	</sql>
+
+	<select id="listadoFiltroEntidad" parameterType="String" resultMap="manzana">
+		<include refid="query"/>
+		WHERE llave_entidad = #{value}
+	</select>
+	
+	<select id="listadoFiltroMunicipio" parameterType="String" resultMap="manzana">
+		<include refid="query"/>
+		WHERE llave_municipio = #{value}
+	</select>
+	
+	<select id="listadoFiltroSeccion" parameterType="String" resultMap="manzana">
+		<include refid="query"/>
+		WHERE llave_seccion = #{value}
+	</select>
+	
+
+	<select id="buscarPorLlave" parameterType="String" resultMap="manzana">
+		<include refid="query"/>
+		WHERE llave_manzana = #{value}
+	</select>
+
+</mapper>

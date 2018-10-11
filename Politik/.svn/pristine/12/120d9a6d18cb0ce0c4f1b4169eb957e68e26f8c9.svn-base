@@ -1,0 +1,72 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Administración" />
+						<p:menuitem value="Usuarios" url="/app/administracion/usuarios" />
+					</p:breadCrumb>
+
+					<p:panel header="Listado de Usuarios">
+						<p:dataTable value="${modeloUsuarios.listado}" var="fila"
+							rowKey="${fila.id}" selection="${modeloUsuarios.seleccionado}"
+							selectionMode="single" paginator="true" rows="5"
+							paginatorAlwaysVisible="false" paginatorPosition="bottom">
+							<p:ajax event="rowSelect" update="#{p:component('tabsUsuario')}" />
+							<p:column headerText="Nick" width="100">${fila.nick}</p:column>
+							<p:column headerText="Nombre">${fila.nombre}</p:column>
+							<p:column headerText="Nivel" width="150">${fila.nivel}</p:column>
+							<p:column headerText="Habilitado" width="75">${fila.habilitado ? 'Si' : 'No'}</p:column>
+						</p:dataTable>
+						<p:separator />
+						<p:tabView id="tabsUsuario">
+							<p:tab title="Roles">
+								<p:dataTable value="${modeloUsuarios.seleccionado.roles}"
+									var="fila" paginator="true" rows="10"
+									paginatorAlwaysVisible="false" paginatorPosition="bottom">
+									<p:column headerText="Rol" width="300">${fila.rol}</p:column>
+									<p:column headerText="Descripción">${fila.descripcion}</p:column>
+								</p:dataTable>
+							</p:tab>
+							<p:tab title="Territorios">
+								<p:dataTable value="${modeloUsuarios.seleccionado.territorios}"
+									var="fila" paginator="true" rows="10"
+									paginatorAlwaysVisible="false" paginatorPosition="bottom">
+									<p:column headerText="Llave" width="100">${fila.llave}</p:column>
+									<p:column headerText="Nombre">${fila.nombre}</p:column>
+								</p:dataTable>
+							</p:tab>
+							<p:tab title="Dependencias">
+								<p:dataTable value="${modeloUsuarios.seleccionado.dependencias}"
+									var="fila" paginator="true" paginatorAlwaysVisible="false"
+									paginatorPosition="bottom">
+									<p:column headerText="Siglas" width="150">${fila.siglas}</p:column>
+									<p:column headerText="Nombre">${fila.dependencia}</p:column>
+								</p:dataTable>
+							</p:tab>
+						</p:tabView>
+
+						<f:facet name="footer">
+							<p:commandButton value="Agregar" action="agregar" />
+							<p:commandButton value="Editar" action="editar" />
+						</f:facet>
+					</p:panel>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,326 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:growl autoUpdate="true" life="4000" showDetail="true" />
+					
+					<p:panel header="Sección">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Municipio :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="#{municipios.seleccionado}" converter="ObjectConverter" style="width:300px" filter="true" filterMatchMode="contains">
+										<p:ajax event="itemSelect" oncomplete="actualizarSeccion()"/>
+										<f:selectItems value="#{municipios.listado}" var="fila" itemLabel="#{fila.idMunicipio}- #{fila.nombre}" itemValue="#{fila}"/>
+									</p:selectOneMenu>								
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Sección :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="#{secciones.seleccionado}" converter="ObjectConverter" style="width:300px" filter="true" filterMatchMode="startsWith">
+										<p:ajax event="itemSelect" oncomplete="actualizar()"/>
+										<f:selectItems value="#{secciones.listado}" var="fila" itemLabel="#{fila.idSeccion}" itemValue="#{fila}"/>
+									</p:selectOneMenu>								
+							</p:column>
+						</p:panelGrid>
+				    </p:panel>
+					<p:panel header="Resultados Casillas" id="resultadosCasillas">
+						<p:dataTable value="${modelo.listado}" var="fila" selectionMode="single" rowKey="${fila.id}" selection="${modelo.seleccionado}" 
+								tableStyle="width:auto" paginator="true" rows="10" emptyMessage="No se han encontrado resultados" editable="true">
+								
+								<p:ajax event="rowEdit"  oncomplete="actualizarFila()"/>
+								
+								<p:column headerText="Clave">
+									<p:outputLabel value="${fila.casilla.llave}" />
+								</p:column>
+								<p:column headerText="Casilla">
+									<p:outputLabel value="${fila.casilla.nombre}" />
+								</p:column>
+								<p:column headerText="Listado Nominal" style="text-align:right">
+									<p:outputLabel value="${fila.listadoNominalF}" />
+								</p:column>
+								
+								
+								<p:column headerText="PAN">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.panF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pan}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PRI">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.priF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pri}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PRD">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.prdF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.prd}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PT">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.ptF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pt}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PES">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.pesF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pes}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								
+								<p:column headerText="PVEM">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.pvemF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pvem}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PANAL">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.panalF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.panal}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								
+								<p:column headerText="MORENA">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.morenaF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.morena}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								
+								<p:column headerText="INDEPENDIENTE">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.independienteF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.independiente}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								
+								<p:column headerText="PRI-PVEM-PANAL-PES">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.pri_pvem_panal_pesF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pri_pvem_panal_pes}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								
+								<p:column headerText="PRI-PVEM-PANAL">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.pri_pvem_panalF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pri_pvem_panal}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PRI-PVEM-PES">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.pri_pvem_pesF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pri_pvem_pes}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								
+								<p:column headerText="PRI-PANAL-PES">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.pri_panal_pesF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pri_panal_pes}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PVEM-PANAL-PES">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.pvem_panal_pesF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pvem_panal_pes}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PRI-PVEM">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.pri_pvemF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pri_pvem}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PRI-PANAL">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.pri_panalF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pri_panal}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PRI-PES">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.pri_pesF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pri_pes}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PVEM-PANAL">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.pvem_panalF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pvem_panal}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PVEM-PES">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.pvem_pesF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.pvem_pes}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="PANAL-PES">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.panal_pesF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.panal_pes}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="Nulos">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.nulosF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.nulos}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								<p:column headerText="No Registrados">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.noRegistradoF}"  style="width:50px"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="${fila.noRegistrado}" style="width:50px" onkeypress="return justNumbers(event);"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								
+								
+								
+								<p:column headerText="Votos Coalicion" style="text-align:right">
+									<p:outputLabel value="${fila.total_pri_pvem_panal_pesF}" />
+								</p:column>
+								<p:column headerText="Votos Validos" style="text-align:right">
+									<p:outputLabel value="${fila.validosF}" />
+								</p:column>
+								<p:column headerText="Votos Totales" style="text-align:right">
+									<p:outputLabel value="${fila.votosTotalesF}" />
+								</p:column>
+								<p:column headerText="Computada">
+									<p:cellEditor>
+										<f:facet name="output">
+											<p:outputLabel value="${fila.computada?'COMPUTADA':'NO COMPUTADA'}"/> 
+										</f:facet>
+										<f:facet name="input">
+											<p:selectBooleanButton value="${fila.computada}" onLabel="COMPUTADA" offLabel="NO COMPUTADA" 
+																   onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:150px;"/>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+								
+								<p:column headerText="Editar" rendered="${fila.computada?false:true}" style="width:32px">
+									<p:rowEditor/>
+								</p:column>
+						</p:dataTable>
+					</p:panel>	
+					
+					<p:dialog header="Actualizando..." widgetVar="dlg1" minHeight="200"  modal="true">
+					    <h:outputText value="Espere Mientras Se Actualiza" />
+					    <p:graphicImage value="/resources/spark-layout/images/preloader.gif" />
+					</p:dialog>
+					
+					
+					<p:remoteCommand name="actualizarSeccion" action="actualizarSeccion" update="@form"/>
+					<p:remoteCommand name="actualizar" action="actualizar" update="resultadosCasillas"/>
+					<p:remoteCommand name="actualizarFila" action="actualizarFila" update="resultadosCasillas" onstart="PF('dlg1').show()" oncomplete="PF('dlg1').hide()"/>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

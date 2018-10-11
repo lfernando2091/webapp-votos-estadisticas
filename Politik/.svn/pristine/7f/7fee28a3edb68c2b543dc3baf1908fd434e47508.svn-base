@@ -1,0 +1,61 @@
+package com.saganet.politik.components.catalogos;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.catalogos.EntidadEO;
+import com.saganet.politik.modelos.catalogos.EntidadesT;
+
+@Component("CatalogosEntidadesC")
+public class EntidadesC {
+	
+	//private static final Logger logger = LoggerFactory.getLogger(EntidadesC.class);
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	public EntidadesT tabla(){
+		EntidadesT tabla;
+		List<EntidadEO> listado;
+		
+		tabla = new EntidadesT();
+		
+		listado = sqlSession.selectList("catalogos.entidades.listado");
+		if(!listado.isEmpty())
+			tabla.setSeleccionado(listado.get(0));
+		tabla.setListado(listado);
+		
+		return tabla;
+	}
+	
+	public EntidadesT tablaBuscador(){
+		EntidadesT tabla;
+		List<EntidadEO> listado;
+		
+		tabla = new EntidadesT();
+		
+		listado = sqlSession.selectList("catalogos.entidades.listadoBuscador");
+		if(!listado.isEmpty())
+			tabla.setSeleccionado(listado.get(0));
+		tabla.setListado(listado);
+		
+		return tabla;
+	}
+	
+	public EntidadesT tablaBuscadorSimple(){
+		EntidadesT tabla;
+		List<EntidadEO> listado;
+		
+		tabla = new EntidadesT();
+		
+		listado = sqlSession.selectList("catalogos.entidades.listadoSimple");
+		if(!listado.isEmpty())
+			tabla.setSeleccionado(listado.get(0));
+		tabla.setListado(listado);
+		
+		return tabla;
+	}
+}

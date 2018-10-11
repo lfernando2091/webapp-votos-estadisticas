@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="warehouse.aliadosEstrategicos">
+	<cache />
+	<resultMap type="AliadoEstrategicoEO" id="aliadoEstrategico">
+		<id column="id_politik" property="id" javaType="Integer" />
+		<association column="{idPersona = id_persona, idEntidad = id_entidad_nacimiento}" property="persona" select="mdm.personas.buscarBasicaPorId"/>
+		<association column="id_entidad" property="entidad" select="catalogos.entidades.entidadById"/>
+	</resultMap>
+	
+	<select id="listado" resultMap="aliadoEstrategico">
+		SELECT 
+		id_politik, 
+		id_persona, 
+		id_entidad_nacimiento, 
+		id_entidad
+  		FROM warehouse.aliados_estrategicos
+	</select>
+	
+	<select id="buscarAliadoEstrategicoByPersona" resultMap="aliadoEstrategico" parameterType="PersonaEO">
+		SELECT id_politik, id_persona, id_entidad_nacimiento, id_entidad
+  		FROM warehouse.aliados_estrategicos
+  		where id_persona = #{id} and id_entidad_nacimiento = #{entidadNacimiento.id} and id_entidad = #{entidad.id}
+	</select>
+	
+	<insert id="insertarAliadoEstrategico" parameterType="PersonaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('warehouse.aliados_estrategicos_id_politik_seq')
+		</selectKey>
+		INSERT INTO warehouse.aliados_estrategicos(
+            id_politik, id_persona, id_entidad_nacimiento, id_entidad)
+    	VALUES (#{id}, #{id}, #{entidadNacimiento.id}, #{entidad.id});
+	</insert>
+	
+	<insert id="insertarTablasPersonasForAliadosEstrategicos" parameterType="AliadoEstrategicoEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('mdm.tablas_personas_id_tabla_persona_seq')
+		</selectKey>
+		INSERT INTO mdm.tablas_personas(
+            id_tabla_persona, id_persona, id_entidad_nacimiento, id_tabla, 
+            id_politik)
+    	VALUES (#{id}, #{persona.id}, #{persona.entidadNacimiento.id}, 4, #{id});
+	</insert>
+
+</mapper>

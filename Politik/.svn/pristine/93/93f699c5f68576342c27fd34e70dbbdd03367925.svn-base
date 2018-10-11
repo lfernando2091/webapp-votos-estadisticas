@@ -1,0 +1,299 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Reporte por Rango de Edad">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nivel :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloNiveles.seleccionado}" style="width:300px">
+										<p:ajax event="itemSelect" oncomplete="actualizar()"/>
+					            		<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+									</p:selectOneMenu>	
+							</p:column>	
+							<p:outputLabel value="Programa" />
+							<p:selectOneMenu value="${modeloProgramas.seleccionado}"
+								style="width:300px">
+								<p:ajax event="itemSelect" onsuccess="actualizar()" />
+								<f:selectItems value="${modeloProgramas.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<p:panel id="gridAcance" scrollable="true" scrollWidth="200%">
+							<p:dataTable value="${modeloEdades.listado}" var="fila" rowKey="${fila.id}" selection="${seleccionado}" selectionMode="single" paginator="true" rows="15" id="tablaResultados" paginatorPosition="bottom" >
+								<p:columnGroup type="header">
+            					<p:row>
+            					
+            						<p:column headerText="Regiones" rowspan="5" width="150"  filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.nombreRegion}"/>
+            						<p:column headerText="Municipios" rowspan="5" width="150"   rendered="${modeloNiveles.seleccionado!='REGION'?true:false}" filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.nombreMunicipio}" />
+            						<p:column headerText="Secciones" rowspan="5" width="150" rendered="${modeloNiveles.seleccionado=='SECCION'}"   filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.seccion}"/>
+            					</p:row>
+            					
+            					<p:row>
+            						<p:column headerText="Edad 18-30" colspan="11" />
+            						<p:column headerText="Edad 31-64" colspan="11" />
+            						<p:column headerText="Edad 65 o más" colspan="11" />
+            					</p:row>
+            					<p:row>
+            						<p:column headerText="Exitosas" rowspan="3" colspan="1"/>
+            						<p:column headerText="A favor" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos a Favor" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos en Contra" rowspan="1" colspan="2"/>
+            						<p:column headerText="En contra" rowspan="1" colspan="2"/>
+            						
+            						<p:column headerText="Exitosas" rowspan="3" colspan="1"/>
+            						<p:column headerText="A favor" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos a Favor" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos en Contra" rowspan="1" colspan="2"/>
+            						<p:column headerText="En contra" rowspan="1" colspan="2"/>
+            						
+            						<p:column headerText="Exitosas" rowspan="3" colspan="1"/>
+            						<p:column headerText="A favor" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos a Favor" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos" rowspan="1" colspan="2"/>
+            						<p:column headerText="Indecisos en Contra" rowspan="1" colspan="2"/>
+            						<p:column headerText="En contra" rowspan="1" colspan="2"/>
+            						
+            						
+            					</p:row>
+            				
+            					<p:row>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            						<p:column headerText="#" colspan="1"  rowspan="1"/>
+            						<p:column headerText="%" colspan="1"  rowspan="1"/>
+            					</p:row>
+               				</p:columnGroup>
+							
+								<p:column  >
+								<p:outputLabel value="${fila.nombreRegion}"  />
+								</p:column>
+								<p:column rendered="${modeloNiveles.seleccionado!='REGION'?true:false}"  >
+								<p:outputLabel value="${fila.nombreMunicipio}" />
+								</p:column>
+								<p:column rendered="${modeloNiveles.seleccionado=='SECCION'}" >
+								<p:outputLabel value="${fila.seccion}"  />
+								</p:column>
+								
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.edad1830Exitosas}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.edad1830aFavor}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.edad1830aFavorPorcentaje}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.edad1830IndecisosAFavor}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.edad1830IndecisosAFavorPorcentaje}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.edad1830Indecisos}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.edad1830IndecisosPorcentaje}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.edad1830IndecisosEnContra}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.edad1830IndecisosEnContraPorcentaje}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.edad1830EnContra}"/>
+								</p:column>
+								<p:column  width="100" style="text-align:right">
+								<p:outputLabel value="${fila.edad1830EnContraPorcentaje}"/>
+								</p:column>
+								
+								<p:column>
+								<p:outputLabel value="${fila.edad3164Exitosas}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad3164aFavor}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad3164aFavorPorcentaje}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad3164IndecisosAFavor}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad3164IndecisosAFavorPorcentaje}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad3164Indecisos}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad3164IndecisosPorcentaje}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad3164IndecisosEnContra}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad3164IndecisosEnContraPorcentaje}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad3164EnContra}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad3164EnContraPorcentaje}"/>
+								</p:column>
+								
+								<p:column>
+								<p:outputLabel value="${fila.edad65masExitosas}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad65masaFavor}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad65masaFavorPorcentaje}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad65masIndecisosAFavor}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad65masIndecisosAFavorPorcentaje}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad65masIndecisos}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad65masIndecisosPorcentaje}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad65masIndecisosEnContra}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad65masIndecisosEnContraPorcentaje}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad65masEnContra}"/>
+								</p:column>
+								<p:column>
+								<p:outputLabel value="${fila.edad65masEnContraPorcentaje}"/>
+								</p:column>
+									
+							<p:columnGroup type="footer">
+								<p:row>
+									<p:column colspan="1"  style="text-align:right"  footerText="Totales:"  rendered="${modeloNiveles.seleccionado=='REGION'}" />
+									<p:column colspan="2"  style="text-align:right"  footerText="Totales:"  rendered="${modeloNiveles.seleccionado=='MUNICIPIO'}" />
+									<p:column colspan="3"  style="text-align:right"  footerText="Totales:"  rendered="${modeloNiveles.seleccionado=='SECCION'}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad1830Exitosas}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad1830aFavor}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad1830aFavorPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad1830IndecisosAFavor}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad1830IndecisosAFavorPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad1830Indecisos}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad1830IndecisosPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad1830IndecisosEnContra}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad1830IndecisosEnContraPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad1830EnContra}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad1830EnContraPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad3164Exitosas}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad3164aFavor}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad3164aFavorPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad3164IndecisosAFavor}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad3164IndecisosAFavorPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad3164Indecisos}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad3164IndecisosPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad3164IndecisosEnContra}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad3164IndecisosEnContraPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad3164EnContra}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad3164EnContraPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad65masExitosas}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad65masaFavor}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad65masaFavorPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad65masIndecisosAFavor}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad65masIndecisosAFavorPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad65masIndecisos}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad65masIndecisosPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad65masIndecisosEnContra}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad65masIndecisosEnContraPorcentaje}" />
+									
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad65masEnContra}" />
+									<p:column style="text-align: right;"  footerText="${modeloSubtotal.tedad65masEnContraPorcentaje}" />
+			
+								</p:row>
+							</p:columnGroup>
+								
+							</p:dataTable>
+						
+						</p:panel>
+					</p:panel>	
+						
+					<p:remoteCommand action="actualizar" name="actualizar" update="@form" />
+					
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,187 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Eventos"  url="/app/evento/"/>
+						<p:menuitem value="Agregar Evento"/>
+					</p:breadCrumb>
+					<p:panel header="Agregar Eventos">
+						<p:messages autoUpdate="true"/>
+						<p:panelGrid columns="2" id="panelGridPrincipal"  columnClasses="topAlign, topAlign2">
+							<p:column>
+								<p:panelGrid columns="2" id="panelGrid">
+									<p:column>
+										Nombre Evento:
+									</p:column>
+									<p:column>
+										<p:inputText value="${evento.nombre}" id="Nombre" style="width:300px"/>
+									</p:column>
+									<p:column>
+										Fecha:
+									</p:column>
+									<p:column>
+										<p:calendar id="dateTime" value="${evento.fechaString}" pattern="dd/MM/yyyy HH:mm" showOn="button" mask="true"/>
+									</p:column>
+									<p:column>
+										Estatus:
+									</p:column>
+									<p:column>
+										<p:selectOneMenu id="comboEstatus" value="${evento.estatus}" style="width:300px">
+							            		<f:selectItems value="${listadoEstatus}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+										</p:selectOneMenu>
+									</p:column>
+									<p:column>
+										Tipo:
+									</p:column>
+									<p:column>
+										<p:selectOneMenu id="comboTipo" value="${evento.tipo}" style="width:300px">
+							            		<f:selectItems value="${listadoTipo}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+										</p:selectOneMenu>
+									</p:column>
+									<p:column>
+										Número de Asistentes:
+									</p:column>
+									<p:column>
+										<p:inputText value="${evento.numeroAsistentes}" id="Número_de_Asistentes" style="width:300px">
+											<f:validateDoubleRange minimum="0" maximum="9999999999" />
+										</p:inputText>
+									</p:column>
+									
+									<p:column>
+										Descripción del Lugar:
+									</p:column>
+									<p:column>
+										<p:inputTextarea value="${evento.descripcionLugar}" cols="40"/>
+									</p:column>
+								</p:panelGrid>
+							</p:column>
+							<p:column>
+								<p:panelGrid id="panelGridTerritorio" columns="2">
+									<p:column>
+										Nivel:
+									</p:column>
+									<p:column>
+										<p:selectOneMenu id="comboNivel" value="${evento.nivel}" style="width:300px">
+												<p:ajax event="itemSelect" update="panelGridTerritorio" />
+							            		<f:selectItems value="${listadoNiveles}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+										</p:selectOneMenu>
+									</p:column>
+									
+									
+									<p:column rendered="${evento.nivel.nombre!='Nacional' and  evento.nivel.nombre!='Geozona'?true:false}">
+										Entidades:
+									</p:column>
+									<p:column rendered="${evento.nivel.nombre!='Nacional' and  evento.nivel.nombre!='Geozona'?true:false}">
+										<p:selectCheckboxMenu value="${entidades.seleccionMultiple}" label="Selección Entidades" style="width: 300px;" 
+												converter="ObjectConverter" id="seleccion_Entidades" 
+							            		rendered="${evento.nivel.nombre!='Entidad'?true:false}">
+												<p:ajax event="toggleSelect"/>
+												<p:ajax event="change" oncomplete="comandoActualizarNivel()" update="panelGridTerritorio"/>
+							            		<f:selectItems value="${entidades.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							            </p:selectCheckboxMenu>
+										<p:selectCheckboxMenu value="${evento.territorios}" label="Selección Entidades" style="width: 300px;" 
+												converter="ObjectConverter" id="selección_Entidades" 
+							            		rendered="${evento.nivel.nombre=='Entidad'?true:false}">
+							            		<f:selectItems value="${entidades.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							            </p:selectCheckboxMenu>
+									</p:column>
+									
+									
+									<p:column rendered="${evento.nivel.nombre!='Nacional' and  evento.nivel.nombre!='Entidad' and  evento.nivel.nombre!='Geozona'?true:false}">
+										${evento.nivel.nombre}:
+									</p:column>
+									<p:column rendered="${evento.nivel.nombre!='Nacional' and  evento.nivel.nombre!='Entidad' and  evento.nivel.nombre!='Geozona'?true:false}">
+										<p:selectCheckboxMenu value="${evento.territorios}" label="Selección ${evento.nivel.nombre}" style="width: 300px;"
+												converter="ObjectConverter" id="selección_${evento.nivel.nombre.replace(' ','_')}" >
+							            		<f:selectItems value="${territorioNivel.listado}" var="fila" itemLabel="${fila.entidad.nombre}-${fila.nombre}" itemValue="${fila}" />
+							            </p:selectCheckboxMenu>
+									</p:column>
+									
+									<p:column rendered="${evento.nivel.nombre=='Geozona'?true:false}">
+										GeoZona:
+									</p:column>
+									<p:column rendered="${evento.nivel.nombre=='Geozona'?true:false}">
+										<p:selectOneMenu value="${geozonas.seleccionado}" label="Selección GeoZona" style="width: 300px;"
+												converter="ObjectConverter" id="seleccion_geozona" >
+												<p:ajax event="itemSelect" update="panelGridTerritorio" onstart="actualizarBandera()"/>
+							            		<f:selectItems value="${geozonas.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							            </p:selectOneMenu>
+									</p:column>
+									
+									
+									<p:column rendered="${evento.nivel.nombre=='Geozona'?true:false}">
+										¿Desea Cargar ${geozonas.seleccionado.nivel.nombre}(s) de Geozona?:
+									</p:column>
+									<p:column rendered="${evento.nivel.nombre=='Geozona'?true:false}">
+										<p:inputSwitch value="${banderaMun}" onLabel="Si" offLabel="No">
+											<p:ajax event="change" update="panelGridTerritorio" onstart="actualizarMunGeozona()"/>
+										</p:inputSwitch>
+									</p:column>
+									
+									
+									<p:column rendered="${evento.nivel.nombre=='Geozona'?true:false}">
+										GeoZona Partición:
+									</p:column>
+									<p:column rendered="${evento.nivel.nombre=='Geozona'?true:false}">
+										<p:selectCheckboxMenu value="${evento.territorios}" label="Selección GeoZona Partición" style="width: 300px;"
+												 rendered="${banderaMun!=true?true:false}"
+												converter="ObjectConverter" id="seleccion_geozona_particion" >
+							            		<f:selectItems value="${geozonas.seleccionado.particiones}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							            </p:selectCheckboxMenu>
+							            
+										<p:selectCheckboxMenu value="${modeloParticiones.seleccionMultiple}" label="Selección GeoZona Partición" style="width: 300px;"
+												 rendered="${evento.nivel.nombre=='Geozona' and banderaMun==true?true:false}"
+												converter="ObjectConverter" id="seleccion_geozona_partición" >
+												<p:ajax event="toggleSelect"/>
+												<p:ajax event="change" oncomplete="comandoSubNivelGeozona()" update="panelGridTerritorio"/>
+							            		<f:selectItems value="${modeloParticiones.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							            </p:selectCheckboxMenu>
+									</p:column>
+									
+									
+									<p:column rendered="${evento.nivel.nombre=='Geozona' and banderaMun==true?true:false}">
+										${geozonas.seleccionado.nivel.nombre}
+									</p:column>
+									<p:column rendered="${evento.nivel.nombre=='Geozona' and banderaMun==true?true:false}">
+										<p:selectCheckboxMenu value="${evento.territorios}" label="Selección ${geozonas.seleccionado.nivel.nombre}" style="width: 300px;"
+												converter="ObjectConverter" id="selección_${geozonas.seleccionado.nivel.nombre.replace(' ','_')}" >
+							            		<f:selectItems value="${subGeozona.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							            </p:selectCheckboxMenu>
+									</p:column>
+								</p:panelGrid>
+							</p:column>
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="guardar" />
+							<p:commandButton value="Cancelar" action="cancelar" immediate="true"/>
+						</f:facet>
+					</p:panel>
+					<p:remoteCommand name="actualizarBandera" action="actualizarBandera" update="panelGridTerritorio"/>
+					<p:remoteCommand name="actualizarMunGeozona" action="crearModeloParticiones" update="panelGridTerritorio"/>
+					<p:remoteCommand name="comandoSubNivelGeozona" action="subNivelGeozona" update="panelGridTerritorio"/>
+					<p:remoteCommand name="comandoActualizarNivel" action="actualizarNivel" update="panelGridTerritorio selección_${evento.nivel.nombre.replace(' ','_')}"/>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+					.topAlign2{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

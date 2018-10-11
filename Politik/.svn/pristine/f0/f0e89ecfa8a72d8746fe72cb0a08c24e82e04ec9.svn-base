@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="administracion.usuarios">
+	<cache />
+	
+	<resultMap type="UsuarioEO" id="usuario">
+		<result column="UsuarioEO_nick" property="nick" javaType="String"/>
+		<result column="UsuarioEO_nombre" property="nombre" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+		nick			UsuarioEO_nick, 
+		nombre			UsuarioEO_nombre
+  		FROM administracion.usuarios
+	</sql>
+	
+	<select id="listado" resultMap="usuario">
+		<include refid="query" />
+		order by nick
+	</select>
+</mapper>

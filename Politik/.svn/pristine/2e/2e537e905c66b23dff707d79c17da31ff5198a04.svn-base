@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Resultados Encuestas - Preguntas">
+						<p:panelGrid columns="1">
+						<p:outputLabel value="Seleccione la pregunta"/>
+						<p:selectOneMenu value="${pregunta}">
+						<f:selectItem itemLabel="Sabe si el apoyo de PROSPERA que usted recibe es de.." itemValue="1"/>
+						<f:selectItem itemLabel="¿Se siente usted apoyado por el Gobierno de la República a través de sus Programas Sociales?" itemValue="2"/>
+						<f:selectItem itemLabel="¿Cómo calificaría el desempeño del Gobierno de la República con PROSPERA en su Estado?" itemValue="3"/>
+						<f:selectItem itemLabel="¿Cómo calificaría los Programas Sociales que recibe por parte del Gobierno del Estado?" itemValue="4"/>
+						<f:selectItem itemLabel="¿Le gustaría que los Programas se mantengan coomo hasta ahora lo han hecho?" itemValue="5"/>
+						</p:selectOneMenu>
+						</p:panelGrid>
+						<f:facet name="footer">
+						<p:commandButton value="Mostrar" action="mostrarEncuesta" icon="fa fa-search"/>
+						</f:facet>
+						</p:panel>
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

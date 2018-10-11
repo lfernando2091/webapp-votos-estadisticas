@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.entidades">
+	<cache />
+	
+	<resultMap type="EntidadEO" id="entidad">
+		<id column="EntidadEO_id" property="id" javaType="Integer"/>
+		<result column="EntidadEO_nombre" property="nombre" javaType="String"/>
+		<association property="geoData" resultMap="gis.geoData.geoData" columnPrefix="EntidadEO_" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT
+			EntidadEO.id_entidad 					EntidadEO_id,
+			EntidadEO.entidad 						EntidadEO_nombre,
+			st_xmin(ST_Extent(GisEntidades.geom)) 	EntidadEO_GeoDataEO_xMin,
+			st_ymin(ST_Extent(GisEntidades.geom)) 	EntidadEO_GeoDataEO_yMin,
+			st_xmax(ST_Extent(GisEntidades.geom)) 	EntidadEO_GeoDataEO_xMax,
+			st_ymax(ST_Extent(GisEntidades.geom)) 	EntidadEO_GeoDataEO_yMax
+		FROM catalogos.entidades EntidadEO
+		LEFT JOIN gis.entidades GisEntidades ON (EntidadEO.id_entidad = GisEntidades.id_entidad)
+	</sql>
+	
+	<sql id="queryGroup">
+		GROUP BY EntidadEO.id_entidad, EntidadEO.entidad
+	</sql>
+	
+	<sql id="whereUsuario">
+		<where>
+			<choose>
+				<when test="id == null">
+					EntidadEO.id_entidad BETWEEN 1 AND 32
+				</when>
+				<when test="nivel.name() == 'NACIONAL'">
+					EntidadEO.id_entidad BETWEEN 1 AND 32
+				</when>
+				<when test="nivel.name() == 'ENTIDAD'">
+					EntidadEO.id_entidad in (
+						<foreach collection="territorios" item="item" separator=",">
+							${item.llave}
+						</foreach>
+					)
+				</when>
+				<otherwise>
+					EntidadEO.id_entidad = -1
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
+	
+	<select id="listado" resultMap="entidad" parameterType="UsuarioEO">
+		<include refid="query" />
+		<include refid="whereUsuario" />
+		<include refid="queryGroup" />
+		ORDER BY EntidadEO.id_entidad
+	</select>
+	
+	<select id="entidadById" resultMap="entidad" parameterType="Integer">
+		<include refid="query" />
+		WHERE EntidadEO.id_entidad = #{param}
+		<include refid="queryGroup" />
+	</select>
+	
+	<select id="listadoBuscador" resultMap="entidad" parameterType="UsuarioEO">
+		SELECT -1 EntidadEO_id, 'CUALQUIERA' EntidadEO_nombre, 0, 0, 0, 0
+		UNION
+		<include refid="query" />
+		<include refid="whereUsuario" />
+		<include refid="queryGroup" />
+		ORDER BY EntidadEO.id_entidad
+	</select>
+	
+	<select id="listadoSimple" resultMap="entidad" parameterType="UsuarioEO">
+		<include refid="query" />
+		<include refid="whereUsuario" />
+		<include refid="queryGroup" />
+		ORDER BY EntidadEO.id_entidad
+	</select>
+	
+	<select id="listadoPorEleccionLlave" resultMap="entidad" parameterType="EleccionEO">
+		<include refid="query" />
+		<where>
+			EntidadEO.id_entidad IN (
+				SELECT EleccionesLlaves.llave::integer 
+				FROM catalogos.elecciones_llaves EleccionesLlaves 
+				WHERE EleccionesLlaves.id_eleccion = #{id} 
+			)
+		</where> 
+		<include refid="queryGroup" />
+		ORDER BY EntidadEO.id_entidad
+	</select>
+	
+	<select id="listadoPorGeozonaParticionLlave" resultMap="entidad" parameterType="GeozonaParticionEO">
+		<include refid="query" />
+		<where>
+			EntidadEO.id_entidad in (
+				SELECT GeozonasParticionLlaves.llave::integer 
+				FROM catalogos.geozonas_llaves GeozonasParticionLlaves 
+				WHERE GeozonasParticionLlaves.id_geozona_particion = #{id} 
+			)
+		</where> 
+		<include refid="queryGroup" />
+		ORDER BY EntidadEO.id_entidad
+	</select>
+	
+	<select id="listadoPorUsuario" parameterType="UsuarioEO" resultMap="entidad" useCache="false">
+		<include refid="query" />
+		<where>
+			EntidadEO.id_entidad in (
+				SELECT UsuariosLlaves.llave::integer
+				FROM administracion.usuarios_llaves UsuariosLlaves
+				WHERE nick = #{nick}
+			)
+		</where>
+		<include refid="queryGroup" />
+	</select>
+	
+	<select id="entidadInId" parameterType="String" resultMap="entidad">
+		<include refid="query"/>
+		<where>
+			EntidadEO.id_entidad IN (${value})
+		</where>
+		<include refid="queryGroup"/>
+	</select>
+	
+</mapper>

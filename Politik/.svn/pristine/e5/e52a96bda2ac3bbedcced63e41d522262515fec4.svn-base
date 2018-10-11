@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<!-- <view-state id="prueba"> -->
+
+	<!-- </view-state> -->
+
+	<view-state id="listado">
+		<on-entry>
+			<set name="viewScope.dfBool" value="false" type="boolean" />
+			<set name="viewScope.dlBool" value="false" type="boolean"/>
+			<set name="viewScope.mBool" value="false" type="boolean"/>
+			
+			<evaluate expression="GisGeoDataC.nuevoGeoDataGlobal()" result="viewScope.geoDataGlobal" />
+			<evaluate expression="GisGeoDataC.nuevoGeoDataGlobal()" result="viewScope.geoDataGlobalMunicipios" />
+			
+			<evaluate expression="CatalogosEntidadesC.tabla()" result="viewScope.listadoEntidades" />
+			<evaluate
+				expression="CatalogosDFederalesC.tabla(viewScope.listadoEntidades.seleccionMultiple )"
+				result="viewScope.listadoDFederales" />
+			<evaluate
+				expression="CatalogosDLocalesC.tabla(viewScope.listadoEntidades.seleccionMultiple)"
+				result="viewScope.listadoDLocales" />
+			<evaluate
+				expression="CatalogosMunicipiosC.tabla(viewScope.listadoEntidades.seleccionMultiple)"
+				result="viewScope.listadoMunicipios" />
+
+			<evaluate
+				expression="CatalogosSeccionesC.nuevoModelo()"
+				result="viewScope.listadoSecciones" />
+		</on-entry>
+
+
+
+		<transition on="actualizaCombos">
+			<evaluate
+				expression="CatalogosDFederalesC.tabla(viewScope.listadoEntidades.seleccionMultiple)"
+				result="viewScope.listadoDFederales" />
+			<evaluate
+				expression="CatalogosDLocalesC.tabla(viewScope.listadoEntidades.seleccionMultiple)"
+				result="viewScope.listadoDLocales" />
+			<evaluate
+				expression="CatalogosMunicipiosC.tabla(viewScope.listadoEntidades.seleccionMultiple)"
+				result="viewScope.listadoMunicipios" />
+			<evaluate expression="GisGeoDataC.geoDataGlobalPorTerritorios(viewScope.listadoEntidades.seleccionMultiple)" result="viewScope.geoDataGlobal" />
+				
+		</transition>
+
+		<transition on="generaTablaSecciones">
+			<evaluate
+				expression="CatalogosSeccionesC.modeloSecciones(viewScope.listadoMunicipios.seleccionMultiple, viewScope.listadoDLocales.seleccionMultiple, viewScope.listadoDFederales.seleccionMultiple)"
+				result="viewScope.listadoSecciones" />
+			<evaluate expression="GisGeoDataC.geoDataGlobalPorTerritorios(viewScope.listadoMunicipios.seleccionMultiple)" result="viewScope.geoDataGlobalMunicipios" />
+		</transition>
+	</view-state>
+
+
+</flow>

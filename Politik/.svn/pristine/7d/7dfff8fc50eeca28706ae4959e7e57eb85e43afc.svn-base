@@ -1,0 +1,364 @@
+package com.saganet.politik.components.estructuras;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+
+import com.saganet.politik.components.mdm.PersonasC;
+import com.saganet.politik.database.catalogos.DependenciaEO;
+import com.saganet.politik.database.catalogos.EleccionEO;
+import com.saganet.politik.database.catalogos.EntidadEO;
+import com.saganet.politik.database.catalogos.TablaParticionEO;
+import com.saganet.politik.database.estructuras.CapturaEO;
+import com.saganet.politik.database.estructuras.EstructuraEO;
+import com.saganet.politik.database.estructuras.NodoEO;
+import com.saganet.politik.database.mdm.PersonaEO;
+import com.saganet.politik.database.mdm.TablaPersonaEO;
+import com.saganet.politik.dominios.TiposCampoDO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("EstructurasCapturaC")
+public class CapturaC {
+	private static final Logger logger = LoggerFactory.getLogger(CapturaC.class);
+
+	@Autowired
+	SqlSession sqlSession;
+	
+	@Autowired
+	PersonasC personasC;
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> iniciarMapaCaptura(RequestContext context){
+		EstructuraEO estructura;
+		EleccionEO eleccion;
+		DependenciaEO dependencia;
+		Modelo<EstructuraEO> modeloEstructuras;
+		Modelo<DependenciaEO> modeloDependencias;
+		Modelo<EleccionEO> modeloElecciones;
+		HashMap<String, Object> viewScope, flowScope, mapaCaptura;
+		List<HashMap<String, Object>> superiores;
+
+		viewScope = (HashMap<String, Object>) context.getViewScope().asMap();
+		flowScope = (HashMap<String, Object>) context.getFlowScope().asMap();
+		modeloEstructuras = (Modelo<EstructuraEO>) viewScope.get("modeloEstructuras");
+		mapaCaptura = new HashMap<>();
+		superiores = new ArrayList<>();
+		
+		estructura = modeloEstructuras.getSeleccionado();
+		mapaCaptura.put("nivel", new Integer(1));
+		mapaCaptura.put("estructura", estructura);
+		mapaCaptura.put("personaPadre", null);
+		mapaCaptura.put("objectoSeleccionado", null);
+		mapaCaptura.put("superiores", superiores);
+		
+		switch(estructura.getAmbito()){
+		case DEPENDENCIA:
+			modeloDependencias = (Modelo<DependenciaEO>) viewScope.get("modeloDependencias");
+			dependencia = modeloDependencias.getSeleccionado();
+			mapaCaptura.put("dependencia", dependencia);
+			break;
+		case ELECCION:
+			modeloElecciones = (Modelo<EleccionEO>) viewScope.get("modeloElecciones");
+			eleccion = modeloElecciones.getSeleccionado();
+			mapaCaptura.put("eleccion", eleccion);
+			break;
+		case DEPENDENCIAS:
+			break;
+		case GENERAL:
+			break;
+		}
+		
+		actualizarMapaCaptura(mapaCaptura);
+
+		return mapaCaptura;
+	}
+	
+	public void actualizarMapaCaptura(HashMap<String, Object> mapaCaptura){
+		HashMap<String, Object> parametros, seleccionados;
+		HashMap<String, List<HashMap<String, Object>>> tablasEstructura;
+		List<HashMap<String, Object>> listadoEstructura;
+		List<NodoEO> nodos;
+		
+		parametros = new HashMap<>();
+		tablasEstructura = new HashMap<>();
+		seleccionados = new HashMap<>();
+		
+		nodos = nodosPorNivel((Integer) mapaCaptura.get("nivel"), (EstructuraEO) mapaCaptura.get("estructura"));
+		mapaCaptura.put("nodos", nodos);
+		
+		parametros.put("estructura", mapaCaptura.get("estructura"));
+		parametros.put("personaPadre", mapaCaptura.get("personaPadre"));
+		
+		for(NodoEO nodo : nodos){
+			parametros.put("nodo", nodo);
+			listadoEstructura = sqlSession.selectList("estructuras.tablaEstructura.listadoPorNodo", parametros);
+			for(HashMap<String, Object> registro : listadoEstructura){
+				registro.put("persona", personasC.personaSimplePorId((Integer) registro.get("id_persona"), (Integer) registro.get("id_entidad_nacimiento")));
+				registro.put("nodo", nodo);
+			}
+			tablasEstructura.put("nodo_" + nodo.getId(), listadoEstructura);
+			if(!listadoEstructura.isEmpty()){
+				seleccionados.put("nodo_" + nodo.getId(), listadoEstructura.get(0));
+			} else {
+				seleccionados.put("nodo_" + nodo.getId(), null);
+			}
+		}
+		
+		mapaCaptura.put("tablasEstructura", tablasEstructura);
+		mapaCaptura.put("objetoSeleccionado", null);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void actualizarMapaCaptura(HashMap<String, Object> mapaCaptura, Integer nivel, PersonaEO personaPadre, NodoEO nodo){
+		HashMap<String, Object> superior;
+		
+		if(nivel.compareTo((Integer) mapaCaptura.get("nivel")) > 0){
+			superior = new HashMap<>();
+			
+			superior.put("nivel", nivel);
+			superior.put("nodo", nodo);
+			superior.put("persona", personaPadre);
+			((List<HashMap<String, Object>>) mapaCaptura.get("superiores")).add(superior);
+		}
+		
+		mapaCaptura.put("nivel", nivel);
+		mapaCaptura.put("personaPadre", personaPadre);
+
+		actualizarMapaCaptura(mapaCaptura);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void avanzarNivel(HashMap<String, Object> mapaCaptura){
+		EstructuraEO estructura;
+		Integer nivel;
+		List<NodoEO> nodos;
+		NodoEO nodo;
+		HashMap<String, Object> objetoSeleccionado;
+		PersonaEO persona;
+		
+		estructura = (EstructuraEO) mapaCaptura.get("estructura");
+		nivel = (Integer) mapaCaptura.get("nivel");
+		nodos = nodosPorNivel(nivel.intValue()+1, estructura);
+		objetoSeleccionado = (HashMap<String, Object>) mapaCaptura.get("objetoSeleccionado");
+		nodo = (NodoEO) objetoSeleccionado.get("nodo");
+		persona = (PersonaEO) objetoSeleccionado.get("persona");
+		
+		if(!nodos.isEmpty())
+			actualizarMapaCaptura(mapaCaptura, nivel.intValue()+1, persona, nodo);
+		else
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "No hay Más Niveles en la Estructura", "Fin de Cadena"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void regresarNivel(HashMap<String, Object> mapaCaptura) {
+		Integer nivel;
+		List<HashMap<String, Object>> superiores;
+		HashMap<String, Object> superior;
+		PersonaEO persona;
+		NodoEO nodo;
+		int index;
+		
+		nivel = (Integer) mapaCaptura.get("nivel");
+		superiores = (List<HashMap<String, Object>>) mapaCaptura.get("superiores");
+		
+		persona = null;
+		nodo = null;
+		if(!superiores.isEmpty()){
+			index = superiores.size()-1;
+			superiores.remove(index);
+			if(!superiores.isEmpty()){
+				superior = superiores.get(index-1);
+				persona = (PersonaEO) superior.get("persona");
+				nodo = (NodoEO) superior.get("nodo");
+			}
+		}
+		
+		actualizarMapaCaptura(mapaCaptura, nivel.intValue()-1, persona, nodo);
+	}
+	
+	public List<NodoEO> nodosPorNivel(Integer nivel, EstructuraEO estructura){
+		List<NodoEO> listado;
+		
+		listado = new ArrayList<>();
+		
+		for(NodoEO nodo : estructura.getNodos()){
+			if(nodo.getNivel().equals(nivel))
+				listado.add(nodo);
+		}
+		
+		//Verificar Figuras Jerárquicas
+		figuraRecursiva: if (listado.isEmpty()) {
+			for (int i = nivel; i > 0; i--) {
+				logger.debug("Índice: {}", i);
+				for (NodoEO nodo : estructura.getNodos()) {
+					logger.debug("Nodo: {}", nodo);
+					if (nodo.getNivel().equals(i) && nodo.getFigura().getJerarquico()) {
+						listado.add(nodo);
+					}
+				}
+				if (!listado.isEmpty()) {
+					break figuraRecursiva;
+				}
+			}
+		}
+		logger.debug("listado de nodos por nivel: {}", listado);
+		
+		return listado;
+	}
+	
+	public CapturaEO nuevaCaptura(){
+		CapturaEO captura;
+		
+		captura = new CapturaEO();
+		
+		return captura;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void capturar(RequestContext context){
+		HashMap<String, Object> mapaCaptura;
+		CapturaEO capturaCRUD;
+		HashMap<String, Object> flowScope, viewScope, parametros, datos;
+		EstructuraEO estructura;
+		List<NodoEO> nodos;
+		List<String> campos;
+		List<TiposCampoDO> tiposCampo;
+		TablaPersonaEO tablaPersona;
+		TablaParticionEO particion;
+		EntidadEO entidad;
+		EleccionEO eleccion;
+		PersonaEO personaPadre;
+		
+		flowScope = (HashMap<String, Object>) context.getFlowScope().asMap();
+		viewScope = (HashMap<String, Object>) context.getViewScope().asMap();
+		
+		mapaCaptura = (HashMap<String, Object>) flowScope.get("mapaCaptura");
+		capturaCRUD = (CapturaEO) flowScope.get("capturaCRUD");
+		
+		parametros = new HashMap<>();
+		estructura = (EstructuraEO) mapaCaptura.get("estructura");
+		nodos = nodosPorNivel((Integer) mapaCaptura.get("nivel"), estructura);
+		personaPadre = (PersonaEO) mapaCaptura.get("personaPadre");
+		campos = new ArrayList<>();
+		datos = new HashMap<>();
+		tiposCampo = new ArrayList<>();
+		tablaPersona = new TablaPersonaEO();
+		
+		parametros.put("esquema", "warehouse");
+		parametros.put("tabla", "estructura_" + estructura.getId());
+		datos.put("id_persona", capturaCRUD.getPersona().getId());
+		datos.put("id_entidad_nacimiento", capturaCRUD.getPersona().getEntidadNacimiento().getId());
+		
+		if(personaPadre == null){
+			datos.put("id_persona_padre", null);
+			datos.put("id_entidad_nacimiento_padre", null);
+		} else {
+			datos.put("id_persona_padre", personaPadre.getId());
+			datos.put("id_entidad_nacimiento_padre", personaPadre.getEntidadNacimiento().getId());
+		}
+		
+		
+		datos.put("id_nodo", nodos.get(0).getId());
+		
+		switch(estructura.getNivel()){
+		case DFEDERAL:
+			break;
+		case DLOCAL:
+			break;
+		case ENTIDAD:
+			entidad = ((Modelo<EntidadEO>) viewScope.get("modeloEntidades")).getSeleccionado();
+			datos.put("llave", entidad.getLlave());
+			break;
+		case GEOZONA:
+			break;
+		case LOCALIDAD:
+			break;
+		case MANZANA:
+			break;
+		case MUNICIPIO:
+			break;
+		case NACIONAL:
+			datos.put("llave", null);
+			break;
+		case SECCION:
+			break;
+		}
+		
+		campos.add("id_persona");
+		campos.add("id_entidad_nacimiento");
+		campos.add("id_persona_padre");
+		campos.add("id_entidad_nacimiento_padre");
+		campos.add("id_nodo");
+		campos.add("llave");
+		
+		tiposCampo.add(TiposCampoDO.INTEGER);
+		tiposCampo.add(TiposCampoDO.INTEGER);
+		tiposCampo.add(TiposCampoDO.INTEGER);
+		tiposCampo.add(TiposCampoDO.INTEGER);
+		tiposCampo.add(TiposCampoDO.INTEGER);
+		tiposCampo.add(TiposCampoDO.TEXT);
+		
+		switch(estructura.getAmbito()){
+		case DEPENDENCIA:
+			break;
+		case DEPENDENCIAS:
+			datos.put("id_dependencia", capturaCRUD.getDependencia().getId());
+			datos.put("cargo", capturaCRUD.getCargo());
+			datos.put("fecha_inicio", capturaCRUD.getFechaInicio());
+			datos.put("fecha_termino", capturaCRUD.getFechaTermino());
+			datos.put("vigente", capturaCRUD.getVigente());
+			campos.add("id_dependencia");
+			campos.add("cargo");
+			campos.add("fecha_inicio");
+			campos.add("fecha_termino");
+			campos.add("vigente");
+			tiposCampo.add(TiposCampoDO.INTEGER);
+			tiposCampo.add(TiposCampoDO.TEXT);
+			tiposCampo.add(TiposCampoDO.DATE);
+			tiposCampo.add(TiposCampoDO.DATE);
+			tiposCampo.add(TiposCampoDO.INTEGER);
+			break;
+		case ELECCION:
+			eleccion = (EleccionEO) mapaCaptura.get("eleccion");
+			datos.put("id_eleccion", eleccion.getId());
+			campos.add("id_eleccion");
+			tiposCampo.add(TiposCampoDO.INTEGER);
+			break;
+		case GENERAL:
+			break;
+		}
+		
+		parametros.put("campos", campos);
+		parametros.put("datos", datos);
+		parametros.put("tiposCampos", tiposCampo);
+		parametros.put("ïdPolitik", null);
+		
+		sqlSession.insert("estructuras.tablaEstructura.insertar", parametros);
+		
+		particion = new TablaParticionEO();
+		if(estructura.getTabla().getParticionada()){
+			//TODO: Proceso en caso de que la tabla de Estructura este particionada (Aun no implementado)
+		}
+		
+		tablaPersona.setTabla(estructura.getTabla());
+		tablaPersona.setIdPolitik((Integer) parametros.get("idPolitik"));
+		tablaPersona.setParticion(particion);
+		personasC.insertarTablaPersona(tablaPersona, capturaCRUD.getPersona());
+		
+		Integer nivel = (Integer) mapaCaptura.get("nivel");
+		if(!nodosPorNivel(nivel.intValue()+1, estructura).isEmpty())
+			actualizarMapaCaptura(mapaCaptura, nivel.intValue()+1, capturaCRUD.getPersona(), nodos.get(0));
+		else
+			actualizarMapaCaptura(mapaCaptura);
+	}
+}

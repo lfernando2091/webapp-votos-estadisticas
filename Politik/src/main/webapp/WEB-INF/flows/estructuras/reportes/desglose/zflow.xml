@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="estructuraOperativa2018_desgloseEntidad">
+		<on-entry>
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018_desgloseEntidad(flowRequestContext)" />
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018_desgloseEntidadP12(flowRequestContext)" />
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018_desgloseEntidadP3(flowRequestContext)" />
+		</on-entry>
+		
+		<transition on="nivelMunicipios" to="estructuraOperativa2018_desgloseMunicipio">
+			<set name="requestScope.seleccionado" value="viewScope.seleccionado" />
+		</transition>
+		<transition on="nivelMunicipiosP12" to="estructuraOperativa2018_desgloseMunicipio">
+			<set name="requestScope.seleccionado" value="viewScope.seleccionadoP1y2" />
+		</transition>
+		<transition on="nivelMunicipiosP3" to="estructuraOperativa2018_desgloseMunicipio">
+			<set name="requestScope.seleccionado" value="viewScope.seleccionadoP3" />
+		</transition>
+		
+		<transition on="nivelDFederales" to="estructuraOperativa2018_desgloseDFederal">
+			<set name="requestScope.seleccionado" value="viewScope.seleccionado" />
+		</transition>
+		<transition on="nivelDFederalesP12" to="estructuraOperativa2018_desgloseDFederal">
+			<set name="requestScope.seleccionado" value="viewScope.seleccionadoP1y2" />
+		</transition>
+		<transition on="nivelDFederalesP3" to="estructuraOperativa2018_desgloseDFederal">
+			<set name="requestScope.seleccionado" value="viewScope.seleccionadoP3" />
+		</transition>
+		
+	</view-state>
+	
+	<view-state id="estructuraOperativa2018_desgloseMunicipio">
+		<on-entry>
+			<set name="viewScope.padre" value="requestScope.seleccionado" />
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018_desgloseMunicipio(flowRequestContext)" />
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018_desgloseMunicipioP12(flowRequestContext)" />
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018_desgloseMunicipioP3(flowRequestContext)" />
+		</on-entry>
+		
+		<transition on="regresar" to="fin" />
+	</view-state>
+	
+	<view-state id="estructuraOperativa2018_desgloseDFederal">
+		<on-entry>
+			<set name="viewScope.padre" value="requestScope.seleccionado" />
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018_desgloseDFederal(flowRequestContext)" />
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018_desgloseDFederalP12(flowRequestContext)" />
+			<evaluate expression="EstructurasReportesC.estructuraOperativa2018_desgloseDFederalP3(flowRequestContext)" />
+		</on-entry>
+		
+		<transition on="regresar" to="fin" />
+	</view-state>
+	
+	<end-state id="fin" />
+
+</flow>

@@ -1,0 +1,151 @@
+package com.saganet.politik.components.diaD;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+import javax.faces.event.ValueChangeEvent;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
+import javax.mail.Session;
+import javax.mail.Store;
+
+import org.apache.ibatis.session.SqlSession;
+import org.primefaces.component.inputswitch.InputSwitch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.binding.message.MessageBuilder;
+import org.springframework.binding.message.MessageContext;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContextHolder;
+
+import com.saganet.politik.database.diaD.MovilizadoEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("diaDJornadaC")
+public class JornadaC {
+	private static final Logger logger = LoggerFactory.getLogger(JornadaC.class);
+	
+	@Autowired SqlSession sqlSession;
+	
+	public HashMap<String, Object> nuevoMapa(){
+		return new HashMap<>();
+	}
+	
+	public void registrarFolio(HashMap<String, Object> mapa){
+		MessageContext messageContext;
+		Boolean flag;
+		Integer folio;
+		
+		messageContext = RequestContextHolder.getRequestContext().getMessageContext();
+		folio = Integer.parseInt((String) mapa.get("folio"));
+		
+		flag = sqlSession.selectOne("diaD.movilizado.estadoRegistroJornada", folio);
+		
+		if (flag != null) {
+
+			if (flag) {
+				messageContext.addMessage(new MessageBuilder().error().source("registroFolio")
+						.defaultText("El Folio " + folio + " ya estaba asignado").build());
+			} else {
+				sqlSession.update("diaD.movilizado.registrarJornada", folio);
+				messageContext.addMessage(new MessageBuilder().info().source("registroFolio")
+						.defaultText("Folio " + folio + " registrado exitosamente").build());
+			}
+		} else {
+			messageContext.addMessage(new MessageBuilder().error().source("registroFolio")
+					.defaultText("El Folio " + folio + " no existe").build());
+		}
+		
+		mapa.remove("folio");
+	}
+	
+	public void registrarFolio2(HashMap<String, Object> mapa, Modelo<MovilizadoEO> modeloMovilizados){
+		Integer folio;
+		Boolean registroJornada, registroJornadaNuevo;
+		HashMap<String, Object> parametros;
+		
+		parametros = new HashMap<>();
+		
+		folio = (Integer) mapa.get("folio2");
+		registroJornada = (Boolean) mapa.get("registroJornada2");
+		registroJornadaNuevo = !registroJornada.booleanValue();
+		
+		parametros.put("folio", folio);
+		parametros.put("registroJornada", registroJornadaNuevo);
+		
+		sqlSession.update("diaD.movilizado.registrarJornada2", parametros);
+		
+		for(MovilizadoEO m : modeloMovilizados.getListado()){
+			if(m.getFolio().equals(folio)){
+				m.setRegistroJornada(registroJornadaNuevo.booleanValue());
+			}
+		}
+	}
+	
+	public void registrarFolioX(ValueChangeEvent e){
+		InputSwitch inputSwitch;
+		Integer folio;
+		Boolean registroJornada;
+		HashMap<String, Object> parametros;
+		
+		parametros = new HashMap<>();
+		
+		inputSwitch = (InputSwitch) e.getSource();
+		folio = Integer.parseInt(inputSwitch.getId().substring(6));
+		registroJornada = (Boolean) inputSwitch.getValue();
+		
+		parametros.put("folio", folio);
+		parametros.put("registroJornada", registroJornada);
+		
+		sqlSession.update("diaD.movilizado.registrarJornada2", parametros);
+	}
+	@Scheduled(cron="0 */1 * * * *")
+	public void leerMensajes(){
+		logger.debug("Entre: {} ");
+		String contenido;
+		StringTokenizer tokens;
+		 int nDatos;
+		String host = "mail.saganet.com.mx";
+		String username = "sms@saganet.com.mx";
+		String password = "SaganetSMS";
+		// Create empty properties
+		Properties props = new Properties();
+		// Get session
+		Session session = Session.getDefaultInstance(props, null);
+		// Get the store
+		Store store;
+		try {
+			store = session.getStore("imap");
+			store.connect(host, username, password);
+			// Get folder
+			Folder folder = store.getFolder("INBOX");
+			folder.open(Folder.READ_ONLY);
+			// Get directory
+			Message message[] = folder.getMessages();
+			for (int i=0, n=10; i<n; i++) {
+				contenido = new String(message[i].getContent().toString());
+				tokens = new StringTokenizer(contenido, ",");
+				nDatos=tokens.countTokens();
+			logger.debug(i + ": " + message[i].getFrom()[0]
+			 + "\t" + message[i].getSubject()+": {}");
+			//message[i].getContent();
+			}
+			// Close connection
+			folder.close(false);
+			store.close();
+		} catch (MessagingException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+}

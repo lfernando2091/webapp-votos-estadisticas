@@ -1,0 +1,197 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:messages autoUpdate="true" />
+					<p:panel header="Contacto">
+						<p:panelGrid layout="grid" columns="1" styleClass="panelNoBorder">
+						<p:row rendered="${contacto.get('estatus') ne 'PENDIENTE'?'true':'false'}">
+							<p:column>
+							<p:outputLabel value="*IMPORTANTE: El folio consultado ya ha sido capturado anteriormente." style="color: red !important"/>
+							</p:column>
+							</p:row>
+						<p:row >
+							<p:column><p:outputLabel value="Id:" styleClass="negritas" /></p:column>
+							</p:row>
+					     <p:row>
+							<p:column colspan="9" style="align:center!impoetant"><p:outputLabel value="${contacto.get('id_interno')}" /></p:column>
+					     </p:row>
+					     <p:row>
+					     <p:column colspan="10"><p:outputLabel value="Entrevistado" styleClass="negritas" /></p:column>
+					     </p:row>
+					     <p:row layout="grid">
+							<p:column><p:outputLabel value="Nombre " styleClass="negritas" /></p:column>
+							</p:row>
+					     <p:row>
+							<p:column><p:inputText value="${encuesta.nombre}"  /></p:column>
+						</p:row>
+					    <p:row>
+							<p:column><p:outputLabel value="Paterno " styleClass="negritas" /></p:column>
+						</p:row>
+					     <p:row>
+							<p:column><p:inputText value="${encuesta.paterno}"  /></p:column>
+						</p:row>
+					     <p:row>
+							<p:column><p:outputLabel value="Materno " styleClass="negritas" /></p:column>
+						</p:row>
+					     <p:row>
+							<p:column><p:inputText value="${encuesta.materno}"  /></p:column>
+						</p:row>
+					     <p:row>
+							<p:column><p:outputLabel value="Fecha Nacimiento (DD/MM/YYYY) " styleClass="negritas" /></p:column>
+						</p:row>
+					     <p:row>
+							<p:column>
+							 <p:inputMask id="date" value="${encuesta.fechaNacimiento}" mask="99/99/9999"/></p:column>
+<!-- 							<p:inputText value="${encuesta.fechaNacimiento}" maxlength="8"  /></p:column> -->
+							</p:row>
+					     <p:row>
+							<p:column><p:outputLabel value="Género " styleClass="negritas" /></p:column>
+							</p:row>
+					     <p:row>
+							<p:column>
+							<p:selectOneRadio value="${encuesta.genero}"
+								converter="ObjectConverter" style="width: 300px"  layout="grid" columns="1">
+								<f:selectItems value="${modeloGeneros.listado}" var="s"
+									itemLabel="${s.nombre}" itemValue="${s}" />
+							</p:selectOneRadio>
+							</p:column>
+						</p:row>
+							<p:row>
+							<p:column>
+							<p:outputLabel value="*IMPORTANTE: Los datos de contacto SE DEBEN EDITAR cuando la persona entrevistada no sea la misma." style="color: red !important"/>
+							</p:column>
+							</p:row>
+						</p:panelGrid>
+					</p:panel>
+					<p:separator />
+					<p:panel header="Entrevista">
+						<p:panelGrid columns="1" styleClass="panelNoBorder" layout="grid" >
+							<p:outputLabel
+								value="1. ¿Sabía usted que habrá elecciones para gobernador del Estado de México el próximo 4 de junio?" />
+							<p:selectOneRadio value="${encuesta.r1}"
+								converter="ObjectConverter" style="width: 300px" required="true"
+								requiredMessage="Pregunta 1: es requerida" styleClass="negritas" layout="grid" columns="3">
+								<f:selectItems value="${modeloSiNoNsNc.listado}" var="s"
+									itemLabel="${s.nombre}" itemValue="${s}" />
+							</p:selectOneRadio>
+							<p:outputLabel
+								value="2.- ¿Piensa usted ir a votar?" />
+							<p:selectOneRadio value="${encuesta.r2}"
+								converter="ObjectConverter" style="width: 300px" required="true"
+								requiredMessage="Pregunta 2: es requerida" styleClass="negritas">
+								<f:selectItems value="${modeloSiNoNsNc.listado}" var="s"
+									itemLabel="${s.nombre}" itemValue="${s}" />
+							</p:selectOneRadio>
+							<p:outputLabel
+								value="3.- Independientemente de su afinidad partidista, si hoy fueran las elecciones para Gobernador, ¿Por cuál Partido  votaría?" />
+							<p:selectOneRadio value="${encuesta.r3}"
+								converter="ObjectConverter" style="width: 300px" required="true"
+								requiredMessage="Pregunta 3: es requerida" layout="grid" columns="1">
+								<f:selectItems value="${modeloPartidos.listado}" var="s"
+									itemLabel="${s.nombre}" itemValue="${s}" />
+							</p:selectOneRadio>
+							<p:outputLabel
+								value="4.- Independientemente de su afinidad partidista, si hoy fueran las elecciones para Gobernador, ¿Por cuál candidato votaría?" />
+							<p:selectOneRadio value="${encuesta.r4}"
+								converter="ObjectConverter" style="width: 300px" required="true"
+								requiredMessage="Pregunta 4: es requerida" layout="grid" columns="1">
+								<f:selectItems value="${modeloCandidatos.listado}" var="s"
+									itemLabel="${s.nombre}" itemValue="${s}" />
+							</p:selectOneRadio>
+							<p:outputLabel
+								value="5.	¿Le gustaría participar el día de la elección en su colonia?" />
+							<p:selectOneRadio value="${encuesta.r5}"
+								converter="ObjectConverter" style="width: 300px" required="true"
+								requiredMessage="Pregunta 5: es requerida">
+								<f:selectItems value="${modeloSiNoNsNc.listado}" var="s" itemLabel="${s.nombre}"
+									itemValue="${s}" />
+							</p:selectOneRadio>
+							<p:row>
+								<p:column><p:outputLabel value="Teléfono " styleClass="negritas" /></p:column>
+							</p:row>
+					    	 <p:row>
+								<p:column>
+									<p:inputText value="${encuesta.tel}"  requiredMessage="Telefono Requerido" validatorMessage="Numero Incorrecto deben ser 10 digitos"  >
+										<f:validateRegex pattern="^[+]?[0-9]+$" />
+										<f:validateLength minimum="10" maximum="10" />
+									</p:inputText>	
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column><p:outputLabel value="Email " styleClass="negritas" /></p:column>
+							</p:row>
+					    	 <p:row>
+								<p:column>
+									<p:inputText value="${encuesta.email}" size="25" >
+										<f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+									</p:inputText>
+								</p:column>
+							</p:row>
+							
+							
+							
+							<p:outputLabel value="Entrevistador" />
+							<p:selectOneMenu value="${encuesta.encuestador}"
+								converter="ObjectConverter" style="width: 300px" required="true" requiredMessage="Entrevistador: requerido">
+								<f:selectItems value="${modeloEncuestadores.listado}" var="s" itemLabel="${s.nombre} ${s.primerApellido} ${s.segundoApellido}"
+									itemValue="${s}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Causa de No Respuesta" />
+							<p:selectOneMenu value="${encuesta.resultado}"
+								converter="ObjectConverter" style="width: 300px">
+								<f:selectItems value="${modeloResultadoEncuesta.listado}" var="s" itemLabel="${s.nombre}"
+									itemValue="${s}" />
+							</p:selectOneMenu>
+							
+							
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandButton value="Guardar" action="guardar"
+								icon="fa fa-save"
+								rendered="#{contacto.get('estatus') ne 'PENDIENTE'?'false':'true'}" />
+							<p:commandButton value="Actualizar" action="actualizar"
+								icon="fa fa-save"
+								rendered="#{contacto.get('estatus') ne 'PENDIENTE'?'true':'false'}" />
+							<p:commandButton value="Salir"   action="salir" icon="fa fa-close"
+								immediate="true" />
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			} 
+			.ui-selectoneradio.ui-widget td {
+     border: 0 none !important;
+}
+.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+border: hidden;
+border-color: white;
+}
+.negritas{
+			font-weight: bold !important;
+			}
+		</h:outputStylesheet>
+
+		<h:outputScript>
+			window.onload = function() {
+				gmap = PF('mapaWV').getMap();
+			}
+		</h:outputScript>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:breadCrumb>
+							<p:menuitem value="root" url="/app/" />
+							<p:menuitem value="Estructuras" />
+							<p:menuitem value="Figuras" url="/app/estructuras/figuras"/>
+					</p:breadCrumb>
+            		<p:panel header="Listado de Figuras">
+						<p:dataTable value="${modeloFiguras.listado}" var="fila"
+							rowKey="${fila.id}" selection="${modeloFiguras.seleccionado}"
+							selectionMode="single" paginator="true" rows="10"
+							paginatorAlwaysVisible="false" paginatorPosition="bottom">
+							<p:ajax event="rowSelect" update="#{p:component('tablaAtributos')}" />
+							<p:column headerText="Nivel" width="120">${fila.nivel.nombre}</p:column>
+							<p:column headerText="Nombre">${fila.nombre}</p:column>
+							<p:column headerText="GeoZona" width="200">${fila.geozona.nombre}</p:column>
+							<p:column headerText="Jerárquico" width="75">${fila.jerarquico ? 'Si' : 'No'}</p:column>
+						</p:dataTable>
+						<p:separator />
+						<p:dataTable id="tablaAtributos"
+							value="${modeloFiguras.seleccionado.atributos}" var="fila"
+							paginator="true" rows="5" paginatorAlwaysVisible="false"
+							paginatorPosition="bottom">
+							<f:facet name="header">Atributos</f:facet>
+							<p:column headerText="Nombre">${fila.nombre}</p:column>
+						</p:dataTable>
+						<f:facet name="footer">
+            				<p:commandButton value="Agregar" action="agregar" />
+            				<p:commandButton value="Editar" action="editar" disabled="${modeloFiguras.seleccionado == null}" />
+            			</f:facet>
+            		</p:panel>
+            		
+            		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

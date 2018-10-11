@@ -1,0 +1,66 @@
+package com.saganet.politik.component_dm.sincronizacion;
+
+
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database_dm.sincronizacion.UsuarioEO;
+import com.saganet.politik.dominios_dm.EmpresaDO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("UsuarioC")
+public class UsuarioC {
+	
+	@Autowired
+	SqlSession sqlSessionDM;
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	private static final Logger logger = LoggerFactory.getLogger(UsuarioC.class);
+	
+	public Modelo<UsuarioEO> modelo(){
+		Modelo<UsuarioEO> modelo;
+		List<UsuarioEO> listado;
+		listado = sqlSessionDM.selectList("sincronizacion.usuario.listado");
+		logger.debug("Listado Usuario: {}", listado);
+		modelo = new Modelo<>();
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		logger.debug("Modelo Usuario: {}", modelo);		
+		return modelo;
+	}
+	public EmpresaDO[] empresa(){
+		return EmpresaDO.values();
+	}
+	
+	public UsuarioEO crearUsuario(EmpresaDO empresa ){
+		UsuarioEO usuario= new UsuarioEO();
+		logger.debug("Usuario cargado {}", usuario);
+		return usuario;
+	}
+	
+	public UsuarioEO agregarUsuario(UsuarioEO usuario){
+		logger.debug("Usuario a guradar es {}", usuario);
+		sqlSession.insert("sincronizacion.usuario.insertar", usuario);
+		logger.debug("Cargo a guradar es {}", usuario);
+		return usuario;
+	}
+	
+	public void eliminiarUsuario(UsuarioEO usuario){
+		logger.debug("Usuario a Eliminar es {}", usuario);	
+		//sqlSession.
+		sqlSession.delete("sincronizacion.usuario.eliminar", usuario);
+		
+	}
+	
+}

@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:focus for="campoBusqueda"/>
+				<p:messages autoUpdate="true"/>
+					<p:panel header="Busqueda de entrevistado">
+					<p:outputLabel value="Ingrese Folio " styleClass="negritas"/>
+					<p:inputText converter="javax.faces.Integer" value="${folioBusqueda}" id="campoBusqueda"  required="true" requiredMessage="Folio: es requerido" converterMessage="Se requiere un número" validatorMessage="Folio Incorrecto">
+					<f:convertNumber integerOnly="true"  />
+					<f:validateDoubleRange minimum="1" maximum="7173343"  />
+					</p:inputText>
+					<f:facet name="footer">
+					<p:commandButton value="Buscar" action="buscar" icon="fa fa-search" update="@form"/>
+					
+					</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			}
+			.negritas{
+			font-weight: bold;
+			}
+		</h:outputStylesheet>
+		
+		<h:outputScript>
+			window.onload = function() {
+				gmap = PF('mapaWV').getMap();
+			}
+		</h:outputScript>
+
+	</ui:define>
+
+</ui:composition>

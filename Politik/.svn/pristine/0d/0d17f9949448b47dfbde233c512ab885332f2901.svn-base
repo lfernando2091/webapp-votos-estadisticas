@@ -1,0 +1,104 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Seccional" rendered="true">
+						<p:panelGrid columns="2" styleClass="panelNoBorder panelNoBorder">
+							<p:outputLabel value="Nombre:  " />
+							<p:outputLabel
+								value="${modeloSeccionales.seleccionado.nombre} ${modeloSeccionales.seleccionado.primerApellido} ${modeloSeccionales.seleccionado.segundoApellido}" />
+							<p:outputLabel value="Dirección: " />
+							<p:outputLabel
+								value="${modeloSeccionales.seleccionado.calle} ${modeloSeccionales.seleccionado.numeroInterior} ${modeloSeccionales.seleccionado.numeroExterior} ${modeloSeccionales.seleccionado.colonia} ${modeloSeccionales.seleccionado.codigoPostal}" />
+							<p:outputLabel value="Sección: " />
+							<p:outputLabel
+								value="${modeloSeccionales.seleccionado.seccion.idSeccion}" />
+						</p:panelGrid>
+					</p:panel>
+					<p:panel header="Movilizadores">
+						<p:dataTable value="${modeloMovilizadores.listado}"
+							id="tablaDatos" var="f" selectionMode="single"
+							selection="${modeloMovilizadores.seleccionado}" rowKey="${f.id}"
+							paginator="true" rows="20" paginatorAlwaysVisible="false"
+							paginatorPosition="bottom">
+							<p:ajax event="rowDblselect" onstart="movilizados()" />
+							<p:column headerText="Nombre" filterable="true"
+								filterBy="${f.region}" filterMatchMode="contains">
+								<p:outputLabel
+									value="${f.nombre} ${f.primerApellido} ${f.segundoApellido} " />
+							</p:column>
+							<p:column headerText="Dirección" filterable="true"
+								filterBy="${f.region}" filterMatchMode="contains">
+								<p:outputLabel
+									value="${f.calle} ${f.numeroInterior} ${f.numeroExterior} ${f.colonia}  " />
+							</p:column>
+							<p:column headerText="Teléfono" filterable="true"
+								filterBy="${f.telefono}" filterMatchMode="contains">
+								<p:outputLabel value="${f.telefono}" />
+							</p:column>
+							<p:column headerText="Celular" filterable="true"
+								filterBy="${f.celular}" filterMatchMode="contains">
+								<p:outputLabel value="${f.celular}" />
+							</p:column>
+
+							<f:facet name="footer">
+								<h:commandLink>
+									<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+									<p:dataExporter type="xls" target="tablaDatos"
+										fileName="Metas Seccionales" />
+								</h:commandLink>
+							</f:facet>
+
+						</p:dataTable>
+						<f:facet name="footer">
+							<p:commandButton value="Salir" action="salir" immediate="true" />
+						</f:facet>
+					</p:panel>
+
+					<p:remoteCommand name="movilizados" update="@form"
+						action="movilizados"/>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			}
+			.negritas{
+			font-weight: bold;
+			}
+			
+			.topAlign{
+				vertical-align: top;
+			} 
+			.ui-selectoneradio.ui-widget td {
+     border: 0 none !important;
+}
+.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+border: hidden;
+border-color: white;
+}
+.negritas{
+			font-weight: bold !important;
+			}
+		</h:outputStylesheet>
+
+		<h:outputScript>
+			window.onload = function() {
+				gmap = PF('mapaWV').getMap();
+			}
+		</h:outputScript>
+
+	</ui:define>
+
+</ui:composition>

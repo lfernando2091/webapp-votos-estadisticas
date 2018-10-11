@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:focus for="campoBusqueda" />
+					<p:messages autoUpdate="true" />
+					<p:panel header="Busqueda" rendered="${duplicados.size()>1?'false':'true'}">
+						<p:outputLabel value="Ingrese Folio " styleClass="negritas" />
+						<p:inputText value="${folioBusqueda}" id="campoBusqueda"
+							required="true" requiredMessage="Folio: es requerido"
+							converterMessage="Se requiere un número">
+							<f:convertNumber integerOnly="true" />
+							<f:validateDoubleRange minimum="1" maximum="10000000000" />
+						</p:inputText>
+						<f:facet name="footer">
+							<p:commandButton value="Buscar" action="buscar"
+								icon="fa fa-search" update="@form" process="@form" onclick="PF('dlg2').show();" />
+								<p:commandButton value="No Encuestado" action="noEncuestado" icon="fa fa-thumbs-down" update="@form"/>
+						</f:facet>
+					</p:panel>
+					<p:separator/>
+					<p:panel header="Persona Visitada" rendered="${duplicados.size()>1?'true':'false'}">
+					<p:panelGrid columns="1">
+					<p:selectOneMenu  value="${d}" converter="ObjectConverter" >
+						<f:selectItems var="f" value="${duplicados}" itemValue="${f.idInterno}" itemLabel="${f.nombre} ${f.apellidoPaterno} ${f.apellidoMaterno}"/>
+					</p:selectOneMenu>
+					<p:commandButton action="mandarDuplicado" value="Continuar"/>
+					</p:panelGrid>
+					</p:panel>
+					
+				
+				
+				
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+		<h:outputStylesheet>
+			.topAlign{
+				vertical-align: top;
+			}
+			.negritas{
+			font-weight: bold;
+			}
+		</h:outputStylesheet>
+	</ui:define>
+
+</ui:composition>

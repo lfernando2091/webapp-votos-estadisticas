@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+			
+		<view-state id="listado">
+			<on-entry>
+				<evaluate expression="CatalogosMunicipiosC.modelo('15')" result="viewScope.municipios"/>
+				<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.municipios.seleccionado)" result="viewScope.secciones"/>					
+				<evaluate expression="DiaDPrepC.modelo(viewScope.secciones.seleccionado)" result="viewScope.modelo" />
+			</on-entry>
+			<transition on="actualizarSeccion">			
+				<evaluate expression="CatalogosSeccionesC.modeloporEntidadMpio(viewScope.municipios.seleccionado)" result="viewScope.secciones"/>					
+				<evaluate expression="DiaDPrepC.modelo(viewScope.secciones.seleccionado)" result="viewScope.modelo" />
+			</transition>
+			<transition on="actualizar">			
+				<evaluate expression="DiaDPrepC.modelo(viewScope.secciones.seleccionado)" result="viewScope.modelo" />
+			</transition>
+			<transition on="actualizarFila">
+				<evaluate expression="DiaDPrepC.actualizar(viewScope.modelo.seleccionado)"/>
+				<evaluate expression="DiaDPrepC.modelo(viewScope.secciones.seleccionado)" result="viewScope.modelo" />
+			</transition>
+		</view-state>
+		
+		
+		<end-state id="fin"/>
+</flow>

@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Buscar Persona" action="buscar" />
+						<p:menuitem value="Perfil Personal" />
+					</p:breadCrumb>
+					<p:panel header="Perfil Personal">
+						<p:panelGrid columns="2">
+							<f:facet name="header">Datos Generales</f:facet>
+							<p:outputLabel value="Identificador" />
+							<p:outputLabel value="${persona.id}" />
+							<p:outputLabel value="Nombre" />
+							<p:outputLabel
+								value="${persona.primerApellido} ${persona.segundoApellido} ${persona.nombre}" />
+							<p:outputLabel value="Fecha de Nacimiento" />
+							<p:outputLabel
+								value="${persona.dia}/${persona.mes.nombre}/${persona.anho}" />
+							<p:outputLabel value="Entidad de Nacimiento" />
+							<p:outputLabel value="${persona.entidadNacimiento.nombre}" />
+						</p:panelGrid>
+						<p:separator />
+						<p:panelGrid columns="2" columnClasses="columna1, columna2">
+							<p:dataTable value="${persona.modeloClaves.listado}" var="fila">
+								<f:facet name="header">Claves Registradas</f:facet>
+								<p:column headerText="Tipo">${fila.tipo.nombre}</p:column>
+								<p:column headerText="Entidad">${fila.entidad.nombre}</p:column>
+								<p:column headerText="Clave">${fila.clave}</p:column>
+							</p:dataTable>
+							<p:dataTable value="${persona.modeloTablas.listado}" var="fila"
+								rowKey="${fila.id}"
+								selection="${persona.modeloTablas.seleccionado}"
+								selectionMode="single">
+								<f:facet name="header">Tablas Registradas</f:facet>
+								<p:column headerText="Tabla">${fila.tabla.tabla}</p:column>
+								<f:facet name="footer">
+									<p:commandButton value="Detalle" action="detalleTabla"
+										disabled="${persona.modeloTablas.seleccionado == null}" />
+								</f:facet>
+							</p:dataTable>
+						</p:panelGrid>
+						<p:tabView>
+							<p:tab title="Teléfonos">
+								<p:dataTable id="tablaTelefonos"
+									value="${persona.modeloTelefonos.listado}" var="fila">
+									<p:column headerText="Tipo">${fila.tipo.nombre}</p:column>
+									<p:column headerText="Teléfono">${fila.telefono}</p:column>
+									<p:column headerText="Ext.">${fila.ext}</p:column>
+									<p:column headerText="Observaciones">${fila.observaciones}</p:column>
+									<f:facet name="footer">
+										<p:commandButton value="Agregar Teléfono"
+											action="agregarTelefono"
+											update="#{p:component('dialogoAgregarTelefono')}"
+											oncomplete="PF('dialogoAgregarTelefonoWV').show();" />
+									</f:facet>
+								</p:dataTable>
+							</p:tab>
+							<p:tab title="E-Mails">
+								<p:dataTable id="tablaEMails"
+									value="${persona.modeloEMails.listado}" var="fila">
+									<p:column headerText="E-Mail">${fila.eMail}</p:column>
+									<f:facet name="footer">
+										<p:commandButton value="Agregar E-Mail" action="agregarEMail"
+											update="#{p:component('dialogoAgregarEMail')}"
+											oncomplete="PF('dialogoAgregarEMailWV').show();" />
+									</f:facet>
+								</p:dataTable>
+							</p:tab>
+							<p:tab title="Redes Sociales">
+								<p:dataTable id="tablaRedesSociales"
+									value="${persona.modeloRedesSociales.listado}" var="fila">
+									<p:column headerText="Red">${fila.tipo.nombre}</p:column>
+									<p:column headerText="Usuario">${fila.usuario}</p:column>
+									<p:column headerText="Observaciones">${fila.observaciones}</p:column>
+									<f:facet name="footer">
+										<p:commandButton value="Agregar Red Social"
+											action="agregarRedSocial"
+											update="#{p:component('dialogoAgregarRedSocial')}"
+											oncomplete="PF('dialogoAgregarRedSocialWV').show();" />
+									</f:facet>
+								</p:dataTable>
+							</p:tab>
+						</p:tabView>
+						<f:facet name="footer">
+							<p:commandButton value="Buscar Persona" action="buscar"
+								immediate="true" />
+						</f:facet>
+					</p:panel>
+
+					<p:dialog id="dialogoAgregarTelefono"
+						widgetVar="dialogoAgregarTelefonoWV" header="Agregar Teléfono"
+						modal="true" visible="false">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Tipo" />
+							<p:selectOneMenu value="${telefonoNuevo.tipo}"
+								converter="ObjectConverter" style="width: 100px;">
+								<f:selectItems
+									value="${agregarTelefono_modeloTiposTelefono.listado}"
+									var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Teléfono" />
+							<p:inputText value="${telefonoNuevo.telefono}"
+								style="width: 100px;" />
+							<p:outputLabel value="Ext." />
+							<p:inputText value="${telefonoNuevo.ext}" style="width: 100px;" />
+							<p:outputLabel value="Observaciones" />
+							<p:inputText value="${telefonoNuevo.observaciones}"
+								style="width: 200px;" />
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" action="guardarTelefono"
+									oncomplete="PF('dialogoAgregarTelefonoWV').hide();"
+									update="#{p:component('tablaTelefonos')}, #{p:component('dialogoAgregarTelefono')}" />
+								<p:commandButton value="Cancelar" immediate="true"
+									onclick="PF('dialogoAgregarTelefonoWV').hide();" />
+							</f:facet>
+						</p:panelGrid>
+					</p:dialog>
+
+					<p:dialog id="dialogoAgregarEMail"
+						widgetVar="dialogoAgregarEMailWV" header="Agregar E-Mail"
+						modal="true" visible="false">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="E-Mail" />
+							<p:inputText value="${eMailNuevo.eMail}" style="width: 200px;" />
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" action="guardarEMail"
+									oncomplete="PF('dialogoAgregarEMailWV').hide();"
+									update="#{p:component('tablaEMails')}, #{p:component('dialogoAgregarEMail')}" />
+								<p:commandButton value="Cancelar" immediate="true"
+									onclick="PF('dialogoAgregarEMailWV').hide();" />
+							</f:facet>
+						</p:panelGrid>
+					</p:dialog>
+
+					<p:dialog id="dialogoAgregarRedSocial"
+						widgetVar="dialogoAgregarRedSocialWV" header="Agregar Red Social"
+						modal="true" visible="false">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Tipo" />
+							<p:selectOneMenu value="${redSocialNueva.tipo}"
+								converter="ObjectConverter" style="width: 100px;">
+								<f:selectItems
+									value="${agregarRedSocial_modeloTiposRedSocial.listado}"
+									var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="Usuario" />
+							<p:inputText value="${redSocialNueva.usuario}" style="width: 150px;"/>
+							<p:outputLabel value="Observaciones" />
+							<p:inputText value="${redSocialNueva.observaciones}" style="width: 200px;"/>
+							<f:facet name="footer">
+								<p:commandButton value="Guardar" action="guardarRedSocial"
+									oncomplete="PF('dialogoAgregarRedSocialWV').hide();"
+									update="#{p:component('tablaRedesSociales')}, #{p:component('dialogoAgregarRedSocial')}" />
+								<p:commandButton value="Cancelar" immediate="true"
+									onclick="PF('dialogoAgregarRedSocialWV').hide();" />
+							</f:facet>
+						</p:panelGrid>
+					</p:dialog>
+
+					<h:outputStylesheet>
+						.columna1 {
+							vertical-align: top;
+							width:70%;
+						}
+						
+						.columna2 {
+							vertical-align: top;
+						}
+						
+						.ui-datatable-footer{
+							text-align: left !important;
+						}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,59 @@
+package com.saganet.politik.modelos;
+
+import java.io.Serializable;
+import java.util.List;
+
+import org.primefaces.model.DualListModel;
+
+import com.saganet.politik.database.catalogos.CampoTablaEO;
+
+@SuppressWarnings("serial")
+public class Modelo<T> implements Serializable {
+	
+	private List<T> listado;
+	private T seleccionado;
+	private List<T> seleccionMultiple;
+	private DualListModel<T> modeloDual;
+	private List<CampoTablaEO> campos;
+
+	public List<T> getListado() {
+		return listado;
+	}
+
+	public void setListado(List<T> listado) {
+		this.listado = listado;
+	}
+
+	public T getSeleccionado() {
+		return seleccionado;
+	}
+
+	public void setSeleccionado(T seleccionado) {
+		this.seleccionado = seleccionado;
+	}
+
+	public List<T> getSeleccionMultiple() {
+		return seleccionMultiple;
+	}
+
+	public void setSeleccionMultiple(List<T> seleccionMultiple) {
+		this.seleccionMultiple = seleccionMultiple;
+	}
+
+	public DualListModel<T> getModeloDual() {
+		return modeloDual;
+	}
+
+	public void setModeloDual(DualListModel<T> modeloDual) {
+		this.modeloDual = modeloDual;
+	}
+
+	public List<CampoTablaEO> getCampos() {
+		return campos;
+	}
+
+	public void setCampos(List<CampoTablaEO> campos) {
+		this.campos = campos;
+	}
+
+}

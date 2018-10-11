@@ -1,0 +1,56 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            	<p:panel header="Bitacora de Usuarios">
+            	<p:panelGrid columns="2">
+            	<p:outputLabel value="Seleccione el Usuario: "/>
+            	<p:selectCheckboxMenu label="Usuarios" value="${modeloUsuarios.seleccionMultiple}" converter="ObjectConverter">
+            	<p:ajax event="change" onstart="llenarBitacora();" />
+            	<p:ajax event="toggleSelect" onstart="llenarBitacora();"/>
+          <f:selectItems value="${modeloUsuarios.listado}" var="fila" itemLabel="${fila.nick}" itemValue="${fila}"/>
+            	</p:selectCheckboxMenu>
+            	</p:panelGrid>
+            	<p:separator/>
+            	<p:dataTable value="${modeloBitacoras.listado}" var="fila" selection="${modeloBitacoras.seleccionado}"
+            	selectionMode="single" rowKey="${fila.id}" paginator="true" paginatorAlwaysVisible="false" rows="20"
+            	paginatorPosition="bottom" reflow="true" id="dtBitacora">
+            	<p:column headerText="Nick" filterable="true" filterBy="${fila.nick}" filterMatchMode="contains" sortable="true" sortBy="${fila.nick}"
+            	filterStyle="width:90%">
+            	${fila.nick}
+            	</p:column>
+            	<p:column headerText="Fecha" filterable="true" filterBy="${fila.fecha}" filterMatchMode="contains" sortable="true" sortBy="${fila.fecha}"
+            	filterStyle="width:90%">
+            	${fila.fecha}
+            	</p:column>
+            	<p:column headerText="Acción" filterable="true" filterBy="${fila.tipoAccion}" filterMatchMode="contains" sortable="true" sortBy="${fila.tipoAccion}"
+            	filterStyle="width:90%">
+            	${fila.tipoAccion}
+            	</p:column>
+            	<p:column headerText="Descripción">
+            	${fila.descripcion}
+            	</p:column>
+            	
+            	</p:dataTable>
+            	
+            	</p:panel>
+            	
+            	<p:remoteCommand name="llenarBitacora" partialSubmit="true" action="llenarBitacora" update="@form"/>
+            	
+            	            		
+            		<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+            	</h:form>            
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

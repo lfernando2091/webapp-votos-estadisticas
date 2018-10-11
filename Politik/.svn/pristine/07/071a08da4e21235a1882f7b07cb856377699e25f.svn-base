@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="administracion.mensajes">
+	<cache />
+	
+	<resultMap type="Avisos" id="avisos">
+		<id column="Avisosid" property="id" javaType="Integer"/>
+		<result column="Avisos_mensaje" property="mensaje" javaType="String"/>
+	</resultMap>
+	
+
+	
+<select id="mostrar">
+	SELECT mensaje
+ 	FROM administracion.avisos
+	WHERE pkey=1
+
+</select>
+
+</mapper>

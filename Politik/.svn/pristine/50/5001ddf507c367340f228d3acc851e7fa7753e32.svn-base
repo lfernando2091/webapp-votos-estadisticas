@@ -1,0 +1,124 @@
+package com.saganet.politik.components.encuestas.admin;
+
+import java.util.HashMap;
+import java.util.List;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.encuestas.admin.CampaniaEO;
+import com.saganet.politik.database.encuestas.admin.EncuestaEO;
+import com.saganet.politik.database.encuestas.admin.ReglaEncuestaEO;
+import com.saganet.politik.dominios.TiposReglasDO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("ReglasEncuestasC")
+public class ReglasEncuestasC {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	@Autowired
+	CampaniasC campaniaC;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ReglasEncuestasC.class);
+	
+	public Modelo<ReglaEncuestaEO> modelo(EncuestaEO encuesta) {
+		
+		Modelo<ReglaEncuestaEO> modelo;
+		List<ReglaEncuestaEO> listado;
+		
+		modelo = new Modelo<>();
+		listado = sqlSession.selectList("encuestas.admin.reglasEncuestas.listado", encuesta);
+		
+		modelo.setListado(listado);
+		
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+		
+	}
+	
+	public ReglaEncuestaEO nuevo(EncuestaEO encuesta){
+		ReglaEncuestaEO nuevo = new ReglaEncuestaEO();
+		nuevo.setIdEncuesta(encuesta.getId());
+		nuevo.setNick("admin");
+		return nuevo;
+	}
+	
+	public void insertar(ReglaEncuestaEO nuevo, String condicion){
+		nuevo.setRegla(condicion);
+		nuevo.setScript(crearScriptForRegla(nuevo.getRegla(), nuevo.getAplica(), nuevo.getNoAplica()).toString());
+		sqlSession.insert("encuestas.admin.reglasEncuestas.insertar", nuevo);
+	}
+	
+	public StringBuilder crearScriptForRegla(String regla, String aplica, String noAplica){
+		
+		StringBuilder script = new StringBuilder();
+		
+		script.append("case when ");
+		script.append(regla.replaceAll("Pregunta", ""));
+		script.append(" then ");
+		script.append("'");
+		script.append(aplica);
+		script.append("'");
+		if(noAplica != null){
+			script.append(" else ");
+			script.append("'");
+			script.append(noAplica);
+			script.append("'");
+		}
+		script.append(" end resultado");
+		
+		return script;
+	}
+	
+	public TiposReglasDO[] listadoTiposReglas(){
+		return TiposReglasDO.values();
+	}
+	
+	public void validarScript(EncuestaEO encuesta, ReglaEncuestaEO nuevo){
+		
+		String script = crearScriptForRegla(nuevo.getRegla(), nuevo.getAplica(), nuevo.getNoAplica()).toString();
+		
+		CampaniaEO campania = new CampaniaEO();
+		
+		campania = campaniaC.modelo(encuesta).getListado().get(0);
+		
+		String tablaResultados = "e_"+campania.getId();
+		
+		logger.debug("Tabla de resultados: {}", tablaResultados);
+		
+		StringBuilder scriptPrueba = new StringBuilder();
+		
+		scriptPrueba.append("select ");
+		scriptPrueba.append(script);
+		scriptPrueba.append(" from ");
+		scriptPrueba.append("encuestas_resultados."+tablaResultados);
+		
+		logger.debug("scriptPrueba: {}", scriptPrueba);
+		
+		try {
+			List<HashMap<String, Object>> lista;
+			lista = sqlSession.selectList("encuestas.admin.reglasEncuestas.validarScript",scriptPrueba);
+			logger.debug("Lista: {}",lista);
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Condición Exitosa!", "Condición Correcta"));
+		} catch (Exception e) {
+			// TODO: handle exception
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Verifique su condición: "+e.getCause()+".", "Error!"));
+			logger.debug("Error: {}",e.getCause());
+			 
+		}
+		
+
+	}
+	
+}

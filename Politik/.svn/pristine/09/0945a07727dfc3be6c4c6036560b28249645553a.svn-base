@@ -1,0 +1,92 @@
+package com.saganet.politik.components.encuestas.edomex2017.entrevistaEntrevistados;
+
+import java.util.HashMap;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.components.encuestas.edomex2017.entrevistaEntrevistador.EntrevistaEntrevistadorC;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.encuestas.edomex2017.entrevistaEntrevistados.EntrevistaEntrevistadoEO;
+import com.saganet.politik.database.encuestas.edomex2017.v2.EncuestaEO;
+
+@Component("Edomex2017EntrevistaEntrevistadosEntrevistaEntrevistadosC")
+public class EntrevistaEntrevistadosC {
+@Autowired
+SqlSession sqlSession;
+
+private static final Logger logger = LoggerFactory.getLogger(EntrevistaEntrevistadorC.class);
+
+public String buscarFolio(RequestContext context, Integer id) {
+	HashMap<String, Object> flowScope;
+	EncuestaEO encuesta;
+	EntrevistaEntrevistadoEO entrevista;
+	
+	flowScope =  (HashMap<String, Object>) context.getFlowScope().asMap();
+	encuesta = new EncuestaEO();
+	encuesta = sqlSession.selectOne("encuestas.edomex2017.captura.buscarEncuestaEntrevista", id.toString());
+	if(encuesta!=null){
+		entrevista = new EntrevistaEntrevistadoEO();
+		entrevista.setNickActualizacion(getUsuario().getNick());
+		flowScope.put("entrevista", entrevista);
+		flowScope.put("entrevistado", encuesta);
+		return "success";
+	}else{
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage(FacesMessage.SEVERITY_ERROR, "No se encontró información", "Contact admin."));
+		return "error";
+	}
+	//buscamos el id de la persona encuestada.
+	
+}
+
+public String guardar(RequestContext context){
+	EntrevistaEntrevistadoEO entrevista;
+	EncuestaEO entrevistado;
+	
+	HashMap<String, Object> flowScope;
+	flowScope =  (HashMap<String, Object>) context.getFlowScope().asMap();
+	entrevistado =(EncuestaEO) flowScope.get("entrevistado");
+	entrevista = (EntrevistaEntrevistadoEO) flowScope.get("entrevista");
+	try {
+	sqlSession.insert("encuestas.edomex2017.entrevistaEntrevistador.entrevistaEntrevistados.insertar",entrevista );
+	sqlSession.update("encuestas.edomex2017.v2.captura.actualizarEncuestado", flowScope);
+	return "success";
+	} catch (Exception error) {
+		error.printStackTrace();
+		return "error";
+	}
+	
+}
+
+public String actualizar(RequestContext context){
+	HashMap<String, Object> flowScope;
+	EntrevistaEntrevistadoEO entrevista;
+	EncuestaEO entrevistado;
+	
+	flowScope =  (HashMap<String, Object>) context.getFlowScope().asMap();
+	entrevistado =(EncuestaEO) flowScope.get("entrevistado");
+	entrevista = (EntrevistaEntrevistadoEO) flowScope.get("entrevista");
+	try {
+	sqlSession.insert("encuestas.edomex2017.entrevistaEntrevistador.entrevistaEntrevistados.actualizar",entrevista);
+	sqlSession.update("encuestas.edomex2017.v2.captura.actualizarEncuestado", flowScope);
+	return "success";
+	} catch (Exception error) {
+		error.printStackTrace();
+		return "error";
+	}
+}
+
+public UsuarioEO getUsuario() {
+	return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+}
+}

@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Catalogos" />
+						<p:menuitem value="Tablas Warehouse" action="cancelar" />
+						<p:menuitem value="Agregar" />
+					</p:breadCrumb>
+					
+					<p:focus />
+					<p:panel header="Agregar Nueva Tabla">
+						<p:panelGrid columns="2">
+							<p:outputLabel value="Nombre" />
+							<p:inputText value="${nuevo.tabla}" />
+							<p:outputLabel value="Descripcion" />
+							<p:inputTextarea value="${nuevo.descripcion}" rows="4" cols="50" />
+							<p:outputLabel value="Tabla Particionada?" />
+							<p:inputSwitch value="${nuevo.particionada}" onLabel="Si"
+								offLabel="No">
+								<p:ajax update="campoParticion" />
+							</p:inputSwitch>
+							<p:outputLabel value="Campo de Particion" />
+							<p:inputText id="campoParticion" value="${nuevo.campoParticion}"
+								disabled="${nuevo.particionada ? false : true}" />
+						</p:panelGrid>
+						<f:facet name="footer">
+							<p:commandLink action="guardar">
+									<p:graphicImage value="/resources/botones/SIGUIENTE.png" />
+							</p:commandLink> 
+							<p:commandLink action="cancelar" immediate="true">
+									<p:graphicImage value="/resources/botones/CANCELAR.png" />
+							</p:commandLink> 
+<!-- 							<p:commandButton value="Siguiente" action="guardar" /> -->
+<!-- 							<p:commandButton value="Cancelar" action="cancelar" -->
+<!-- 								immediate="true" /> -->
+						</f:facet>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,84 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+				<p:panel header="Avance de Captura - Concentrado por usuarios">
+				<p:dataTable value="${avanceCaptura}" var="fila">
+				<p:column headerText="Fecha" filterable="true" filterBy="${fila.fecha_uso}" width="10%" filterStyle="width:95%">
+				${fila.fecha_uso}
+				</p:column>
+				<p:column headerText="Nick" filterable="true" filterBy="${fila.nick}" width="8%" filterStyle="width: 90%">
+				${fila.nick}
+				</p:column>
+				<p:column headerText="Ocupado">
+				${fila.ocupado}
+				</p:column>
+				<p:column headerText="Encuestado">
+				${fila.encuestado}
+				</p:column>
+				<p:column headerText="No Contestan">
+				${fila.no_contestan}
+				</p:column>
+				<p:column headerText="Num. Fuera Servicio">
+				${fila.numero_fuera_de_servicio}
+				</p:column>
+				<p:column headerText="Llamar mas tarde">
+				${fila.llamar_mas_tarde}
+				</p:column>
+				<p:column headerText="No quiso contestar">
+				${fila.no_quiso_contestar}
+				</p:column>
+				<p:column headerText="Modem Fax">
+				${fila.modem_fax}
+				</p:column>
+				<p:column headerText="Numero repetido">
+				${fila.numero_repetido}
+				</p:column>
+				<p:column headerText="Menor Edad">
+				${fila.menor_de_edad}
+				</p:column>
+				<p:column headerText="Contestador Automatico">
+				${fila.contestador_automatico}
+				</p:column>
+				<p:column headerText="Numero de empresa">
+				${fila.numero_de_empresa}
+				</p:column>
+				<p:column headerText="Corto llamada">
+				${fila.se_corto_la_llamada}
+				</p:column>
+				<p:column headerText="Total">
+				${fila.total}
+				</p:column>
+				
+				</p:dataTable>
+				<f:facet name="footer">
+						<p:commandLink action="salir">
+									<p:graphicImage value="/resources/botones/SALIR.png" />
+							</p:commandLink>
+<!-- 				<p:commandButton action="salir" value="Salir" icon="fa fa-reply"/> -->
+				</f:facet>
+				</p:panel>
+				
+				<h:outputStylesheet>
+						.topAlign{
+							vertical-align: top;
+							
+						}
+					</h:outputStylesheet>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

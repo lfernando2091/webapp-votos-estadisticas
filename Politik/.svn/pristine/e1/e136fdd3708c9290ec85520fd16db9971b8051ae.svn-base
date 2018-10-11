@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.captura.cuestionario">
+	<cache />
+	
+	<resultMap type="ContactoEO" id="contacto">
+		<id column="ContactoEO_id" property="id" javaType="Integer"/>
+		
+		<result column="ContactoEO_idContacto" property="idContacto" javaType="String"/>
+		<result column="ContactoEO_idPersona" property="idPersona" javaType="Integer"/>
+		<result column="ContactoEO_nombre" property="nombre" javaType="String"/>
+		<result column="ContactoEO_primerApellido" property="primerApellido" javaType="String"/>
+		<result column="ContactoEO_segundoApellido" property="segundoApellido" javaType="String"/>
+		<result column="ContactoEO_telefono" property="telefono" javaType="String"/>
+		<result column="ContactoEO_celular" property="celular" javaType="String"/>
+		<result column="ContactoEO_estatus" property="estatus" javaType="String"/>
+		<result column="ContactoEO_vuelta" property="vuelta" javaType="Integer"/>
+		<result column="ContactoEO_nick" property="nick" javaType="String"/>
+		<result column="ContactoEO_fecha" property="fecha" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+		pkey										ContactoEO_id, 
+		id_contacto									ContactoEO_idContacto, 
+		id_persona									ContactoEO_idPersona, 
+		nombre										ContactoEO_nombre, 
+		primer_apellido								ContactoEO_primerApellido, 
+		segundo_apellido							ContactoEO_segundoApellido, 
+       	telefono									ContactoEO_telefono, 
+       	celular										ContactoEO_celular, 
+       	estatus										ContactoEO_estatus, 
+       	vuelta										ContactoEO_vuelta, 
+       	nick										ContactoEO_nick, 
+       	to_char(fecha, 'YYYY-MM-DD HH12:MI:SS')		ContactoEO_fecha
+	</sql>
+	
+	<select id="contactoByEstatus" resultMap="contacto" parameterType="String">
+		<include refid="query" />
+		FROM ${value}
+  		where estatus = 'LIBRE'
+  		limit 1
+	</select>
+	
+	<select id="validaContactosDisponibles" resultType="Integer" parameterType="String">
+		select count(*)
+		FROM ${value}
+  		where estatus = 'LIBRE'
+	</select>
+	
+	<update id="cabiarEstatusContacto" parameterType="hashmap">
+		UPDATE ${tablaContactos}
+   		SET estatus = #{estatus}
+ 		WHERE pkey = #{id}
+	</update>
+	
+	<insert id="insertar" parameterType="hashmap">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('encuestas_resultados.e_${cuestionario.campania.id}_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas_resultados.e_${cuestionario.campania.id}
+			(
+				pkey, 
+				id_contacto, 
+				id_persona, 
+				${camposPreguntas} 
+				estatus,
+				nick
+				
+			)
+	    VALUES 
+	    	(
+	    		#{id}, 
+	    		#{cuestionario.contacto.idContacto}, 
+	    		#{cuestionario.contacto.idPersona}, 
+	    		${camposRespuestas} 
+	    		#{cuestionario.estatus},
+	    		#{cuestionario.campania.nick} 
+	    	);
+	</insert>
+	
+</mapper>

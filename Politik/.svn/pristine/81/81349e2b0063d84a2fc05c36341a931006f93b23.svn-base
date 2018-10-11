@@ -1,0 +1,205 @@
+package com.saganet.politik.components.encuestas.edomex2017.respuestas;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.GeozonaEO;
+import com.saganet.politik.database.catalogos.GeozonaParticionEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.modelos.JavaBeanT;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("Edomex2017EncuestasRespuestasC")
+public class RespuestasC {
+
+	@Autowired
+	SqlSession sqlSession;
+
+	private static final Logger logger = LoggerFactory.getLogger(RespuestasC.class);
+
+	public HashMap<String, Object> modeloPregunta(HashMap<String, Object> fila, String pregunta, String programa) {
+		Modelo<HashMap<String, Object>> modelo;
+		List<HashMap<String, Object>> listado;
+		HashMap<String, Object> mapa, retorno;
+		NivelesDO nivel;
+		String filtroTerritorio;
+
+		mapa = new HashMap<>();
+		retorno = new HashMap<>();
+		filtroTerritorio = "";
+		mapa.put("pregunta", pregunta);
+		mapa.put("programa", programa);
+		switch (pregunta) {
+		case "1":
+			retorno.put("nombre_pregunta", "¿El apoyo que recibe le hace sentir que su Gobierno le está cumpliendo?");
+			break;
+		case "2":
+			retorno.put("nombre_pregunta",
+					"¿Los apoyos que le otorga el Gobierno contribuyen a mejorar su ingreso familiar?");
+			break;
+		case "3":
+			retorno.put("nombre_pregunta",
+					"¿Qué tan satisfecho está con los apoyos sociales que recibe?");
+			break;
+		case "4":
+			retorno.put("nombre_pregunta",
+					"¿Qué calificación le daría al Gobierno Federal?");
+			break;
+		case "5":
+			retorno.put("nombre_pregunta",
+					"¿Le gustaría que los Programas se mantengan coomo hasta ahora lo han hecho?");
+			break;
+
+		}
+		//buscar nivel y sus territorios
+		nivel = getUsuario().getNivel();
+		logger.debug("nivel: {}",nivel);
+		//logger.debug("Territorios: {}",(GeozonaEO)getUsuario().getTerritorios());
+		mapa.put("nivel", nivel.getNombre());
+		switch (nivel) {
+		case GEOZONA:
+			logger.debug("Territorios: {} ", getUsuario().getTerritorios());
+			List<GeozonaParticionEO> geozonaParticiones;
+			geozonaParticiones =  new ArrayList<>();
+			for (JavaBeanT geozona : getUsuario().getTerritorios()) {
+				geozonaParticiones.add((GeozonaParticionEO)geozona);
+			}
+			mapa.put("territorios", geozonaParticiones);
+			break;
+		case MUNICIPIO:
+			logger.debug("Territorios: {} ", getUsuario().getTerritorios());
+			List<MunicipioEO> geozonaParticiones2;
+			geozonaParticiones2 =  new ArrayList<>();
+			for (JavaBeanT geozona : getUsuario().getTerritorios()) {
+				geozonaParticiones2.add((MunicipioEO)geozona);
+			}
+			mapa.put("territorios", geozonaParticiones2);
+			break;
+		default:
+			break;
+					}
+		mapa.put("filtroTerritorio", filtroTerritorio);
+		//fin de la busqueda
+		logger.debug("Valor Ingreso: {}", fila);logger.debug("Pregunta: {}", pregunta);logger.debug("PROGRAMA: {}", programa);
+		if (fila == null) {
+			mapa.put("tipo", "REGION");
+			mapa.put("listado",
+					"select id_particion id,particion nombre, 'REGION'::text tipo, pkey from catalogos.geozonas_particiones	where id_geozona = 4");
+			try{
+			listado = sqlSession.selectList("mencuestas.edomex2017.respuestas.otros.respuestas.listadoRegion", mapa);
+			modelo = new Modelo<>(listado);
+			retorno.put("anterior", modelo.getSeleccionado());
+			retorno.put("actual", modelo);
+			}catch(Exception e){
+				logger.debug("Error: {}",e.getMessage());
+			}
+			logger.debug("Listado :{} ", retorno.get("actual"));
+		} else if (fila.get("tipo").equals("REGION")) {
+			mapa.put("listado",
+					"select id_municipio id, municipio nombre,'MUNICIPIO'::text tipo  from catalogos.geozonas_llaves a join catalogos.municipios b on (a.llave = b.llave) where id_geozona = 4 and id_geozona_particion = "
+							+ fila.get("pkey") + " order by id_municipio");
+			mapa.put("tipo", "MUNICIPIO");
+			mapa.put("id", fila.get("id"));
+			listado = sqlSession.selectList("mencuestas.edomex2017.respuestas.otros.respuestas.listadoRegion", mapa);
+			modelo = new Modelo<>(listado);
+			retorno.put("actual", modelo);
+			retorno.put("anterior", fila);
+		} else if (fila.get("tipo").equals("MUNICIPIO")) {
+			mapa.put("listado",
+					"select id_seccion id, id_seccion nombre,'SECCION'::text tipo from catalogos.secciones where id_entidad = 15 and id_municipio = "
+							+ fila.get("id"));
+			mapa.put("tipo", "SECCION");
+			mapa.put("id", fila.get("id"));
+			listado = sqlSession.selectList("mencuestas.edomex2017.respuestas.otros.respuestas.listadoRegion", mapa);
+			modelo = new Modelo<>(listado);
+			retorno.put("actual", modelo);
+			retorno.put("anterior", fila);
+		} else if (fila.get("tipo").equals("SECCION")) {
+			mapa.put("tipo", "PERSONA");
+			mapa.put("seccion", fila.get("id"));
+			logger.debug("Entro en persona: {}", mapa);
+			try {
+				listado = sqlSession.selectList("mencuestas.edomex2017.respuestas.otros.respuestas.listadoRegion",
+						mapa);
+				logger.debug("Listado Personas: {}", listado);
+				modelo = new Modelo<>(listado);
+				retorno.put("actual", modelo);
+				retorno.put("anterior", fila);
+				
+				
+			} catch (Exception e) {
+				logger.debug("Error: {}", e.getMessage());
+			}
+
+		} else {
+			retorno.put("actual", null);
+		}
+
+		return retorno;
+	}
+	
+	public HashMap<String, Object> subtotal(Modelo<HashMap<String, Object>> modelo, String pregunta){
+		HashMap<String, Object> mapa;
+	    mapa = new HashMap<>();
+	    if(!pregunta.equals("5")){
+		mapa.put("nc_hombres_total", sumar(modelo.getListado(),"nc_hombres"));
+		mapa.put("nc_mujeres_total", sumar(modelo.getListado(),"nc_mujeres"));
+		mapa.put("nc_total_total", sumar(modelo.getListado(),"nc_total"));
+		mapa.put("mucho_hombres_total", sumar(modelo.getListado(),"mucho_hombres"));
+		mapa.put("mucho_mujeres_total", sumar(modelo.getListado(),"mucho_mujeres"));
+		mapa.put("mucho_total_total", sumar(modelo.getListado(),"mucho_total"));
+		mapa.put("regular_hombres_total", sumar(modelo.getListado(),"regular_hombres"));
+		mapa.put("regular_mujeres_total", sumar(modelo.getListado(),"regular_mujeres"));
+		mapa.put("regular_total_total", sumar(modelo.getListado(),"regular_total"));
+		mapa.put("nada_hombres_total", sumar(modelo.getListado(),"nada_hombres"));
+		mapa.put("nada_mujeres_total", sumar(modelo.getListado(),"nada_mujeres"));
+		mapa.put("nada_total_total", sumar(modelo.getListado(),"nada_total"));
+		mapa.put("hombres_total", sumar(modelo.getListado(),"hombres"));
+		mapa.put("mujeres_total", sumar(modelo.getListado(),"mujeres"));
+		mapa.put("total_total", sumar(modelo.getListado(),"total"));
+	    }else{
+	    	mapa.put("nc_hombres_total", sumar(modelo.getListado(),"nc_hombres"));
+			mapa.put("nc_mujeres_total", sumar(modelo.getListado(),"nc_mujeres"));
+			mapa.put("nc_total_total", sumar(modelo.getListado(),"nc_total"));
+			mapa.put("si_hombres_total", sumar(modelo.getListado(),"si_hombres"));
+			mapa.put("si_mujeres_total", sumar(modelo.getListado(),"si_mujeres"));
+			mapa.put("si_total_total", sumar(modelo.getListado(),"si_total"));
+			mapa.put("no_hombres_total", sumar(modelo.getListado(),"no_hombres"));
+			mapa.put("no_mujeres_total", sumar(modelo.getListado(),"no_mujeres"));
+			mapa.put("no_total_total", sumar(modelo.getListado(),"no_total"));
+			mapa.put("hombres_total", sumar(modelo.getListado(),"hombres"));
+			mapa.put("mujeres_total", sumar(modelo.getListado(),"mujeres"));
+			mapa.put("total_total", sumar(modelo.getListado(),"total"));
+	    }
+	    
+		return mapa;
+	}
+	
+	private Integer sumar(List<HashMap<String, Object>> listado, String campo){
+		Integer resultado;
+		resultado = 0;
+		for (HashMap<String, Object> fila : listado) {
+			if(fila.containsKey(campo)){
+			resultado = resultado + Integer.parseInt(fila.get(campo).toString());
+			}else{
+				resultado=resultado+0;
+			}
+		}
+		return resultado;
+	}
+	
+	public UsuarioEO getUsuario() {
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+}

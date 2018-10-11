@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="diaD.reportes.metasJornadaEstatica">
+	
+	<select id="general" parameterType="hashmap" resultType="hashmap">
+		select 15 pkey, entidad, sum(meta)::integer meta, coalesce(sum(registrados), 0)::integer registrados, 
+		(sum(meta) - coalesce(sum(registrados), 0))::integer no_registrados
+		--coalesce(sum(no_registrados), 0)::integer no_registrados
+		from (
+			select entidad, grupo_movilizacion, sum(jornada_voto::integer) registrados, 
+			sum((not jornada_voto)::integer) no_registrados
+			from dia_d.movilizables_estatico
+			<where>
+				<if test="grupo != 'Todos'">
+					grupo_movilizacion = #{grupo}
+				</if>
+			</where>
+			group by entidad, grupo_movilizacion
+		) a join dia_d.jornada_avance_entidad_libres b using(entidad, grupo_movilizacion)
+		group by entidad
+	</select>
+	
+	
+	<select id="estatal" parameterType="hashmap" resultType="hashmap">
+		select region pkey, entidad, region, nombre_region,
+		sum(meta)::integer meta, coalesce(sum(registrados), 0)::integer registrados, 
+		(sum(meta) - coalesce(sum(registrados), 0))::integer no_registrados
+		--coalesce(sum(no_registrados), 0)::integer no_registrados
+		from (
+			select entidad, region_edomex_2017 region, nombre_region, grupo_movilizacion, sum(jornada_voto::integer) registrados, 
+			sum((not jornada_voto)::integer) no_registrados
+			from dia_d.movilizables_estatico
+			<where>
+				<if test="grupo != 'Todos'">
+					grupo_movilizacion = #{grupo}
+				</if>
+			</where>
+			group by entidad, region_edomex_2017, nombre_region, grupo_movilizacion
+		) a join dia_d.jornada_avance_region_libres b using(entidad, grupo_movilizacion, region, nombre_region)
+		group by entidad, region, nombre_region
+		order by region
+	</select>
+	
+	<select id="region" parameterType="hashmap" resultType="hashmap">
+		select municipio pkey, entidad, region, nombre_region, municipio, nombre_municipio,
+		sum(meta)::integer meta, coalesce(sum(registrados), 0)::integer registrados, 
+		(sum(meta) - coalesce(sum(registrados), 0))::integer no_registrados
+		--coalesce(sum(no_registrados), 0)::integer no_registrados
+		from (
+			select entidad, region_edomex_2017 region, nombre_region, municipio, nombre_municipio, grupo_movilizacion, 
+			sum(jornada_voto::integer) registrados, 
+			sum((not jornada_voto)::integer) no_registrados
+			from dia_d.movilizables_estatico
+			<where>
+				<if test="idRegion &gt; 0">
+					region_edomex_2017 = #{idRegion}
+				</if>
+				<if test="idRegion eq -1">
+					municipio in (2,5,13,14,20,24,25,26,30,32,34,36,38,40,43,52,55,58,60,61,71,75,82,83,89,100,105,107,109,110,115,119,121,122)
+				</if>
+				<if test="idRegion eq -2">
+					municipio not in (2,5,13,14,20,24,25,26,30,32,34,36,38,40,43,52,55,58,60,61,71,75,82,83,89,100,105,107,109,110,115,119,121,122)
+				</if>
+
+				<if test="grupo != 'Todos'">
+					and grupo_movilizacion = #{grupo}
+				</if>
+			</where>
+			group by entidad, region_edomex_2017, nombre_region, municipio, nombre_municipio, grupo_movilizacion
+		) a join dia_d.jornada_avance_municipio_libres b using(entidad, grupo_movilizacion, region, nombre_region, municipio, nombre_municipio)
+		group by entidad, region, nombre_region, municipio, nombre_municipio
+		order by municipio
+	</select>
+	
+	<select id="municipio" parameterType="hashmap" resultType="hashmap">
+		select seccion pkey, entidad, region, nombre_region, municipio, nombre_municipio, seccion,
+		sum(meta)::integer meta, coalesce(sum(registrados), 0)::integer registrados, 
+		(sum(meta) - coalesce(sum(registrados), 0))::integer no_registrados
+		--coalesce(sum(no_registrados), 0)::integer no_registrados
+		from (
+			select entidad, region_edomex_2017 region, nombre_region, municipio, nombre_municipio, seccion, grupo_movilizacion, 
+			sum(jornada_voto::integer) registrados, 
+			sum((not jornada_voto)::integer) no_registrados
+			from dia_d.movilizables_estatico
+			<where>
+				municipio = #{idMunicipio}
+				<if test="grupo != 'Todos'">
+					and grupo_movilizacion = #{grupo}
+				</if>
+			</where>
+			group by entidad, region_edomex_2017, nombre_region, municipio, nombre_municipio, seccion, grupo_movilizacion
+		) a join dia_d.jornada_avance_seccion_libres b using(entidad, grupo_movilizacion, region, nombre_region, municipio, seccion, nombre_municipio)
+		group by entidad, region, nombre_region, municipio, nombre_municipio, seccion
+		order by seccion
+	</select>
+	
+	<select id="seccion" parameterType="hashmap" resultType="hashmap">
+		select localidad||'-'||manzana pkey, entidad, region, nombre_region, municipio, nombre_municipio, seccion, localidad, manzana, localidad||'-'||manzana loc_man,
+		sum(meta)::integer meta, coalesce(sum(registrados), 0)::integer registrados, 
+		(sum(meta) - coalesce(sum(registrados), 0))::integer no_registrados
+		--coalesce(sum(no_registrados), 0)::integer no_registrados
+		from (
+			select entidad, region_edomex_2017 region, nombre_region, municipio, nombre_municipio, seccion, localidad, manzana, grupo_movilizacion, 
+			sum(jornada_voto::integer) registrados, 
+			sum((not jornada_voto)::integer) no_registrados
+			from dia_d.movilizables_estatico
+			<where>
+				seccion = #{idSeccion}
+				<if test="grupo != 'Todos'">
+					and grupo_movilizacion = #{grupo}
+				</if>
+			</where>
+			group by entidad, region_edomex_2017, nombre_region, municipio, nombre_municipio, seccion, localidad, manzana, grupo_movilizacion
+		) a join dia_d.jornada_avance_manzana_libres b using(entidad, grupo_movilizacion, region, nombre_region, municipio, nombre_municipio, seccion, localidad, manzana)
+		group by entidad, region, nombre_region, municipio, nombre_municipio, seccion, localidad, manzana
+		order by localidad, manzana
+	</select>
+	
+	<select id="municipiosMapa" resultType="hashmap">
+		select '15-'||municipio llave_municipio,
+		sum(meta)::integer meta, coalesce(max(registrados), 0)::integer registrados, 
+		(sum(meta) - coalesce(sum(registrados), 0))::integer no_registrados
+		--coalesce(max(no_registrados), 0)::integer no_registrados
+		from (
+			select municipio, sum(jornada_voto::integer) registrados, 
+			sum((not jornada_voto)::integer) no_registrados
+			from dia_d.movilizables_estatico
+			group by municipio
+		) a join dia_d.jornada_avance_municipio_libres b using(municipio)
+		group by municipio
+		order by municipio
+	</select>
+	
+	<select id="cortes" resultType="hashmap">
+		SELECT *
+		FROM dia_d.jornada_cortes_libres
+	</select>
+	
+</mapper>

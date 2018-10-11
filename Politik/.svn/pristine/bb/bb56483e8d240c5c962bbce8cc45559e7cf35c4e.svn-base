@@ -1,0 +1,69 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Teléfonos">
+						<p:panelGrid columns="2" columnClasses="alignTop, alignTop">
+							<p:panel header="Agregar">
+								<p:panelGrid columns="2">
+									<h:outputText value="Nombre:" />
+									<h:outputText value="${persona.nombre} ${persona.primerApellido} ${persona.segundoApellido}" />
+									<h:outputText value="Entidad Nacimiento: " />
+									<h:outputText value="${persona.entidadNacimiento.nombre}" />
+									<h:outputText value="Tipo de Telefono:" />
+									<p:selectOneMenu value="${tiposTelefonos.key}" filter="true" filterMatchMode="contains">
+										<f:selectItems value="${tiposTelefonos.listado}" var="tipos"
+											itemLabel="${tipos.id} - ${tipos.tipoTelefono}"
+											itemValue="${tipos.id}" />
+									</p:selectOneMenu>
+									<h:outputText value="Telefono: " />
+									<p:inputText value="${nuevo.telefono}" maxlength="10" required="true" requiredMessage="Datos requeridos validos" />
+									<h:outputText value="Extensión: " />
+									<p:inputText value="${nuevo.ext}" />
+									<h:outputText value="Observaciones: " />
+									<p:inputTextarea value="${nuevo.observaciones}" />
+									<f:facet name="footer">
+										<p:commandButton value="Agregar" action="guardar"/>
+										<p:commandButton value="Salir" action="salirAgregar" immediate="true"/>										
+									</f:facet>
+								</p:panelGrid>							
+							</p:panel>
+
+							<p:panel header="Listado">
+								<p:dataTable var="tel2" value="#{tablaTelefonos.listado}">
+									<p:column headerText="Tipo">
+										<h:outputText value="#{tel2.tipoTelefono.tipoTelefono}" />
+									</p:column>
+
+									<p:column headerText="Telefono">
+										<h:outputText value="#{tel2.telefono}" />
+									</p:column>
+
+									<p:column headerText="Ext.">
+										<h:outputText value="#{tel2.ext}" />
+									</p:column>
+
+									<p:column headerText="Observaciones">
+										<h:outputText value="#{tel2.observaciones}" />
+									</p:column>
+								</p:dataTable>
+							</p:panel>
+						</p:panelGrid>
+					</p:panel>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+		<h:outputStylesheet>
+			.alignTop { vertical-align: top; }
+		</h:outputStylesheet>
+	</ui:define>
+</ui:composition>

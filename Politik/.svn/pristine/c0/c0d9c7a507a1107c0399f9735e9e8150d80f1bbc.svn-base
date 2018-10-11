@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cronograma.grupos">
+	<cache />
+	
+	<resultMap type="GrupoEO" id="grupo">
+		<id column="GrupoEO_id" property="id" javaType="Integer"/>
+		<result column="GrupoEO_nombre" property="nombre" javaType="String"/>
+	</resultMap>
+	
+	<select id="listado" resultMap="grupo">
+		select 
+			id_grupo GrupoEO_id,
+			grupo GrupoEO_nombre
+		from cronograma.grupos
+		order by grupo
+	</select>
+	
+	<insert id="insertarNombre" parameterType="String">
+		insert into cronograma.grupos(grupo)
+		values(#{value})
+	</insert>
+	
+</mapper>

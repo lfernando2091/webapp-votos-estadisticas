@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="pruebas">
+	
+	<select id="nicksPorPrograma" parameterType="String" resultType="String" >
+		select nick
+		from encuestas_edomex.e_edomex a
+		join encuestas_edomex.encuesta_edomex b on (a.id_contacto::integer = b.id_interno)
+		where programa_general = #{value}
+		group by nick
+	</select>	
+	
+	<select id="accesosPorNick" parameterType="String" resultType="Object">
+		select acceso
+		from administracion.usuarios_accesos
+		where nick = #{value} and acceso::date &gt;= '2017-04-23'
+		order by acceso
+	</select>
+	
+	<select id="capturasPorFechas" parameterType="hashmap" resultType="java.sql.Timestamp">
+		select fecha
+		from encuestas_edomex.e_edomex a
+		join encuestas_edomex.encuesta_edomex b on (a.id_contacto::integer = b.id_interno)
+		where nick = #{nick} and fecha &gt;= #{fi} and fecha &lt; #{ff}
+		order by fecha
+	</select>
+</mapper>

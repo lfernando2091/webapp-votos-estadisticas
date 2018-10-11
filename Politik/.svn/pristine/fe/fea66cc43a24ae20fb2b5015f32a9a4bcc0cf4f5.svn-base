@@ -1,0 +1,242 @@
+package com.saganet.politik.components.encuestas.edomex2017;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.RolEO;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.encuestas.edomex2017.EncuestaEO;
+import com.saganet.politik.database.encuestas.edomex2017.EncuestaProsperaEO;
+import com.saganet.politik.database.encuestas.edomex2017.callCenter.CapturistaEO;
+import com.saganet.politik.database.encuestas.edomex2017.callCenter.EncargadoEO;
+import com.saganet.politik.database.encuestas.edomex2017.supervisor.EncuestadorEO;
+import com.saganet.politik.database.encuestas.edomex2017.supervisor.SupervisorEO;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("Edomex2017Captura")
+public class CapturaC {
+	@Autowired
+	SqlSession sqlSession;
+	private static final Logger logger = LoggerFactory.getLogger(CapturaC.class);
+
+	public String buscarId(RequestContext context, Integer id) {
+		HashMap<String, Object> mapa, parametros, viewScope;
+		EncuestadorEO encuestador;
+		mapa = new HashMap<>();
+		parametros = new HashMap<>();
+		parametros.put("idInterno", id);
+		viewScope = (HashMap<String, Object>) context.getFlowScope().asMap();
+		boolean esSupervisor = false;
+		boolean esCallCenter = false;
+		boolean esEncuestador = false;
+		boolean esCapturista = false;
+		for (RolEO rol : getUsuario().getRoles()) {
+
+			if (rol.getRol().equals("ROLE_ENCUESTAS_SUPERVISOR_EDOMEX")) {
+				esSupervisor = true;
+				break;
+			} else if (rol.getRol().equals("ROLE_ENCUESTAS_EDOMEX_CALL_CENTER")) {
+				esCallCenter = true;
+				break;
+			}else if(rol.getRol().equals("ROLE_ENCUESTA_EDOMEX")){
+				esEncuestador = true;
+			}else if(rol.getRol().equals("ROLE_ENCUESTAS_EDOMEX_CALL_CENTER_CAPTURISTA")){
+				esCapturista = true;
+			}
+		}
+
+		// buscamos los datos
+		if (esSupervisor) {
+			SupervisorEO supervisor;
+			supervisor = sqlSession.selectOne("encuestas.supervisor.supervisor.buscarPorId", getUsuario().getNick());
+			parametros.put("programa", supervisor.getProgama());
+			parametros.put("tipo", "SUPERVISOR");
+		} else if (esCallCenter) {
+			logger.debug("Call Center: {} ");
+			EncargadoEO encargado;
+			encargado = new EncargadoEO();
+			encargado = sqlSession.selectOne("encuestas.callcenter.encargado.buscarPorNick", getUsuario().getNick());
+			parametros.put("programa", encargado.getProgama());
+			parametros.put("tipo", "CALL_CENTER");
+
+		} else{
+			
+			encuestador = sqlSession.selectOne("encuestas.supervisor.encuestador.buscarPorNick",getUsuario().getNick());
+			if(encuestador!=null){
+				parametros.put("tipo", "ENCUESTADOR");
+			logger.debug("Encuestador: {}", encuestador);
+			parametros.put("programa", encuestador.getProgama());
+			parametros.put("municipio", encuestador.getMunicipio().getIdMunicipio());
+			}
+			CapturistaEO capturista;
+			capturista = sqlSession.selectOne("encuestas.edomex2017.callcenter.capturista.buscarPorNick", getUsuario().getNick());
+			if(capturista!=null){
+				parametros.put("tipo", "CAPTURISTA");
+				logger.debug("cAPTURISTA: {}", capturista);
+				parametros.put("programa", capturista.getEncargado().getProgama());
+				
+				}
+		}
+		// fin
+
+		mapa = new HashMap<>();
+		mapa = sqlSession.selectOne("encuestas.edomex2017.captura.buscarPorId", parametros);
+		if (mapa != null) {
+			viewScope.put("contacto", mapa);
+			viewScope.put("parametros", parametros);
+			return "success";
+		} else {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "No se encontró información", "Contact admin."));
+			return "error";
+		}
+	}
+
+	public EncuestaEO nuevo(String folio, String estatus) {
+		logger.debug("Estatus: {}", estatus);
+		logger.debug("Folio: {}", folio);
+		EncuestaEO nuevo, consulta;
+
+		nuevo = new EncuestaEO();
+		consulta = new EncuestaEO();
+		if (!estatus.equals("PENDIENTE")) {
+			consulta = sqlSession.selectOne("encuestas.edomex2017.captura.buscarEncuesta", folio);
+			logger.debug("Consulta: {}", consulta);
+			nuevo.setId(consulta.getId());
+			nuevo.setR1(consulta.getR1());
+			nuevo.setR2(consulta.getR2());
+			nuevo.setR3(consulta.getR3());
+			nuevo.setR4(consulta.getR4());
+			nuevo.setR5(consulta.getR5());
+			nuevo.setResultado(consulta.getResultado());
+			nuevo.setIdInterno(consulta.getIdInterno());
+			nuevo.setNick(consulta.getNick());
+			nuevo.setEmail(consulta.getEmail());
+			nuevo.setTelefono(consulta.getTelefono());
+			nuevo.setAdultos(consulta.getAdultos());
+			nuevo.setEncuestador(consulta.getEncuestador());
+			nuevo.setNombreManual(consulta.getNombreManual());
+			nuevo.setPrimerManual(consulta.getPrimerManual());
+			nuevo.setSegundoManual(consulta.getSegundoManual());
+			nuevo.setDireccionManual(consulta.getDireccionManual());
+			logger.debug("Nuevo: {}", nuevo);
+		} else {
+			nuevo = new EncuestaEO();
+			nuevo.setIdInterno(Integer.parseInt(folio));
+			nuevo.setNick(getUsuario().getNick());
+		}
+		return nuevo;
+	}
+	
+	public EncuestaProsperaEO nuevoProspera(String folio, String estatus) {
+		logger.debug("Estatus: {}", estatus);
+		logger.debug("Folio: {}", folio);
+		EncuestaProsperaEO nuevo, consulta;
+
+		nuevo = new EncuestaProsperaEO();
+		consulta = new EncuestaProsperaEO();
+		if (!estatus.equals("PENDIENTE")) {
+			consulta = sqlSession.selectOne("encuestas.edomex2017.captura.buscarEncuestaProspera", folio);
+			logger.debug("Consulta: {}", consulta);
+			nuevo.setId(consulta.getId());
+			nuevo.setR1(consulta.getR1());
+			nuevo.setR2(consulta.getR2());
+			nuevo.setR3(consulta.getR3());
+			nuevo.setR4(consulta.getR4());
+			nuevo.setR5(consulta.getR5());
+			nuevo.setResultado(consulta.getResultado());
+			nuevo.setIdInterno(consulta.getIdInterno());
+			nuevo.setNick(consulta.getNick());
+
+			logger.debug("Nuevo: {}", nuevo);
+		} else {
+			nuevo = new EncuestaProsperaEO();
+			nuevo.setIdInterno(Integer.parseInt(folio));
+			nuevo.setNick(getUsuario().getNick());
+		}
+		return nuevo;
+	}
+
+	public void guardar(EncuestaEO encuesta) {
+		logger.debug("Encuesta guardar: {}", encuesta);
+		sqlSession.insert("encuestas.edomex2017.captura.insertar", encuesta);
+		sqlSession.update("encuestas.edomex2017.captura.actualizarEstatus", encuesta);
+	}
+	public void guardar(EncuestaProsperaEO encuesta) {
+		logger.debug("Encuesta guardar: {}", encuesta);
+		sqlSession.insert("encuestas.edomex2017.captura.insertarProspera", encuesta);
+		sqlSession.update("encuestas.edomex2017.captura.actualizarEstatusProspera", encuesta);
+	}
+
+	public void actualizar(EncuestaEO encuesta) {
+		sqlSession.update("encuestas.edomex2017.captura.actualizarEncuesta", encuesta);
+		sqlSession.update("encuestas.edomex2017.captura.actualizarEstatus", encuesta);
+	}
+	public void actualizar(EncuestaProsperaEO encuesta) {
+		sqlSession.update("encuestas.edomex2017.captura.actualizarEncuestaProspera", encuesta);
+		sqlSession.update("encuestas.edomex2017.captura.actualizarEstatusProspera", encuesta);
+	}
+
+	public Modelo<EncuestadorEO> encuestadores() {
+		Modelo<EncuestadorEO> modelo;
+		List<EncuestadorEO> listado;
+
+		boolean esSupervisor = false;
+		boolean esCallCenter = false;
+		boolean esEncuestador = false;
+		boolean esCapturista = false;
+		for (RolEO rol : getUsuario().getRoles()) {
+
+			if (rol.getRol().equals("ROLE_ENCUESTAS_SUPERVISOR_EDOMEX")) {
+				esSupervisor = true;
+				break;
+			} else if (rol.getRol().equals("ROLE_ENCUESTAS_EDOMEX_CALL_CENTER")) {
+				esCallCenter = true;
+				break;
+			}else if(rol.getRol().equals("ROLE_ENCUESTA_EDOMEX")){
+				esEncuestador = true;
+			}else if(rol.getRol().equals("ROLE_ENCUESTAS_EDOMEX_CALL_CENTER_CAPTURISTA")){
+				esCapturista = true;
+			}
+		}
+		if (esSupervisor) {
+			listado = sqlSession.selectList("encuestas.supervisor.encuestador.buscarPorSupervisor",getUsuario().getNick());
+		} else if (esCallCenter) {
+			EncargadoEO encargado;
+			encargado = new EncargadoEO();
+			encargado = sqlSession.selectOne("encuestas.callcenter.encargado.buscarPorNick", getUsuario().getNick());
+			listado = sqlSession.selectList("encuestas.supervisor.encuestador.buscarPorEncargadoCallCenter",encargado.getUsuario().getNick());
+		}else if(esCapturista){
+		
+			CapturistaEO capturista;
+			capturista = new CapturistaEO();
+			capturista = sqlSession.selectOne("encuestas.edomex2017.callcenter.capturista.buscarPorNick", getUsuario().getNick());
+			
+			listado = sqlSession.selectList("encuestas.supervisor.encuestador.buscarPorEncargadoCallCenter",capturista.getEncargado().getUsuario().getNick());
+		}else {
+
+			listado = sqlSession.selectList("encuestas.supervisor.encuestador.buscarPorNick", getUsuario().getNick());
+		}
+		modelo = new Modelo<>(listado);
+		return modelo;
+
+	}
+
+	public UsuarioEO getUsuario() {
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+
+}

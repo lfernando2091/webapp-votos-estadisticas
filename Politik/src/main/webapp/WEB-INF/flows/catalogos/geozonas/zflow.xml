@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="CatalogosGeozonasC.modelo()" result="viewScope.modelo" />
+		</on-entry>
+		<transition on="agregar" to="agregarEditar">
+			<evaluate expression="CatalogosGeozonasC.nuevo()" result="flowScope.geozona" />
+		</transition>
+		<transition on="detalle" to="detalle">
+			<set name="requestScope.detalle" value="viewScope.modelo.seleccionado" />
+		</transition>
+	</view-state>
+	
+	<view-state id="detalle">
+		<on-entry>
+			<set name="viewScope.detalle" value="requestScope.detalle" />
+			<evaluate expression="CatalogosGeozonasC.modeloParticiones(viewScope.detalle)" result="viewScope.modeloParticiones" />
+		</on-entry>
+		<transition on="regresar" to="listado" />
+	</view-state>
+	
+	<view-state id="agregarEditar">
+		<on-entry>
+			<evaluate expression="UtilidadesDominiosC.modeloNiveles()" result="viewScope.modeloNiveles" />
+		</on-entry>
+		<transition on="siguiente" to="asignarLlaves" />
+		<transition on="cancelar" to="listado">
+			<set name="flowScope.geozona" value="null" />
+		</transition>
+	</view-state>
+	
+	<view-state id="asignarLlaves">
+		<on-entry>
+			<evaluate expression="CatalogosEntidadesC.tablaBuscadorSimple()" result="viewScope.listadoEntidades" />
+			<evaluate expression="CatalogosDFederalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDFederales" />
+			<evaluate expression="CatalogosDLocalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDLocales" />
+			<evaluate expression="CatalogosMunicipiosC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoMunicipios" />
+		</on-entry>
+		<transition on="actualizarCombos">
+			<evaluate expression="CatalogosDFederalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDFederales" />
+			<evaluate expression="CatalogosDLocalesC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoDLocales" />
+			<evaluate expression="CatalogosMunicipiosC.tabla(listadoEntidades.seleccionMultiple)" result="viewScope.listadoMunicipios" />
+		</transition>
+		<transition on="regresar" to="agregarEditar" />
+		<transition on="siguiente" to="generarParticiones">
+			<evaluate expression="CatalogosGeozonasC.listadoTerritorios(flowRequestContext)" result="requestScope.listadoTerritorios" />
+		</transition>
+		<transition on="cancelar" to="listado">
+			<set name="flowScope.geozona" value="null" />
+		</transition>
+	</view-state>
+	
+	<view-state id="generarParticiones">
+		<on-entry>
+			<set name="viewScope.listadoTerritorios" value="requestScope.listadoTerritorios" />
+			<evaluate expression="CatalogosGeozonasC.modeloParticiones(flowScope.geozona)" result="viewScope.modeloParticiones" />
+			<evaluate expression="CatalogosGeozonasC.modeloTerritorios(viewScope.listadoTerritorios, viewScope.modeloParticiones.listado)" result="viewScope.modeloTerritorios" />
+			<evaluate expression="CatalogosGeozonasC.nuevaParticion(flowScope.geozona)" result="viewScope.particion" />
+		</on-entry>
+		<transition on="agregarParticion">
+			<evaluate expression="CatalogosGeozonasC.agregarParticion(flowScope.geozona, viewScope.particion, viewScope.modeloTerritorios.modeloDual.target)" />
+			<evaluate expression="CatalogosGeozonasC.modeloTerritorios(viewScope.listadoTerritorios, viewScope.modeloParticiones.listado)" result="viewScope.modeloTerritorios" />
+			<evaluate expression="CatalogosGeozonasC.nuevaParticion(flowScope.geozona)" result="viewScope.particion" />
+		</transition>
+		<transition on="guardar" to="listado">
+			<evaluate expression="CatalogosGeozonasC.guardar(flowScope.geozona, viewScope.listadoTerritorios)" />
+			<set name="flowScope.geozona" value="null" />
+		</transition>
+		<transition on="regresar" to="asignarLlaves" />
+		<transition on="cancelar" to="listado">
+			<set name="flowScope.geozona" value="null" />
+		</transition>
+	</view-state>
+</flow>

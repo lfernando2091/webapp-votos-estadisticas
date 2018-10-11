@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.elecciones">
+	<cache />
+	
+	<resultMap type="EleccionEO" id="eleccion">
+		<id column="EleccionEO_id" property="id" javaType="Integer"/>
+		<result column="EleccionEO_tipo" property="tipo" javaType="com.saganet.politik.dominios.TiposEleccionDO"/>
+		<result column="EleccionEO_representante" property="representante" javaType="com.saganet.politik.dominios.TiposRepresentanteDO"/>
+		<result column="EleccionEO_ejercicio" property="ejercicio" javaType="Integer"/>
+		<result column="EleccionEO_fechaJornada" property="fechaJornada" javaType="java.sql.Date"/>
+		<result column="EleccionEO_descripcion" property="descripcion" javaType="String"/>
+		<collection property="partidos" resultMap="catalogos.partidos.partido" ofType="PartidoEO" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			EleccionEO.id_eleccion 			EleccionEO_id,
+			EleccionEO.tipo 				EleccionEO_tipo,
+			EleccionEO.representante 		EleccionEO_representante,
+			EleccionEO.ejercicio 			EleccionEO_ejercicio,
+			EleccionEO.fecha_jornada 		EleccionEO_fechaJornada,
+			EleccionEO.descripcion 			EleccionEO_descripcion,
+			PartidoEO.id_partido 			PartidoEO_id,
+			PartidoEO.nombre 				PartidoEO_nombre,
+			PartidoEO.siglas 				PartidoEO_siglas,
+			PartidoEO.coalicion 			PartidoEO_coalicion,
+			CoalicionesPartidos.id_partido	Coalicion_id,
+			CoalicionesPartidos.nombre 		Coalicion_nombre,
+			CoalicionesPartidos.siglas 		Coalicion_siglas,
+			CoalicionesPartidos.coalicion 	Coalicion_coalicion
+		FROM catalogos.elecciones EleccionEO
+		LEFT JOIN catalogos.elecciones_partidos EleccionesPartidos on (EleccionEO.id_eleccion = EleccionesPartidos.id_eleccion)
+		LEFT JOIN catalogos.partidos PartidoEO on (EleccionesPartidos.id_partido = PartidoEO.id_partido)
+		LEFT JOIN catalogos.coaliciones Coaliciones on (PartidoEO.id_partido = Coaliciones.id_coalicion)
+		LEFT JOIN catalogos.partidos CoalicionesPartidos on (Coaliciones.id_partido = CoalicionesPartidos.id_partido)
+	</sql>
+	
+	<select id="listado" resultMap="eleccion">
+		<include refid="query" />
+		ORDER BY EleccionEO.ejercicio, EleccionEO.representante, EleccionEO.tipo, PartidoEO.id_partido
+	</select>
+	
+	<select id="porId" parameterType="Integer" resultMap="eleccion">
+		<include refid="query" />
+		WHERE EleccionEO.id_eleccion = #{value}
+	</select>
+	
+	<select id="listadoIdsEstructura" parameterType="EleccionEO" resultType="Integer">
+		SELECT eleccionesEstructuras.id_estructura
+		FROM catalogos.elecciones EleccionEO
+		JOIN catalogos.elecciones_estructuras eleccionesEstructuras on (EleccionEO.id_eleccion = eleccionesEstructuras.id_eleccion)
+		WHERE EleccionEO.id_eleccion = #{id}
+	</select>
+	
+	<insert id="insertar" parameterType="EleccionEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT nextval('catalogos.elecciones_id_eleccion_seq'::regclass)
+		</selectKey>
+		
+		INSERT INTO catalogos.elecciones(id_eleccion, tipo, representante, ejercicio, fecha_jornada, descripcion)
+    	VALUES (#{id}, #{tipo}, #{representante}, #{ejercicio}, #{fechaJornada}, #{descripcion});
+	</insert>
+	
+	<insert id="insertarTerritorios" parameterType="hashmap">
+		INSERT INTO catalogos.elecciones_llaves(id_eleccion, llave)
+		VALUES
+		<foreach collection="llaves" item="item" separator="," close=";">
+			(#{eleccion.id}, #{item})
+		</foreach>
+	</insert>
+	
+	<insert id="insertarPartidos" parameterType="hashmap">
+		<if test="!partidos.isEmpty()">
+			INSERT INTO catalogos.elecciones_partidos(id_eleccion, id_partido)
+			VALUES
+			<foreach collection="partidos" item="item" separator="," close=";">
+				(#{eleccion.id}, #{item.id})
+			</foreach>
+		</if>
+	</insert>
+	
+	<insert id="insertarEstructuras" parameterType="hashmap">
+		INSERT INTO catalogos.elecciones_estructuras(id_eleccion, id_estructura)
+		VALUES
+		<foreach collection="estructuras" item="item" separator="," close=";">
+			(#{eleccion.id}, #{item.id})
+		</foreach>
+	</insert>
+	
+</mapper>

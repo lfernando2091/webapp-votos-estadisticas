@@ -1,0 +1,107 @@
+package com.saganet.politik.database.eventos;
+
+import com.saganet.politik.dominios.EstatusEventoDO;
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.dominios.TipoEventoDO;
+import com.saganet.politik.modelos.JavaBeanT;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.io.Serializable;
+import org.apache.ibatis.type.Alias;
+
+@Alias("EventoSocialEO")
+public class EventoSocialEO extends JavaBeanT implements Serializable {
+	
+	private static final long serialVersionUID = 2958149825338022635L;
+	private Integer id;
+	private String nombre;
+	private String descripcionLugar;
+	private EstatusEventoDO estatus;
+	private TipoEventoDO tipo;
+	private List<JavaBeanT> territorios;
+	private NivelesDO nivel;
+	private Integer numeroAsistentes;
+	private Timestamp fecha;
+	private java.util.Date fechaString;
+	private String fechaFormateada;
+
+	@Override
+	public String toString() {
+		return "EventosEO [id=" + id + ", nombre=" + nombre + ", descripcionLugar=" + descripcionLugar + ", estatus="
+				+ estatus + ", tipo=" + tipo + ", territorios=" + territorios + ", nivel=" + nivel
+				+ ", numeroAsistentes=" + numeroAsistentes + ", fecha=" + fecha + ", fechaString=" + fechaString + "]";
+	}
+	public Timestamp getFecha() {
+		return fecha;
+	}
+	public void setFecha(Timestamp fecha) {
+		this.fechaFormateada= new SimpleDateFormat("dd/MM/yyyy HH:mm").format(fecha);
+		this.fecha = fecha;
+	}
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	
+	public NivelesDO getNivel() {
+		return nivel;
+	}
+	public void setNivel(NivelesDO nivel) {
+		this.nivel = nivel;
+	}
+	public java.util.Date getFechaString() {
+		return fechaString;
+	}
+	public void setFechaString(java.util.Date fechaString) {
+		this.fechaString = fechaString;
+		this.fecha =new java.sql.Timestamp(fechaString.getTime());
+	}
+
+	public List<JavaBeanT> getTerritorios() {
+		return territorios;
+	}
+
+	public void setTerritorios(List<JavaBeanT> territorios) {
+		this.territorios = territorios;
+	}
+	public String getNombre() {
+		return nombre;
+	}
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	public String getDescripcionLugar() {
+		return descripcionLugar;
+	}
+	public void setDescripcionLugar(String descripcionLugar) {
+		this.descripcionLugar = descripcionLugar;
+	}
+	public EstatusEventoDO getEstatus() {
+		return estatus;
+	}
+	public void setEstatus(EstatusEventoDO estatus) {
+		this.estatus = estatus;
+	}
+	public TipoEventoDO getTipo() {
+		return tipo;
+	}
+	public void setTipo(TipoEventoDO tipo) {
+		this.tipo = tipo;
+	}
+	public Integer getNumeroAsistentes() {
+		return numeroAsistentes;
+	}
+	public void setNumeroAsistentes(Integer numeroAsistentes) {
+		this.numeroAsistentes = numeroAsistentes;
+	}
+	public String getFechaFormateada() {
+		return fechaFormateada;
+	}
+	public void setFechaFormateada(String fechaFormateada) {
+		this.fechaFormateada = fechaFormateada;
+	}
+
+}

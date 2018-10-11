@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.admin.campaniasUsuarios">
+	<cache />
+	
+	<resultMap type="CampaniaUsuarioEO" id="campaniaUsuario">
+		<id column="CampaniaUsuarioEO_id" property="id" javaType="Integer" />
+		
+		<result column="CampaniaUsuarioEO_idCampania" property="idCampania" javaType="Integer"/>
+		<result column="CampaniaUsuarioEO_nick" property="nick" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			pkey							CampaniaUsuarioEO_id, 
+			id_campania						CampaniaUsuarioEO_idCampania, 
+			nick							CampaniaUsuarioEO_nick
+  		FROM encuestas.campanias_usuarios
+	</sql>
+	
+	<select id="listado" resultMap="campaniaUsuario" parameterType="CampaniaEO">
+		<include refid="query" />
+		where id_campania = #{id}
+		order by pkey desc
+	</select>
+	
+	<insert id="insertar" parameterType="CampaniaUsuarioEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('encuestas.campanias_usuarios_pkey_seq)
+		</selectKey>
+		INSERT INTO encuestas.campanias_usuarios(pkey, id_campania, nick)
+    	VALUES (#{id}, #{idCampania}, #{nick})
+	</insert>
+	
+</mapper>

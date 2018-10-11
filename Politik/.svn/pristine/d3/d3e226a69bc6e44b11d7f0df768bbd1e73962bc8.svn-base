@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+		
+		<input name="flag" type="java.lang.Boolean"/>
+	
+		<view-state id="listado">
+			<on-entry>
+				<set name="viewScope.movilizador" value="conversationScope.movilizador!=null?conversationScope.movilizador:(requestScope.movilizador!=null?requestScope.movilizador:DiaDMovilizados.getMovilizador())"/>
+				<evaluate expression="DiaDMovilizados.modelo(viewScope.movilizador)" result="viewScope.modelo"/>			
+			</on-entry>
+			<transition on="agregar" to="agregarMovilizado">
+				<set name="requestScope.movilizador" value="viewScope.movilizador"/>
+			</transition>
+			<transition on="regresar" to="fin"/>
+		</view-state>
+		
+		<view-state id="agregarMovilizado">
+			<on-entry>
+				<set name="viewScope.movilizador" value="requestScope.movilizador"/>
+				<set name="viewScope.nombre" value="''"/>
+				<set name="viewScope.primerApellido" value="''"/>
+				<set name="viewScope.segundoApellido" value="''"/>
+				<set name="viewScope.folio" value="''"/>
+				<set name="viewScope.seccion" value="''"/>
+				<set name="viewScope.clave" value="''"/>
+				<set name="viewScope.anho" value="''"/>
+				<set name="viewScope.dia" value="''"/>
+				<evaluate expression="DominiosModelosC.diaDBusquedas()" result="viewScope.modeloBusquedas"/>
+				<evaluate expression="UtilidadesDominiosC.modeloMeses()" result="viewScope.tablaMeses" />
+				<set name="viewScope.mes" value="viewScope.tablaMeses.seleccionado"/>
+				<evaluate expression="DiaDMovilizados.busquedasModelo(viewScope.movilizador, viewScope.modeloBusquedas.seleccionado, viewScope.nombre, viewScope.primerApellido, viewScope.segundoApellido, viewScope.folio, viewScope.seccion, viewScope.clave, viewScope.dia, viewScope.mes, viewScope.anho)" result="viewScope.modelo"/>
+			</on-entry>
+			<transition on="actualizar">
+				<evaluate expression="viewScope.modelo.seleccionado!=null?(viewScope.modelo.seleccionado.padron?DiaDMovilizados.busquedasModeloPadron(viewScope.movilizador, viewScope.modeloBusquedas.seleccionado, viewScope.nombre, viewScope.primerApellido, viewScope.segundoApellido, viewScope.folio, viewScope.seccion, viewScope.clave, viewScope.dia, viewScope.mes, viewScope.anho):DiaDMovilizados.busquedasModelo(viewScope.movilizador, viewScope.modeloBusquedas.seleccionado, viewScope.nombre, viewScope.primerApellido, viewScope.segundoApellido, viewScope.folio, viewScope.seccion, viewScope.clave, viewScope.dia, viewScope.mes, viewScope.anho)):DiaDMovilizados.busquedasModelo(viewScope.movilizador, viewScope.modeloBusquedas.seleccionado, viewScope.nombre, viewScope.primerApellido, viewScope.segundoApellido, viewScope.folio, viewScope.seccion, viewScope.clave, viewScope.dia, viewScope.mes, viewScope.anho)" result="viewScope.modelo"/>
+			</transition>
+			<transition on="buscarPadron">
+				<evaluate expression="DiaDMovilizados.busquedasModeloPadron(viewScope.movilizador, viewScope.modeloBusquedas.seleccionado, viewScope.nombre, viewScope.primerApellido, viewScope.segundoApellido, viewScope.folio, viewScope.seccion, viewScope.clave, viewScope.dia, viewScope.mes, viewScope.anho)" result="viewScope.modelo"/>
+			</transition>
+			<transition on="vaciar">
+				<set name="viewScope.nombre" value="''"/>
+				<set name="viewScope.primerApellido" value="''"/>
+				<set name="viewScope.segundoApellido" value="''"/>
+				<set name="viewScope.folio" value="''"/>
+				<set name="viewScope.seccion" value="''"/>
+				<set name="viewScope.clave" value="''"/>
+				<set name="viewScope.anho" value="''"/>
+				<set name="viewScope.dia" value="''"/>
+				<evaluate expression="UtilidadesDominiosC.modeloMeses()" result="viewScope.tablaMeses" />
+				<set name="viewScope.mes" value="viewScope.tablaMeses.seleccionado"/>
+			</transition>			
+			<transition on="asignar">
+				<set name="viewScope.modelo.seleccionado.movilizador" value="viewScope.movilizador"/>
+				<evaluate expression="DiaDMovilizados.guardarMovilizado(viewScope.movilizador, viewScope.modelo.seleccionado, viewScope.modeloBusquedas.seleccionado)"/>
+				<evaluate expression="viewScope.modelo.seleccionado.padron?DiaDMovilizados.busquedasModeloPadron(viewScope.movilizador, viewScope.modeloBusquedas.seleccionado, viewScope.nombre, viewScope.primerApellido, viewScope.segundoApellido, viewScope.folio, viewScope.seccion, viewScope.clave, viewScope.dia, viewScope.mes, viewScope.anho):DiaDMovilizados.busquedasModelo(viewScope.movilizador, viewScope.modeloBusquedas.seleccionado, viewScope.nombre, viewScope.primerApellido, viewScope.segundoApellido, viewScope.folio, viewScope.seccion, viewScope.clave, viewScope.dia, viewScope.mes, viewScope.anho)" result="viewScope.modelo"/>
+			</transition>
+			<transition on="regresar" to="listado">
+				<set name="requestScope.movilizador" value="viewScope.movilizador"/>
+			</transition>
+		</view-state>
+		
+		<end-state id="fin"/>
+</flow>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="encuestas.admin.campania">
+	<cache />
+	
+	<resultMap type="CampaniaEO" id="campania">
+	
+		<id column="CampaniaEO_id" property="id" javaType="Integer" />
+		<result column="CampaniaEO_nombre" property="nombre" javaType="String"/>
+		<result column="CampaniaEO_fecha" property="fecha" javaType="String"/>
+		<result column="CampaniaEO_tablaContactos" property="tablaContactos" javaType="String"/>
+		<result column="CampaniaEO_nick" property="nick" javaType="String"/>
+		<result column="CampaniaEO_fechaRegistro" property="fechaRegistro" javaType="String"/>
+		
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			pkey													CampaniaEO_id, 
+			id_encuesta												CampaniaEO_idEncuesta,
+			nombre													CampaniaEO_nombre, 
+			fecha													CampaniaEO_fecha, 
+			tabla_contactos											CampaniaEO_tablaContactos, 
+			nick													CampaniaEO_nick, 
+			to_char(fecha_registro, 'YYYY-MM-DD HH12:MI:SS')		CampaniaEO_fechaRegistro
+  		FROM encuestas.campanias
+	</sql>
+	
+	<select id="listado" resultMap="campania" parameterType="EncuestaEO">
+		<include refid="query" />
+		where id_encuesta = #{id}
+		order by fecha desc
+	</select>
+	
+	<insert id="insertar" parameterType="CampaniaEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			select NEXTVAL('encuestas.campanias_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas.campanias(pkey, id_encuesta, nombre, fecha, tabla_contactos, nick)
+    	VALUES (#{id}, #{encuesta.id}, #{nombre}, #{fecha}, #{tablaContactos}, #{nick});
+	</insert>
+	
+	 <update id="createTable" parameterType="hashmap">
+		CREATE TABLE encuestas_resultados.e_${idCampania}
+		(
+		   pkey serial NOT NULL,
+		   id_contacto TEXT,
+		   id_persona INTEGER,
+		   ${idPreguntas}
+		   nick TEXT,
+		   fecha TEXT,
+		   estatus TEXT,
+		   CONSTRAINT e_${idCampania}_pkey_pk PRIMARY KEY (pkey)
+		) 
+		WITH (
+		  OIDS = FALSE
+		)
+	</update>
+
+</mapper>

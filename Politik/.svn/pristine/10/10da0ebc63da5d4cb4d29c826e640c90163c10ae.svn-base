@@ -1,0 +1,341 @@
+package com.saganet.politik.component_dm.estadisticas;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+import javax.faces.context.FacesContext;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+
+import com.saganet.politik.beans.seguridad.Usuario;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.dominios_dm.RegionesDO;
+
+@Component("EstadisticasEstatusEncuestaC")
+public class EstadisticasEstatusEncuestaC {
+	
+	@Autowired
+	SqlSession sqlSessionDM;
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	private static final Logger logger = LoggerFactory.getLogger(EstadisticasEstatusEncuestaC.class);
+	
+	public List<HashMap<String, Object>> listadoRegion(Integer region, Integer tipoBusqueda, String fechaInicio, String fechaFin){
+		List<HashMap<String, Object>> listado;
+		List<HashMap<String, Object>> listadoFinal = new ArrayList<>();
+		HashMap<String, Object> params;
+		params = new HashMap<>();
+		params.put("region", region);
+		params.put("tipoBusqueda", tipoBusqueda);
+		params.put("fechaInicio", fechaInicio);
+		params.put("fechaFin", fechaFin);
+		params.put("nivel", getNivelUsuario());
+		params.put("zona", getZonaUsuario());
+		params.put("municipio", getMunicipioUsuario());
+		logger.debug("Parametros: {}", params);
+		listado = sqlSessionDM.selectList("estadisticas.estadisticasEstadoEncuesta.concentradoRegion", params);
+		
+		logger.debug("listadoResult: {}", listado);
+		
+		for(HashMap<String, Object> map : listado){
+			HashMap<String, Object> map2 = new HashMap<>();
+			map2.put("reporte", 1);
+			map2.put("fila_r", map.get("fila_r"));
+			map2.put("nombre_completo", map.get("nombre_completo"));
+			switch (tipoBusqueda) {
+			case 1:
+				map2.put("region", RegionesDO.values()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				break;
+			case 2:
+				map2.put("region", RegionesDO.values()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				map2.put("municipio", map.get("municipio"));
+				break;
+			case 3:
+				map2.put("region", RegionesDO.values()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				map2.put("zona", map.get("zona"));
+				break;
+			case 4:
+				map2.put("region", RegionesDO.values()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				map2.put("municipio", map.get("municipio"));
+				map2.put("zona", map.get("zona"));
+				map2.put("seccion", map.get("seccion"));
+				break;
+			case 5:
+				map2.put("region", RegionesDO.values()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				map2.put("municipio", map.get("municipio"));
+				map2.put("zona", map.get("zona"));
+				map2.put("seccion", map.get("seccion"));
+				map2.put("usuario_id", map.get("usuario"));
+				break;
+
+			default:
+				break;
+			}
+			
+			map2.put("completa", map.get("completa"));
+			map2.put("incompleta", map.get("incompleta"));
+			map2.put("nego_dar_informacion", map.get("nego_dar_informacion"));
+			map2.put("no_tiene_credencial", map.get("no_tiene_credencial"));
+			map2.put("no_se_encontro_persona", map.get("no_se_encontro_persona"));
+			map2.put("no_se_encontro_vivienda", map.get("no_se_encontro_vivienda"));
+			map2.put("no_hubo_quien_respondiera", map.get("no_hubo_quien_respondiera"));
+			map2.put("sin_estado", map.get("sin_estado"));
+			
+			listadoFinal.add(map2);
+		}
+		
+		logger.debug("Listado de estadisticas por Region: {}", listadoFinal);
+		return listadoFinal;
+	}
+	
+	
+	public List<HashMap<String, Object>> listadoPersonas(Integer region, Integer tipoBusqueda, String fechaInicio, String fechaFin, String nick){
+		List<HashMap<String, Object>> listado;
+		List<HashMap<String, Object>> listadoFinal = new ArrayList<>();
+		HashMap<String, Object> params;
+		params = new HashMap<>();
+		params.put("region", region);
+		params.put("tipoBusqueda", tipoBusqueda);
+		params.put("fechaInicio", fechaInicio);
+		params.put("fechaFin", fechaFin);
+		params.put("nivel", getNivelUsuario());
+		params.put("zona", getZonaUsuario());
+		params.put("municipio", getMunicipioUsuario());
+		params.put("nick", nick);
+		try {
+			
+	
+		logger.debug("Parametros: {}", params);
+		listado = sqlSessionDM.selectList("estadisticas.estadisticasEstadoEncuesta.listadoRegion", params);
+		
+		logger.debug("listadoResult: {}", listado);
+		
+		for(HashMap<String, Object> map : listado){
+			HashMap<String, Object> map2 = new HashMap<>();
+			map2.put("reporte", 1);
+			map2.put("fila_r", map.get("fila_r"));
+			map2.put("nombre_completo", map.get("nombre_completo"));
+			map2.put("estado", map.get("estado"));
+			switch (tipoBusqueda) {
+			case 1:
+				map2.put("region", RegionesDO.values()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				break;
+			case 2:
+				map2.put("region", RegionesDO.values()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				map2.put("municipio", map.get("municipio"));
+				break;
+			case 3:
+				map2.put("region", RegionesDO.values()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				map2.put("zona", map.get("zona"));
+				break;
+			case 4:
+				map2.put("region", RegionesDO.values()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				map2.put("municipio", map.get("municipio"));
+				map2.put("zona", map.get("zona"));
+				map2.put("seccion", map.get("seccion"));
+				break;
+			case 5:
+				map2.put("region", RegionesDO.values()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				map2.put("municipio", map.get("municipio"));
+				map2.put("zona", map.get("zona"));
+				map2.put("seccion", map.get("seccion"));
+				map2.put("usuario_id", map.get("usuario"));
+				map2.put("imei", map.get("imei"));
+				break;
+
+			default:
+				break;
+			}
+			
+			map2.put("completa", map.get("completa"));
+			map2.put("incompleta", map.get("incompleta"));
+			map2.put("nego_dar_informacion", map.get("nego_dar_informacion"));
+			map2.put("no_tiene_credencial", map.get("no_tiene_credencial"));
+			map2.put("no_se_encontro_persona", map.get("no_se_encontro_persona"));
+			map2.put("no_se_encontro_vivienda", map.get("no_se_encontro_vivienda"));
+			map2.put("no_hubo_quien_respondiera", map.get("no_hubo_quien_respondiera"));
+			map2.put("sin_estado", map.get("sin_estado"));
+			
+			listadoFinal.add(map2);
+		}
+		
+		logger.debug("Listado de estadisticas por Region: {}", listadoFinal);
+		return listadoFinal;
+		
+		
+		} catch (Exception e) {
+			logger.debug("Errores: {}", e.getMessage());
+			return null;
+		}
+	}
+	
+	
+	public HashMap<String, Object> totalesConcentrados(List<HashMap<String, Object>> listado){
+		Integer var1 = 0;
+		Integer var2 = 0;
+		Integer var3 = 0;
+		Integer var4 = 0;
+		Integer var5 = 0;
+		Integer var6 = 0;
+		Integer var7 = 0;
+		Integer var8 = 0;
+		HashMap<String, Object> resultado;
+		resultado = new HashMap<>();
+		
+		for(HashMap<String, Object> map : listado){
+			var8 = var8 + Integer.parseInt(map.get("completa").toString());
+			var1 = var1 + Integer.parseInt(map.get("incompleta").toString());
+			var2 = var2 + Integer.parseInt(map.get("nego_dar_informacion").toString());
+			var3 = var3 + Integer.parseInt(map.get("no_tiene_credencial").toString());
+			var4 = var4 + Integer.parseInt(map.get("no_se_encontro_persona").toString());
+			var5 = var5 + Integer.parseInt(map.get("no_se_encontro_vivienda").toString());
+			var6 = var6 + Integer.parseInt(map.get("no_hubo_quien_respondiera").toString());
+			var7 = var7 + Integer.parseInt(map.get("sin_estado").toString());
+		}
+		
+		resultado.put("t_completa",var8);
+		resultado.put("t_incompleta",var1);
+		resultado.put("t_nego_dar_informacion",var2);
+		resultado.put("t_no_tiene_credencial",var3);
+		resultado.put("t_no_se_encontro_persona",var4);
+		resultado.put("t_no_se_encontro_vivienda",var5);
+		resultado.put("t_no_hubo_quien_respondiera",var6);
+		resultado.put("t_sin_estado",var7);
+		
+		logger.debug("Totales Concentrado: {}", resultado);
+		
+		return resultado;
+	}
+	
+	public UsuarioEO getUsuario(){
+		return ((Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
+	}
+	
+	public HashMap<String, Object> nivelUsuario(String nick){
+		
+		HashMap<String, Object> nivel;
+		nivel = new HashMap<>();
+		
+		//Nivel_Region 
+		if(getUsuario().getNivel().getNombre().equals("Geozona")){
+			nivel.put("nivel", 1);
+			nivel.put("region", sqlSession.selectOne("administracion.usuariosTerritorios.usuarioRegiones",nick)); 
+		}else if(getUsuario().getNivel().getNombre().equals("Zona")){
+			nivel.put("nivel", 3);
+			HashMap<String, Object> result;
+			try{
+				result = sqlSession.selectOne("administracion.usuariosTerritorios.usuarioZona",nick);
+				nivel.put("region", result.get("region"));
+				nivel.put("zona", result.get("zona"));
+			}catch(Exception ex){
+				nivel = new HashMap<>();
+			}
+		}else if(getUsuario().getNivel().getNombre().equals("Municipio")){
+			nivel.put("nivel", 2);
+			HashMap<String, Object> result;
+			try{
+				result = sqlSession.selectOne("administracion.usuariosTerritorios.usuarioMunicipio",nick);
+				nivel.put("region", result.get("region"));
+				nivel.put("id_municipio", result.get("id_municipio"));
+				nivel.put("municipio", result.get("municipio"));
+			}catch(Exception ex){
+				nivel = new HashMap<>();
+			}
+		}
+		
+		logger.debug("Mapa nivel: {}", nivel);
+		
+		return nivel;
+		
+	}
+	
+	public Integer getNivelUsuario(){
+		HashMap<String, Object> nivel;
+		nivel = nivelUsuario(getUsuario().getNick());
+		logger.debug("Nivel Usuario: {}", nivel);
+		if(!nivel.isEmpty()){
+			return Integer.parseInt(nivel.get("nivel").toString());
+		}
+		return 0;
+	}
+	
+	public Integer getZonaUsuario(){
+		HashMap<String, Object> nivel;
+		nivel = nivelUsuario(getUsuario().getNick());
+		logger.debug("Nivel Usuario: {}", nivel);
+		if(!nivel.isEmpty() && nivel.get("zona")!=null){
+			return Integer.parseInt(nivel.get("zona").toString());
+		}
+		return 0;
+	}
+	
+	public String getMunicipioUsuario(){
+		HashMap<String, Object> nivel;
+		nivel = nivelUsuario(getUsuario().getNick());
+		logger.debug("Nivel Usuario: {}", nivel);
+		if(!nivel.isEmpty() && nivel.get("municipio")!=null){
+			return nivel.get("municipio").toString();
+		}
+		return "";
+	}
+	
+	public Integer getRegionUser() {
+		HashMap<String, Object> nivel;
+		nivel = nivelUsuario(getUsuario().getNick());
+		logger.debug("Nivel Usuario: {}", nivel);
+		if(!nivel.isEmpty()){
+			if(nivel.get("region")!=null)
+			 return Integer.parseInt(nivel.get("region").toString());
+		}
+		return 0;
+	}
+	
+	public RegionesDO[] regiones(){
+		HashMap<String, Object> params = nivelUsuario(getUsuario().getNick());
+		
+		if(!params.isEmpty()){
+			if(Integer.parseInt(params.get("nivel").toString())==1 || Integer.parseInt(params.get("nivel").toString())==2 || Integer.parseInt(params.get("nivel").toString())== 3){
+								
+				StringTokenizer token = new StringTokenizer(params.get("region").toString(), ",");
+				
+				RegionesDO[] regiones = new RegionesDO[token.countTokens()];
+				int c=0;
+				
+				RegionesDO[] regionesCompleta = RegionesDO.values();
+				
+				while (token.hasMoreElements()) {
+					regiones[c] = regionesCompleta[Integer.parseInt(token.nextElement().toString())-1];
+					c++;		
+				}
+				
+				return regiones;
+				
+				
+			}else{
+				//logger.debug("Se genera listado de Regiones");
+				return RegionesDO.values();
+			}
+		}else{
+			//logger.debug("Se genera listado de Regiones");
+			return RegionesDO.values();
+		}
+		
+	}
+public void l(RequestContext requestContext){
+	String messageId = requestContext.getRequestParameters().get("nick");
+	String dos = requestContext.getExternalContext().getRequestParameterMap().get("nik");
+	logger.debug("Valor del dato Final: ", messageId, dos);
+	
+}
+}

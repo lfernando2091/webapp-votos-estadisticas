@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventos.eventos">
+	<cache />
+
+	<resultMap type="EventoSocialEO" id="eventoSocial">
+		<id column="EventoSocialEO_id" property="id" javaType="Integer" />
+		<result column="EventoSocialEO_nivel" property="nivel" javaType="com.saganet.politik.dominios.NivelesDO" />
+		<result column="EventoSocialEO_estatus" property="estatus" javaType="com.saganet.politik.dominios.EstatusEventoDO" />
+		<result column="EventoSocialEO_tipo_envento" property="tipo" javaType="com.saganet.politik.dominios.TipoEventoDO" />
+		<result column="EventoSocialEO_n_asistentes" property="numeroAsistentes" javaType="Integer" />
+		<result column="EventoSocialEO_fecha" property="fecha"  javaType="java.sql.Timestamp"/>
+		<result column="EventoSocialEO_fecha_fin" property="fechaFin"  javaType="java.sql.Timestamp"/>
+		<result column="EventoSocialEO_nombre" property="nombre" javaType="String" />
+		<result column="EventoSocialEO_descripcion_lugar" property="descripcionLugar" javaType="String" />
+		<result column="EventoSocialEO_descripcion_logistica" property="descripcionLogistica" javaType="String" />
+		<result column="EventoSocialEO_nick" property="nick" javaType="String" />
+		
+	</resultMap>
+
+	<sql id="query">
+		SELECT
+		EventoSocialEO.pkey EventoSocialEO_id,
+		EventoSocialEO.nombre EventoSocialEO_nombre,
+		EventoSocialEO.descripcion_lugar EventoSocialEO_descripcion_lugar,
+		EventoSocialEO.nivel EventoSocialEO_nivel,
+		EventoSocialEO.estatus EventoSocialEO_estatus,
+		EventoSocialEO.tipo_envento EventoSocialEO_tipo_envento,
+		EventoSocialEO.n_asistentes EventoSocialEO_n_asistentes,
+		EventoSocialEO.fecha EventoSocialEO_fecha,
+		EventoSocialEO.fecha_fin EventoSocialEO_fecha_fin,
+		EventoSocialEO.descripcion_logistica EventoSocialEO_descripcion_logistica,
+		EventoSocialEO.nick EventoSocialEO_nick
+		FROM eventos_sociales.eventos_sociales EventoSocialEO
+	</sql>
+	
+	<select id="listado" resultMap="eventoSocial">
+		<include refid="query"/>
+		ORDER BY EventoSocialEO.fecha,EventoSocialEO.tipo_envento, EventoSocialEO.nivel
+	</select>
+	
+	<select id="listadoPorNick" resultMap="eventoSocial" parameterType="String">
+		<include refid="query"/>
+		where EventoSocialEO.nick = #{value} OR EventoSocialEO.nick_actualizacion = #{value}
+		ORDER BY EventoSocialEO.fecha,EventoSocialEO.tipo_envento, EventoSocialEO.nivel
+	</select>
+		
+	<select id="listadoPorDependencia" resultMap="eventoSocial" parameterType="hashmap">
+		<include refid="query"/>
+		LEFT JOIN eventos_sociales.eventos_programas EventosProgramasEO on (EventosProgramasEO.id_evento_social=EventoSocialEO.pkey)
+		WHERE (EventosProgramasEO.id_ejercicio_programa in (
+			SELECT ProgramaEjercicioEO.pkey
+			FROM catalogos.dependencias DependenciaEO
+			JOIN catalogos.programas ProgramaEO on (DependenciaEO.pkey=ProgramaEO.id_dependencia)
+			JOIN catalogos.programas_ejercicios ProgramaEjercicioEO on (ProgramaEjercicioEO.id_programa=ProgramaEO.pkey)
+			WHERE DependenciaEO.pkey in 
+					<foreach collection="dependencias" open="(" separator="," close=")" item="item" index="index">
+						#{item.id}
+					</foreach>
+		) or EventoSocialEO.nick=#{nick})
+		ORDER BY EventoSocialEO.fecha,EventoSocialEO.tipo_envento, EventoSocialEO.nivel
+	</select>
+	
+	<select id="listadoPorDependenciaCompleto" resultMap="eventoSocial" parameterType="hashmap">
+		<foreach collection="dependencias" item="item" separator=" UNION ">
+			<include refid="query"/>
+			join eventos_sociales.eventos_programas cc on (EventoSocialEO.pkey = cc.id_evento_social)
+			join catalogos.programas_ejercicios pe on (cc.id_ejercicio_programa = pe.pkey)
+			join catalogos.programas pr on (pe.id_programa = pr.pkey)
+			join catalogos.dependencias de on (pr.id_dependencia = de.pkey)
+			join (select keyid, parent_keyid, level from connectby ('catalogos.dependencias',
+					'pkey','id_dependencia_padre','${item.id}',0)  AS t(keyid text, parent_keyid text, level
+					int)) b on de.pkey=b.keyid::integer
+		</foreach>
+	</select>	
+	
+	<select id="listadoCompleto" resultMap="eventoSocial">
+			<include refid="query"/>
+			join eventos_sociales.eventos_programas cc on (EventoSocialEO.pkey = cc.id_evento_social)
+			join catalogos.programas_ejercicios pe on (cc.id_ejercicio_programa = pe.pkey)
+			join catalogos.programas pr on (pe.id_programa = pr.pkey)
+			join catalogos.dependencias de on (pr.id_dependencia = de.pkey)
+			where de.pkey is not null
+	</select>
+	
+	<select id="listadoRealizados" resultMap="eventoSocial">
+		<include refid="query"/>
+		WHERE EventoSocialEO.estatus='REALIZADO'
+		ORDER BY EventoSocialEO.fecha,EventoSocialEO.tipo_envento, EventoSocialEO.nivel
+	</select>
+	
+	<select id="buscarID" resultMap="eventoSocial" parameterType="Integer">
+		<include refid="query"/>
+		WHERE EventoSocialEO.pkey=#{value}
+		ORDER BY EventoSocialEO.fecha,EventoSocialEO.tipo_envento, EventoSocialEO.nivel
+	</select>
+	
+	
+	<select id="buscarPorFecha" resultMap="eventoSocial" parameterType="String">
+		<include refid="query"/>
+		 <![CDATA[
+		WHERE to_date(to_char(EventoSocialEO.fecha,'DD-MM-YYYY'), 'DD-MM-YYYY')<='${value}'
+			and to_date(to_char(EventoSocialEO.fecha_fin,'DD-MM-YYYY'), 'DD-MM-YYYY')>='${value}'
+		ORDER BY EventoSocialEO.fecha,EventoSocialEO.tipo_envento, EventoSocialEO.nivel
+		]]>
+	</select>
+	
+	<select id="buscarPorFechaCompleto" resultMap="eventoSocial" parameterType="hashmap">
+		<foreach collection="dependencias" item="item" separator=" UNION ">
+			<include refid="query"/>
+			join eventos_sociales.eventos_programas cc on (EventoSocialEO.pkey = cc.id_evento_social)
+			join catalogos.programas_ejercicios pe on (cc.id_ejercicio_programa = pe.pkey)
+			join catalogos.programas pr on (pe.id_programa = pr.pkey)
+			join catalogos.dependencias de on (pr.id_dependencia = de.pkey)
+			join (select keyid, parent_keyid, level from connectby ('catalogos.dependencias',
+					'pkey','id_dependencia_padre','${item.id}',0)  AS t(keyid text, parent_keyid text, level
+					int)) b on de.pkey=b.keyid::integer
+			<![CDATA[
+				WHERE to_date(to_char(EventoSocialEO.fecha,'DD-MM-YYYY'), 'DD-MM-YYYY')<='${fecha}'
+				and to_date(to_char(EventoSocialEO.fecha_fin,'DD-MM-YYYY'), 'DD-MM-YYYY')>='${fecha}'
+				ORDER BY EventoSocialEO.fecha,EventoSocialEO.tipo_envento, EventoSocialEO.nivel
+			]]>
+		</foreach>
+	</select>
+	
+	<select id="buscarPorFechaCompletoDependenciasTodas" resultMap="eventoSocial" parameterType="String">
+			<include refid="query"/>
+			join eventos_sociales.eventos_programas cc on (EventoSocialEO.pkey = cc.id_evento_social)
+			join catalogos.programas_ejercicios pe on (cc.id_ejercicio_programa = pe.pkey)
+			join catalogos.programas pr on (pe.id_programa = pr.pkey)
+			join catalogos.dependencias de on (pr.id_dependencia = de.pkey)
+			<![CDATA[
+				WHERE de.pkey is not null and to_date(to_char(EventoSocialEO.fecha,'DD-MM-YYYY'), 'DD-MM-YYYY')<='${value}'
+				and to_date(to_char(EventoSocialEO.fecha_fin,'DD-MM-YYYY'), 'DD-MM-YYYY')>='${value}'
+				ORDER BY EventoSocialEO.fecha,EventoSocialEO.tipo_envento, EventoSocialEO.nivel
+			]]>
+	</select>
+	
+	<select id="porFiltros" resultMap="eventoSocial" parameterType="com.saganet.politik.utilidades.eventos.FiltrosMapa">
+		<include refid="query" />
+		<where>
+			<if test="fechaInicio != null">
+				fecha &gt;= #{fechaInicio}
+			</if>
+			<if test="fechaFinal != null">
+				and fecha &lt;= #{fechaFinal}
+			</if>
+		</where>
+		ORDER BY EventoSocialEO.fecha,EventoSocialEO.tipo_envento, EventoSocialEO.nivel
+	</select>
+	
+	<select id="nuevoID" resultType="Integer">
+		SELECT nextval('eventos_sociales.eventos_sociales_pkey_seq')
+	</select>
+	
+	<insert id="agregar" parameterType="EventoSocialEO">
+		INSERT INTO eventos_sociales.eventos_sociales(pkey ,nombre, descripcion_lugar, estatus, tipo_envento, nivel, n_asistentes, fecha, fecha_fin,descripcion_logistica, nick)
+    	VALUES (#{id}, #{nombre},#{descripcionLugar},#{estatus},#{tipo},#{nivel},#{numeroAsistentes},#{fecha},#{fechaFin},#{descripcionLogistica}, #{nick})
+	</insert>
+	
+	<update id="actualizar" parameterType="EventoSocialEO">
+		UPDATE eventos_sociales.eventos_sociales
+   		SET 
+   			nombre = #{nombre}, 
+   			descripcion_lugar = #{descripcionLugar}, 
+   			estatus = #{estatus}, 
+   			tipo_envento = #{tipo},
+   			nivel = #{nivel}, 
+   			n_asistentes = #{numeroAsistentes}, 
+   			descripcion_logistica = #{descripcionLogistica}, 
+   			fecha = #{fecha}, 
+   			fecha_fin = #{fechaFin},
+   			nick = #{nick},
+   			fecha_actualizacion = now()
+ 		<where>
+ 			pkey = #{id}
+ 		</where> 
+	</update>
+
+	<insert id="agregarllaves" parameterType="hashmap">
+		INSERT INTO eventos_sociales.territorios_evento(id_evento_social, llave) VALUES (#{idEvento}, #{llave});
+	</insert>
+	
+	<delete id="eliminar" parameterType="EventoSocialEO">
+			DELETE FROM eventos_sociales.eventos_sociales WHERE pkey=#{id}
+	</delete>
+	
+	<delete id="eliminarllaves" parameterType="EventoSocialEO">
+			DELETE FROM eventos_sociales.territorios_evento WHERE id_evento_social=#{id}
+	</delete>
+	
+	<update id="actualizarEstatus" parameterType="EventoSocialEO">
+		UPDATE eventos_sociales.eventos_sociales
+		SET estatus=#{estatus} WHERE pkey=#{id}
+	</update>
+	
+</mapper>

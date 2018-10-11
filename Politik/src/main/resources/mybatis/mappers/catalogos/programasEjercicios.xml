@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="catalogos.programasEjercicios">
+	<cache />
+	
+	<resultMap type="ProgramaEjercicioEO" id="programaEjercicio">
+	
+		<id column="ProgramaEjercicioEO_id" property="id" javaType="Integer" />
+		
+		<result column="ProgramaEjercicioEO_idPrograma" property="idPrograma" javaType="Integer" />
+		<result column="ProgramaEjercicioEO_ejercicio" property="ejercicio" javaType="Integer" />
+		<result column="ProgramaEjercicioEO_fechaInicio" property="fechaInicio" javaType="String" />
+		<result column="ProgramaEjercicioEO_fechaTermino" property="fechaTermino" javaType="String" />
+		<result column="ProgramaEjercicioEO_poblacionObjetivo" property="poblacionObjetivo" javaType="String" />
+		<result column="ProgramaEjercicioEO_beneficiariosProyectados" property="beneficiariosProyectados" javaType="Integer" />
+		<result column="ProgramaEjercicioEO_observaciones" property="observaciones" javaType="String" />
+		<result column="ProgramaEjercicioEO_nick" property="nick" javaType="String"/>
+		<result column="ProgramaEjercicioEO_fecha" property="fecha" javaType="String"/>
+		<result column="ProgramaEjercicioEO_nickActualizacion" property="nickActualizacion" javaType="String"/>
+		<result column="ProgramaEjercicioEO_fechaActualizacion" property="fechaActualizacion" javaType="String"/>
+		<association property="programa" column="ProgramaEjercicioEO_idProgramaPrograma" select="catalogos.programas.programaById" />
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+		ProgramaEjercicioEO.pkey													ProgramaEjercicioEO_id, 
+		ProgramaEjercicioEO.id_programa												ProgramaEjercicioEO_idPrograma, 
+		ProgramaEjercicioEO.id_programa												ProgramaEjercicioEO_idProgramaPrograma, 
+		ProgramaEjercicioEO.ejercicio												ProgramaEjercicioEO_ejercicio, 
+		ProgramaEjercicioEO.fecha_inicio											ProgramaEjercicioEO_fechaInicio, 
+		ProgramaEjercicioEO.fecha_termino											ProgramaEjercicioEO_fechaTermino, 
+		ProgramaEjercicioEO.poblacion_objetivo										ProgramaEjercicioEO_poblacionObjetivo, 
+       	ProgramaEjercicioEO.beneficiarios_proyectados								ProgramaEjercicioEO_beneficiariosProyectados, 
+       	ProgramaEjercicioEO.observaciones											ProgramaEjercicioEO_observaciones,
+       	ProgramaEjercicioEO.nick													ProgramaEjercicioEO_nick,
+       	to_char(ProgramaEjercicioEO.fecha, 'YYYY-MM-DD HH24:MI:SS')					ProgramaEjercicioEO_fecha,
+       	ProgramaEjercicioEO.nick_actualizacion										ProgramaEjercicioEO_nickActualizacion,
+       	to_char(ProgramaEjercicioEO.fecha_actualizacion, 'YYYY-MM-DD HH24:MI:SS')	ProgramaEjercicioEO_fechaActualizacion
+  		FROM catalogos.programas_ejercicios ProgramaEjercicioEO
+	</sql>
+	
+	<select id="listadoByIdPrograma" parameterType="ProgramaEO" resultMap="programaEjercicio">
+		<include refid="query"/>
+		<where>
+			ProgramaEjercicioEO.id_programa = #{id}
+		</where>
+		ORDER BY ProgramaEjercicioEO.pkey
+	</select>
+	
+	<select id="buscarID" parameterType="Integer" resultMap="programaEjercicio">
+		<include refid="query"/>
+		WHERE ProgramaEjercicioEO.pkey = #{value}
+		ORDER BY ProgramaEjercicioEO.pkey
+	</select>
+	
+	<insert id="insertar" parameterType="ProgramaEjercicioEO">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT NEXTVAL('catalogos.programas_ejercicios_pkey_seq')
+		</selectKey>
+		INSERT INTO catalogos.programas_ejercicios(pkey, id_programa, ejercicio, fecha_inicio, fecha_termino, poblacion_objetivo, beneficiarios_proyectados, observaciones, nick)
+    	VALUES (#{id}, #{idPrograma}, #{ejercicio}, #{fechaInicio}, #{fechaTermino}, #{poblacionObjetivo}, #{beneficiariosProyectados}, #{observaciones}, #{nick})
+	</insert>
+	
+	<insert id="insertarProgramasEjerciciosLlaves" parameterType="hashmap">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT NEXTVAL('catalogos.programas_ejercicios_llaves_pkey_seq')
+		</selectKey>
+		INSERT INTO catalogos.programas_ejercicios_llaves(pkey, id_ejercicio, llave, nick)
+    	VALUES (#{id}, #{idEjercicio}, #{llave}, #{nick})
+	</insert>
+	
+	<select id="listadoProgramasEjerciciosLlavesStr" parameterType="Integer" resultType="String">
+		SELECT string_agg(''''||llave||'''', ',') llave
+  		FROM catalogos.programas_ejercicios_llaves
+  		<where>
+  			id_ejercicio = #{value}
+  		</where>
+	</select>
+	
+	<delete id="eliminarEjercicio" parameterType="Integer">
+		DELETE FROM catalogos.programas_ejercicios
+ 		<where>
+ 			pkey = #{value}
+ 		</where>
+	</delete>
+	
+	<delete id="eliminarProgramasEjerciciosLlaves" parameterType="Integer">
+		DELETE FROM catalogos.programas_ejercicios_llaves
+ 		<where>
+ 			id_ejercicio = #{value}
+ 		</where>
+	</delete>
+	
+	<delete id="eliminarProgramasEjerciciosFuentes" parameterType="Integer">
+		DELETE FROM catalogos.programas_ejercicios_fuentes
+ 		<where>
+			id_ejercicio = #{value}			
+ 		</where>
+	</delete>
+	
+</mapper>

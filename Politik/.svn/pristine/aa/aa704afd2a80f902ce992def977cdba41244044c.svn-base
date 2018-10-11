@@ -1,0 +1,79 @@
+package com.saganet.politik.components.encuestas.admin;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.database.biblioteca.ParametrosEstadisticas;
+import com.saganet.politik.database.encuestas.admin.CampaniaEO;
+import com.saganet.politik.database.encuestas.admin.ReglaEncuestaEO;
+import com.saganet.politik.database.encuestas.admin.ReglaResultadoEO;
+
+@Component("ReglasResultadosC")
+public class ReglasResultadosC {
+	
+	@Autowired
+	SqlSession sqlSession;
+	
+	@Autowired
+	ParametrosEstadisticas parametrosEstadisticas;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ReglasResultadosC.class);
+	
+	public void actualizarResultados(CampaniaEO campania){
+		
+		List<ReglaEncuestaEO> reglasEncuesta;
+		StringBuilder reglasCombinadas;
+		StringBuilder reglasSimples;
+		
+		//Identificación_de_reglas_existentes.
+		reglasCombinadas = new StringBuilder();
+		reglasSimples = new StringBuilder();
+		reglasEncuesta = sqlSession.selectList("encuestas.admin.reglasEncuestas.listado", campania.getEncuesta());
+		
+		for(ReglaEncuestaEO reglaEncuesta : reglasEncuesta){
+			if(reglaEncuesta.getTipo().equals("COMBINADA")){
+				reglasCombinadas.append("_"+reglaEncuesta.getId());
+				reglasCombinadas.append(",");
+			}else if(reglaEncuesta.getTipo().equals("SIMPLE")){
+				reglasSimples.append("_"+reglaEncuesta.getId());
+				reglasSimples.append(",");
+			}
+		}
+		
+		logger.debug("reglasEncuestas: {}", reglasEncuesta);
+		logger.debug("reglasCombinadas: {}", reglasCombinadas);
+		logger.debug("reglasSimples: {}", reglasSimples);
+		
+		//Eliminacio_de_reglas_existentes
+		
+		
+	}
+	
+	public void estadisticas(CampaniaEO campania){
+		
+		logger.debug("CampaniaEntrada: {}", campania);
+		
+		List<ReglaEncuestaEO> reglasEncuestas = null;
+		reglasEncuestas = sqlSession.selectList("encuestas.admin.reglasEncuestas.listado", campania.getEncuesta());
+		
+		campania.getEncuesta().setReglasEncuestas(reglasEncuestas);
+		
+		logger.debug("ReglasEncuestas: {}", reglasEncuestas);
+		
+		for(ReglaEncuestaEO reglaEncuesta : campania.getEncuesta().getReglasEncuestas()){
+			List<ReglaResultadoEO> reglasResultados = null;
+			reglasResultados = sqlSession.selectList("encuestas.admin.reglasResultados.listado", reglaEncuesta);
+			reglaEncuesta.setReglasResultados(reglasResultados);
+		}
+		
+		logger.debug("CampaniaSalida: {}", campania);
+		parametrosEstadisticas.setCampania(campania);
+		
+	}
+	
+}

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="estadisticas.estadisticas_avances">
+
+<select id="selectSemanas" resultType="hashmap">
+
+select to_char(date_trunc('week', creada),'yyyy-mm-dd') semana,to_char(date_trunc('week', creada),'yyyy-mm-dd')||'/'||to_char(to_char(date_trunc('week', creada),'yyyy-mm-dd')::date+'6 day'::interval,'yyyy-mm-dd') semana_descripcion
+from encuesta group by to_char(date_trunc('week', creada),'yyyy-mm-dd')
+order by to_char(date_trunc('week', creada),'yyyy-mm-dd') desc
+
+</select>
+
+<select id="selectContestadas" resultType="hashmap" parameterType="hashmap">
+
+select
+<if test="nivel==1">
+t.region,
+</if>
+<if test="nivel==2">
+t.region, municipio,
+</if>
+<if test="nivel==3">
+t.region, municipio, zona,
+</if>
+<if test="nivel==4">
+t.region, municipio, zona,seccion,
+</if>
+<if test="nivel==5">
+t.region, municipio, zona,seccion,id_usuario,usuario, nombre_completo,
+</if>
+
+sum(c_lunes) c_lunes,  sum(c_martes) c_martes, sum(c_miercoles) c_miercoles, sum(c_jueves) c_jueves, sum(c_viernes) c_viernes, sum(c_sabado) c_sabado, sum(c_domingo) c_domingo,
+sum(c_lunes) + sum(c_martes) +sum(c_miercoles)+ sum(c_jueves) +sum(c_viernes) +sum(c_sabado) +sum(c_domingo) c_total
+from (
+select 
+b.region, b.municipio, b.zona, b.seccion, a.id,b.id id_usuario,b.usuario,coalesce(b.nombre,'')||' '||coalesce(b.primerapellido,'')||' '||coalesce(b.segundoapellido) nombre_completo,
+case when (codigo_resultado =1 or (codigo_resultado = 8 and tiene_ine =1)) and date_part('dow',creada) = 1 then 1 else 0 end c_lunes,
+case when (codigo_resultado =1 or (codigo_resultado = 8 and tiene_ine =1)) and date_part('dow',creada) = 2 then 1 else 0 end c_martes,
+case when (codigo_resultado =1 or (codigo_resultado = 8 and tiene_ine =1)) and date_part('dow',creada) = 3 then 1 else 0 end c_miercoles,
+case when (codigo_resultado =1 or (codigo_resultado = 8 and tiene_ine =1)) and date_part('dow',creada) = 4 then 1 else 0 end c_jueves,
+case when (codigo_resultado =1 or (codigo_resultado = 8 and tiene_ine =1)) and date_part('dow',creada) = 5 then 1 else 0 end c_viernes,
+case when (codigo_resultado =1 or (codigo_resultado = 8 and tiene_ine =1)) and date_part('dow',creada) = 6 then 1 else 0 end c_sabado,
+case when (codigo_resultado =1 or (codigo_resultado = 8 and tiene_ine =1)) and date_part('dow',creada) = 0 then 1 else 0 end c_domingo
+
+/*case when codigo_resultado in (2,3,4,5,6,7) then 1 else 0 end no_contestada,
+case when codigo_resultado =8 then 1 else 0 end sin_codigo*/
+   from
+encuesta a
+join usuario b on (a.usuario_id = b.id)
+where 
+<if test="region==0">
+b.region!=#{region} 
+</if>
+<if test="region!=0">
+b.region=#{region} 
+</if>
+
+and  /*(codigo_resultado = 1 or (codigo_resultado = 8 and tiene_ine =1)) and*/ to_char(date_trunc('week', creada),'yyyy-mm-dd') ='${semana}'
+) t
+
+group by 
+<if test="nivel==1">
+t.region
+</if>
+<if test="nivel==2">
+t.region, municipio
+</if>
+<if test="nivel==3">
+t.region, municipio, zona
+</if>
+<if test="nivel==4">
+t.region, municipio, zona,seccion
+</if>
+<if test="nivel==5">
+t.region, municipio, zona,seccion,id_usuario,usuario, nombre_completo
+</if>
+
+order by 
+<if test="nivel==1">
+t.region
+</if>
+<if test="nivel==2">
+t.region, municipio
+</if>
+<if test="nivel==3">
+t.region, municipio, zona
+</if>
+<if test="nivel==4">
+t.region, municipio, zona,seccion
+</if>
+<if test="nivel==5">
+t.region, municipio, zona,seccion,id_usuario,usuario, nombre_completo
+</if>
+
+</select>
+
+
+<select id="selectNoContestadas" resultType="hashmap" parameterType="hashmap">
+
+select
+<if test="nivel==1">
+t.region,
+</if>
+<if test="nivel==2">
+t.region, municipio,
+</if>
+<if test="nivel==3">
+t.region, municipio, zona,
+</if>
+<if test="nivel==4">
+t.region, municipio, zona,seccion,
+</if>
+<if test="nivel==5">
+t.region, municipio, zona,seccion,id_usuario,usuario, nombre_completo,
+</if>
+
+sum(nc_lunes) nc_lunes,  sum(nc_martes) nc_martes, sum(nc_miercoles) nc_miercoles, sum(nc_jueves) nc_jueves, sum(nc_viernes) nc_viernes, sum(nc_sabado) nc_sabado, sum(nc_domingo) nc_domingo,
+sum(nc_lunes) + sum(nc_martes) +sum(nc_miercoles)+ sum(nc_jueves) +sum(nc_viernes) +sum(nc_sabado) +sum(nc_domingo) nc_total
+from (
+select 
+b.region, b.municipio, b.zona, b.seccion, a.id,b.id id_usuario,b.usuario,coalesce(b.nombre,'')||' '||coalesce(b.primerapellido,'')||' '||coalesce(b.segundoapellido) nombre_completo,
+case when (codigo_resultado in (2,3,4,5,6,7) or (codigo_resultado = 8 and tiene_ine !=1)) and date_part('dow',creada) = 1 then 1 else 0 end nc_lunes,
+case when (codigo_resultado in (2,3,4,5,6,7) or (codigo_resultado = 8 and tiene_ine !=1)) and date_part('dow',creada) = 2 then 1 else 0 end nc_martes,
+case when (codigo_resultado in (2,3,4,5,6,7) or (codigo_resultado = 8 and tiene_ine !=1)) and date_part('dow',creada) = 3 then 1 else 0 end nc_miercoles,
+case when (codigo_resultado in (2,3,4,5,6,7) or (codigo_resultado = 8 and tiene_ine !=1)) and date_part('dow',creada) = 4 then 1 else 0 end nc_jueves,
+case when (codigo_resultado in (2,3,4,5,6,7) or (codigo_resultado = 8 and tiene_ine !=1)) and date_part('dow',creada) = 5 then 1 else 0 end nc_viernes,
+case when (codigo_resultado in (2,3,4,5,6,7) or (codigo_resultado = 8 and tiene_ine !=1)) and date_part('dow',creada) = 6 then 1 else 0 end nc_sabado,
+case when (codigo_resultado in (2,3,4,5,6,7) or (codigo_resultado = 8 and tiene_ine !=1)) and date_part('dow',creada) = 0 then 1 else 0 end nc_domingo
+/*case when codigo_resultado in (2,3,4,5,6,7) then 1 else 0 end no_contestada,
+case when codigo_resultado =8 then 1 else 0 end sin_codigo*/
+   from
+encuesta a
+join usuario b on (a.usuario_id = b.id)
+where 
+<if test="region==0">
+b.region!=#{region} 
+</if>
+<if test="region!=0">
+b.region=#{region} 
+</if>
+
+and  /*(codigo_resultado = 1 or (codigo_resultado = 8 and tiene_ine =1)) and*/ to_char(date_trunc('week', creada),'yyyy-mm-dd') ='${semana}'
+) t
+
+group by 
+<if test="nivel==1">
+t.region
+</if>
+<if test="nivel==2">
+t.region, municipio
+</if>
+<if test="nivel==3">
+t.region, municipio, zona
+</if>
+<if test="nivel==4">
+t.region, municipio, zona,seccion
+</if>
+<if test="nivel==5">
+t.region, municipio, zona,seccion,id_usuario,usuario, nombre_completo
+</if>
+
+order by 
+<if test="nivel==1">
+t.region
+</if>
+<if test="nivel==2">
+t.region, municipio
+</if>
+<if test="nivel==3">
+t.region, municipio, zona
+</if>
+<if test="nivel==4">
+t.region, municipio, zona,seccion
+</if>
+<if test="nivel==5">
+t.region, municipio, zona,seccion,id_usuario,usuario, nombre_completo
+</if>
+
+</select>
+
+</mapper>

@@ -1,0 +1,134 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Eventos" />
+					</p:breadCrumb>
+					<p:panel header="Eventos">
+						<p:dataTable id="tablaEventos" value="${tabla.listado}" var="fila" rowKey="${fila.id}" selection="${tabla.seleccionado}"
+							selectionMode="single" paginator="true" rows="15" paginatorPosition="bottom">
+							<p:ajax event="rowSelect" update="@form"/>
+							<p:column headerText="Nombre" sortable="true"
+									sortBy="${fila.nombre}" filterable="true"
+									filterBy="${fila.nombre}">
+								${fila.nombre}
+							</p:column>
+<!-- 							<p:column headerText="Descripción" > -->
+<!-- 								${fila.descripcionLogistica} -->
+<!-- 							</p:column> -->
+							<p:column headerText="Fecha" sortable="true"
+									sortBy="${fila.fechaFormateada} - ${fila.fechaFinFormateada}" filterable="true"
+									filterBy="${fila.fechaFormateada} - ${fila.fechaFinFormateada}" style="width:150px">
+								${fila.fechaFormateada} - ${fila.fechaFinFormateada}
+							</p:column>
+							<p:column headerText="Estatus"  style="width:115px" styleClass="${fila.estatus.nombre}" sortable="true"
+									sortBy="${fila.estatus}" filterable="true"
+									filterBy="${fila.estatus}">
+									<p:graphicImage value="/resources/iconos/${fila.estatus.nombre}.png"/>
+<!-- 								${fila.estatus} -->
+							</p:column>
+<!-- 							<p:column headerText="Tipo" style="width:10%"> -->
+<!-- 								${fila.tipo} -->
+<!-- 							</p:column> -->
+							<p:column headerText="Usuario" style="width:115px" sortable="true"
+									sortBy="${fila.nick}" filterable="true"
+									filterBy="${fila.nick}">
+								${fila.nick}
+							</p:column>
+							<p:column headerText="Nivel" style="width:115px" sortable="true"
+									sortBy="${fila.nivel}" filterable="true"
+									filterBy="${fila.nivel}">
+								${fila.nivel}
+							</p:column>
+<!-- 							<p:column headerText="Asistentes"  style="width:7%"> -->
+<!-- 								${fila.numeroAsistentes} -->
+<!-- 							</p:column> -->
+<!-- 							<p:column headerText="Descripción Lugar" > -->
+<!-- 								${fila.descripcionLugar} -->
+<!-- 							</p:column> -->
+							
+							<p:column headerText="Lugar" rendered="${fila.territorios[0]!=null}" >
+								<ui:repeat value="${fila.territorios}" var="value">
+									     #{value.llave} - #{value.nombre} <br />
+								</ui:repeat>
+							</p:column>
+							<p:column headerText="Lugar" rendered="${fila.territorios[0]==null}">
+							</p:column>
+							
+							<p:column headerText="Dependencia" rendered="${fila.dependencias[0]!=null}" >
+								<ui:repeat value="${fila.dependencias}" var="value">
+									     #{value.dependencia} <br />
+								</ui:repeat>
+							</p:column>
+							<p:column headerText="Dependencia" rendered="${fila.dependencias[0]==null}">
+							</p:column>
+						</p:dataTable>
+
+						<f:facet name="footer">
+							<p:commandLink action="agregar">
+								<p:graphicImage value="/resources/botones/AGREGAR.png"/>
+							</p:commandLink>
+							<p:commandLink action="detalle">
+								<p:graphicImage value="/resources/botones/DETALLE.png" rendered="${tabla.seleccionado!=null}"/>
+							</p:commandLink>
+							<p:commandLink action="editar">
+								<p:graphicImage value="/resources/botones/ESTATUS.png" rendered="${tabla.seleccionado!=null}"/>
+							</p:commandLink>
+							<p:commandLink action="eliminar">
+								<p:graphicImage value="/resources/botones/ELIMINAR.png" rendered="${tabla.seleccionado!=null}"/>
+								<p:confirm header="Confirmación"
+									message="¿Esta seguro de eliminar el Evento?"
+									icon="ui-icon-alert" />
+							</p:commandLink>
+<!-- 							<p:commandButton action="eliminar" value="Eliminar"> -->
+<!-- 								<p:confirm header="Confirmación" -->
+<!-- 									message="¿Esta seguro de eleminar el Evento?" -->
+<!-- 									icon="ui-icon-alert" /> -->
+<!-- 							</p:commandButton> -->
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton value="Yes" type="button"
+									styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+									update="messages" />
+								<p:commandButton value="No" type="button"
+									styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							</p:confirmDialog>
+							<p:commandLink action="listadoProgramas" id="botonProgramas" rendered="${tabla.seleccionado.tipo.nombre=='Programas' and tabla.seleccionado!=null?true:false}">
+								<p:graphicImage value="/resources/botones/PROGRAMAS.png">
+							</p:graphicImage>
+							</p:commandLink>
+<!-- 							<p:commandButton value="Programas" action="listadoProgramas" id="botonProgramas" rendered="${tabla.seleccionado.tipo.nombre=='Programas'?true:false}"/> -->
+						</f:facet>
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+<!-- 				<h:outputStylesheet> -->
+<!-- 					.Realizado{ -->
+<!-- 						color : white !important; -->
+<!-- 						background-color : #04B431 !important; -->
+<!-- 					} -->
+<!-- 					.Aprobado{ -->
+<!-- 						color : white !important; -->
+<!-- 						background-color: #2E9AFE !important; -->
+<!-- 					} -->
+					
+<!-- 					.Programado{ -->
+<!-- 						color : white !important; -->
+<!-- 						background-color: #F78181 !important;  -->
+<!-- 					} -->
+<!-- 				</h:outputStylesheet> -->
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

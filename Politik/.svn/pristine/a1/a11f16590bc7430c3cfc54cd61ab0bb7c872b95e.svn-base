@@ -1,0 +1,104 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/views/templates/spark/template.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-portlets-box">
+            <div class="Container100">
+            	<h:form>
+            		<p:panel header="Agregar Variable Estadística">
+            			<p:panelGrid columns="2">
+            				<p:outputLabel value="Descripción" />
+            				<p:inputText value="${nuevo.descripcion}" size="50" />
+            				<p:outputLabel value="Campo" />
+            				<p:inputText value="${nuevo.campo}" />
+            				<p:outputLabel value="Tipo de Campo" />
+            				<p:selectOneMenu value="${nuevo.tipo}" style="width: 100px;">
+            					<f:selectItems value="${listadoTiposCampo}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+            				</p:selectOneMenu>
+            				<p:outputLabel value="Valor Predeterminado" />
+            				<p:inputText value="${nuevo.valorDefault}" />
+            				<p:outputLabel value="Generar a Nivel" />
+            				<p:selectOneMenu value="${nuevo.nivelCalculo}" style="width: 130px;">
+            					<p:ajax event="itemSelect" update="#{p:component('panelPropagar')}, #{p:component('panelMapeo')}" />
+            					<f:selectItems value="${listadoNiveles}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+            				</p:selectOneMenu>
+            				<p:outputLabel value="Propagar a" />
+            				<p:panelGrid columns="4" id="panelPropagar">
+            					<p:outputLabel value="Entidad" />
+            					<p:inputSwitch value="${nuevo.entidad}" onLabel="Si" offLabel="No" disabled="${nuevo.nivelCalculo == 'ENTIDAD'}" />
+            					<p:outputLabel value="Distrito Federal" />
+            					<p:inputSwitch value="${nuevo.dfederal}" onLabel="Si" offLabel="No" disabled="${nuevo.nivelCalculo != 'SECCION' and nuevo.nivelCalculo != 'MANZANA'}" />
+            					<p:outputLabel value="Distrito Local" />
+            					<p:inputSwitch value="${nuevo.dlocal}" onLabel="Si" offLabel="No" disabled="${nuevo.nivelCalculo != 'SECCION' and nuevo.nivelCalculo != 'MANZANA'}" />
+            					<p:outputLabel value="Municipio" />
+            					<p:inputSwitch value="${nuevo.municipio}" onLabel="Si" offLabel="No" disabled="${nuevo.nivelCalculo != 'SECCION' and nuevo.nivelCalculo != 'LOCALIDAD' and nuevo.nivelCalculo != 'MANZANA'}" />
+            					<p:outputLabel value="Sección" />
+            					<p:inputSwitch value="${nuevo.seccion}" onLabel="Si" offLabel="No" disabled="${nuevo.nivelCalculo != 'MANZANA'}" />
+            					<p:outputLabel value="Localidad" />
+            					<p:inputSwitch value="${nuevo.localidad}" onLabel="Si" offLabel="No" disabled="${nuevo.nivelCalculo != 'MANZANA'}" />
+            				</p:panelGrid>
+            				<p:outputLabel value="Tabla" />
+            				<p:selectOneMenu value="${tablaTablas.key}" style="width: 200px;">
+            					<p:ajax event="itemSelect" onstart="actualizarCamposTabla();" />
+            					<f:selectItems value="${tablaTablas.listado}" var="fila" itemLabel="${fila.tabla}" itemValue="${fila.id}" />
+            				</p:selectOneMenu>
+            				<p:outputLabel value="Campo a Calcular" />
+            				<p:selectOneMenu id="comboCamposTabla" value="${tablaCamposTabla.key}" style="width: 300px;">
+            					<f:selectItems value="${tablaCamposTabla.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.id}" />
+            				</p:selectOneMenu>
+            				<p:outputLabel value="Operador de Cálculo" />
+            				<p:selectOneMenu value="${nuevo.consulta.operador}" style="width: 100px;">
+            					<f:selectItems value="${listadoOperadores}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />
+            				</p:selectOneMenu>
+            				<p:outputLabel value="Condición" />
+            				<p:inputText value="${nuevo.consulta.condicion}" size="50" />
+            				<p:outputLabel value="Mapeo de Campos" />
+            				<p:panelGrid columns="2" id="panelMapeo">
+								<p:outputLabel value="Entidad" />
+								<p:selectOneMenu value="${nuevo.consulta.campoEntidad}" style="width: 300px;">
+									<f:selectItems value="${tablaCamposTablaEntidad.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+								<p:outputLabel value="Distrito Federal" />
+            					<p:selectOneMenu value="${nuevo.consulta.campoDFederal}" style="width: 300px;" disabled="${nuevo.nivelCalculo != 'DFEDERAL'}">
+									<f:selectItems value="${tablaCamposTablaDFederal.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+            					<p:outputLabel value="Distrito Local" />
+            					<p:selectOneMenu value="${nuevo.consulta.campoDLocal}" style="width: 300px;" disabled="${nuevo.nivelCalculo != 'DLOCAL'}">
+									<f:selectItems value="${tablaCamposTablaDLocal.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+            					<p:outputLabel value="Municipio" />
+            					<p:selectOneMenu value="${nuevo.consulta.campoMunicipio}" style="width: 300px;" disabled="${nuevo.nivelCalculo != 'MUNICIPIO' and nuevo.nivelCalculo != 'LOCALIDAD' and nuevo.nivelCalculo != 'MANZANA'}">
+									<f:selectItems value="${tablaCamposTablaMunicipio.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+            					<p:outputLabel value="Sección" />
+            					<p:selectOneMenu value="${nuevo.consulta.campoSeccion}" style="width: 300px;" disabled="${nuevo.nivelCalculo != 'SECCION' and nuevo.nivelCalculo != 'MANZANA'}">
+									<f:selectItems value="${tablaCamposTablaSeccion.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+            					<p:outputLabel value="Localidad" />
+            					<p:selectOneMenu value="${nuevo.consulta.campoLocalidad}" style="width: 300px;" disabled="${nuevo.nivelCalculo != 'LOCALIDAD' and nuevo.nivelCalculo != 'MANZANA'}">
+									<f:selectItems value="${tablaCamposTablaLocalidad.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+								<p:outputLabel value="Manzana" />
+            					<p:selectOneMenu value="${nuevo.consulta.campoManzana}" style="width: 300px;" disabled="${nuevo.nivelCalculo != 'MANZANA'}" >
+									<f:selectItems value="${tablaCamposTablaManzana.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila.nombre}" />
+								</p:selectOneMenu>
+            				</p:panelGrid>
+            			</p:panelGrid>
+            			<f:facet name="footer">
+            				<p:commandButton value="Guardar" action="guardar" />
+            				<p:commandButton value="Cancelar" action="cancelar" immediate="true" />
+            			</f:facet>
+            		</p:panel>
+            		
+            		<p:remoteCommand name="actualizarCamposTabla" action="actualizarCamposTabla" update="comboCamposTabla, panelMapeo" />
+            	</h:form>
+            </div>
+        </div>
+        
+    </ui:define>
+
+</ui:composition>

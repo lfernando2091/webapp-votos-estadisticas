@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<view-state id="listado">
+		<on-entry>
+			<evaluate expression="CatalogosEntidadesC.modelo()" result="viewScope.modeloEntidades" />
+			<evaluate expression="CatalogosMunicipiosC.modelo(viewScope.modeloEntidades.seleccionado)" result="viewScope.modeloMunicipios" />
+		</on-entry>
+		
+		<transition on="actualizarModeloMunicipios">
+			<evaluate expression="CatalogosMunicipiosC.modelo(viewScope.modeloEntidades.seleccionado)" result="viewScope.modeloMunicipios" />
+		</transition>
+	</view-state>
+
+</flow>

@@ -1,0 +1,155 @@
+package com.saganet.politik.database.estructurasEdoMex;
+
+import java.io.Serializable;
+import org.apache.ibatis.type.Alias;
+import com.saganet.politik.database.administracion.UsuarioEO;
+import com.saganet.politik.database.catalogos.GeozonaParticionEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.mdm.PersonaEO;
+import com.saganet.politik.dominios.ProgramasEdoMexDO;
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("EstructurasEdoMexVisitadorEO")
+public class VisitadorEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = 1869647800401555906L;
+
+	private Integer id;
+	private PersonaEO persona;
+	private UsuarioEO supervisor;
+	private GeozonaParticionEO region;
+	private MunicipioEO municipio;
+	private String nombre;
+	private String primerApellido;
+	private String segundoApellido;
+	private String email;
+	private String movil;
+	private ProgramasEdoMexDO programa;
+	private String nick;
+	private String pw;
+	private UsuarioEO usuario;
+	private String codigo;
+    private String municipioProspera;
+    private String estatus;
+    
+	
+    
+	@Override
+	public String toString() {
+		return "VisitadorEO [id=" + id + ", persona=" + persona + ", supervisor=" + supervisor + ", region=" + region
+				+ ", municipio=" + municipio + ", nombre=" + nombre + ", primerApellido=" + primerApellido
+				+ ", segundoApellido=" + segundoApellido + ", email=" + email + ", movil=" + movil + ", programa="
+				+ programa + ", nick=" + nick + ", pw=" + pw + ", usuario=" + usuario + ", codigo=" + codigo
+				+ ", municipioProspera=" + municipioProspera + ", estatus=" + estatus + "]";
+	}
+	
+	
+	public String getEstatus() {
+		return estatus;
+	}
+
+
+	public void setEstatus(String estatus) {
+		this.estatus = estatus;
+	}
+
+
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public PersonaEO getPersona() {
+		return persona;
+	}
+	public void setPersona(PersonaEO persona) {
+		this.persona = persona;
+	}
+	public UsuarioEO getSupervisor() {
+		return supervisor;
+	}
+	public void setSupervisor(UsuarioEO supervisor) {
+		this.supervisor = supervisor;
+	}
+	public GeozonaParticionEO getRegion() {
+		return region;
+	}
+	public void setRegion(GeozonaParticionEO region) {
+		this.region = region;
+	}
+	public MunicipioEO getMunicipio() {
+		return municipio;
+	}
+	public void setMunicipio(MunicipioEO municipio) {
+		this.municipio = municipio;
+	}
+	public String getNombre() {
+		return nombre;
+	}
+	public void setNombre(String nombre) {
+		this.nombre = nombre.toUpperCase();
+	}
+	public String getPrimerApellido() {
+		return primerApellido;
+	}
+	public void setPrimerApellido(String primerApellido) {
+		this.primerApellido = primerApellido.toUpperCase();
+	}
+	public String getSegundoApellido() {
+		return segundoApellido;
+	}
+	public void setSegundoApellido(String segundoApellido) {
+		this.segundoApellido = segundoApellido.toUpperCase();
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getMovil() {
+		return movil;
+	}
+	public void setMovil(String movil) {
+		this.movil = movil;
+	}
+	public ProgramasEdoMexDO getPrograma() {
+		return programa;
+	}
+	public void setPrograma(ProgramasEdoMexDO programa) {
+		this.programa = programa;
+	}
+	public String getNick() {
+		return nick;
+	}
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+	public String getPw() {
+		return pw;
+	}
+	public void setPw(String pw) {
+		this.pw = pw;
+	}
+	public UsuarioEO getUsuario() {
+		return usuario;
+	}
+	public void setUsuario(UsuarioEO usuario) {
+		this.usuario = usuario;
+	}
+	public String getCodigo() {
+		return codigo;
+	}
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+	public String getMunicipioProspera() {
+		return municipioProspera;
+	}
+	public void setMunicipioProspera(String municipioProspera) {
+		this.municipioProspera = municipioProspera;
+	}
+	
+	
+	
+}

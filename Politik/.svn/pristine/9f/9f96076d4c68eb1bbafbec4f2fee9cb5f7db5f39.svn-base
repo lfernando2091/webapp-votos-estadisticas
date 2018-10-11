@@ -1,0 +1,127 @@
+package com.saganet.politik.component_dm.estadisticas;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.dominios_dm.RegionesDO;
+
+@Component("EstadisticasEstatusEncuestaC")
+public class EstadisticasEstatusEncuestaC {
+	
+	@Autowired
+	SqlSession sqlSessionDM;
+	
+	private static final Logger logger = LoggerFactory.getLogger(EstadisticasEstatusEncuestaC.class);
+	
+	public List<HashMap<String, Object>> listadoRegion(Integer region, Integer tipoBusqueda){
+		List<HashMap<String, Object>> listado;
+		List<HashMap<String, Object>> listadoFinal = new ArrayList<>();
+		HashMap<String, Object> params;
+		params = new HashMap<>();
+		params.put("region", region);
+		params.put("tipoBusqueda", tipoBusqueda);
+		
+		listado = sqlSessionDM.selectList("estadisticas.estadisticasEstadoEncuesta.concentradoRegion", params);
+		
+		logger.debug("listadoResult: {}", listado);
+		
+		for(HashMap<String, Object> map : listado){
+			HashMap<String, Object> map2 = new HashMap<>();
+			map2.put("reporte", 1);
+			
+			switch (tipoBusqueda) {
+			case 1:
+				map2.put("region", regiones()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				break;
+			case 2:
+				map2.put("region", regiones()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				map2.put("municipio", map.get("municipio"));
+				break;
+			case 3:
+				map2.put("region", regiones()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				map2.put("zona", map.get("zona"));
+				break;
+			case 4:
+				map2.put("region", regiones()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				map2.put("municipio", map.get("municipio"));
+				map2.put("zona", map.get("zona"));
+				map2.put("seccion", map.get("seccion"));
+				break;
+			case 5:
+				map2.put("region", regiones()[Integer.parseInt(map.get("region").toString())-1].getNombre());
+				map2.put("municipio", map.get("municipio"));
+				map2.put("zona", map.get("zona"));
+				map2.put("seccion", map.get("seccion"));
+				map2.put("usuario_id", map.get("usuario"));
+				break;
+
+			default:
+				break;
+			}
+			
+			map2.put("completa", map.get("completa"));
+			map2.put("incompleta", map.get("incompleta"));
+			map2.put("nego_dar_informacion", map.get("nego_dar_informacion"));
+			map2.put("no_tiene_credencial", map.get("no_tiene_credencial"));
+			map2.put("no_se_encontro_persona", map.get("no_se_encontro_persona"));
+			map2.put("no_se_encontro_vivienda", map.get("no_se_encontro_vivienda"));
+			map2.put("no_hubo_quien_respondiera", map.get("no_hubo_quien_respondiera"));
+			map2.put("sin_estado", map.get("sin_estado"));
+			
+			listadoFinal.add(map2);
+		}
+		
+		logger.debug("Listado de estadisticas por Region: {}", listadoFinal);
+		return listadoFinal;
+	}
+	
+	public HashMap<String, Object> totalesConcentrados(List<HashMap<String, Object>> listado){
+		Integer var1 = 0;
+		Integer var2 = 0;
+		Integer var3 = 0;
+		Integer var4 = 0;
+		Integer var5 = 0;
+		Integer var6 = 0;
+		Integer var7 = 0;
+		Integer var8 = 0;
+		HashMap<String, Object> resultado;
+		resultado = new HashMap<>();
+		
+		for(HashMap<String, Object> map : listado){
+			var8 = var8 + Integer.parseInt(map.get("completa").toString());
+			var1 = var1 + Integer.parseInt(map.get("incompleta").toString());
+			var2 = var2 + Integer.parseInt(map.get("nego_dar_informacion").toString());
+			var3 = var3 + Integer.parseInt(map.get("no_tiene_credencial").toString());
+			var4 = var4 + Integer.parseInt(map.get("no_se_encontro_persona").toString());
+			var5 = var5 + Integer.parseInt(map.get("no_se_encontro_vivienda").toString());
+			var6 = var6 + Integer.parseInt(map.get("no_hubo_quien_respondiera").toString());
+			var7 = var7 + Integer.parseInt(map.get("sin_estado").toString());
+		}
+		
+		resultado.put("t_completa",var8);
+		resultado.put("t_incompleta",var1);
+		resultado.put("t_nego_dar_informacion",var2);
+		resultado.put("t_no_tiene_credencial",var3);
+		resultado.put("t_no_se_encontro_persona",var4);
+		resultado.put("t_no_se_encontro_vivienda",var5);
+		resultado.put("t_no_hubo_quien_respondiera",var6);
+		resultado.put("t_sin_estado",var7);
+		
+		logger.debug("Totales Concentrado: {}", resultado);
+		
+		return resultado;
+	}
+	
+	public RegionesDO[] regiones(){
+		logger.debug("Se genera listado de Regiones");
+		return RegionesDO.values();
+	}
+
+}

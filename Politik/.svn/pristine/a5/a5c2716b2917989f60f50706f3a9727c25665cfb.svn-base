@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="encuestas.edomex2017.callcenter.capturista">
+	
+	<resultMap type="Edomex2017CallcenterCapturistaEO" id="capturista">
+		<id 	column="Edomex2017CallcenterCapturistaEO_id" 							property="id" 				javaType="Integer"/>
+		<association column="Edomex2017CallcenterCapturistaEO_nick" 					property="usuario" 			select="administracion.usuarios.porNick"/>
+		<association column="Edomex2017CallcenterCapturistaEO_id_call_center" 			property="encargado" 		select="encuestas.callcenter.encargado.buscarPorNick"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			Edomex2017CallcenterCapturistaEO.pkey 								Edomex2017CallcenterCapturistaEO_id, 
+			Edomex2017CallcenterCapturistaEO.nick_capturista					Edomex2017CallcenterCapturistaEO_nick,
+			Edomex2017CallcenterCapturistaEO.id_call_center      				Edomex2017CallcenterCapturistaEO_id_call_center
+  		FROM encuestas.encuesta_edomex_call_center_capturistas					Edomex2017CallcenterCapturistaEO
+	</sql>
+
+	<insert id="insertarEncargadoCapturista" parameterType="HashMap">
+		<selectKey keyProperty="id" resultType="Integer" order="BEFORE">
+			SELECT NEXTVAL('encuestas.encuesta_edomex_call_center_capturistas_pkey_seq')
+		</selectKey>
+		INSERT INTO encuestas.encuesta_edomex_call_center_capturistas(
+            pkey, id_call_center, nick_capturista, programa)
+    	VALUES (#{id}, #{encargado}, #{nick_capturista}, #{programa})
+	</insert>
+	
+	<select id="listadoCapturistas" parameterType="String" resultMap="capturista">
+		<include refid="query"/>
+	 	where Edomex2017CallcenterCapturistaEO.id_call_center= #{value}
+	</select>
+	
+	<select id="buscarPorNick" parameterType="String" resultMap="capturista">
+		<include refid="query"/>
+	 	where nick_capturista= #{value}
+	</select>
+	
+</mapper>

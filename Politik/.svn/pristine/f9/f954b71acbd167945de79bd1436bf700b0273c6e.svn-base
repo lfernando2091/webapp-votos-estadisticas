@@ -1,0 +1,692 @@
+package com.saganet.politik.components.estructuras;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.webflow.execution.RequestContext;
+
+import com.saganet.politik.components.catalogos.DFederalesC;
+import com.saganet.politik.components.catalogos.EntidadesC;
+import com.saganet.politik.components.catalogos.MunicipiosC;
+import com.saganet.politik.components.catalogos.PartidosC;
+import com.saganet.politik.components.catalogos.SeccionesC;
+import com.saganet.politik.components.mdm.PersonasC;
+import com.saganet.politik.database.catalogos.CasillaEO;
+import com.saganet.politik.database.catalogos.DFederalEO;
+import com.saganet.politik.database.catalogos.EntidadEO;
+import com.saganet.politik.database.catalogos.MunicipioEO;
+import com.saganet.politik.database.catalogos.PartidoEO;
+import com.saganet.politik.database.catalogos.SeccionEO;
+import com.saganet.politik.database.estructuras.EstructuraEO;
+import com.saganet.politik.database.estructuras.NodoEO;
+import com.saganet.politik.database.estructuras.NodoMetaEO;
+import com.saganet.politik.database.mdm.PersonaEO;
+import com.saganet.politik.dominios.EstructurasReportesDO;
+import com.saganet.politik.dominios.FiguraAtributosDO;
+import com.saganet.politik.dominios.NivelesDO;
+import com.saganet.politik.modelos.JavaBeanT;
+import com.saganet.politik.modelos.Modelo;
+
+@Component("EstructurasReportesC")
+public class ReportesC {
+	private static final Logger logger = LoggerFactory.getLogger(ReportesC.class);
+	
+	@Autowired SqlSession sqlSession;
+	@Autowired PersonasC personasC;
+	@Autowired PartidosC partidosC;
+	@Autowired EntidadesC entidadesC;
+	@Autowired DFederalesC dFederalesC;
+	@Autowired MunicipiosC municipiosC;
+	@Autowired SeccionesC seccionesC;
+	@Autowired EstructurasC estructurasC;
+	
+	
+	public Modelo<EntidadEO> modeloEntidades(){
+		logger.debug("modeloEntidades");
+		Modelo<EntidadEO> modelo;
+		List<EntidadEO> listado;
+		
+		modelo = new Modelo<>();
+		listado = new ArrayList<>();
+		
+		listado.add(entidadesC.buscarPorId(2));
+		listado.add(entidadesC.buscarPorId(6));
+		listado.add(entidadesC.buscarPorId(10));
+		
+		modelo.setListado(listado);
+		modelo.setSeleccionado(listado.get(0));
+		
+		logger.debug("Se genera modeloEntidades");
+		return modelo;
+	}
+	
+	public Modelo<NivelesDO> modeloNiveles(){
+		Modelo<NivelesDO> modelo;
+		List<NivelesDO> listado;
+		
+		modelo = new Modelo<>();
+		listado = new ArrayList<>();
+		
+		listado.add(NivelesDO.NACIONAL);
+		listado.add(NivelesDO.ENTIDAD);
+		listado.add(NivelesDO.DFEDERAL);
+		listado.add(NivelesDO.MUNICIPIO);
+		listado.add(NivelesDO.SECCION);
+		
+		modelo.setListado(listado);
+		modelo.setSeleccionado(listado.get(0));
+		
+		return modelo;
+	}
+		
+	public String elegirReporte(EstructurasReportesDO reporte){
+		String respuesta;
+		
+		respuesta = null;
+		switch(reporte){
+		case CONCENTRADO_ESTATAL:
+			respuesta = "concentradoEstatal";
+			break;
+		case ESTRUCTURA_OPERATIVA_2018:
+			respuesta = "estructuraOperativa2018";
+			break;
+		}
+		
+		return respuesta;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void actualizarCombos(RequestContext context){
+		HashMap<String, Object> viewScope;
+		NivelesDO nivel;
+		Modelo<EntidadEO> modeloEntidades;
+		Modelo<DFederalEO> modeloDFederales;
+		Modelo<MunicipioEO> modeloMunicipios;
+		Modelo<SeccionEO> modeloSecciones;
+		
+		viewScope = (HashMap<String, Object>) context.getViewScope().asMap();
+		
+		nivel = (NivelesDO) viewScope.get("nivel");
+		
+		modeloEntidades = (Modelo<EntidadEO>) viewScope.get("modeloEntidades");
+		modeloDFederales = (Modelo<DFederalEO>) viewScope.get("modeloDFederales");
+		modeloMunicipios = (Modelo<MunicipioEO>) viewScope.get("modeloMunicipios");
+		modeloSecciones = (Modelo<SeccionEO>) viewScope.get("modeloSecciones");
+		
+		logger.debug("Nivel a Generar: {}", nivel);
+		
+		if(modeloEntidades == null){
+			modeloEntidades = modeloEntidades();
+		}
+		
+		if(modeloEntidades.getSeleccionado() == null){
+			modeloEntidades.setSeleccionado(modeloEntidades.getListado().get(0));
+		}
+		viewScope.put("modeloEntidades", modeloEntidades);
+		
+		switch(nivel){
+		case CASILLA:
+			break;
+		case DFEDERAL:
+			if(modeloDFederales == null){
+				modeloDFederales = dFederalesC.modelo(modeloEntidades.getSeleccionado());
+			}
+			
+			if(modeloDFederales.getSeleccionado() == null){
+				modeloDFederales = dFederalesC.modelo(modeloEntidades.getSeleccionado());
+			} else {
+				if(!modeloDFederales.getSeleccionado().getEntidad().equals(modeloEntidades.getSeleccionado())){
+					modeloDFederales = dFederalesC.modelo(modeloEntidades.getSeleccionado());
+				}
+			}
+			viewScope.put("modeloDFederales", modeloDFederales);
+			break;
+		case DLOCAL:
+			break;
+		case ENTIDAD:
+			break;
+		case GEOZONA:
+			break;
+		case LOCALIDAD:
+			break;
+		case MANZANA:
+			break;
+		case MUNICIPIO:
+			if(modeloMunicipios == null){
+				modeloMunicipios = municipiosC.modelo(modeloEntidades.getSeleccionado());
+			}
+			
+			if(modeloMunicipios.getSeleccionado() == null){
+				modeloMunicipios = municipiosC.modelo(modeloEntidades.getSeleccionado());
+			} else {
+				if(!modeloMunicipios.getSeleccionado().getEntidad().equals(modeloEntidades.getSeleccionado())){
+					modeloMunicipios = municipiosC.modelo(modeloEntidades.getSeleccionado());
+				}
+			}
+			viewScope.put("modeloMunicipios", modeloMunicipios);
+			break;
+		case NACIONAL:
+			break;
+		case SECCION:
+			if(modeloSecciones == null){
+				modeloSecciones = seccionesC.modelo(modeloEntidades.getSeleccionado());
+			}
+			
+			if(modeloSecciones.getSeleccionado() == null){
+				modeloSecciones = seccionesC.modelo(modeloEntidades.getSeleccionado());
+			} else {
+				if(!modeloSecciones.getSeleccionado().getEntidad().equals(modeloEntidades.getSeleccionado())){
+					modeloSecciones = seccionesC.modelo(modeloEntidades.getSeleccionado());
+				}
+			}
+			viewScope.put("modeloSecciones", modeloSecciones);
+			break;
+		}
+		
+		viewScope.put("modeloEntidades", modeloEntidades);
+		
+		if(modeloDFederales == null)
+			viewScope.put("modeloDFederales", new Modelo<DFederalEO>());
+		if(modeloMunicipios == null)
+			viewScope.put("modeloMunicipios", new Modelo<MunicipioEO>());
+		if(modeloSecciones == null)
+			viewScope.put("modeloSecciones", new Modelo<SeccionEO>());
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void estructuraOperativa2018(NivelesDO nivel, RequestContext context){
+		HashMap<String, Object> viewScope, parametros;
+		EstructuraEO estructura;
+		List<NodoMetaEO> metas;
+		NodoMetaEO meta;
+		EntidadEO entidad;
+		DFederalEO dFederal;
+		MunicipioEO municipio;
+		SeccionEO seccion;
+		CasillaEO casilla;
+		
+		parametros = new HashMap<>();
+
+		estructura = estructurasC.obtenerPorId(32);
+		viewScope = (HashMap<String, Object>) context.getViewScope().asMap();
+		
+		//obtener metas
+		for(NodoEO nodo : estructura.getNodos()){
+			metas = new ArrayList<>();
+			meta = new NodoMetaEO();
+			meta.setId(1);
+			meta.setLlave(null);
+			meta.setMeta(0);
+			
+			parametros.put("nodo", nodo);
+			
+			parametros.put("joinQuery", null);
+			parametros.put("llave", null);
+			parametros.put("llaveCompleja", null);
+			switch(nivel){
+			case CASILLA:
+				
+				break;
+			case DFEDERAL:
+				dFederal = ((Modelo<DFederalEO>) viewScope.get("modeloDFederales")).getSeleccionado();
+				switch(nodo.getFigura().getNivel()){
+				case CASILLA:
+					parametros.put("joinQuery", "JOIN catalogos.casillas CasillaEO on (NodoMetaEO.llave = CasillaEO.llave) JOIN catalogos.secciones SeccionEO on (CasillaEO.id_entidad = SeccionEO.id_entidad AND CasillaEO.id_seccion = SeccionEO.id_seccion)");
+					parametros.put("llaveCompleja", "SeccionEO.id_entidad = " + dFederal.getEntidad().getId() + " AND SeccionEO.id_dfederal = " + dFederal.getIdDFederal());
+					break;
+				case DFEDERAL:
+					parametros.put("llave", dFederal.getLlave());
+					break;
+				case DLOCAL:
+					break;
+				case ENTIDAD:
+					parametros.put("llave", dFederal.getEntidad().getLlave());
+					break;
+				case GEOZONA:
+					break;
+				case LOCALIDAD:
+					break;
+				case MANZANA:
+					break;
+				case MUNICIPIO:
+					parametros.put("joinQuery", "JOIN catalogos.municipios MunicipioEO on (NodoMetaEO.llave = MunicipioEO.llave)");
+					parametros.put("llaveCompleja", "MunicipioEO.llave in (SELECT id_entidad||'-'||id_municipio FROM catalogos.secciones WHERE id_entidad = " + dFederal.getEntidad().getId() + " AND id_dfederal = " + dFederal.getIdDFederal() + " group by id_entidad, id_municipio)");
+					break;
+				case NACIONAL:
+					break;
+				case SECCION:
+					parametros.put("joinQuery", "JOIN catalogos.secciones SeccionEO on (NodoMetaEO.llave = SeccionEO.llave)");
+					parametros.put("llaveCompleja", "SeccionEO.id_entidad = " + dFederal.getEntidad().getId() + " AND SeccionEO.id_dfederal = " + dFederal.getIdDFederal());
+					break;
+				}
+				break;
+			case DLOCAL:
+				break;
+			case ENTIDAD:
+				entidad = ((Modelo<EntidadEO>) viewScope.get("modeloEntidades")).getSeleccionado();
+				switch(nodo.getFigura().getNivel()){
+				case CASILLA:
+					parametros.put("joinQuery", "JOIN catalogos.casillas CasillaEO on (NodoMetaEO.llave = CasillaEO.llave)");
+					parametros.put("llaveCompleja", "CasillaEO.id_entidad = " + entidad.getLlave());
+					break;
+				case DFEDERAL:
+					parametros.put("joinQuery", "JOIN catalogos.dfederales DFederalEO on (NodoMetaEO.llave = DFederalEO.llave)");
+					parametros.put("llaveCompleja", "DFederalEO.id_entidad = " + entidad.getLlave());
+					break;
+				case DLOCAL:
+					break;
+				case ENTIDAD:
+					parametros.put("llave", entidad.getLlave());
+					break;
+				case GEOZONA:
+					break;
+				case LOCALIDAD:
+					break;
+				case MANZANA:
+					break;
+				case MUNICIPIO:
+					parametros.put("joinQuery", "JOIN catalogos.municipios MunicipioEO on (NodoMetaEO.llave = MunicipioEO.llave)");
+					parametros.put("llaveCompleja", "MunicipioEO.id_entidad = " + entidad.getLlave());
+					break;
+				case NACIONAL:
+					break;
+				case SECCION:
+					parametros.put("joinQuery", "JOIN catalogos.secciones SeccionEO on (NodoMetaEO.llave = SeccionEO.llave)");
+					parametros.put("llaveCompleja", "SeccionEO.id_entidad = " + entidad.getLlave());
+					break;
+				}
+				
+				break;
+			case GEOZONA:
+				break;
+			case LOCALIDAD:
+				break;
+			case MANZANA:
+				break;
+			case MUNICIPIO:
+				municipio = ((Modelo<MunicipioEO>) viewScope.get("modeloMunicipios")).getSeleccionado();
+				switch(nodo.getFigura().getNivel()){
+				case CASILLA:
+					parametros.put("joinQuery", "JOIN catalogos.casillas CasillaEO on (NodoMetaEO.llave = CasillaEO.llave) JOIN catalogos.secciones SeccionEO on (CasillaEO.id_entidad = SeccionEO.id_entidad AND CasillaEO.id_seccion = SeccionEO.id_seccion)");
+					parametros.put("llaveCompleja", "SeccionEO.id_entidad = " + municipio.getEntidad().getId() + " AND SeccionEO.id_municipio = " + municipio.getIdMunicipio());
+					break;
+				case DFEDERAL:
+					parametros.put("joinQuery", "JOIN catalogos.dfederales DFederalEO on (NodoMetaEO.llave = DFederalEO.llave)");
+					parametros.put("llaveCompleja", "DFederalEO.llave in (SELECT id_entidad||'-'||id_dfederal FROM catalogos.secciones WHERE id_entidad = " + municipio.getEntidad().getId() + " AND id_municipio = " + municipio.getIdMunicipio() + " group by id_entidad, id_dfederal)");
+					break;
+				case DLOCAL:
+					break;
+				case ENTIDAD:
+					parametros.put("llave", municipio.getEntidad().getLlave());
+					break;
+				case GEOZONA:
+					break;
+				case LOCALIDAD:
+					break;
+				case MANZANA:
+					break;
+				case MUNICIPIO:
+					parametros.put("llave", municipio.getLlave());
+					break;
+				case NACIONAL:
+					break;
+				case SECCION:
+					parametros.put("joinQuery", "JOIN catalogos.secciones SeccionEO on (NodoMetaEO.llave = SeccionEO.llave)");
+					parametros.put("llaveCompleja", "SeccionEO.id_entidad = " + municipio.getEntidad().getId() + " AND SeccionEO.id_municipio = " + municipio.getIdMunicipio());
+					break;
+				}
+				break;
+			case NACIONAL:
+				//No hacer nada
+				break;
+			case SECCION:
+				seccion = ((Modelo<SeccionEO>) viewScope.get("modeloSecciones")).getSeleccionado();
+				switch(nodo.getFigura().getNivel()){
+				case CASILLA:
+					break;
+				case DFEDERAL:
+					parametros.put("llave", seccion.getdFederal().getLlave());
+					break;
+				case DLOCAL:
+					break;
+				case ENTIDAD:
+					parametros.put("llave", seccion.getEntidad().getLlave());
+					break;
+				case GEOZONA:
+					break;
+				case LOCALIDAD:
+					break;
+				case MANZANA:
+					break;
+				case MUNICIPIO:
+					parametros.put("llave", seccion.getMunicipio().getLlave());
+					break;
+				case NACIONAL:
+					break;
+				case SECCION:
+					parametros.put("llave", seccion.getLlave());
+					break;
+				}
+				break;
+			}
+			
+			meta = sqlSession.selectOne("estructuras.nodos.metasPorNodoDinamico", parametros);
+			metas.add(meta);
+			nodo.setMetas(metas);
+		}
+		
+		viewScope.put("estructura", estructura);
+		
+	}
+	
+	public NivelesDO nivelPredeterminado(){
+		return NivelesDO.NACIONAL;
+	}
+	
+	public void concentradoEstatal(String vista, EntidadEO entidad, RequestContext context){
+		HashMap<String, Object> viewScope;
+		
+		viewScope = (HashMap<String, Object>) context.getViewScope().asMap();
+		
+		switch(vista){
+		case "Gobernador":
+			viewScope.put("gobernador", infoGobernador(entidad));
+			break;
+		case "ExGobernadores":
+			viewScope.put("modeloExGobernadores", infoExGobernadores(entidad));
+			break;
+		case "Senadores de MR":
+			viewScope.put("modeloSenadoresMR", infoSenadoresMR(entidad));
+			break;
+		case "Senadores de RP":
+			viewScope.put("modeloSenadoresRP", infoSenadoresRP(entidad));
+			break;
+		case "Diputados de MR":
+			viewScope.put("modeloDiputadosMR", infoDiputadosMR(entidad));
+			break;
+		case "Presidentes Municipales":
+			viewScope.put("modeloPresidentesMunicipales", infoPresidentesMunicipales(entidad));
+			break;
+		}
+		
+	}
+	
+	public HashMap<String, Object> infoGobernador(EntidadEO entidad){
+		HashMap<String, Object> gobernador, parametros;
+		HashMap<String, Integer> mapa;
+		List<HashMap<String, Object>> atributos;
+		PersonaEO persona;
+		PartidoEO partido;
+		FiguraAtributosDO figuraAtributo;
+		
+		gobernador = new HashMap<>();
+		persona = new PersonaEO();
+		
+		mapa = sqlSession.selectOne("estructuras.reportes.gobernadorPorEntidad", entidad);
+		
+		if(mapa != null){
+			persona = personasC.personaSimplePorId(mapa.get("id_persona"), mapa.get("id_entidad_nacimiento"));
+			gobernador.put("persona", persona);
+			parametros = new HashMap<>();
+			parametros.put("idPolitik", mapa.get("id_politik"));
+			parametros.put("idEstructura", 26);
+			
+			atributos = sqlSession.selectList("estructuras.reportes.atributos", parametros);
+			for(HashMap<String, Object> atributo : atributos){
+				figuraAtributo = FiguraAtributosDO.valueOf((String) atributo.get("tipo_atributo"));
+				switch(figuraAtributo){
+				case PARTIDO_POLITICO:
+					partido = partidosC.partidoPorId((Integer) atributo.get("dato01_int"));
+					gobernador.put("partido", partido);
+					break;
+				case PERIODO:
+					gobernador.put("fechaInicio", atributo.get("dato01_text"));
+					gobernador.put("fechaTermino", atributo.get("dato02_text"));
+					break;
+				}
+			}
+			
+		}
+		
+		return gobernador;
+	}
+	
+	public Modelo<HashMap<String, Object>> infoExGobernadores(EntidadEO entidad){
+		Modelo<HashMap<String, Object>> modelo;
+		List<HashMap<String, Object>> mapa, listado, atributos;
+		HashMap<String, Object> gobernador, parametros;
+		PersonaEO persona;
+		PartidoEO partido;
+		FiguraAtributosDO figuraAtributo;
+		
+		modelo = new Modelo<>();
+		listado = new ArrayList<>();
+		
+		mapa = sqlSession.selectList("estructuras.reportes.exGobernadoresPorEntidad", entidad);
+		logger.debug("mapa: {}", mapa);
+		
+		parametros = new HashMap<>();
+		parametros.put("idEstructura", 26);
+		if(mapa != null){
+			for(HashMap<String, Object> reg : mapa){
+				gobernador = new HashMap<>();
+				persona = personasC.personaSimplePorId(((Integer)reg.get("id_persona")), ((Integer)reg.get("id_entidad_nacimiento")));
+				gobernador.put("persona", persona);
+				parametros.put("idPolitik", reg.get("id_politik"));
+				atributos = sqlSession.selectList("estructuras.reportes.atributos", parametros);
+				for(HashMap<String, Object> atributo : atributos){
+					figuraAtributo = FiguraAtributosDO.valueOf((String) atributo.get("tipo_atributo"));
+					switch(figuraAtributo){
+					case PARTIDO_POLITICO:
+						partido = partidosC.partidoPorId((Integer) atributo.get("dato01_int"));
+						gobernador.put("partido", partido);
+						break;
+					case PERIODO:
+						gobernador.put("fechaInicio", atributo.get("dato01_text"));
+						gobernador.put("fechaTermino", atributo.get("dato02_text"));
+						break;
+					}
+				}
+				listado.add(gobernador);
+			}
+		}
+		logger.debug("listado de Exgobernadores: {}", listado);
+		
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+	}
+	
+	public Modelo<HashMap<String, Object>> infoSenadoresMR(EntidadEO entidad){
+		Modelo<HashMap<String, Object>> modelo;
+		List<HashMap<String, Object>> mapa, listado, atributos;
+		HashMap<String, Object> senador, parametros;
+		PersonaEO persona;
+		PartidoEO partido;
+		FiguraAtributosDO figuraAtributo;
+		
+		modelo = new Modelo<>();
+		listado = new ArrayList<>();
+		
+		mapa = sqlSession.selectList("estructuras.reportes.senadoresMRPorEntidad", entidad);
+		logger.debug("mapa: {}", mapa);
+		
+		parametros = new HashMap<>();
+		parametros.put("idEstructura", 27);
+		if(mapa != null){
+			for(HashMap<String, Object> reg : mapa){
+				senador = new HashMap<>();
+				persona = personasC.personaSimplePorId(((Integer)reg.get("id_persona")), ((Integer)reg.get("id_entidad_nacimiento")));
+				senador.put("persona", persona);
+				parametros.put("idPolitik", reg.get("id_politik"));
+				atributos = sqlSession.selectList("estructuras.reportes.atributos", parametros);
+				for(HashMap<String, Object> atributo : atributos){
+					figuraAtributo = FiguraAtributosDO.valueOf((String) atributo.get("tipo_atributo"));
+					switch(figuraAtributo){
+					case PARTIDO_POLITICO:
+						partido = partidosC.partidoPorId((Integer) atributo.get("dato01_int"));
+						senador.put("partido", partido);
+						break;
+					}
+				}
+				listado.add(senador);
+			}
+		}
+		logger.debug("listado de Senadores: {}", listado);
+		
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+	}
+	
+	public Modelo<HashMap<String, Object>> infoSenadoresRP(EntidadEO entidad){
+		Modelo<HashMap<String, Object>> modelo;
+		List<HashMap<String, Object>> mapa, listado, atributos;
+		HashMap<String, Object> senador, parametros;
+		PersonaEO persona;
+		PartidoEO partido;
+		FiguraAtributosDO figuraAtributo;
+		
+		modelo = new Modelo<>();
+		listado = new ArrayList<>();
+		
+		mapa = sqlSession.selectList("estructuras.reportes.senadoresRPPorEntidad", entidad);
+		logger.debug("mapa: {}", mapa);
+		
+		parametros = new HashMap<>();
+		parametros.put("idEstructura", 28);
+		if(mapa != null){
+			for(HashMap<String, Object> reg : mapa){
+				senador = new HashMap<>();
+				persona = personasC.personaSimplePorId(((Integer)reg.get("id_persona")), ((Integer)reg.get("id_entidad_nacimiento")));
+				senador.put("persona", persona);
+				parametros.put("idPolitik", reg.get("id_politik"));
+				atributos = sqlSession.selectList("estructuras.reportes.atributos", parametros);
+				for(HashMap<String, Object> atributo : atributos){
+					figuraAtributo = FiguraAtributosDO.valueOf((String) atributo.get("tipo_atributo"));
+					switch(figuraAtributo){
+					case PARTIDO_POLITICO:
+						partido = partidosC.partidoPorId((Integer) atributo.get("dato01_int"));
+						senador.put("partido", partido);
+						break;
+					}
+				}
+				listado.add(senador);
+			}
+		}
+		logger.debug("listado de Senadores: {}", listado);
+		
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+	}
+	
+	public Modelo<HashMap<String, Object>> infoDiputadosMR(EntidadEO entidad){
+		Modelo<HashMap<String, Object>> modelo;
+		List<HashMap<String, Object>> mapa, listado, atributos;
+		HashMap<String, Object> diputado, parametros;
+		PersonaEO persona;
+		PartidoEO partido;
+		FiguraAtributosDO figuraAtributo;
+		
+		modelo = new Modelo<>();
+		listado = new ArrayList<>();
+		
+		mapa = sqlSession.selectList("estructuras.reportes.diputadosMRPorEntidad", entidad);
+		logger.debug("mapa: {}", mapa);
+		
+		parametros = new HashMap<>();
+		parametros.put("idEstructura", 29);
+		if(mapa != null){
+			for(HashMap<String, Object> reg : mapa){
+				diputado = new HashMap<>();
+				persona = personasC.personaSimplePorId(((Integer)reg.get("id_persona")), ((Integer)reg.get("id_entidad_nacimiento")));
+				diputado.put("persona", persona);
+				parametros.put("idPolitik", reg.get("id_politik"));
+				atributos = sqlSession.selectList("estructuras.reportes.atributos", parametros);
+				for(HashMap<String, Object> atributo : atributos){
+					figuraAtributo = FiguraAtributosDO.valueOf((String) atributo.get("tipo_atributo"));
+					switch(figuraAtributo){
+					case PARTIDO_POLITICO:
+						partido = partidosC.partidoPorId((Integer) atributo.get("dato01_int"));
+						diputado.put("partido", partido);
+						break;
+					}
+				}
+				listado.add(diputado);
+			}
+		}
+		logger.debug("listado de Diputados de MR: {}", listado);
+		
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+	}
+	
+	public Modelo<HashMap<String, Object>> infoPresidentesMunicipales(EntidadEO entidad){
+		Modelo<HashMap<String, Object>> modelo;
+		List<HashMap<String, Object>> mapa, listado, atributos;
+		HashMap<String, Object> presidenteMunicipal, parametros;
+		PersonaEO persona;
+		PartidoEO partido;
+		FiguraAtributosDO figuraAtributo;
+		
+		modelo = new Modelo<>();
+		listado = new ArrayList<>();
+		
+		mapa = sqlSession.selectList("estructuras.reportes.presidentesMunicipalesPorEntidad", entidad);
+		logger.debug("mapa: {}", mapa);
+		
+		parametros = new HashMap<>();
+		parametros.put("idEstructura", 27);
+		if(mapa != null){
+			for(HashMap<String, Object> reg : mapa){
+				presidenteMunicipal = new HashMap<>();
+				persona = personasC.personaSimplePorId(((Integer)reg.get("id_persona")), ((Integer)reg.get("id_entidad_nacimiento")));
+				presidenteMunicipal.put("persona", persona);
+				parametros.put("idPolitik", reg.get("id_politik"));
+				atributos = sqlSession.selectList("estructuras.reportes.atributos", parametros);
+				for(HashMap<String, Object> atributo : atributos){
+					figuraAtributo = FiguraAtributosDO.valueOf((String) atributo.get("tipo_atributo"));
+					switch(figuraAtributo){
+					case PARTIDO_POLITICO:
+						partido = partidosC.partidoPorId((Integer) atributo.get("dato01_int"));
+						presidenteMunicipal.put("partido", partido);
+						break;
+					case PERIODO:
+						presidenteMunicipal.put("fechaInicio", atributo.get("dato01_text"));
+						presidenteMunicipal.put("fechaTermino", atributo.get("dato02_text"));
+						break;
+					}
+				}
+				listado.add(presidenteMunicipal);
+			}
+		}
+		logger.debug("listado de Presidentes Municipales: {}", listado);
+		
+		modelo.setListado(listado);
+		if(!listado.isEmpty()){
+			modelo.setSeleccionado(listado.get(0));
+		}
+		
+		return modelo;
+	}
+}

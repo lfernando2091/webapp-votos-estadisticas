@@ -1,0 +1,121 @@
+package com.saganet.politik.database.catalogos;
+
+import java.io.Serializable;
+
+import org.apache.ibatis.type.Alias;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.saganet.politik.database.gis.GeoDataEO;
+import com.saganet.politik.modelos.JavaBeanT;
+
+@Alias("SeccionEO")
+public class SeccionEO extends JavaBeanT implements Serializable {
+	private static final long serialVersionUID = -4055673425009874693L;
+
+	private Integer id;
+	private Integer idSeccion;
+	private EntidadEO entidad;
+	private DFederalEO dFederal;
+	private DLocalEO dLocal;
+	private MunicipioEO municipio;
+	private TipoSeccionEO tipo;
+	private String llave;
+	private GeoDataEO geoData;
+
+	@Override
+	public String toString() {
+		return "SeccionEO [id=" + id + ", idSeccion=" + idSeccion + ", entidad=" + entidad + ", dFederal=" + dFederal
+				+ ", dLocal=" + dLocal + ", municipio=" + municipio + ", tipo=" + tipo + ", llave=" + llave
+				+ ", geoData=" + geoData + "]";
+	}
+	
+	public boolean contieneTerritorio(JavaBeanT territorio){
+		return this.equals(territorio) || entidad.equals(territorio) || dFederal.equals(territorio) || dLocal.equals(territorio) || municipio.equals(territorio);
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getIdSeccion() {
+		return idSeccion;
+	}
+
+	public void setIdSeccion(Integer idSeccion) {
+		this.idSeccion = idSeccion;
+	}
+
+	public EntidadEO getEntidad() {
+		return entidad;
+	}
+
+	public void setEntidad(EntidadEO entidad) {
+		this.entidad = entidad;
+	}
+
+	public DFederalEO getdFederal() {
+		return dFederal;
+	}
+
+	public void setdFederal(DFederalEO dFederal) {
+		this.dFederal = dFederal;
+	}
+
+	public DLocalEO getdLocal() {
+		return dLocal;
+	}
+
+	public void setdLocal(DLocalEO dLocal) {
+		this.dLocal = dLocal;
+	}
+
+	public MunicipioEO getMunicipio() {
+		return municipio;
+	}
+
+	public void setMunicipio(MunicipioEO municipio) {
+		this.municipio = municipio;
+	}
+
+	public TipoSeccionEO getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(TipoSeccionEO tipo) {
+		this.tipo = tipo;
+	}
+
+	public String getLlave() {
+		return llave;
+	}
+
+	public void setLlave(String llave) {
+		this.llave = llave;
+	}
+
+	public GeoDataEO getGeoData() {
+		return geoData;
+	}
+
+	public void setGeoData(GeoDataEO geoData) {
+		this.geoData = geoData;
+	}
+	
+	@JsonIgnore
+	public String getNombre(){
+		StringBuilder nombre;
+		
+		nombre = new StringBuilder();
+		
+		//nombre.append(entidad.getNombre());
+		//nombre.append(": ");
+		nombre.append(idSeccion);
+		
+		return nombre.toString();
+	}
+
+}

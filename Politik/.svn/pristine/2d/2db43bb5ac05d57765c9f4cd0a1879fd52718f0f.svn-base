@@ -1,0 +1,46 @@
+package com.saganet.politik.components.dominios;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.saganet.politik.dominios.BuenaRegularNadaDO;
+import com.saganet.politik.dominios.MuchoRegularNadaDO;
+import com.saganet.politik.dominios.SiNoDO;
+import com.saganet.politik.modelos.Modelo;
+
+
+
+@Component("DominiosModelosC")
+public class ModelosC {
+
+	private static final Logger logger = LoggerFactory.getLogger(ModelosC.class);
+	
+	public Modelo<SiNoDO>  sino(){
+		 Modelo<SiNoDO> modelo;
+		 List<SiNoDO> listado;
+		 listado= Arrays.asList(SiNoDO.values());			
+		 modelo =  new Modelo<>(listado);
+		return modelo;
+	}
+	
+	
+	public Modelo<MuchoRegularNadaDO>  muchoRegularNada(){
+		 Modelo<MuchoRegularNadaDO> modelo;
+		 List<MuchoRegularNadaDO> listado;
+		 listado= Arrays.asList(MuchoRegularNadaDO.values());			
+		 modelo =  new Modelo<>(listado);
+		return modelo;
+	}
+	public Modelo<BuenaRegularNadaDO>  buenaRegularNada(){
+		 Modelo<BuenaRegularNadaDO> modelo;
+		 List<BuenaRegularNadaDO> listado;
+		 listado= Arrays.asList(BuenaRegularNadaDO.values());			
+		 modelo =  new Modelo<>(listado);
+		return modelo;
+	}
+}

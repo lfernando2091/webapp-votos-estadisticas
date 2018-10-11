@@ -1,0 +1,149 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="Resultados Entrevistas">
+						<p:panelGrid columns="2">
+							<p:column>
+								<p:outputLabel value="Nivel :"/>
+							</p:column>
+							<p:column>
+									<p:selectOneMenu value="${modeloNiveles.seleccionado}" style="width:300px">
+										<p:ajax event="itemSelect" onsuccess="actualizar()" />
+					            		<f:selectItems value="${modeloNiveles.listado}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+									</p:selectOneMenu>
+							</p:column>
+						</p:panelGrid>
+						<p:panel id="gridEncuestas">
+							<p:dataTable value="${modelo.listado}" var="fila" rowKey="${fila.id}" selection="${modelo.seleccionado}" summary="true"
+									selectionMode="single" paginator="true" rows="15" id="tablaResultados" paginatorPosition="bottom">
+									<p:ajax event="rowSelect" oncomplete="actualizarGrafica()"/>
+									<p:column headerText="Region"  width="200" filterable="true" filterMatchMode="contains" filterStyle="width:90%;" filterBy="${fila.nombreRegion}">
+										<p:outputLabel value="${fila.nombreRegion}"/>
+									</p:column>
+									<p:column headerText="Municipio"  width="200" filterable="true" filterMatchMode="contains" filterStyle="width:90%;"
+										 filterBy="${fila.municipio} ${fila.nombreMunicipio}" rendered="${modeloNiveles.seleccionado!='REGION'}">
+										<p:outputLabel value="${fila.municipio} ${fila.nombreMunicipio}"/>
+									</p:column>
+									<p:column headerText="N° Municipios" width="150" rendered="${modeloNiveles.seleccionado=='REGION'}">
+										<p:outputLabel value="${fila.numMunicipio}"/>
+									</p:column>
+									<p:column headerText="Seccion" width="150" filterable="true" filterMatchMode="contains" filterStyle="width:90%;"
+										 filterBy="${fila.seccion}" rendered="${modeloNiveles.seleccionado=='SECCION'}">
+										<p:outputLabel value="${fila.seccion}"/>
+									</p:column>
+									<p:column headerText="N° Secciones" width="100" rendered="${modeloNiveles.seleccionado!='SECCION'}">
+										<p:outputLabel value="${fila.numSeccion}"/>
+									</p:column>
+									<p:column headerText="Completadas" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.exitosoF}"/>
+									</p:column>
+									<p:column headerText="% Completadas" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeExitoso}"/>
+									</p:column>
+									<p:column headerText="No Hubo Quien Contestara" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.noHuboQuienContestaraF}"/>
+									</p:column>
+									<p:column headerText="% No Hubo Quien Contestara" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeNoHuboQuienContestara}"/>
+									</p:column>
+									<p:column headerText="Menor De Edad" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.menorDeEdadF}"/>
+									</p:column> 
+									<p:column headerText="% Menor De Edad" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeMenorDeEdad}"/>
+									</p:column>
+									<p:column headerText="Domicilio No Encontrado" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.domicilioNoEncontradoF}"/>
+									</p:column>
+									<p:column headerText="% Domicilio No Encontrado" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeDomicilioNoEncontrado}"/>
+									</p:column>
+									<p:column headerText="No Quisieron Contestar" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.noQuisieronContestarF}"/>
+									</p:column>
+									<p:column headerText="% No Quisieron Contestar" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeNoQuisieronContestar}"/>
+									</p:column>
+									<p:column headerText="Otro" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.otroF}"/>
+									</p:column>
+									<p:column headerText="% Otro" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeOtro}"/>
+									</p:column>
+									<p:column headerText="Realizadas" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.totalF}"/>
+									</p:column>
+									<p:column headerText="Esperadas" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.metaF}"/>
+									</p:column>
+									<p:column headerText="% Esperadas" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeMeta}"/>
+									</p:column>
+									<p:column headerText="Meta" width="100" style="text-align:right">
+										<p:outputLabel value="${fila.totalTotalF}"/>
+									</p:column>
+									<p:column headerText="% Meta" width="100" style="text-align:center">
+										<p:outputLabel value="${fila.porcentajeTotal}"/>
+									</p:column>
+									<p:columnGroup type="footer">
+										 <p:row>
+								            <p:column colspan="3" style="text-align:right" footerText="Total:" />
+											<p:column footerText="${filaTotal.exitosoF}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeExitoso}" style="text-align:center"/>
+											<p:column footerText="${filaTotal.noHuboQuienContestaraF}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeNoHuboQuienContestara}" style="text-align:center"/>
+											<p:column footerText="${filaTotal.menorDeEdadF}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeMenorDeEdad}"  style="text-align:center"/>
+											<p:column footerText="${filaTotal.domicilioNoEncontradoF}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeDomicilioNoEncontrado}" style="text-align:center"/>
+											<p:column footerText="${filaTotal.noQuisieronContestarF}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeNoQuisieronContestar}" style="text-align:center"/>
+											<p:column footerText="${filaTotal.otroF}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeOtro}" style="text-align:center"/>
+											<p:column footerText="${filaTotal.totalF}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.metaF}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeMeta}"  style="text-align:center"/>
+											<p:column footerText="${filaTotal.totalTotalF}"  style="text-align:right"/>
+											<p:column footerText="${filaTotal.porcentajeTotal}"  style="text-align:center"/>
+										</p:row>
+							        </p:columnGroup>
+									<f:facet name="footer">
+										<h:commandLink>
+											<p:graphicImage value="/resources/botones/DESCARGAR.png" />
+											<p:dataExporter type="xls" target="tablaResultados" fileName="ResultadosEncuestas"/>
+										</h:commandLink>
+									</f:facet>
+							</p:dataTable>
+							<p:chart type="bar" model="${chart}"  id="graficaBarras"  shadow="true" barPadding="60"/>		
+						</p:panel>
+					</p:panel>	
+					
+					<p:remoteCommand name="actualizarGrafica" action="actualizarGrafica" update="gridEncuestas"/>
+					<p:remoteCommand name="actualizar" action="actualizar" update="gridEncuestas"/>
+					
+					<h:outputStylesheet>
+							.columna1{
+								vertical-align: top;
+							}
+							.columna2{
+								vertical-align: top;
+								width: 300px;
+							}
+					</h:outputStylesheet>
+					
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

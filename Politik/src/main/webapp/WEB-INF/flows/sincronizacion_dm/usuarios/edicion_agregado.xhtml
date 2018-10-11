@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panel header="${usuario.id!=null?'Edicion':'Agregado'} Usuario">
+							<p:panelGrid columns="2" columnClasses="topAlign, topAlign2">
+								<p:column>
+									<p:outputLabel value="Nick"/>
+								</p:column>
+								<p:column>
+									<p:inputText value="${usuario.usuario}" size="50" disabled="${usuario.id!=null}"/>
+								</p:column>
+								<p:column>
+									<p:outputLabel value="Password"/>
+								</p:column>
+								<p:column>
+									<p:inputText value="${usuario.password}" size="50"/>
+								</p:column>
+								<p:column>
+									<p:outputLabel value="Nombre"/>
+								</p:column>
+								<p:column>
+									<p:inputText value="${usuario.nombre}" size="50"  onkeyup="this.value=this.value.toUpperCase();"/>
+								</p:column>
+								<p:column>
+									<p:outputLabel value="Primer Apellido"/>
+								</p:column>
+								<p:column>
+									<p:inputText value="${usuario.primerApellido}" size="50"  onkeyup="this.value=this.value.toUpperCase();"/>
+								</p:column>
+								<p:column>
+									<p:outputLabel value="Segundo Apellido" />
+								</p:column>
+								<p:column>
+									<p:inputText value="${usuario.segundoApellido}" size="50"  onkeyup="this.value=this.value.toUpperCase();"/>
+								</p:column>
+								<p:column>
+									<p:outputLabel value="Región"/>
+								</p:column>
+								<p:column>
+										<p:selectOneMenu value="${usuario.region}" style="width:300px">
+							            		<f:selectItems value="${listadoRegiones}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+										</p:selectOneMenu>
+								</p:column>
+								<p:column>
+									<p:outputLabel value="Estatus"/>
+								</p:column>
+								<p:column>
+										<p:selectOneMenu value="${usuario.estatus}" style="width:300px">
+							            		<f:selectItems value="${listadoEstatus}" var="fila" itemLabel="${fila.nombre}" itemValue="${fila}" />		
+										</p:selectOneMenu>
+								</p:column>
+							</p:panelGrid>
+							<f:facet name="footer">
+								
+								
+									<p:commandLink action="agregar" rendered="${usuario.id==null}">
+										<p:graphicImage value="/resources/botones/GUARDAR.png"/>
+									</p:commandLink>
+									<p:commandLink action="guardar" rendered="${usuario.id!=null}">
+										<p:graphicImage value="/resources/botones/GUARDAR.png"/>
+									</p:commandLink>
+									<p:commandLink action="cancelar">
+										<p:graphicImage value="/resources/botones/CANCELAR.png"/>
+									</p:commandLink>
+							</f:facet>			
+					</p:panel>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+				</h:form>
+				<h:outputStylesheet>
+					.topAlign{
+						width: 200px;
+					}
+					.topAlign2{
+						width: 300px;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

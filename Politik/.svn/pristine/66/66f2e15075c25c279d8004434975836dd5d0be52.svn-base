@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="estadisticas.resultados_encuestas">
+	<resultMap type="ResultadosEncuestasEO" id="resultadoEncuesta">
+		<id column="ResultadosEncuestasEO_id" property="id" javaType="Integer"/>
+		<result column="ResultadosEncuestasEO_fechaEnc" property="fechaEnc" javaType="java.sql.Date"/>
+		<result column="ResultadosEncuestasEO_validador" property="validador" javaType="String"/>
+		<result column="ResultadosEncuestasEO_region" property="region" javaType="String"/>
+		<result column="ResultadosEncuestasEO_dtto" property="dtto" javaType="String"/>
+		<result column="ResultadosEncuestasEO_zona" property="zona" javaType="String"/>
+		<result column="ResultadosEncuestasEO_secc" property="secc" javaType="String"/>
+		<result column="ResultadosEncuestasEO_programa" property="programa" javaType="String"/>
+		<result column="ResultadosEncuestasEO_edad" property="edad" javaType="Integer"/>
+		<result column="ResultadosEncuestasEO_mpio" property="mpio" javaType="String"/>
+		<result column="ResultadosEncuestasEO_sexo" property="sexo" javaType="String"/>
+		<result column="ResultadosEncuestasEO_seEnc" property="seEnc" javaType="String"/>
+		<result column="ResultadosEncuestasEO_1CredElec" property="_1CredElec" javaType="String"/>
+		<result column="ResultadosEncuestasEO_2País" property="_2País" javaType="String"/>
+		<result column="ResultadosEncuestasEO_2EdoMex" property="_2EdoMex" javaType="String"/>
+		<result column="ResultadosEncuestasEO_2Mpio" property="_2Mpio" javaType="String"/>
+		<result column="ResultadosEncuestasEO_3CalfEconAct" property="_3CalfEconAct" javaType="String"/>
+		<result column="ResultadosEncuestasEO_4CalfPolAct" property="_4CalfPolAct" javaType="String"/>
+		<result column="ResultadosEncuestasEO_5SitEconPrx" property="_5SitEconPrx" javaType="String"/>
+		<result column="ResultadosEncuestasEO_6SitPolPrx" property="_6SitPolPrx" javaType="String"/>
+		<result column="ResultadosEncuestasEO_7MedNot" property="_7MedNot" javaType="String"/>
+		<result column="ResultadosEncuestasEO_8MedUtilz" property="_8MedUtilz" javaType="String"/>
+		<result column="ResultadosEncuestasEO_9PartIdentf" property="_9PartIdentf" javaType="String"/>
+		<result column="ResultadosEncuestasEO_10GemDif" property="_10GemDif" javaType="String"/>
+		<result column="ResultadosEncuestasEO_11PartNuncVot" property="_11PartNuncVot" javaType="String"/>
+		<result column="ResultadosEncuestasEO_12GemVot" property="_12GemVot" javaType="String"/>
+		<result column="ResultadosEncuestasEO_13GemPRI_PAN" property="_13GemPRI_PAN" javaType="String"/>
+		<result column="ResultadosEncuestasEO_14GemPRI_PRD" property="_14GemPRI_PRD" javaType="String"/>
+		<result column="ResultadosEncuestasEO_15ApyGfed" property="_15ApyGfed" javaType="String"/>
+		<result column="ResultadosEncuestasEO_16EPNcump" property="_16EPNcump" javaType="String"/>
+		<result column="ResultadosEncuestasEO_17SatfapyEPN" property="_17SatfapyEPN" javaType="String"/>
+		<result column="ResultadosEncuestasEO_18ApyMejIng" property="_18ApyMejIng" javaType="String"/>
+		<result column="ResultadosEncuestasEO_19SolcOtrApy" property="_19SolcOtrApy" javaType="String"/>
+		<result column="ResultadosEncuestasEO_20InfProgFed" property="_20InfProgFed" javaType="String"/>
+		<result column="ResultadosEncuestasEO_21Cel" property="_21Cel" javaType="String"/>
+		<result column="ResultadosEncuestasEO_21Correo" property="_21Correo" javaType="String"/>
+		<result column="ResultadosEncuestasEO_22PteMx" property="_22PteMx" javaType="Integer"/>
+		<result column="ResultadosEncuestasEO_22Gob" property="_22Gob" javaType="Integer"/>
+		<result column="ResultadosEncuestasEO_22PteMpal" property="_22PteMpal" javaType="Integer"/>
+		<result column="ResultadosEncuestasEO_23AnavpEsc" property="_23AnavpEsc" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23AnavpOpin" property="_23AnavpOpin" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23AencinrEsc" property="_23AencinrEsc" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23AencinrOpin" property="_23AencinrOpin" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23EnemaEsc" property="_23EnemaEsc" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23EnemaOpin" property="_23EnemaOpin" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23JvzqzmEsc" property="_23JvzqzmEsc" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23JvzqzmOpin" property="_23JvzqzmOpin" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23JmanzqEsc" property="_23JmanzqEsc" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23JmanzqOpin" property="_23JmanzqOpin" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23YpolvnkEsc" property="_23YpolvnkEsc" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23YpolvnkOpin" property="_23YpolvnkOpin" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23LvidgyEsc" property="_23LvidgyEsc" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23LvidgyOpin" property="_23LvidgyOpin" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23AmazomEsc" property="_23AmazomEsc" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23AmazomOpin" property="_23AmazomOpin" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23AlilhaEsc" property="_23AlilhaEsc" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23AlilhaOpin" property="_23AlilhaOpin" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23CarmmEsc" property="_23CarmmEsc" javaType="String"/>
+		<result column="ResultadosEncuestasEO_23CarmmOpin" property="_23CarmmOpin" javaType="String"/>
+	</resultMap>
+	
+	<sql id="query">
+		SELECT 
+			e.id ResultadosEncuestasEO_id, 
+			e.creada ResultadosEncuestasEO_fechaEnc , 
+			u.nombre||' '||u.paterno||' '||u.materno ResultadosEncuestasEO_validador, 
+			u.region ResultadosEncuestasEO_region,  
+			u.distrito ResultadosEncuestasEO_dtto,
+			u.nombre_municipio ResultadosEncuestasEO_mpio, 
+			u.zona_asignada ResultadosEncuestasEO_zona, 
+			edo.programa_unico ResultadosEncuestasEO_programa, 
+			u.seccion_asignada ResultadosEncuestasEO_secc, 
+			(CASE WHEN pre.sexo=1 THEN 'H' 	ELSE 'M' END) ResultadosEncuestasEO_sexo, 
+			EXTRACT(YEAR FROM AGE(TO_DATE(pre.fecha_nacimiento,'YYYYMMDD')))::INTEGER ResultadosEncuestasEO_edad, 
+			(SELECT cr.codigo_respuesta FROM codigos_respuesta cr WHERE cr.id_codigo_respuesta=e.codigo_resultado) ResultadosEncuestasEO_seEnc, 
+			(SELECT c.texto FROM catsn c WHERE c.id=e.tiene_ine) ResultadosEncuestasEO_1CredElec,
+			e.problema_pais ResultadosEncuestasEO_2País, 
+			e.problema_estado ResultadosEncuestasEO_2EdoMex, 
+			e.problema_mpio ResultadosEncuestasEO_2Mpio, 
+			(SELECT c1.texto FROM catmpinn c1 WHERE c1.id=e.actual_economico) ResultadosEncuestasEO_3CalfEconAct, 
+			(SELECT c2.texto FROM catmpinn c2 WHERE c2.id=e.actual_politico) ResultadosEncuestasEO_4CalfPolAct, 
+			(SELECT c3.texto FROM catmpinn c3 WHERE c3.id=e.futuro_economico) ResultadosEncuestasEO_5SitEconPrx, 
+			(SELECT c4.texto FROM catmpinn c4 WHERE c4.id=e.futuro_politico) ResultadosEncuestasEO_6SitPolPrx, 
+			(SELECT string_agg(c5.texto,',') FROM catmedio c5 WHERE c5.id in (SELECT m.medio_id FROM medios m WHERE m.encuesta_id=e.id)) ResultadosEncuestasEO_7MedNot, 
+			(SELECT string_agg(c6.texto,',') FROM catcomunicacion c6 
+			WHERE c6.id in (SELECT m.comunicacion_id FROM comunicacion m WHERE m.encuesta_id=e.id)) ResultadosEncuestasEO_8MedUtilz, 
+			(SELECT string_agg(c7.texto,',') FROM catpartido c7 WHERE c7.id in (SELECT m.partido_id FROM simpatizapartido m WHERE m.encuesta_id=e.id)) ResultadosEncuestasEO_9PartIdentf,
+			(SELECT c8.texto FROM catsnnc c8 WHERE c8.id=e.gob_estatal_dif_pri) ResultadosEncuestasEO_10GemDif,
+			(SELECT c9.texto FROM catpartido c9 WHERE c9.id=e.no_votaria_por) ResultadosEncuestasEO_11PartNuncVot,
+			(SELECT c10.texto FROM catpartido c10 WHERE c10.id=e.votaria_por_estatal) ResultadosEncuestasEO_12GemVot,
+			(SELECT c11.texto FROM catpri_pan c11 WHERE c11.id=e.voto_pri_pan_estatal) ResultadosEncuestasEO_13GemPRI_PAN,
+			(SELECT c12.texto FROM catpri_prd c12 WHERE c12.id=e.voto_pri_prd_estatal) ResultadosEncuestasEO_14GemPRI_PRD,
+			(SELECT c13.texto FROM catsnnc c13 WHERE c13.id=e.benef_programa_social) ResultadosEncuestasEO_15ApyGfed,
+			(SELECT c14.texto FROM catmbrm c14 WHERE c14.id=e.calif_epn) ResultadosEncuestasEO_16EPNcump,
+			(SELECT c15.texto FROM catmbrm c15 WHERE c15.id=e.calif_gob_epn) ResultadosEncuestasEO_17SatfapyEPN,
+			(SELECT c16.texto FROM catmbrm c16 WHERE c16.id=e.calif_ingreso_fam_epn) ResultadosEncuestasEO_18ApyMejIng,
+			e.otros_apoyos ResultadosEncuestasEO_19SolcOtrApy,
+			(SELECT c17.texto FROM catsnnc c17 WHERE c17.id=e.recibir_info_prog) ResultadosEncuestasEO_20InfProgFed,
+			e.tel ResultadosEncuestasEO_21Cel,
+			e.email ResultadosEncuestasEO_21Correo,
+			e.calif_num_presidente ResultadosEncuestasEO_22PteMx,
+			e.calif_num_gobernador ResultadosEncuestasEO_22Gob,
+			e.calif_num_pres_municip ResultadosEncuestasEO_22PteMpal,
+			t.anavp_esc ResultadosEncuestasEO_23AnavpEsc,
+			t.anavp_opin ResultadosEncuestasEO_23AnavpOpin,
+			t.aencinr_esc ResultadosEncuestasEO_23AencinrEsc,
+			t.aencinr_opin ResultadosEncuestasEO_23AencinrOpin,
+			t.enema_esc ResultadosEncuestasEO_23EnemaEsc,
+			t.enema_opin ResultadosEncuestasEO_23EnemaOpin,
+			t.jvzqzm_esc ResultadosEncuestasEO_23JvzqzmEsc,
+			t.jvzqzm_opin ResultadosEncuestasEO_23JvzqzmOpin,
+			t.jmanzq_esc ResultadosEncuestasEO_23JmanzqEsc,
+			t.jmanzq_opin ResultadosEncuestasEO_23JmanzqOpin,
+			t.ypolvnk_esc ResultadosEncuestasEO_23YpolvnkEsc,
+			t.ypolvnk_opin ResultadosEncuestasEO_23YpolvnkOpin,
+			t.lvidgy_esc ResultadosEncuestasEO_23LvidgyEsc,
+			t.lvidgy_opin ResultadosEncuestasEO_23LvidgyOpin,
+			t.amazom_esc ResultadosEncuestasEO_23AmazomEsc,
+			t.amazom_opin ResultadosEncuestasEO_23AmazomOpin,
+			t.alilha_esc ResultadosEncuestasEO_23AlilhaEsc,
+			t.alilha_opin ResultadosEncuestasEO_23AlilhaOpin,
+			t.carmm_esc ResultadosEncuestasEO_23CarmmEsc,
+			t.carmm_opin ResultadosEncuestasEO_23CarmmOpin
+		  FROM encuesta e
+		  LEFT JOIN (
+			SELECT t.encuesta_id id,
+				string_agg(CASE WHEN t.id=1 THEN t.escuhar ELSE null END,'') anavp_esc, 
+				string_agg(CASE WHEN t.id=1 THEN t.opinion ELSE null END,'') anavp_opin,
+				string_agg(CASE WHEN t.id=2 THEN t.escuhar ELSE null END,'') aencinr_esc, 
+				string_agg(CASE WHEN t.id=2 THEN t.opinion ELSE null END,'') aencinr_opin,
+				string_agg(CASE WHEN t.id=3 THEN t.escuhar ELSE null END,'') enema_esc, 
+				string_agg(CASE WHEN t.id=3 THEN t.opinion ELSE null END,'') enema_opin,
+				string_agg(CASE WHEN t.id=4 THEN t.escuhar ELSE null END,'') jvzqzm_esc, 
+				string_agg(CASE WHEN t.id=4 THEN t.opinion ELSE null END,'') jvzqzm_opin,
+				string_agg(CASE WHEN t.id=5 THEN t.escuhar ELSE null END,'') jmanzq_esc, 
+				string_agg(CASE WHEN t.id=5 THEN t.opinion ELSE null END,'') jmanzq_opin,
+				string_agg(CASE WHEN t.id=6 THEN t.escuhar ELSE null END,'') ypolvnk_esc, 
+				string_agg(CASE WHEN t.id=6 THEN t.opinion ELSE null END,'') ypolvnk_opin,
+				string_agg(CASE WHEN t.id=7 THEN t.escuhar ELSE null END,'') lvidgy_esc, 
+				string_agg(CASE WHEN t.id=7 THEN t.opinion ELSE null END,'') lvidgy_opin,
+				string_agg(CASE WHEN t.id=8 THEN t.escuhar ELSE null END,'') amazom_esc, 
+				string_agg(CASE WHEN t.id=8 THEN t.opinion ELSE null END,'') amazom_opin,
+				string_agg(CASE WHEN t.id=9 THEN t.escuhar ELSE null END,'') alilha_esc, 
+				string_agg(CASE WHEN t.id=9 THEN t.opinion ELSE null END,'') alilha_opin,
+				string_agg(CASE WHEN t.id=10 THEN t.escuhar ELSE null END,'') carmm_esc, 
+				string_agg(CASE WHEN t.id=10 THEN t.opinion ELSE null END,'') carmm_opin
+			FROM (
+			  SELECT cp.encuesta_id, p.id, p.texto personaje, (SELECT c0.texto FROM catsnnc c0 WHERE c0.id=cp.snnc_id) escuhar, 
+				(SELECT cc.texto FROM catmbrm cc WHERE cc.id=op.mbrm_id) opinion
+			  FROM catpersonaje p
+			  LEFT JOIN conocepersonaje cp on (p.id=cp.personaje_id)
+			  LEFT JOIN opinionpersonaje op on (cp.encuesta_id=op.encuesta_id and op.personaje_id=p.id)
+			  ORDER BY  cp.encuesta_id, p.id
+			) t 
+			GROUP BY t.encuesta_id
+		  ) t ON (t.id=e.id)
+		  JOIN precarga pre ON (pre.id=e.encuestado_id::INTEGER)
+		  JOIN administracion.contactos_edomex_completo edo ON (pre.id=edo.id_dm)
+		  JOIN administracion.usuarios_dispositivos_moviles_edomex_completa u ON (u.pkey=e.usuario_id)
+	</sql>
+	
+	
+	
+	<select id="selectContestadas" resultMap="resultadoEncuesta" parameterType="hashmap">
+		<include refid="query"/>
+		<if test="fechaInicio!=null and fechaFin!=null">
+			WHERE (CASE WHEN e.creada&lt;TO_DATE('2016-10-18','YYYY-MM-DD') THEN TO_DATE('2016-10-18','YYYY-MM-DD') ELSE e.creada END)&gt;=TO_DATE('${fechaInicio}','YYYY-MM-DD') 
+			AND   (CASE WHEN e.creada&lt;TO_DATE('2016-10-18','YYYY-MM-DD') THEN TO_DATE('2016-10-18','YYYY-MM-DD') ELSE e.creada END)&lt;=TO_DATE('${fechaFin}','YYYY-MM-DD')
+		</if>	
+		limit 100
+	</select>
+
+	
+	<select id="selectSinLimit" resultMap="resultadoEncuesta" parameterType="hashmap">
+		<include refid="query"/>
+		<if test="fechaInicio!=null and fechaFin!=null">
+			WHERE (CASE WHEN e.creada&lt;TO_DATE('2016-10-18','YYYY-MM-DD') THEN TO_DATE('2016-10-18','YYYY-MM-DD') ELSE e.creada END)&gt;=TO_DATE('${fechaInicio}','YYYY-MM-DD') 
+			AND   (CASE WHEN e.creada&lt;TO_DATE('2016-10-18','YYYY-MM-DD') THEN TO_DATE('2016-10-18','YYYY-MM-DD') ELSE e.creada END)&lt;=TO_DATE('${fechaFin}','YYYY-MM-DD')
+		</if>	
+	</select>
+	
+	<update id="copyReporte" parameterType="hashmap">
+		COPY (
+			<include refid="query"/>
+			<if test="fechaInicio!=null and fechaFin!=null">
+				WHERE (CASE WHEN e.creada&lt;TO_DATE('2016-10-18','YYYY-MM-DD') THEN TO_DATE('2016-10-18','YYYY-MM-DD') ELSE e.creada END)&gt;=TO_DATE('${fechaInicio}','YYYY-MM-DD') 
+				AND   (CASE WHEN e.creada&lt;TO_DATE('2016-10-18','YYYY-MM-DD') THEN TO_DATE('2016-10-18','YYYY-MM-DD') ELSE e.creada END)&lt;=TO_DATE('${fechaFin}','YYYY-MM-DD')
+			</if>
+		)
+ 		to '${ruta}' DELIMITER  ',' ENCODING 'WIN1254' CSV HEADER;	
+	</update>
+</mapper>

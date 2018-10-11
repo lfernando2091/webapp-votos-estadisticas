@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:breadCrumb>
+						<p:menuitem value="root" url="/app/" />
+						<p:menuitem value="Administración" />
+						<p:menuitem value="Usuarios" url="/app/administracion/usuarios" />
+					</p:breadCrumb>
+
+					<p:panel header="Usuarios del Sistema">
+						<p:panelGrid columns="2" columnClasses="columna1, columna2">
+							<p:dataTable widgetVar="tablaUsuariosWV"
+								value="${modeloUsuarios.listado}" var="fila" rowKey="${fila.id}"
+								selection="${modeloUsuarios.seleccionado}"
+								selectionMode="single" paginator="true" rows="15"
+								paginatorAlwaysVisible="false" paginatorPosition="bottom">
+								<f:facet name="header">
+									<p:outputLabel value="Usuario: " />
+									<h:inputText id="globalFilter"
+										onkeyup="PF('tablaUsuariosWV').filter();" style="width:150px;" />
+								</f:facet>
+								<p:ajax event="rowSelect" update="#{p:component('tabsUsuario')}" />
+								<p:column headerText="Nick" width="150" filterBy="${fila.nick}"
+									filterStyle="display: none;" sortBy="${fila.nick}">${fila.nick}</p:column>
+								<p:column headerText="Nombre">${fila.nombre}</p:column>
+								<p:column headerText="Nivel" width="100">${fila.nivel}</p:column>
+								<p:column headerText="Activo" width="40">${fila.habilitado ? 'Si' : 'No'}</p:column>
+								<p:column headerText="Último Acceso" width="125"
+									sortBy="${fila.ultimoAcceso}">${fila.ultimoAcceso == null ? '' : fila.ultimoAccesoFormato}</p:column>
+							</p:dataTable>
+
+							<p:tabView id="tabsUsuario">
+								<p:tab title="Roles">
+									<p:dataTable value="${modeloUsuarios.seleccionado.roles}"
+										var="fila" paginator="true" rows="15"
+										paginatorAlwaysVisible="false" paginatorPosition="bottom">
+										<p:column headerText="Rol" width="300">${fila.rol}</p:column>
+										<p:column headerText="Descripción">${fila.descripcion}</p:column>
+									</p:dataTable>
+								</p:tab>
+								<p:tab title="Territorios">
+									<p:dataTable value="${modeloUsuarios.seleccionado.territorios}"
+										var="fila" paginator="true" rows="15"
+										paginatorAlwaysVisible="false" paginatorPosition="bottom">
+										<p:column headerText="Llave" width="100">${fila.llave}</p:column>
+										<p:column headerText="Nombre">${fila.nombre}</p:column>
+									</p:dataTable>
+								</p:tab>
+								<p:tab title="Dependencias">
+									<p:dataTable
+										value="${modeloUsuarios.seleccionado.dependencias}" var="fila"
+										paginator="true" paginatorAlwaysVisible="false"
+										paginatorPosition="bottom" rows="15">
+										<p:column headerText="Siglas" width="150">${fila.siglas}</p:column>
+										<p:column headerText="Nombre">${fila.dependencia}</p:column>
+									</p:dataTable>
+								</p:tab>
+								<p:tab title="Accesos">
+									<p:dataTable value="${modeloUsuarios.seleccionado.accesos}"
+										var="fila" paginator="true" rows="15"
+										paginatorAlwaysVisible="false" paginatorPosition="bottom">
+										<p:column headerText="Fecha y Hora" width="125">${fila.accesoFormato}</p:column>
+										<p:column headerText="Host" width="100">${fila.host}</p:column>
+										<p:column headerText="Cliente">${fila.cliente}</p:column>
+									</p:dataTable>
+								</p:tab>
+							</p:tabView>
+							<f:facet name="footer">
+								<p:commandButton value="Agregar" action="agregar" />
+								<p:commandButton value="Editar" action="editar" />
+								<p:commandButton value="Usuarios Conectados" action="usuariosConectados" />
+							</f:facet>
+						</p:panelGrid>
+					</p:panel>
+
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.columna1{
+						vertical-align: top;
+						width: 30%;
+					}
+					
+					.columna2{
+						vertical-align: top;
+					}
+					
+					.ui-datatable-header{
+						text-align: right !important;
+					}
+					
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

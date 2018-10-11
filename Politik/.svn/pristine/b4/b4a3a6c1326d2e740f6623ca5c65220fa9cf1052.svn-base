@@ -1,0 +1,141 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/views/templates/spark/template.xhtml"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:c="http://java.sun.com/jstl/core">
+	<ui:define name="content">
+		<div class="layout-portlets-box">
+			<div class="Container100">
+				<h:form>
+					<p:panelGrid columns="2" columnClasses="topAlign,topAlign">
+						<p:panel header="Dependencias">
+							<p:dataTable value="${modeloDependencias.listado}" var="fila"
+								rowKey="${fila.id}"
+								selection="${modeloDependencias.seleccionado}"
+								selectionMode="single" paginator="true"
+								paginatorAlwaysVisible="false" rows="10" reflow="true">
+								<p:ajax event="rowSelect" onstart="llenarTerritorios()"
+									update="@form" />
+								<p:column headerText="Dependencia Padre" sortable="true"
+									sortBy="${fila.dependenciaPadre.dependencia}">
+${fila.dependenciaPadre.dependencia}
+</p:column>
+								<p:column headerText="Dependencia" sortable="true"
+									sortBy="${fila.dependencia}" filterable="true"
+									filterBy="${fila.dependencia}">
+${fila.dependencia}
+</p:column>
+								<p:column headerText="Nivel Geográfico"
+									sortBy="${fila.nivelGeografico}">
+${fila.nivelGeografico}
+</p:column>
+								<p:column headerText="Nivel Dependencia"
+									sortBy="${fila.nivelDependencia}">
+${fila.nivelDependencia} 
+</p:column>
+							</p:dataTable>
+							<f:facet name="footer">
+							<p:outputLabel value="*Para visualizar la dependencias recien agregadas, cierre sesión e ingrese nuevamente para validar sus información"/>
+							<p:spacer height="10px"/>
+							<p:separator/>
+								<p:commandLink action="agregar" title="Agregar una Dependencia"
+									rendered="true">
+									<p:graphicImage value="/resources/botones/AGREGAR.png" />
+								</p:commandLink>
+								<p:commandLink action="agregarSubnivel"
+									rendered="${sec:areAllGranted('ROLE_CATALOGO_DEPENDENCIAS_EDITAR')}">
+									<p:graphicImage value="/resources/botones/AGREGAR SUBNIVEL.png"
+										title="Agregar una Dependencia al Seleccionado" />
+								</p:commandLink>
+								
+								<p:commandLink action="eliminar" title="Eliminar la Dependencia Seleccionada">
+								<p:graphicImage value="/resources/botones/ELIMINAR.png"/>
+								 <p:confirm header="Confirmación" message="¿Está seguro de eliminar la dependencia seleccionada?" icon="ui-icon-alert" />
+								</p:commandLink>
+
+								<p:commandButton value="Editar" icon="fa fa-edit"
+									action="editar" rendered="false" />
+									
+									 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+        <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+    </p:confirmDialog>
+							</f:facet>
+						</p:panel>
+<p:panelGrid columns="2" columnClasses="topAlign,topAlign">
+						<p:panel id="pnlTerritorios"
+							header="Territorios - ${modeloDependencias.seleccionado.nivelGeografico}">
+							<p:dataTable
+								value="${modeloContenidoGeozona.listado}" var="t" rowKey="${t.id}"
+								id="tblTerritorios" paginator="true" rows="10" selection="${modeloContenidoGeozona.seleccionado}" selectionMode="single"
+								paginatorAlwaysVisible="false" paginatorPosition="bottom">
+								<p:ajax event="rowSelect" onstart="#{modeloDependencias.seleccionado.nivelGeografico eq 'Geozona'?'llenarContenidoGeozona()':null}"/>
+								
+								<p:column headerText="Descripción" filterable="true">
+									<c:if
+										test="#{modeloDependencias.seleccionado.nivelGeografico eq 'Entidad'}">
+										<p:outputLabel value="${t.id} ${t.nombre}" />
+									</c:if>
+									<c:if
+										test="#{modeloDependencias.seleccionado.nivelGeografico eq 'Municipio'}">
+										<p:outputLabel
+											value="${t.llave} - ${t.nombre}" />
+									</c:if>
+									<c:if
+										test="#{modeloDependencias.seleccionado.nivelGeografico eq 'Distrito Federal'}">
+										<p:outputLabel
+											value="${t.llave} - ${t.nombre}" />
+									</c:if>
+									<c:if
+										test="#{modeloDependencias.seleccionado.nivelGeografico eq 'Distrito Local'}">
+										<p:outputLabel
+											value="${t.llave}  - ${t.nombre}" />
+									</c:if>
+									<c:if
+										test="#{modeloDependencias.seleccionado.nivelGeografico eq 'Sección'}">
+										<p:outputLabel
+											value="${t.llave} - ${t.id}" />
+									</c:if>
+									<c:if
+										test="#{modeloDependencias.seleccionado.nivelGeografico eq 'Geozona'}">
+										<p:outputLabel
+											value="${t.nombre}" />
+									</c:if>
+									<!-- 						${t.llave}-${t.nombre} -->
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+						
+						<p:panel rendered="${modeloDependencias.seleccionado.nivelGeografico eq 'Geozona'?'true':'false'}">
+						
+						<p:dataTable value="${modeloGeozonaTerritorios.listado}" var="lista" id="dtcontenidogeozona"
+						selection="${modeloGeozonaTerritorios.seleccionado}" selectionMode="single" rowKey="${lista.id}">
+						<p:column headerText="Contenido">
+						${lista.nombre}
+						</p:column>
+						</p:dataTable>
+						</p:panel>
+						
+						</p:panelGrid>
+					</p:panelGrid>
+					<p:remoteCommand name="llenarTerritorios"
+						action="llenarTerritorios" update="@form" />
+						<p:remoteCommand name="llenarContenidoGeozona" action="llenarContenidoGeozona" update="dtcontenidogeozona"/>
+					<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+				</h:form>
+
+				<h:outputStylesheet>
+					.topAlign{
+						vertical-align: top;
+					}
+				</h:outputStylesheet>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>
